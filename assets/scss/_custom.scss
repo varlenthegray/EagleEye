@@ -1,0 +1,102 @@
+// This is the document that contains all custom written SCSS outside of the bounds of what's going on
+
+.cursor-hand {
+  cursor: pointer;
+
+  &:hover {
+    color: $custom;
+  }
+}
+
+.card-block {
+  padding: 5px;
+}
+
+// allow custom background colors
+.bg-lightgray {
+  background-color: rgba(228, 228, 228, .8);
+}
+
+// small text
+.text-sm-10 {
+  font-size: 10px;
+}
+
+.pad-lr-4 {
+  padding-left: 4px !important;
+  padding-right: 4px !important;
+}
+
+.pad-lr-12 {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+// job coloring
+.job-color-green {
+  background-color: $job-green;
+}
+
+.job-color-yellow {
+  background-color: $job-yellow;
+}
+
+.job-color-orange {
+  background-color: $job-orange;
+}
+
+.job-color-red {
+  background-color: $job-red;
+}
+
+/* Override section
+ * This is where all of the overrides take place
+ */
+
+// Override the nav link custom (this is for tabs at the top of view_contact specifically)
+.nav-link.active {
+  background-color: #f5f5f5 !important;
+}
+
+// override tabs and their padding information
+.nav-tabs {
+  margin-top: -3px;
+
+  .nav-link {
+    padding: 1px 1em !important;
+  }
+}
+
+// override tablesaw CSS information
+.tablesaw-advance {
+  font-size: .75em;
+  margin-bottom: 3px;
+}
+
+.tablesaw-bar {
+  margin-top: -10px;
+}
+
+// separator for pricing program
+.separator {
+  background-color: #000000;
+  color: #FFFFFF;
+  font-weight: bold;
+  padding: 2px 20px;
+  margin: 10px 0;
+}
+
+// custom group for "panel" on the pricing program
+.pricing_group {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #AAAAAA;
+  margin: 10px 0;
+  padding: 2px;
+}
+
+// option group enabled dropdown text (black, overrides the text-muted option dropdown)
+.text-muted option:enabled {
+  color: #000000;
+}

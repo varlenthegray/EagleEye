@@ -1,0 +1,10 @@
+// bootstrap custom mixin page for the little (and big) things that are used!
+
+// custom mixin for button (shrink the size down!)
+// Button sizes
+@mixin button-no-padding($font-size, $line-height, $border-radius) {
+  font-size: $font-size;
+  line-height: $line-height;
+  @include border-radius($border-radius);
+}
+
