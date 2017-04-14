@@ -138,7 +138,7 @@ require 'includes/header_end.php';
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card">
+                    <div class="card" id="search_results_card" style="display: none;">
                         <div class="card-block" style="min-height: 294px;">
                             <div class="row">
                                 <div class="col-md-12">
@@ -224,33 +224,33 @@ require 'includes/header_end.php';
                             </tr>
                             </thead>
                             <tbody>
-                            <tr class="job-color-green">
+                            <tr>
                                 <td>A-Kitchen</td>
-                                <td>260-Sample Approved</td>
-                                <td>520-Bore, Dado, Pocket Hole</td>
-                                <td>430-Door Pick Up</td>
-                                <td>610-Custom</td>
+                                <td class="job-color-green">260-Sample Approved</td>
+                                <td class="job-color-green">520-Bore, Dado, Pocket Hole</td>
+                                <td class="job-color-yellow">430-Door Pick Up</td>
+                                <td class="job-color-orange">610-Custom</td>
                             </tr>
-                            <tr class="job-color-yellow">
+                            <tr>
                                 <td>B-Kitchen Island</td>
-                                <td>260-Sample Approved</td>
-                                <td>510-Cut Plywood Panels to Size</td>
-                                <td>427-Door Order</td>
-                                <td>610-Custom</td>
+                                <td class="job-color-red">260-Sample Approved</td>
+                                <td class="job-color-red">510-Cut Plywood Panels to Size</td>
+                                <td class="job-color-yellow">427-Door Order</td>
+                                <td class="job-color-green">610-Custom</td>
                             </tr>
-                            <tr class="job-color-orange">
+                            <tr>
                                 <td>C-Pantry</td>
-                                <td>260-Sample Approved</td>
-                                <td>503-Pick List for Box</td>
-                                <td>N/A</td>
-                                <td>605-Pick List for Custom</td>
+                                <td class="job-color-green">260-Sample Approved</td>
+                                <td class="job-color-green">503-Pick List for Box</td>
+                                <td class="job-color-green">N/A</td>
+                                <td class="job-color-orange">605-Pick List for Custom</td>
                             </tr>
-                            <tr class="job-color-red">
+                            <tr>
                                 <td>D-Fireplace</td>
-                                <td>260-Sample Approved</td>
-                                <td>503-Pick List for Box</td>
-                                <td>N/A</td>
-                                <td>N/A</td>
+                                <td class="job-color-yellow">260-Sample Approved</td>
+                                <td class="job-color-green">503-Pick List for Box</td>
+                                <td class="job-color-green">N/A</td>
+                                <td class="job-color-green">N/A</td>
                             </tr>
                             </tbody>
                         </table>
@@ -332,9 +332,13 @@ require 'includes/header_end.php';
         if(field.length >= 1) {
             $.post("/ondemand/livesearch/search_results.php?search=" + search, {find: field}, function(data) {
                 $("#search_results_table").html(data);
+
+                if(data !== '') {
+                    $("#search_results_card").show();
+                }
             });
         } else {
-            $("#search_results_table").html('<tr><td colspan="4">No results to display</td></tr>');
+            $("#search_results_card").hide();
         }
     }
 
@@ -382,7 +386,7 @@ require 'includes/header_end.php';
 
     $("#calendar-tab").on("shown.bs.tab", function() {
         $("#calendar_display").fullCalendar({
-            aspectRatio: 3.25,
+            aspectRatio: 1.8,
             header: {
                 left: 'prev,next today',
                 center: 'title',

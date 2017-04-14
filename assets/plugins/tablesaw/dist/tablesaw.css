@@ -242,7 +242,7 @@ table.tablesaw {
 
 .tablesaw-bar .tablesaw-advance a.tablesaw-nav-btn.left:before,
 .tablesaw-bar .tablesaw-advance a.tablesaw-nav-btn.right:before {
-  top: .45em;
+  top: .2em;
   border-top: 5px solid transparent;
   border-bottom: 5px solid transparent;
 }
