@@ -200,7 +200,7 @@ switch($_SERVER['SCRIPT_NAME']) {
                         <a href="/index.php"><i class="zmdi zmdi-view-dashboard"></i> <span> <?php echo NAV_DASHBOARD; ?> </span> </a>
                     </li>
                     <li>
-                        <a href="#"><i class="zmdi zmdi-store"></i> <span> <?php echo NAV_PRICINGPROGRAM; ?> </span> </a>
+                        <a href="/pricing/index.php"><i class="zmdi zmdi-store"></i> <span> <?php echo NAV_PRICINGPROGRAM; ?> </span> </a>
                     </li>
                     <li class="has-submenu">
                         <a href="#"><i class="zmdi zmdi-assignment"></i> <?php echo NAV_SHOPFLOOR; ?> </a>

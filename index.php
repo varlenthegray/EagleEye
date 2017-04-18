@@ -207,7 +207,7 @@ require 'includes/header_end.php';
 
 
 
-<div class="row">
+<div class="row" id="room_results_row" style="display: none;">
     <div class="col-md-8">
         <div class="card">
             <div class="card-block">
@@ -223,34 +223,9 @@ require 'includes/header_end.php';
                                 <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Customs</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="room_search_table">
                             <tr>
-                                <td>A-Kitchen</td>
-                                <td class="job-color-green">260-Sample Approved</td>
-                                <td class="job-color-green">520-Bore, Dado, Pocket Hole</td>
-                                <td class="job-color-yellow">430-Door Pick Up</td>
-                                <td class="job-color-orange">610-Custom</td>
-                            </tr>
-                            <tr>
-                                <td>B-Kitchen Island</td>
-                                <td class="job-color-red">260-Sample Approved</td>
-                                <td class="job-color-red">510-Cut Plywood Panels to Size</td>
-                                <td class="job-color-yellow">427-Door Order</td>
-                                <td class="job-color-green">610-Custom</td>
-                            </tr>
-                            <tr>
-                                <td>C-Pantry</td>
-                                <td class="job-color-green">260-Sample Approved</td>
-                                <td class="job-color-green">503-Pick List for Box</td>
-                                <td class="job-color-green">N/A</td>
-                                <td class="job-color-orange">605-Pick List for Custom</td>
-                            </tr>
-                            <tr>
-                                <td>D-Fireplace</td>
-                                <td class="job-color-yellow">260-Sample Approved</td>
-                                <td class="job-color-green">503-Pick List for Box</td>
-                                <td class="job-color-green">N/A</td>
-                                <td class="job-color-green">N/A</td>
+                                <td colspan="5">No results to display</td>
                             </tr>
                             </tbody>
                         </table>
@@ -269,42 +244,11 @@ require 'includes/header_end.php';
     </div>
 </div>
 
-<div class="row">
+<div class="row" id="gantt_chart_row" style="display: none;">
     <div class="col-md-12">
         <div class="card">
             <div class="card-block">
-                <table class="tablesaw table m-b-0" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
-                    <thead>
-                    <tr>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="1">Sales</th>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Design</th>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Design/Engineering</th>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Distribution</th>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="5">Acknowledgement</th>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="6">Engineering</th>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="7">Box</th>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="8">Finishing</th>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="9">Assembly</th>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="10">Shipping</th>
-                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="11">Delivery</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>165-Sample Door Approval</td>
-                        <td>315-Engineering</td>
-                        <td>315.1-Signed & Completed Ack.</td>
-                        <td>N/A</td>
-                        <td>315.1-Signed & Completed Ack.</td>
-                        <td>315.1-Signed & Completed Ack.</td>
-                        <td>503-Pick List for Box</td>
-                        <td>540-Finishing</td>
-                        <td>560-Assembly</td>
-                        <td>580-Load All Parts</td>
-                        <td>590-Delivery</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div id="job_status_gantt"></div>
             </div>
         </div>
     </div>
@@ -340,6 +284,17 @@ require 'includes/header_end.php';
         } else {
             $("#search_results_card").hide();
         }
+    }
+
+    function displaySO(sonum) {
+        $.post("/ondemand/livesearch/search_results.php?search=room", {find: sonum}, function(data) {
+            $("#room_search_table").html(data);
+            $("#room_results_row").show();
+        });
+    }
+
+    function displayGantt(room_id) {
+        $("#gantt_chart_row").show();
     }
 
     $("#search_accordion1").accordion();
@@ -463,6 +418,289 @@ require 'includes/header_end.php';
             ]
         });
     });
+
+    AmCharts.makeChart( "job_status_gantt", {
+        "type": "gantt",
+        "theme": "custom",
+        "marginRight": 20,
+        "marginTop": 10,
+        "marginBottom": 10,
+        "period": "hh",
+        "dataDateFormat":"YYYY-MM-DD",
+        "balloonDateFormat": "JJ:NN",
+        "columnWidth": 0.5,
+        "valueAxis": {
+            "type": "date"
+        },
+        "brightnessStep": 10,
+        "graph": {
+            "fillAlphas": 1,
+            "balloonText": "<b>[[task]]</b>: [[open]] [[value]]"
+        },
+        "rotate": true,
+        "categoryField": "category",
+        "segmentsField": "segments",
+        "colorField": "color",
+        "startDate": "2015-01-01",
+        "startField": "start",
+        "endField": "end",
+        "durationField": "duration",
+        "dataProvider": [ {
+            "category": "John",
+            "segments": [ {
+                "start": 7,
+                "duration": 2,
+                "color": "#46615e",
+                "task": "Task #1"
+            }, {
+                "duration": 2,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "duration": 2,
+                "color": "#8dc49f",
+                "task": "Task #3"
+            } ]
+        }, {
+            "category": "Smith",
+            "segments": [ {
+                "start": 10,
+                "duration": 2,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "duration": 1,
+                "color": "#8dc49f",
+                "task": "Task #3"
+            }, {
+                "duration": 4,
+                "color": "#46615e",
+                "task": "Task #1"
+            } ]
+        }, {
+            "category": "Ben",
+            "segments": [ {
+                "start": 12,
+                "duration": 2,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "start": 16,
+                "duration": 2,
+                "color": "#FFE4C4",
+                "task": "Task #4"
+            } ]
+        }, {
+            "category": "Mike",
+            "segments": [ {
+                "start": 9,
+                "duration": 6,
+                "color": "#46615e",
+                "task": "Task #1"
+            }, {
+                "duration": 4,
+                "color": "#727d6f",
+                "task": "Task #2"
+            } ]
+        }, {
+            "category": "Lenny",
+            "segments": [ {
+                "start": 8,
+                "duration": 1,
+                "color": "#8dc49f",
+                "task": "Task #3"
+            }, {
+                "duration": 4,
+                "color": "#46615e",
+                "task": "Task #1"
+            } ]
+        }, {
+            "category": "Scott",
+            "segments": [ {
+                "start": 15,
+                "duration": 3,
+                "color": "#727d6f",
+                "task": "Task #2"
+            } ]
+        }, {
+            "category": "Julia",
+            "segments": [ {
+                "start": 9,
+                "duration": 2,
+                "color": "#46615e",
+                "task": "Task #1"
+            }, {
+                "duration": 1,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "duration": 8,
+                "color": "#8dc49f",
+                "task": "Task #3"
+            } ]
+        }, {
+            "category": "Bob",
+            "segments": [ {
+                "start": 9,
+                "duration": 8,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "duration": 7,
+                "color": "#8dc49f",
+                "task": "Task #3"
+            } ]
+        }, {
+            "category": "Kendra",
+            "segments": [ {
+                "start": 11,
+                "duration": 8,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "start": 16,
+                "duration": 2,
+                "color": "#FFE4C4",
+                "task": "Task #4"
+            } ]
+        }, {
+            "category": "Tom",
+            "segments": [ {
+                "start": 9,
+                "duration": 4,
+                "color": "#46615e",
+                "task": "Task #1"
+            }, {
+                "duration": 3,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "duration": 5,
+                "color": "#8dc49f",
+                "task": "Task #3"
+            } ]
+        }, {
+            "category": "Kyle",
+            "segments": [ {
+                "start": 6,
+                "duration": 3,
+                "color": "#727d6f",
+                "task": "Task #2"
+            } ]
+        }, {
+            "category": "Anita",
+            "segments": [ {
+                "start": 12,
+                "duration": 2,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "start": 16,
+                "duration": 2,
+                "color": "#FFE4C4",
+                "task": "Task #4"
+            } ]
+        }, {
+            "category": "Jack",
+            "segments": [ {
+                "start": 8,
+                "duration": 10,
+                "color": "#46615e",
+                "task": "Task #1"
+            }, {
+                "duration": 2,
+                "color": "#727d6f",
+                "task": "Task #2"
+            } ]
+        }, {
+            "category": "Kim",
+            "segments": [ {
+                "start": 12,
+                "duration": 2,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "duration": 3,
+                "color": "#8dc49f",
+                "task": "Task #3"
+            } ]
+        }, {
+            "category": "Aaron",
+            "segments": [ {
+                "start": 18,
+                "duration": 2,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "duration": 2,
+                "color": "#FFE4C4",
+                "task": "Task #4"
+            } ]
+        }, {
+            "category": "Alan",
+            "segments": [ {
+                "start": 17,
+                "duration": 2,
+                "color": "#46615e",
+                "task": "Task #1"
+            }, {
+                "duration": 2,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "duration": 2,
+                "color": "#8dc49f",
+                "task": "Task #3"
+            } ]
+        }, {
+            "category": "Ruth",
+            "segments": [ {
+                "start": 13,
+                "duration": 2,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "duration": 1,
+                "color": "#8dc49f",
+                "task": "Task #3"
+            }, {
+                "duration": 4,
+                "color": "#46615e",
+                "task": "Task #1"
+            } ]
+        }, {
+            "category": "Simon",
+            "segments": [ {
+                "start": 10,
+                "duration": 3,
+                "color": "#727d6f",
+                "task": "Task #2"
+            }, {
+                "start": 17,
+                "duration": 4,
+                "color": "#FFE4C4",
+                "task": "Task #4"
+            } ]
+        } ],
+        "valueScrollbar": {
+            "autoGridCount":true,
+            "color": "#132882"
+
+        },
+        "chartCursor": {
+            "cursorColor":"#55bb76",
+            "valueBalloonsEnabled": false,
+            "cursorAlpha": 0,
+            "valueLineAlpha":0.5,
+            "valueLineBalloonEnabled": true,
+            "valueLineEnabled": true,
+            "zoomable":false,
+            "valueZoomable":true
+        },
+        "export": {
+            "enabled": true
+        }
+    } );
 </script>
 
 <?php 
