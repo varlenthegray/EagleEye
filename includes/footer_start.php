@@ -168,3 +168,7 @@
 <!-- App js -->
 <script src="/assets/js/jquery.core.js"></script>
 <script src="/assets/js/jquery.app.js"></script>
+
+
+<!-- Calendar -->
+<script src="/assets/plugins/fullcalendar/dist/fullcalendar.min.js"></script>

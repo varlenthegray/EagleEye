@@ -39,6 +39,14 @@
     <!-- Modernizr js -->
     <script src="/assets/js/modernizr.min.js"></script>
 
+    <!-- Full Calendar-->
+    <link href="/assets/plugins/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
+
+    <script src="/assets/plugins/moment/moment.js"></script>
+
+    <script>
+        var userTZ = '<?php echo $_SESSION['userInfo']['timezone']; ?>';
+    </script>
 </head>
 
 <body>

@@ -4,11 +4,17 @@
   cursor: pointer;
 
   &:hover {
+    background-color: $white;
     color: $custom;
   }
 }
 
+// override the padding on both blocks and boxes
 .card-block {
+  padding: 5px;
+}
+
+.card-box {
   padding: 5px;
 }
 
@@ -105,4 +111,22 @@
 // option group enabled dropdown text (black, overrides the text-muted option dropdown)
 .text-muted option:enabled {
   color: #000000;
+}
+
+// adding a bottom border
+.bottom-border:after {
+  content: "";
+  display: block;
+  border-bottom: 1px solid #ccc;
+  margin: 0;
+}
+
+// setting the jquery UI state active color
+.ui-state-active {
+  background: $brand-primary;
+}
+
+// fullcalendar color adjustment
+.fc-event-dot {
+  background-color: $brand-primary !important;
 }

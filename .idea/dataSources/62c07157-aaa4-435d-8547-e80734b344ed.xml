@@ -22,241 +22,323 @@
     <schema id="16" parent="1" name="wfdguild"/>
     <table id="17" parent="2" name="account_type"/>
     <table id="18" parent="2" name="customer"/>
-    <table id="19" parent="2" name="log"/>
-    <table id="20" parent="2" name="operations"/>
-    <table id="21" parent="2" name="rooms"/>
-    <table id="22" parent="2" name="user"/>
-    <column id="23" parent="17" name="id">
+    <table id="19" parent="2" name="jobs"/>
+    <table id="20" parent="2" name="log"/>
+    <table id="21" parent="2" name="operations"/>
+    <table id="22" parent="2" name="rooms"/>
+    <table id="23" parent="2" name="user"/>
+    <column id="24" parent="17" name="id">
       <Position>1</Position>
       <DataType>tinyint(2)|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="24" parent="17" name="name">
+    <column id="25" parent="17" name="name">
       <Position>2</Position>
       <DataType>varchar(30)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="25" parent="17" name="PRIMARY">
+    <key id="26" parent="17" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="26" parent="18" name="id">
+    <column id="27" parent="18" name="id">
       <Position>1</Position>
       <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="27" parent="18" name="sales_order_num">
+    <column id="28" parent="18" name="sales_order_num">
       <Position>2</Position>
       <DataType>varchar(10)|0</DataType>
     </column>
-    <column id="28" parent="18" name="project">
+    <column id="29" parent="18" name="project">
       <Position>3</Position>
       <DataType>varchar(50)|0</DataType>
     </column>
-    <column id="29" parent="18" name="dealer_contractor">
+    <column id="30" parent="18" name="dealer_contractor">
       <Position>4</Position>
       <DataType>varchar(75)|0</DataType>
     </column>
-    <column id="30" parent="18" name="project_manager">
+    <column id="31" parent="18" name="project_manager">
       <Position>5</Position>
       <DataType>varchar(75)|0</DataType>
     </column>
-    <column id="31" parent="18" name="dealer_code">
+    <column id="32" parent="18" name="dealer_code">
       <Position>6</Position>
       <DataType>varchar(6)|0</DataType>
     </column>
-    <column id="32" parent="18" name="job_type">
+    <column id="33" parent="18" name="job_type">
       <Position>7</Position>
       <DataType>tinyint(4)|0</DataType>
     </column>
-    <column id="33" parent="18" name="account_type">
+    <column id="34" parent="18" name="account_type">
       <Position>8</Position>
       <DataType>char(1)|0</DataType>
     </column>
-    <key id="34" parent="18" name="PRIMARY">
+    <key id="35" parent="18" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="35" parent="19" name="id">
+    <column id="36" parent="19" name="id">
       <Position>1</Position>
       <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="36" parent="19" name="time">
+    <column id="37" parent="19" name="job_id">
+      <Position>2</Position>
+      <DataType>varchar(50)|0</DataType>
+    </column>
+    <column id="38" parent="19" name="operation">
+      <Position>3</Position>
+      <DataType>varchar(50)|0</DataType>
+    </column>
+    <column id="39" parent="19" name="started">
+      <Position>4</Position>
+      <DataType>int(15)|0</DataType>
+    </column>
+    <column id="40" parent="19" name="part_id">
+      <Position>5</Position>
+      <DataType>varchar(50)|0</DataType>
+    </column>
+    <column id="41" parent="19" name="department">
+      <Position>6</Position>
+      <DataType>varchar(25)|0</DataType>
+    </column>
+    <column id="42" parent="19" name="assigned_to">
+      <Position>7</Position>
+      <DataType>int(11)|0</DataType>
+    </column>
+    <column id="43" parent="19" name="status">
+      <Position>8</Position>
+      <Comment>1: New, 2: Completed, 3: Partial Completion, 4: Rework</Comment>
+      <DataType>tinyint(4)|0</DataType>
+    </column>
+    <column id="44" parent="19" name="completed">
+      <Position>9</Position>
+      <DataType>int(15)|0</DataType>
+    </column>
+    <column id="45" parent="19" name="notes">
+      <Position>10</Position>
+      <DataType>text|0</DataType>
+    </column>
+    <column id="46" parent="19" name="qty_requested">
+      <Position>11</Position>
+      <DataType>tinyint(4)|0</DataType>
+    </column>
+    <column id="47" parent="19" name="qty_completed">
+      <Position>12</Position>
+      <DataType>tinyint(4)|0</DataType>
+    </column>
+    <column id="48" parent="19" name="active">
+      <Position>13</Position>
+      <DataType>tinyint(1)|0</DataType>
+    </column>
+    <key id="49" parent="19" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="50" parent="20" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+    </column>
+    <column id="51" parent="20" name="time">
       <Position>2</Position>
       <DataType>datetime|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="37" parent="19" name="message">
+    <column id="52" parent="20" name="message">
       <Position>3</Position>
       <DataType>text|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="38" parent="19" name="ref_page">
+    <column id="53" parent="20" name="ref_page">
       <Position>4</Position>
       <DataType>varchar(120)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="39" parent="19" name="type">
+    <column id="54" parent="20" name="type">
       <Position>5</Position>
       <Comment>1: SQL Error</Comment>
       <DataType>tinyint(1)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="40" parent="19" name="PRIMARY">
+    <key id="55" parent="20" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="41" parent="20" name="id">
+    <column id="56" parent="21" name="id">
       <Position>1</Position>
       <DataType>int(5)|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="42" parent="20" name="op_id">
+    <column id="57" parent="21" name="op_id">
       <Position>2</Position>
       <DataType>varchar(10)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="43" parent="20" name="department">
+    <column id="58" parent="21" name="department">
       <Position>3</Position>
       <DataType>varchar(50)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="44" parent="20" name="job_title">
+    <column id="59" parent="21" name="job_title">
       <Position>4</Position>
       <DataType>varchar(150)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="45" parent="20" name="icon">
+    <column id="60" parent="21" name="icon">
       <Position>5</Position>
       <DataType>varchar(30)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="46" parent="20" name="color">
+    <column id="61" parent="21" name="color">
       <Position>6</Position>
       <DataType>varchar(25)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="47" parent="20" name="description">
+    <column id="62" parent="21" name="description">
       <Position>7</Position>
       <DataType>text|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="48" parent="20" name="PRIMARY">
+    <key id="63" parent="21" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="49" parent="21" name="id">
+    <column id="64" parent="22" name="id">
       <Position>1</Position>
       <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="50" parent="21" name="so_parent">
+    <column id="65" parent="22" name="so_parent">
       <Position>2</Position>
       <DataType>int(11)|0</DataType>
     </column>
-    <column id="51" parent="21" name="room">
+    <column id="66" parent="22" name="room">
       <Position>3</Position>
       <DataType>char(1)|0</DataType>
     </column>
-    <column id="52" parent="21" name="sample_bracket_priority">
+    <column id="67" parent="22" name="sample_bracket_priority">
       <Position>4</Position>
       <DataType>tinyint(4)|0</DataType>
     </column>
-    <column id="53" parent="21" name="sample_bracket_status">
+    <column id="68" parent="22" name="sample_bracket_status">
       <Position>5</Position>
       <DataType>varchar(50)|0</DataType>
     </column>
-    <column id="54" parent="21" name="main_bracket_priority">
+    <column id="69" parent="22" name="main_bracket_priority">
       <Position>6</Position>
       <DataType>tinyint(4)|0</DataType>
     </column>
-    <column id="55" parent="21" name="main_bracket_status">
+    <column id="70" parent="22" name="main_bracket_status">
       <Position>7</Position>
       <DataType>varchar(50)|0</DataType>
     </column>
-    <column id="56" parent="21" name="doordrawer_bracket_priority">
+    <column id="71" parent="22" name="doordrawer_bracket_priority">
       <Position>8</Position>
       <DataType>tinyint(4)|0</DataType>
     </column>
-    <column id="57" parent="21" name="doordrawer_bracket_status">
+    <column id="72" parent="22" name="doordrawer_bracket_status">
       <Position>9</Position>
       <DataType>varchar(50)|0</DataType>
     </column>
-    <column id="58" parent="21" name="customs_bracket_priority">
+    <column id="73" parent="22" name="customs_bracket_priority">
       <Position>10</Position>
       <DataType>tinyint(4)|0</DataType>
     </column>
-    <column id="59" parent="21" name="customs_bracket_status">
+    <column id="74" parent="22" name="customs_bracket_status">
       <Position>11</Position>
       <DataType>varchar(50)|0</DataType>
     </column>
-    <column id="60" parent="21" name="room_name">
+    <column id="75" parent="22" name="room_name">
       <Position>12</Position>
       <DataType>varchar(30)|0</DataType>
     </column>
-    <key id="61" parent="21" name="PRIMARY">
+    <key id="76" parent="22" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="62" parent="22" name="id">
+    <column id="77" parent="23" name="id">
       <Position>1</Position>
       <DataType>int(11)|0</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
     </column>
-    <column id="63" parent="22" name="username">
+    <column id="78" parent="23" name="username">
       <Position>2</Position>
       <DataType>varchar(25)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="64" parent="22" name="password">
+    <column id="79" parent="23" name="password">
       <Position>3</Position>
       <DataType>varchar(255)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="65" parent="22" name="email">
+    <column id="80" parent="23" name="email">
       <Position>4</Position>
       <DataType>varchar(150)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="66" parent="22" name="last_ip_address">
+    <column id="81" parent="23" name="last_ip_address">
       <Position>5</Position>
       <DataType>varchar(40)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="67" parent="22" name="last_login">
+    <column id="82" parent="23" name="last_login">
       <Position>6</Position>
       <DataType>datetime|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="68" parent="22" name="session_id">
+    <column id="83" parent="23" name="session_id">
       <Position>7</Position>
       <DataType>varchar(40)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="69" parent="22" name="account_type">
+    <column id="84" parent="23" name="account_type">
       <Position>8</Position>
       <DataType>tinyint(2)|0</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="70" parent="22" name="account_status">
+    <column id="85" parent="23" name="account_status">
       <Position>9</Position>
       <DataType>tinyint(1)|0</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;1&apos;</DefaultExpression>
     </column>
-    <key id="71" parent="22" name="PRIMARY">
+    <column id="86" parent="23" name="department">
+      <Position>10</Position>
+      <DataType>varchar(25)|0</DataType>
+    </column>
+    <column id="87" parent="23" name="name">
+      <Position>11</Position>
+      <DataType>varchar(150)|0</DataType>
+    </column>
+    <column id="88" parent="23" name="shift">
+      <Position>12</Position>
+      <DataType>tinyint(4)|0</DataType>
+    </column>
+    <column id="89" parent="23" name="pin_code">
+      <Position>13</Position>
+      <DataType>int(10)|0</DataType>
+    </column>
+    <column id="90" parent="23" name="timezone">
+      <Position>14</Position>
+      <DataType>varchar(25)|0</DataType>
+      <DefaultExpression>&apos;America/New_York&apos;</DefaultExpression>
+    </column>
+    <key id="91" parent="23" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>

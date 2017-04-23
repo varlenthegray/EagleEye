@@ -13,6 +13,7 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
 
         if(password_verify($_REQUEST['password'],$result['password'])) { // seems the password is valid too
             $_SESSION['valid'] = true; // set the session as valid
+            $_SESSION['userInfo'] = $result;
             ?>
             <script type="text/javascript">
                 displayToast("success", "We have logged you in, please wait one moment while your dashboard loads...", "Successful Login", true);
@@ -34,10 +35,18 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
         </script>
         <?php
     }
-}elseif($_REQUEST['pli']) {
+} elseif ($_REQUEST['pli']) {
     ?>
     <script type="text/javascript">
         displayToast("info", "Before accessing any information, please log in to your account.", "Please Login");
+    </script>
+    <?php
+} elseif ($_REQUEST['logout']) {
+    session_destroy();
+    session_regenerate_id();
+    ?>
+    <script type="text/javascript">
+        displayToast("info", "You have successfully logged out.", "Logout Successful");
     </script>
     <?php
 }
