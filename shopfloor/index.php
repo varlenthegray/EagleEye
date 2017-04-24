@@ -1,69 +1,15 @@
 <?php
 require '../includes/header_start.php';
+
+$_SESSION['shop_active'] ? null : header('Location: /shopfloor/login.php');
+
 require '../includes/header_end.php';
 ?>
 
 <!-- tablesaw-->
 <link href="/assets/plugins/tablesaw/dist/tablesaw.css" rel="stylesheet" type="text/css"/>
 
-<?php if(!$_SESSION['shop_active']) { ?>
-<div class="row" id="default_login_form">
-    <div class="col-md-6">
-        <div class="card-box">
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="tablesaw table">
-                        <thead>
-                        <tr>
-                            <th scope="col" data-tablesaw-priority="persist">Employee</th>
-                        </tr>
-                        </thead>
-                        <tbody id="room_search_table">
-                        <?php
-                            $qry = $dbconn->query("SELECT * FROM user");
-
-                            while($result = $qry->fetch_assoc()) {
-                                echo "<tr class='cursor-hand' data-toggle='modal' data-target='#modalLogin' data-login-id='{$result['id']}' data-login-name='{$result['name']}'>";
-                                echo "<td>{$result['name']}</td>";
-                                echo "</tr>";
-                            }
-                        ?>
-                        </tbody>
-                    </table>
-
-                    <!-- modal -->
-                    <div id="modalLogin" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLoginLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                    <h4 class="modal-title" id="modalLoginName">Login As Ben</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-md-12 text-md-center">
-                                            <h4>Enter PIN Code</h4>
-
-                                            <input type="password" autocomplete="off" name="pin" placeholder="PIN" maxlength="4" id="loginPin" class="text-md-center">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                                    <button type="button" class="btn btn-primary waves-effect waves-light" id="clock_in">Clock In</button>
-                                </div>
-                            </div><!-- /.modal-content -->
-                        </div><!-- /.modal-dialog -->
-                    </div><!-- /.modal -->
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<?php } ?>
-
-<div class="row" id="next_section" <?php if(!$_SESSION['shop_active']) echo 'style="display: none;"'; ?>>
-    <!-- Left column -->
+<div class="row" id="next_section">
     <div class="col-md-6" id="main_window">
         <div class="card-box" style="min-height: 511px;">
             <div class="row">
@@ -79,35 +25,35 @@ require '../includes/header_end.php';
                         </tr>
                         </thead>
                         <tbody id="active_jobs_table">
-                            <?php
-                                $qry = $dbconn->query("SELECT * FROM jobs WHERE active AND assigned_to = {$_SESSION['shop_user']['id']}");
+                        <?php
+                        $qry = $dbconn->query("SELECT * FROM jobs WHERE active AND assigned_to = {$_SESSION['shop_user']['id']}");
 
-                                if($qry->num_rows > 0) {
-                                    while($result = $qry->fetch_assoc()) {
-                                        echo "<tr class='cursor-hand' data-toggle='modal' data-target='#modalUpdateJob' data-id='{$result['id']}'>";
-                                        echo "  <td>{$result['job_id']}</td>";
-                                        echo "  <td>{$result['operation']}</td>";
+                        if($qry->num_rows > 0) {
+                            while($result = $qry->fetch_assoc()) {
+                                echo "<tr class='cursor-hand update-active-job' id='job_id_{$result['id']}' data-id='{$result['id']}'>";
+                                echo "  <td>{$result['job_id']}</td>";
+                                echo "  <td>{$result['operation']}</td>";
 
-                                        $startTime = date(DATE_TIME_DEFAULT, $result['started']);
+                                $startTime = date(DATE_TIME_DEFAULT, $result['started']);
 
-                                        echo "  <td id='startTime' data-toggle='tooltip' data-placement='top' title='$startTime'>
-                                                    <span id='startTime{$result['id']}'></span>
-                                                    <script>
-                                                        $('#startTime{$result['id']}').html(moment({$result['started']} * 1000).fromNow());
-                                                        
-                                                        setInterval(function() {
-                                                            $('#startTime{$result['id']}').html(moment({$result['started']} * 1000).fromNow());
-                                                        }, 1000);
-                                                    </script>
-                                                </td>";
-                                        echo "</tr>";
-                                    }
-                                } else {
-                                    echo "<tr>";
-                                    echo "  <td colspan='4'>No active jobs</td>";
-                                    echo "</tr>";
-                                }
-                            ?>
+                                echo "  <td id='startTime' data-toggle='tooltip' data-placement='top' title='$startTime'>
+                            <span id='startTime{$result['id']}'></span>
+                            <script>
+                                $('#startTime{$result['id']}').html(moment({$result['started']} * 1000).fromNow());
+                                
+                                setInterval(function() {
+                                    $('#startTime{$result['id']}').html(moment({$result['started']} * 1000).fromNow());
+                                }, 1000);
+                            </script>
+                        </td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr>";
+                            echo "  <td colspan='4'>No active jobs</td>";
+                            echo "</tr>";
+                        }
+                        ?>
                         </tbody>
                     </table>
 
@@ -121,24 +67,24 @@ require '../includes/header_end.php';
                             <th scope="col">Part ID</th>
                         </tr>
                         </thead>
-                        <tbody id="room_search_table">
-                            <?php
-                                $qry = $dbconn->query("SELECT * FROM jobs WHERE NOT active AND assigned_to = {$_SESSION['shop_user']['id']}");
+                        <tbody id="job_queue_table">
+                        <?php
+                        $qry = $dbconn->query("SELECT * FROM jobs WHERE NOT active AND assigned_to = {$_SESSION['shop_user']['id']} AND completed IS NULL");
 
-                                if($qry->num_rows > 0) {
-                                    while($result = $qry->fetch_assoc()) {
-                                        echo "<tr class='cursor-hand queue-job-start' data-job-id='{$result['id']}'>";
-                                        echo "  <td>{$result['job_id']}</td>";
-                                        echo "  <td>{$result['operation']}</td>";
-                                        echo "  <td>{$result['part_id']}</td>";
-                                        echo "</tr>";
-                                    }
-                                } else {
-                                    echo "<tr>";
-                                    echo "  <td colspan='3'>No jobs in queue</td>";
-                                    echo "</tr>";
-                                }
-                            ?>
+                        if($qry->num_rows > 0) {
+                            while($result = $qry->fetch_assoc()) {
+                                echo "<tr class='cursor-hand queue-job-start' id='job_id_{$result['id']}' data-job-id='{$result['id']}'>";
+                                echo "  <td>{$result['job_id']}</td>";
+                                echo "  <td>{$result['operation']}</td>";
+                                echo "  <td>{$result['part_id']}</td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr>";
+                            echo "  <td colspan='3'>No jobs in queue</td>";
+                            echo "</tr>";
+                        }
+                        ?>
                         </tbody>
                     </table>
                 </div>
@@ -184,18 +130,18 @@ require '../includes/header_end.php';
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="modalUpdateJobHeader">Update 734A_A01_DOORS</h4>
+                    <h4 class="modal-title" id="modalUpdateJobHeader">Update ???</h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-3">
                             <fieldset class="form-group">
                                 <label for="qtyCompleted">Quantity Completed</label>
-                                <input type="text" class="form-control" id="qtyCompleted" name="qtyComplete" placeholder="1">
+                                <input type="text" class="form-control" id="qtyCompleted" name="qtyComplete" placeholder="???"  data-toggle='tooltip' data-placement='top'>
                             </fieldset>
 
                             <fieldset class="form-group">
-                                <input type="radio" name="completionCode" id="completion_code1" value="Complete" checked>
+                                <input type="radio" name="completionCode" id="completion_code1" value="Complete">
                                 <label for="completion_code1">Completed</label>
                                 <br />
                                 <input type="radio" name="completionCode" id="completion_code2" value="Partially Complete">
@@ -216,7 +162,7 @@ require '../includes/header_end.php';
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary waves-effect waves-light" id="save_job_update">Save</button>
+                    <button type="button" class="btn btn-primary waves-effect waves-light" id="save_job_update">Complete</button>
                 </div>
             </div>
         </div>
@@ -231,45 +177,24 @@ require '../includes/header_end.php';
 <script src="/ondemand/js/page_content_functions.js"></script>
 
 <script>
-    var userID;
     var jobInterval;
-    var employeeName;
     var jobInfo;
 
-    function doLogin() {
-        $.post("/ondemand/shopfloor/login_actions.php?action=login", {id: userID, pin: $("#loginPin").val()}, function(data) {
-            if (data === 'success') {
-                $("#modalLogin").modal('hide').on('hidden.bs.modal', function() {
-                    $("#default_login_form").remove(); // remove the ability to log in (completely)
-
-                    $("#next_section").show(); // show the main page after login
-                    loadCalendarPane(); // load the calendar
-                    $("#shop_employee_name").text(employeeName);
-                });
-            } else {
-                displayToast("error", "Failed to log in, please try again.", "Login Failure");
-                $("#modalLogin").modal('hide');
-            }
+    function updateActiveJobs() {
+        $.post("/ondemand/shopfloor/job_actions.php?action=display_active_jobs", function(data) { // grab the latest information
+            $("#active_jobs_table").html(data); // display that information in the table
         });
     }
 
-    $("#modalLogin").on("show.bs.modal", function(e) { // when we're triggering the show event
-        var userLine = $(e.relatedTarget); // grab the related line and information associated with it
-        var modal = $(this); // set the modal to this specific element
-
-        employeeName = userLine.data("login-name");
-
-        modal.find('.modal-title').text('Hello ' + userLine.data("login-name")); // find and update the text to the login name from the data line
-        userID = userLine.data("login-id"); // grab the user ID and prep it for sending to the login handler
-
-        $("#loginPin").val(""); // clear out any previous entries/attempts
-    }).on("shown.bs.modal", function() { // once the modal form is completely shown
-        $("#loginPin").focus(); // set the focus (once the modal is fully painted on the canvas)
-    });
+    function updateQueuedJobs() {
+        $.post("/ondemand/shopfloor/job_actions.php?action=display_job_queue", function(data) { // grab the latest information
+            $("#job_queue_table").html(data); // display that information in the table
+        });
+    }
 
     $("body")
         .on("click", ".queue-job-start", function() {
-        $.post("/ondemand/shopfloor/job_actions.php?action=start_job", {jobID: $(this).data("job-id")}, function(data) {
+        $.post("/ondemand/shopfloor/job_actions.php?action=get_job_info", {jobID: $(this).data("job-id")}, function(data) {
             if(data !== '') {
                 jobInfo = $.parseJSON(data);
 
@@ -280,22 +205,48 @@ require '../includes/header_end.php';
         .on("click", "#start_job", function() {
             $.post("/ondemand/shopfloor/job_actions.php?action=update_start_job", {id: jobInfo.id}, function(data) {
                 if(data === 'success') {
+                    updateActiveJobs();
+                    updateQueuedJobs();
+
                     displayToast("success", "Successfully started job.", "Job Started");
+
+                    $("#modalStartJob").modal('hide');
                 } else {
                     displayToast("error", "Unable to start job.", "Job Error");
                 }
             });
-    });
+    })
+        .on("click", ".update-active-job", function() {
+            $.post("/ondemand/shopfloor/job_actions.php?action=get_job_info", {jobID: $(this).data("id")}, function(data) {
+                jobInfo = $.parseJSON(data);
+
+                $("#modalUpdateJob").modal();
+            })
+    })
+        .on("click", "#save_job_update", function() {
+            if(!$("input[name='completionCode']").is(':checked')) {
+                alert("Please select the completion code before marking this job complete.");
+            } else {
+                $.post("/ondemand/shopfloor/job_actions.php?action=update_active_job", {jobID: jobInfo.id, notes: $("#notes").val(), qty: $("#qtyCompleted").val(), status: $("input[name='completionCode']:checked").val()}, function(data) {
+                    if(data === 'success' ) {
+                        displayToast("success", "Job has been closed.", "Job closed");
+                        $("#modalUpdateJob").modal('hide');
+
+                        updateActiveJobs();
+                    } else {
+                        displayToast("error", "Unable to close the job", "Job error");
+                    }
+                });
+            }
+        });
 
     $("#modalStartJob").on("show.bs.modal", function() {
-        var modal = $(this);
-
         $("#start_job_time").html(moment().format("LT"));
 
-        modal.find('#modalStartJobInnerTitle').text(jobInfo.job_id);
-        modal.find("#start_job_qty").text("Quantity to complete: " + jobInfo.qty_requested);
-        modal.find("#start_job_operation").text("Operation: " + jobInfo.operation);
-        modal.find("#start_job_partid").text("Job ID: " + jobInfo.part_id);
+        $('#modalStartJobInnerTitle').html(jobInfo.job_id);
+        $("#start_job_qty").html("Quantity to complete: <b>" + jobInfo.qty_requested + "</b>");
+        $("#start_job_operation").html("Operation: <b>" + jobInfo.operation + "</b>");
+        $("#start_job_partid").html("Job ID: <b>" + jobInfo.part_id + "</b>");
 
         $("#start_job").attr("data-startid", jobInfo.id);
 
@@ -306,13 +257,11 @@ require '../includes/header_end.php';
         clearInterval(jobInterval);
     });
 
-    $("#clock_in").on("click", function() { // if you click the button, do login
-        doLogin();
-    });
-
-    $("#loginPin").on("keypress", function(e) { // each time you press a key in the PIN field
-        if(e.keyCode === 13) // if hitting the enter key, do login
-            doLogin();
+    $("#modalUpdateJob").on("show.bs.modal", function() {
+        $("#modalUpdateJobHeader").html("Update job " + jobInfo.job_id + " <i>(" + jobInfo.operation + ")</i>");
+        $("#qtyCompleted").val(jobInfo.qty_requested).attr("data-original-title", "Requested qty: " + jobInfo.qty_requested);
+        $("input[name='completionCode']").prop("checked", false);
+        $("#notes").val("");
     });
 
     $("#date-time").html(moment().format("LLLL"));
@@ -321,13 +270,18 @@ require '../includes/header_end.php';
         $("#date-time").html(moment().format("LLLL"));
     }, 1000);
 
-    <?php if($_SESSION['shop_active']) echo 'loadCalendarPane();'; ?>
+    loadCalendarPane();
 
     $("#shop_logout_link").on("click", function() {
         $.post("/ondemand/shopfloor/login_actions.php?action=logout", function() {
-            window.location.href = ("/shopfloor/index.php");
+            window.location.href = ("/shopfloor/login.php");
         });
     });
+
+    setInterval(function() { // reatime(ish) updating of job information, perhaps migrate this to Node.js at some point
+        updateQueuedJobs();
+        updateActiveJobs();
+    }, 10000)
 </script>
 
 <?php 

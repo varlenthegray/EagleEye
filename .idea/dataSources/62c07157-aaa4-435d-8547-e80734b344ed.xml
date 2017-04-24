@@ -115,7 +115,7 @@
     <column id="43" parent="19" name="status">
       <Position>8</Position>
       <Comment>1: New, 2: Completed, 3: Partial Completion, 4: Rework</Comment>
-      <DataType>tinyint(4)|0</DataType>
+      <DataType>varchar(25)|0</DataType>
     </column>
     <column id="44" parent="19" name="completed">
       <Position>9</Position>
