@@ -114,18 +114,45 @@ switch($_SERVER['SCRIPT_NAME']) {
             <div id="navigation">
                 <!-- Navigation Menu-->
                 <ul class="navigation-menu">
+                    <?php
+                        if($_SESSION['userInfo']['account_type'] === '6') {
+                    ?>
+                        <li>
+                            <a href="/shopfloor/index.php"><i class="zmdi zmdi-assignment"></i>
+                                <span><?php echo NAV_INDIVIDUAL; ?></span></a>
+                        </li>
+                        <li>
+                            <a href="/ondemand/shopfloor/login_actions.php?action=logout"
+                               id="shop_logout_link"><i class="zmdi zmdi-time-restore-setting"></i>
+                                <span><?php echo NAV_SHOP_LOGOUT; ?></span></a></li>
+                    <?php
+                        } else {
+                    ?>
+
                     <li>
-                        <a href="/index.php"><i class="zmdi zmdi-view-dashboard"></i> <span> <?php echo NAV_DASHBOARD; ?> </span> </a>
+                        <a href="/index.php"><i class="zmdi zmdi-view-dashboard"></i>
+                            <span> <?php echo NAV_DASHBOARD; ?> </span> </a>
                     </li>
                     <li>
-                        <a href="/pricing/index.php"><i class="zmdi zmdi-store"></i> <span> <?php echo NAV_PRICINGPROGRAM; ?> </span> </a>
+                        <a href="/pricing/index.php"><i class="zmdi zmdi-store"></i>
+                            <span> <?php echo NAV_PRICINGPROGRAM; ?> </span> </a>
                     </li>
                     <li class="has-submenu">
                         <a href="#"><i class="zmdi zmdi-assignment"></i> <?php echo NAV_SHOPFLOOR; ?> </a>
                         <ul class="submenu">
                             <li><a href="/shopfloor/index.php"><?php echo NAV_INDIVIDUAL; ?></a></li>
-                            <li><a href="#"><?php echo NAV_WORKCENTER; ?></a></li>
-                            <li><a href="#" id="shop_logout_link"><?php echo NAV_SHOP_LOGOUT; ?></a></li>
+                            <li><a href="/shopfloor/workcenter.php"><?php echo NAV_WORKCENTER; ?></a></li>
+                            <li class="has-submenu">
+                                <a href="#"><?php echo NAV_BRACKET_MGMT; ?></a>
+                                <ul class="submenu">
+                                    <li><a href="/shopfloor/bracket_builder.php"><?php echo NAV_BRACKET_NEW; ?></a></li>
+                                    <li><a href="#"><?php echo NAV_BRACKET_LIST; ?></a></li>
+                                </ul>
+                            </li>
+                            <li><a href="/shopfloor/job_management.php">Job Management</a></li>
+                            <li><a href="/shopfloor/sales_order.php">Sales Orders</a></li>
+                            <li><a href="/ondemand/shopfloor/login_actions.php?action=logout"
+                                   id="shop_logout_link"><?php echo NAV_SHOP_LOGOUT; ?></a></li>
                         </ul>
                     </li>
                     <li>
@@ -148,6 +175,9 @@ switch($_SERVER['SCRIPT_NAME']) {
                             <li><a href="/cp/add_user.php"><?php echo NAV_ADDUSER; ?></a></li>
                         </ul>
                     </li>
+                    <?php
+                        }
+                    ?>
                 </ul>
                 <!-- End navigation menu  -->
             </div>

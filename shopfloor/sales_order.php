@@ -1,16 +1,10 @@
 <?php
-require 'includes/header_start.php';
-require 'includes/header_end.php';
+require '../includes/header_start.php';
+require '../includes/header_end.php';
 ?>
 
 <!-- tablesaw-->
 <link href="/assets/plugins/tablesaw/dist/tablesaw.css" rel="stylesheet" type="text/css"/>
-
-<script src="includes/js/searchTab.js"></script>
-
-<script>
-    var searchCounter = 2;
-</script>
 
 <div class="row">
     <!-- Left column -->
@@ -54,7 +48,7 @@ require 'includes/header_end.php';
                                             </div>
 
                                             <div class="col-md-3" style="padding-bottom: 5px;">
-                                                <button class="btn waves-effect btn-primary pull-right" data-toggle="modal" data-target="#modalAddCustomer"> <i class="zmdi zmdi-account-add"></i> </button>
+                                                <button class="btn waves-effect btn-primary pull-right" id="cu_add_button" data-toggle="modal" data-target="#modalAddCustomer"> <i class="zmdi zmdi-account-add"></i> </button>
                                             </div>
                                         </div>
 
@@ -148,18 +142,7 @@ require 'includes/header_end.php';
                                     <form name="add_new_customer" id="add_new_customer">
                                         <table style="width: 100%;">
                                             <tr>
-                                                <?php
-                                                $qry = $dbconn->query("SELECT DISTINCT sales_order_num FROM customer ORDER BY sales_order_num DESC LIMIT 0,1");
-
-                                                if($qry->num_rows > 0) {
-                                                    $result = $qry->fetch_assoc();
-
-                                                    $new_so_num = $result['sales_order_num'] + 1;
-                                                } else {
-                                                    $new_so_num = 1;
-                                                }
-                                                ?>
-                                                <td><input type="text" class="form-control" id="new_so_num" name="new_so_num" placeholder="SO #" value="<?php echo $new_so_num; ?>"></td>
+                                                <td><input type="text" class="form-control" id="new_so_num" name="new_so_num" placeholder="SO #"></td>
                                                 <td><input type="text" class="form-control" id="new_dealer_code" name="new_dealer_code" placeholder="Dealer Code"></td>
                                                 <td><input type="text" class="form-control" id="new_project_name" name="new_project_name" placeholder="Project Name"></td>
                                             </tr>
@@ -272,7 +255,7 @@ require 'includes/header_end.php';
                                 <table class="tablesaw table" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
                                     <thead>
                                     <tr>
-                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO#</th>
+                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist"">SO#</th>
                                         <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Project</th>
                                         <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Dealer/Contractor</th>
                                         <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Project Manager</th>
@@ -311,45 +294,125 @@ require 'includes/header_end.php';
     <!-- End right column -->
 </div>
 
-<div class="row" id="room_results_row" style="display: none;">
+<div class="row" id="edit_so_info" style="display: none;">
     <div class="col-md-8">
         <div class="card-box">
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="tablesaw table" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
-                        <thead>
-                        <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">Room</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Sample</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Main</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Door/Drawer</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Customs</th>
-                        </tr>
-                        </thead>
-                        <tbody id="room_search_table">
-                        <tr>
-                            <td colspan="5">No results to display</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <h4>Edit SO# <span id="so_num">???</span></h4>
 
-            <div class="row">
-                <div class="col-md-12 text-md-right">
-                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Collapse</button>
-                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Print</button>
-                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Export</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+            <form name="edit_so" id="edit_so">
+                <table style="width: 100%">
+                    <tr class="form-group">
+                        <td><label for="sales_order_num">SO #</label></td>
+                        <td><input class="form-control" type="text" name="sales_order_num" id="sales_order_num" placeholder="SO #"></td>
+                        <td><label for="project">Project</label></td>
+                        <td><input class="form-control" type="text" name="project" id="project" placeholder="Project"></td>
+                        <td><label for="dealer_contractor">Dealer/Contractor</label></td>
+                        <td><input class="form-control" type="text" name="dealer_contractor" id="dealer_contractor" placeholder="Dealer/Contractor"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="project_manager">Project Manager</label></td>
+                        <td><input class="form-control" type="text" name="project_manager" id="project_manager" placeholder="Project Manager"></td>
+                        <td><label for="dealer_code">Dealer Code</label></td>
+                        <td><input class="form-control" type="text" name="dealer_code" id="dealer_code" placeholder="Dealer Code"></td>
+                        <td><label for="account_type">Account Type</label></td>
+                        <td>
+                            <select name="account_type" id="account_type" class="form-control">
+                                <option value="R">Retail</option>
+                                <option value="W">Wholesale</option>
+                                <option value="D">Distribution</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="org_name">Organization Name</label></td>
+                        <td><input class="form-control" type="text" name="org_name" id="org_name" placeholder="Organization Name"></td>
+                        <td><label for="addr1">Address 1</label></td>
+                        <td><input class="form-control" type="text" name="addr1" id="addr1" placeholder="Address 1"></td>
+                        <td><label for="addr2">Address 2</label></td>
+                        <td><input class="form-control" type="text" name="addr2" id="addr2" placeholder="Address 2"></td>
+                    </tr>
+                    <tr>
+                    <tr>
+                        <td><label for="city">City</label></td>
+                        <td><input type="text" class="form-control" id="city" name="city" placeholder="City"></td>
+                        <td><label for="state">State</label></td>
+                        <td><select class="form-control" id="state" name="state">
+                                <option value="AL">Alabama</option>
+                                <option value="AK">Alaska</option>
+                                <option value="AZ">Arizona</option>
+                                <option value="AR">Arkansas</option>
+                                <option value="CA">California</option>
+                                <option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option>
+                                <option value="DE">Delaware</option>
+                                <option value="FL">Florida</option>
+                                <option value="GA">Georgia</option>
+                                <option value="HI">Hawaii</option>
+                                <option value="ID">Idaho</option>
+                                <option value="IL">Illinois</option>
+                                <option value="IN">Indiana</option>
+                                <option value="IA">Iowa</option>
+                                <option value="KS">Kansas</option>
+                                <option value="KY">Kentucky</option>
+                                <option value="LA">Louisiana</option>
+                                <option value="ME">Maine</option>
+                                <option value="MD">Maryland</option>
+                                <option value="MA">Massachusetts</option>
+                                <option value="MI">Michigan</option>
+                                <option value="MN">Minnesota</option>
+                                <option value="MS">Mississippi</option>
+                                <option value="MO">Missouri</option>
+                                <option value="MT">Montana</option>
+                                <option value="NE">Nebraska</option>
+                                <option value="NV">Nevada</option>
+                                <option value="NH">New Hampshire</option>
+                                <option value="NJ">New Jersey</option>
+                                <option value="NM">New Mexico</option>
+                                <option value="NY">New York</option>
+                                <option value="NC" selected>North Carolina</option>
+                                <option value="ND">North Dakota</option>
+                                <option value="OH">Ohio</option>
+                                <option value="OK">Oklahoma</option>
+                                <option value="OR">Oregon</option>
+                                <option value="PA">Pennsylvania</option>
+                                <option value="RI">Rhode Island</option>
+                                <option value="SC">South Carolina</option>
+                                <option value="SD">South Dakota</option>
+                                <option value="TN">Tennessee</option>
+                                <option value="TX">Texas</option>
+                                <option value="UT">Utah</option>
+                                <option value="VT">Vermont</option>
+                                <option value="VA">Virginia</option>
+                                <option value="WA">Washington</option>
+                                <option value="WV">West Virginia</option>
+                                <option value="WI">Wisconsin</option>
+                                <option value="WY">Wyoming</option>
+                            </select></td>
+                        <td><label for="zip">Zip</label></td>
+                        <td><input type="text" class="form-control" id="zip" name="zip" placeholder="ZIP"></td>
+                    </tr>
+                    </tr>
+                    <tr>
+                        <td><label for="pri_phone">Primary Phone</label></td>
+                        <td><input class="form-control" type="text" name="pri_phone" id="pri_phone" placeholder="Primary Phone"></td>
+                        <td><label for="alt_phone1">Alternate Phone 1</label></td>
+                        <td><input class="form-control" type="text" name="alt_phone1" id="alt_phone1" placeholder="Alternate Phone 1"></td>
+                        <td><label for="alt_phone2">Alternate Phone 2</label></td>
+                        <td><input class="form-control" type="text" name="alt_phone2" id="alt_phone2" placeholder="Alternate Phone 2"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="pri_email">Primary Email</label></td>
+                        <td><input class="form-control" type="text" name="pri_email" id="pri_email" placeholder="Primary Email"></td>
+                        <td><label for="alt_email">Alternate Email</label></td>
+                        <td><input class="form-control" type="text" name="alt_email" id="alt_email" placeholder="Alternate Email"></td>
+                        <td colspan="2" class="text-md-right">
+                            <button type="button" class="btn btn-primary waves-effect waves-light w-xs" id="update_customer" name="update_customer">Update</button>
+                        </td>
+                    </tr>
+                </table>
 
-<div class="row" id="gantt_chart_row" style="display: none;">
-    <div class="col-md-12">
-        <div class="card-box">
-            <div id="job_status_gantt" style="height: 200px;"></div>
+                <input type="hidden" name="record_id" id="record_id" value="???">
+            </form>
         </div>
     </div>
 </div>
@@ -358,22 +421,15 @@ require 'includes/header_end.php';
 <script src="/assets/plugins/tablesaw/dist/tablesaw.js"></script>
 <script src="/assets/plugins/tablesaw/dist/tablesaw-init.js"></script>
 
-<!-- Chart -->
-<script src="/assets/plugins/amcharts/amcharts.js"></script>
-<script src="/assets/plugins/amcharts/serial.js"></script>
-<script src="/assets/plugins/amcharts/gantt.js"></script>
-<script src="/assets/plugins/amcharts/themes/custom.js"></script>
-<script src="/assets/plugins/amcharts/plugins/dataloader/dataloader.min.js" type="text/javascript"></script>
-
 <!-- Loading page content -->
 <script src="/ondemand/js/page_content_functions.js"></script>
 
 <script>
     loadCalendarPane(); // found in page_content_functions
 
-    function updateSearchTable(field, search, functn) {
+    function updateSearchTable(field, search) {
         if(field.length >= 1) {
-            $.post("/ondemand/livesearch/search_results.php?search=" + search, {find: field, functn: functn}, function(data) {
+            $.post("/ondemand/livesearch/search_results.php?search=" + search, {find: field}, function(data) {
                 $("#search_results_table").html(data);
 
                 if(data !== '') {
@@ -386,14 +442,32 @@ require 'includes/header_end.php';
     }
 
     function displaySO(sonum) {
-        $.post("/ondemand/livesearch/search_results.php?search=room", {find: sonum}, function(data) {
-            $("#room_search_table").html(data);
-            $("#room_results_row").show();
-        });
-    }
+        $.post("/ondemand/livesearch/search_results.php?search=edit_so_num", {find: sonum}, function(data) {
+            var cuInfo = $.parseJSON(data);
 
-    function displayRoomInfo(room_id) {
-        $("#gantt_chart_row").show();
+            $("#so_num").text(cuInfo.sales_order_num);
+
+            $("#sales_order_num").val(cuInfo.sales_order_num);
+            $("#project").val(cuInfo.project);
+            $("#dealer_contractor").val(cuInfo.dealer_contractor);
+            $("#project_manager").val(cuInfo.project_manager);
+            $("#dealer_code").val(cuInfo.dealer_code);
+            $("#account_type").val(cuInfo.account_type);
+            $("#org_name").val(cuInfo.org_name);
+            $("#addr1").val(cuInfo.addr_1);
+            $("#addr2").val(cuInfo.addr_2);
+            $("#city").val(cuInfo.city);
+            $("#state").val(cuInfo.state);
+            $("#zip").val(cuInfo.zip);
+            $("#pri_phone").val(cuInfo.pri_phone);
+            $("#alt_phone1").val(cuInfo.alt_phone_1);
+            $("#alt_phone2").val(cuInfo.alt_phone_2);
+            $("#pri_email").val(cuInfo.pri_email);
+            $("#alt_email").val(cuInfo.alt_email);
+            $("#record_id").val(cuInfo.id);
+
+            $("#edit_so_info").show();
+        });
     }
 
     $("#search_accordion1").accordion();
@@ -425,6 +499,28 @@ require 'includes/header_end.php';
                     $("body").append(data);
                 }
             });
+        })
+        .on("click", "#update_customer", function() {
+            var newCuInfo = $("#edit_so").serialize();
+
+            $.post("/ondemand/customer.php?action=update_customer", newCuInfo, function(data) {
+                if(data === 'success') {
+                    $("#edit_so_info").hide();
+
+                    displayToast("success", "Updated customer information successfully.", "Customer Updated");
+                } else {
+                    $("body").append(data);
+                }
+            });
+        })
+        .on("click", "#cu_add_button", function() {
+            $.post("/ondemand/customer.php?action=add_button", function(data) {
+                if(data !== '') {
+                    $("#new_so_num").val(data);
+                    $("#new_state").val("NC").change();
+                    $("#new_account_type").val("R").change();
+                }
+            });
         });
 
     $("#cu_sales_order_num1")
@@ -435,7 +531,7 @@ require 'includes/header_end.php';
         .autocomplete({
             source: "/ondemand/livesearch/general.php?search=cusonum"
         })
-        .on("autocompleteselect", function(e, ui) {
+            .on("autocompleteselect", function(e, ui) {
             updateSearchTable(ui.item.label, "sonum", "displaySO"); // this is on click of the auto-complete
             $("#edit_so_info").hide();
         });
@@ -478,63 +574,9 @@ require 'includes/header_end.php';
             updateSearchTable(ui.item.label, "project_manager", "displaySO"); // this is on click of the auto-complete
             $("#edit_so_info").hide();
         });
-
-    var ganttChart = AmCharts.makeChart( "job_status_gantt", {
-        "type": "gantt",
-        "theme": "custom",
-        "marginRight": 20,
-        "marginTop": 10,
-        "marginBottom": 10,
-        "period": "mm",
-        "dataDateFormat":"YYYY-MM-DD",
-        "balloonDateFormat": "JJ:NN",
-        "columnWidth": 0.5,
-        "valueAxis": {
-            "type": "date"
-        },
-        "brightnessStep": 10,
-        "graph": {
-            "fillAlphas": 1,
-            "balloonText": "<b>[[task]]</b>: [[open]]<br /> <small style='text-align: center;'>([[duration]] <i>mins</i>)</small>",
-            "cornerRadiusTop": 10,
-            "labelText": "[[task]]",
-            "labelPosition": "middle"
-        },
-        "rotate": true,
-        "categoryField": "category",
-        "segmentsField": "segments",
-        "colorField": "color",
-        "startDate": "2016-04-19",
-        "startField": "start",
-        "endField": "end",
-        "durationField": "duration",
-        "dataLoader": {
-            "url": "/ondemand/gantt_chart.php"
-        },
-        "valueScrollbar": {
-            "autoGridCount":true,
-            "color": "#132882"
-        },
-        "chartCursor": {
-            "cursorColor":"#55bb76",
-            "valueBalloonsEnabled": false,
-            "cursorAlpha": 0,
-            "valueLineAlpha":0.5,
-            "valueLineBalloonEnabled": true,
-            "valueLineEnabled": true,
-            "zoomable":false,
-            "valueZoomable":true
-        },
-        "export": {
-            "enabled": true
-        },
-        "balloon": {
-            "fixedPosition": false
-        }
-    } );
 </script>
 
 <?php 
-require 'includes/footer_start.php';
-require 'includes/footer_end.php';
+require '../includes/footer_start.php';
+require '../includes/footer_end.php'; 
 ?>

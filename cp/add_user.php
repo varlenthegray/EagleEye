@@ -10,20 +10,20 @@ if($_REQUEST["action"] === "create") {
 
 
     if(strlen($username) <= 3 || strlen($username) >= 25) {
-        Toast("error", "Username presented was not long enough or too long to process. Please try again.", "Error");
+        displayToast("error", "Username presented was not long enough or too long to process. Please try again.", "Error");
     } elseif(strlen($email) <= 8 || strlen($email) >= 150) {
-        Toast("error", "Email presented was not long enough or too long to process. Please try again.", "Error");
+        displayToast("error", "Email presented was not long enough or too long to process. Please try again.", "Error");
     } elseif(strlen($acc_type) > 2) {
-        Toast("error", "Account type did not match a valid function. Please try again.", "Error");
+        displayToast("error", "Account type did not match a valid function. Please try again.", "Error");
     } else {
         $qry = $dbconn->query("SELECT * FROM user WHERE username = '$username' OR email = '$email'");
 
         if($qry->num_rows > 0) {
-            Toast("error", "A user with that email address or username already exists.", "Error");
+            displayToast("error", "A user with that email address or username already exists.", "Error");
         } else {
             $sql = "INSERT INTO user (username, password, email, last_ip_address, last_login, session_id, account_type, account_status) VALUES ('$username', '$password', '$email', '$ip', NOW(), '', '$acc_type', '1')";
             if($dbconn->query($sql) === true) {
-                Toast("success", "The account has been created successfully and the user can log in promptly.", "Created Successfully");
+                displayToast("success", "The account has been created successfully and the user can log in promptly.", "Created Successfully");
             } else {
                 dbLogSQLErr($dbconn);
             }

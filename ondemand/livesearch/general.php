@@ -1,5 +1,5 @@
 <?php
-require_once ("../../includes/config.php");
+require_once ("../../includes/header_start.php");
 header('Content-Type: application/json');
 
 $term = sanitizeInput($_REQUEST['term'], $dbconn);

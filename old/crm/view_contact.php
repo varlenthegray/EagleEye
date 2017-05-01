@@ -52,13 +52,13 @@ if($_REQUEST['action'] === 'update') {
 
     if(strlen($error) === 0) {
         if($dbconn->query("UPDATE contacts SET first_name = '$fname', last_name = '$lname', pri_phone = '$pri_phone', company = '$company', address_1 = '$add1', city = '$city', state = '$state', zip = '$zip', alias = '$alias', account_type = '$account_type', directions = '$directions', email = '$email' WHERE id = $id")) {
-            echo Toast("success", "Contact updated successfully.", "Updated Record Successfully");
+            echo displayToast("success", "Contact updated successfully.", "Updated Record Successfully");
             $_REQUEST = array();
         } else {
             dbLogSQLErr($dbconn);
         }
     } else {
-        echo Toast("error", "$error", "Error");
+        echo displayToast("error", "$error", "Error");
     }
 }
 ?>

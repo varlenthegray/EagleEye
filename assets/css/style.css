@@ -23116,19 +23116,12 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
   font-size: .75em;
   margin-bottom: 3px; }
 
-.tablesaw-bar {
+.mode-swipe {
   margin-top: -7px; }
 
 #job_status_gantt {
   width: 100%;
   height: 500px; }
-
-.separator {
-  background-color: #000000;
-  color: #FFFFFF;
-  font-weight: bold;
-  padding: 2px 20px;
-  margin: 10px 0; }
 
 .pricing_group {
   -webkit-border-radius: 4px;
@@ -23152,5 +23145,35 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
 
 .fc-event-dot {
   background-color: #132882 !important; }
+
+.bracket-adjustment-table {
+  margin: 0 auto;
+  border-collapse: separate; }
+
+.bracket-adjustment-header {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2em;
+  text-decoration: underline; }
+
+.bracket-border-top {
+  border: solid #132882;
+  border-width: 3px 3px 0 3px;
+  border-radius: 5px 5px 0 0; }
+
+.bracket-border-bottom {
+  border: solid #132882;
+  border-width: 0 3px 3px 3px;
+  border-radius: 0 0 5px 5px; }
+
+.bracket-header-custom {
+  margin: 0 auto;
+  width: 80%; }
+
+.ms-container .ms-selectable li.ms-elem-selectable {
+  font-size: 1em !important; }
+
+.ms-container .ms-selection li.ms-elem-selection {
+  font-size: 1em !important; }
 
 /*# sourceMappingURL=style.css.map */

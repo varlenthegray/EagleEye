@@ -8,15 +8,20 @@ define("LOGO_TEXT", "Stone Mountain Cabinetry"); // The logo text displayed
 define("TAB_TEXT", "SMCM - Dashboard"); // The text displayed in the title bar/tab
 define("FOOTER_TEXT", "SMCM"); // Footer copyright name specifically
 define("DATE_TIME_DEFAULT", "M jS Y @ g:i:s A T"); // the default date/time to use
+define("SITE_URL", "http://smc.trustedprogrammer.com/"); // the SITE URL, used to configure header_start.php's includes
 
 // Navigation bar definitions
 define("NAV_DASHBOARD", "Dashboard"); // Navigation menu dashboard item name
 
-/// Navication > Shopfloor
+/// Navigation > Shopfloor
 define("NAV_SHOPFLOOR", "Shopfloor"); // Navigation menu Shopfloor
 define("NAV_INDIVIDUAL", "Individual"); // Navigation menu Shopfloor Dashboard
 define("NAV_WORKCENTER", "Workcenter"); // Navigation menu, create bracket
 define("NAV_SHOP_LOGOUT", "Employee List"); // Navigation menu, log out
+define("NAV_BRACKET_MGMT", "Bracket Management"); // Navigation menu, bracket management
+//// Navigation > bracket management
+define("NAV_BRACKET_NEW", "Create Bracket"); // Navigation menu, create bracket
+define("NAV_BRACKET_LIST", "Existing Brackets"); // Navigation menu, existing bracket information
 
 // Pricing bar definition
 define("NAV_PRICINGPROGRAM", "Pricing System"); // Navigation menu Pricing Program

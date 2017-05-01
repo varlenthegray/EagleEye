@@ -5,8 +5,6 @@
  * Date: 3/17/2017
  * Time: 10:13 PM
  */
-require_once ("functions.php");
-
 // initial MySQL configuration
 $servername = "localhost";
 $username = "main.smc";

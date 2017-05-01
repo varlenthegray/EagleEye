@@ -65,7 +65,9 @@ require '../includes/header_end.php';
 
     function doLogin() {
         $.post("/ondemand/shopfloor/login_actions.php?action=login", {id: userID, pin: $("#loginPin").val()}, function(data) {
-            if (data === 'success') {
+            if (data === 'success - clocked in') {
+                window.location.href = "/shopfloor/index.php?action=cltrue";
+            } else if(data === 'success') {
                 window.location.href = "/shopfloor/index.php";
             } else {
                 displayToast("error", "Failed to log in, please try again.", "Login Failure");

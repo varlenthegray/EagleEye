@@ -41,7 +41,7 @@ if($_REQUEST['action'] === 'sent') {
 
         if(strlen($error) === 0) {
             if($dbconn->query("INSERT INTO contacts (first_name, last_name, pri_phone, company, address_1, address_2, city, state, zip, alias, account_type) VALUES ('$fname', '$lname', '$pri_phone', '$company', '$add1','$add2', '$city', '$state', '$zip', '$alias', '$account_type')")) {
-                echo Toast("success", "Contact created successfully.", "Added Contact Record");
+                echo displayToast("success", "Contact created successfully.", "Added Contact Record");
                 $_REQUEST = array();
             } else {
                 dbLogSQLErr($dbconn);
