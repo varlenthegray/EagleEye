@@ -1,0 +1,3 @@
+syntax: glob
+.idea
+includes/config.php
