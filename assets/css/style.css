@@ -4738,9 +4738,6 @@ body {
   background-color: #ffffff;
   box-shadow: 0 0px 24px 0 rgba(0, 0, 0, 0.06), 0 1px 0px 0 rgba(0, 0, 0, 0.02); }
 
-.card-box:hover {
-  background-color: #cba84c; }
-
 .header-title {
   font-size: 1.1rem;
   text-transform: uppercase; }
@@ -23074,6 +23071,8 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
 
 .card-box {
   padding: 5px; }
+  .card-box:hover {
+    background-color: #ede1c4; }
 
 .bg-lightgray {
   background-color: rgba(228, 228, 228, 0.8); }
@@ -23155,6 +23154,9 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
   font-weight: bold;
   font-size: 1.2em;
   text-decoration: underline; }
+
+label {
+  margin-bottom: 0; }
 
 .bracket-border-top {
   border: solid #132882;

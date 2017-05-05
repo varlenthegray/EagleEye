@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="smc.trustedprogrammer.com" uuid="62c07157-aaa4-435d-8547-e80734b344ed">
+    <data-source source="LOCAL" name="SMC Dev" uuid="d3e7c992-6fa0-44c8-a7bc-b3c6c639d060">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://hosting.trustedprogrammer.com:3306/smc</jdbc-url>
+      <jdbc-url>jdbc:mysql://hosting.trustedprogrammer.com:3306/devsmc</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
         <property name="zeroDateTimeBehavior" value="convertToNull" />

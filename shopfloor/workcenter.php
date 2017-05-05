@@ -19,10 +19,11 @@ require '../includes/header_end.php';
                     <table class="tablesaw table m-b-0" data-tablesaw-sortable>
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Job ID</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Part ID</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">SO ID</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Department</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Operation</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Assigned To</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Release Date</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="5">Release Date</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -33,7 +34,7 @@ require '../includes/header_end.php';
                         $display_no_jobs = 0;
 
                         // for each job in the queue
-                        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE active = false AND completed = false");
+                        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE active = false AND completed = false AND published = TRUE");
 
                         if($op_queue_qry->num_rows > 0) {
                             while($op_queue = $op_queue_qry->fetch_assoc()) {

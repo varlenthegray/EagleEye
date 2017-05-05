@@ -16,6 +16,10 @@
 
 .card-box {
   padding: 5px;
+
+  &:hover {
+    background-color: $gold;
+  }
 }
 
 // allow custom background colors
@@ -134,6 +138,11 @@
   font-weight: bold;
   font-size: 1.2em;
   text-decoration: underline;
+}
+
+// label adjustment
+label {
+  margin-bottom: 0;
 }
 
 // borders for the brackets

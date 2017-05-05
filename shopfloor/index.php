@@ -27,31 +27,57 @@ if(!empty($_GET['action']))
                     <table class="tablesaw table">
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-priority="persist">Operation ID</th>
+                            <th scope="col" data-tablesaw-priority="persist">Sales Order ID</th>
+                            <th scope="col">Department</th>
                             <th scope="col">Operation</th>
-                            <th scope="col">Started</th>
+                            <th scope="col">Release Date</th>
+                            <th scope="col">Operation Time</th>
                         </tr>
                         </thead>
                         <tbody id="active_jobs_table">
                         <?php
-                            activeJobGeneration();
+                        activeJobGeneration();
                         ?>
                         </tbody>
                     </table>
+                </div>
+            </div>
 
-                    <h4 class="text-md-center">Queue</h4>
+            <div class="row">
+                <div class="col-md-6"><h4>Queue</h4></div>
 
+                <div class="col-md-6 text-md-right">
+                    <!--<label for="viewing_queue">Viewing:</label>
+                    <select name="viewing_queue" id="viewing_queue">
+                        <?php
+                            $qry = $dbconn->query("SELECT department FROM user WHERE id = '{$_SESSION['shop_user']['id']}'");
+                            $dpt_result = $qry->fetch_assoc();
+
+                            $deptartments = json_decode($dpt_result['department']);
+
+                            foreach($deptartments as $department) {
+                                echo "<option value='$department'>$department</option>";
+                            }
+                        ?>
+                    </select>-->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
                     <table class="tablesaw table" id="queue_jobs_table">
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-priority="persist">Part ID</th>
-                            <th scope="col">Operation ID</th>
+                            <th scope="col" data-tablesaw-priority="persist">Sales Order ID</th>
+                            <th scope="col">Department</th>
                             <th scope="col">Operation</th>
+                            <th scope="col">Release Date</th>
+                            <th scope="col">Operation Time</th>
                         </tr>
                         </thead>
                         <tbody id="job_queue_table">
                         <?php
-                            queuedJobGeneration();
+                        queuedJobGeneration();
                         ?>
                         </tbody>
                     </table>
@@ -167,8 +193,14 @@ if(!empty($_GET['action']))
         });
     }
 
-    function updateQueuedJobs() {
-        $.post("/ondemand/shopfloor/job_actions.php?action=display_job_queue", function(data) { // grab the latest information
+    function updateQueuedJobs(filter) {
+        var filterLine = '';
+
+        if(filter !== undefined) {
+            filterLine = "&filter=" + filter;
+        }
+
+        $.post("/ondemand/shopfloor/job_actions.php?action=display_job_queue" + filterLine, function(data) { // grab the latest information
             if(data !== '')
                 $("#job_queue_table").html(data); // display that information in the table
             else
@@ -323,6 +355,9 @@ if(!empty($_GET['action']))
                     }
                 });
             }
+        })
+        .on("change", "#viewing_queue", function() {
+
         });
 
     $("#modalStartJob").on("show.bs.modal", function() {
