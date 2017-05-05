@@ -19,11 +19,10 @@ require '../includes/header_end.php';
                     <table class="tablesaw table m-b-0" data-tablesaw-sortable>
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">SO ID</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Department</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Job ID</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Part ID</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Operation</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Release Date</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="5">Release Date</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Assigned To</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -58,7 +57,7 @@ require '../includes/header_end.php';
                                     $part_id = strtoupper($room['so_parent'] . $room['room'] . "-" . $so_result['dealer_code'] . "_" . $room['room_name']);
 
                                     // generate the operation ID
-                                    $op_id = strtoupper($ind_op['op_id'] . $room['room'] . "_" . $so_result['dealer_code'] . '_' . $ind_op['department']);
+                                    $op_id = strtoupper($ind_op['op_id'] . "_" . $so_result['dealer_code'] . '_' . $ind_op['department']);
 
                                     echo "<tr class='cursor-hand queue-op-start' data-op-id='{$op_queue['id']}' data-op-info='$operation_payload'
                                             data-long-op-id='$op_id' data-long-part-id='$part_id'>";

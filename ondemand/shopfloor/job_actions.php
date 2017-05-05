@@ -95,74 +95,60 @@ switch($_REQUEST['action']) {
 
         break;
     case 'update_active_job':
-        $id = sanitizeInput($_POST['opID'], $dbconn);
-        $notes = sanitizeInput($_POST['notes'], $dbconn);
-        $status = sanitizeInput($_POST['status'], $dbconn);
-        $qty = sanitizeInput($_POST['qty'], $dbconn);
+        function incrementJob($operation, $ind_bracket_array) {
+            global $dbconn;
+            global $room_id;
 
-        $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
-        $results = $qry->fetch_assoc();
-        $time = date(DATE_TIME_DEFAULT);
+            if(in_array($operation, $ind_bracket_array)) { // sales bracket
+                $next_operation = array_search($operation, $ind_bracket_array) + 1;
+                $next_operation = $ind_bracket_array[$next_operation];
 
-        $notes_qry = $dbconn->query("SELECT notes FROM op_queue WHERE id = '$id'");
-        $notes_result = $notes_qry->fetch_assoc();
+                $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$next_operation'");
+                $op_result = $op_qry->fetch_assoc();
 
-        $finalnotes = null;
+                switch($op_result['department']) {
+                    case 'Sales':
+                        $bracket = 'sales_bracket';
+                        $published = 'sales_published';
+                        break;
 
-        if(empty($notes_result['notes'])) {
-            $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />";
-        } else {
-            $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />" . $notes_result['notes'];
-        }
+                    case 'Pre-Production':
+                        $bracket = 'preproduction_bracket';
+                        $published = 'preproduction_published';
+                        break;
 
-        switch($status) {
-            case 'Complete':
-                if($dbconn->query("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = FALSE, notes = '$finalnotes', qty_completed = '$qty', completed = TRUE, partially_completed = FALSE, rework = FALSE WHERE id = $id")) {
-                    $changed = ["End time"=>time(), "Active"=>false, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Completed"=>true];
-                    $changed = json_encode($changed);
+                    case 'Sample':
+                        $bracket = 'sample_bracket';
+                        $published = 'sample_published';
+                        break;
 
-                    if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP())")) {
-                        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$results['room_id']}'");
-                        $room_results = $room_qry->fetch_assoc();
+                    case 'Drawer & Doors':
+                        $bracket = 'doordrawer_bracket';
+                        $published = 'doordrawer_published';
+                        break;
 
-                        $bracket = json_decode($room_results['individual_bracket_buildout']);
+                    case 'Custom':
+                        $bracket = 'custom_bracket';
+                        $published = 'custom_published';
+                        break;
 
-                        ////////////////////////////////
+                    case 'Box':
+                        $bracket = 'box_bracket';
+                        $published = 'box_published';
+                        break;
 
-                        echo "success";
-                    } else {
-                        dbLogSQLErr($dbconn);
-                        die();
-                    }
-
-
-                } else {
-                    dbLogSQLErr($dbconn);
-                    die();
+                    default:
+                        $bracket = 'sales_bracket';
+                        $published = 'sales_published';
+                        break;
                 }
 
-                break;
-
-            case 'Partially Complete':
-                break;
-
-            case 'Rework':
-                break;
-        }
-
-        /*
-        function incrementJob($op_queue_array, $ind_bracket_array) {
-            global $dbconn;
-
-            if(in_array($op_queue_array['operation_id'], $ind_bracket_array)) { // sales bracket
-                $next_operation = array_search($op_queue_array['operation_id'], $ind_bracket_array) + 1;
-
                 if(!empty($next_operation)) {
-                    $dbconn->query("UPDATE rooms SET sales_bracket = '{$ind_bracket_array[$next_operation]}' WHERE id = '{$op_queue_array['room_id']}'"); // set the next operation in the bracket
+                    $dbconn->query("UPDATE rooms SET $bracket = '$next_operation' WHERE id = '$room_id'"); // set the next operation in the bracket for that specific room
 
-                    generateOpQueue($op_queue_array['room_id'], 'sales_published', 'sales_bracket', '');
+                    generateOpQueue($room_id, $published, $bracket, ''); // generate the next operation
                 } else {
-                    $dbconn->query("UPDATE rooms SET sales_bracket = 0"); // close the bracket
+                    $dbconn->query("UPDATE rooms SET $published = 0 WHERE id = '$room_id'"); // bracket is no longer published
                 }
             }
         }
@@ -175,6 +161,8 @@ switch($_REQUEST['action']) {
         $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
         $results = $qry->fetch_assoc();
         $time = date(DATE_TIME_DEFAULT);
+
+        $room_id = $results['room_id'];
 
         $notes_qry = $dbconn->query("SELECT notes FROM op_queue WHERE id = '$id'");
         $notes_result = $notes_qry->fetch_assoc();
@@ -198,12 +186,12 @@ switch($_REQUEST['action']) {
 
                     $ind_brackets = json_decode($room_results['individual_bracket_buildout']);
 
-                    incrementJob($results, $ind_brackets[0]);
-                    incrementJob($results, $ind_brackets[1]);
-                    incrementJob($results, $ind_brackets[2]);
-                    incrementJob($results, $ind_brackets[3]);
-                    incrementJob($results, $ind_brackets[4]);
-                    incrementJob($results, $ind_brackets[5]);
+                    incrementJob($results['operation_id'], $ind_brackets[0]);
+                    incrementJob($results['operation_id'], $ind_brackets[1]);
+                    incrementJob($results['operation_id'], $ind_brackets[2]);
+                    incrementJob($results['operation_id'], $ind_brackets[3]);
+                    incrementJob($results['operation_id'], $ind_brackets[4]);
+                    incrementJob($results['operation_id'], $ind_brackets[5]);
 
                     echo "success";
                 } else {
@@ -242,21 +230,31 @@ switch($_REQUEST['action']) {
                 dbLogSQLErr($dbconn);
                 die();
             }
-        }*/
+        }
 
         break;
 
     case 'update_brackets':
+        $bracket_id = sanitizeInput($_REQUEST['bracketID'], $dbconn);
         $room = sanitizeInput($_REQUEST['room'], $dbconn);
         $sonum = sanitizeInput($_REQUEST['sonum'], $dbconn);
-        $iteration = sanitizeInput($_REQUEST['iteration'], $dbconn);
+
+        $qry = $dbconn->query("SELECT description FROM brackets WHERE id = '$bracket_id'");
+        $bracket_desc = $qry->fetch_assoc(); // grab the description, should only be 1 because we're grabbing by ID
 
         // grab the individual bracket
-        $override_qry = $dbconn->query("SELECT individual_bracket_buildout FROM rooms WHERE so_parent = '$sonum' AND room = '$room' AND iteration = '$iteration'");
+        $override_qry = $dbconn->query("SELECT individual_bracket_buildout FROM rooms WHERE so_parent = '$sonum' AND room = '$room'");
         $override_desc = $override_qry->fetch_assoc();
 
         // set the individual bracket description
-        $op_ids = $override_desc['individual_bracket_buildout'];
+        $override_desc = $override_desc['individual_bracket_buildout'];
+
+        if(!empty($override_desc)) { // if there is an individual bracket in place, we need to override
+            $op_ids = $override_desc; // override it
+        } else { // otherwise, there is no individual bracket in place
+            $op_ids = $bracket_desc['description']; // assign the global description to a variable
+        }
+
         $op_ids = json_decode($op_ids);
 
         $final['Sales'] = array();
@@ -276,7 +274,7 @@ switch($_REQUEST['action']) {
             }
         }
 
-        $qry = $dbconn->query("SELECT sales_published, preproduction_published, sample_published, doordrawer_published, custom_published, box_published FROM rooms WHERE so_parent = '$sonum' AND room = '$room' AND iteration = '$iteration'");
+        $qry = $dbconn->query("SELECT sales_published, preproduction_published, sample_published, doordrawer_published, custom_published, box_published FROM rooms WHERE so_parent = '$sonum' AND room = '$room'");
         $result = $qry->fetch_row();
 
         $final['Published'] = $result;
@@ -299,15 +297,14 @@ switch($_REQUEST['action']) {
         $custom_bracket = sanitizeInput($_POST['custom_bracket'], $dbconn);
         $box_bracket = sanitizeInput($_POST['box_bracket'], $dbconn);
         $so_num = sanitizeInput($_POST['add_to_sonum'], $dbconn);
-        $iteration = sanitizeInput($_POST['iteration'], $dbconn);
 
-        $qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' AND room = '$room' AND iteration = '$iteration'");
+        $qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' AND room = '$room'");
 
         if($qry->num_rows === 1) {
-            $update = $dbconn->query("UPDATE rooms SET iteration = '$iteration', room_name = '$room_name', product_type = '$product_type', remodel_reqd = '$remodel_required', room_notes = '$room_notes',
+            $update = $dbconn->query("UPDATE rooms SET room_name = '$room_name', product_type = '$product_type', remodel_reqd = '$remodel_required', room_notes = '$room_notes',
               assigned_bracket = '$assigned_bracket', sales_bracket = '$sales_bracket', preproduction_bracket = '$pre_prod_bracket', sample_bracket = '$sample_bracket', doordrawer_bracket = '$door_drawer_bracket',
               custom_bracket = '$custom_bracket', box_bracket = '$box_bracket', sales_bracket_priority = 4, preproduction_bracket_priority = 4, sample_bracket_priority = 4, 
-              doordrawer_bracket_priority = 4, custom_bracket_priority = 4, box_bracket_priority = 4 WHERE so_parent = '$so_num' AND room = '$room' AND iteration = '$iteration'");
+              doordrawer_bracket_priority = 4, custom_bracket_priority = 4, box_bracket_priority = 4 WHERE so_parent = '$so_num' AND room = '$room'");
 
             if($update) {
                 echo "success - update";
@@ -315,19 +312,15 @@ switch($_REQUEST['action']) {
                 dbLogSQLErr($dbconn);
             }
         } else {
-            $qry = $dbconn->query("SELECT * FROM operations WHERE department != 'Admin'");
-            $bracket = array();
+            $ind_bracket_qry = $dbconn->query("SELECT * FROM brackets WHERE id = '$assigned_bracket'");
+            $ind_bracket = $ind_bracket_qry->fetch_assoc();
 
-            while($result = $qry->fetch_assoc()) {
-                $bracket[] = $result['id'];
-            }
+            $bracket = $ind_bracket['description'];
 
-            $bracket = json_encode($bracket);
-
-            $query = $dbconn->query("INSERT INTO rooms (iteration, so_parent, room, room_name, product_type, remodel_reqd, room_notes, sales_bracket, 
+            $query = $dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, remodel_reqd, room_notes, sales_bracket, 
           preproduction_bracket, sample_bracket, doordrawer_bracket, custom_bracket, box_bracket, sales_bracket_priority, preproduction_bracket_priority, 
           sample_bracket_priority, doordrawer_bracket_priority, custom_bracket_priority, box_bracket_priority, individual_bracket_buildout) 
-          VALUES ('$iteration', '$so_num', '$room', '$room_name', '$product_type', '$remodel_required', '$room_notes', '$sales_bracket', '$pre_prod_bracket',
+          VALUES ('$so_num', '$room', '$room_name', '$product_type', '$remodel_required', '$room_notes', '$sales_bracket', '$pre_prod_bracket',
           '$sample_bracket', '$door_drawer_bracket', '$custom_bracket', '$box_bracket', 4, 4, 4, 4, 4, 4, '$bracket')");
 
             if($query) {

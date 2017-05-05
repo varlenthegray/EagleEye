@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/SMC Dev.iml" filepath="$PROJECT_DIR$/.idea/SMC Dev.iml" />
-      <module fileurl="file://C:\Users\Ben\PhpstormProjects\eagleye\.idea\eagleye.iml" filepath="C:\Users\Ben\PhpstormProjects\eagleye\.idea\eagleye.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/SMCDev.iml" filepath="$PROJECT_DIR$/.idea/SMCDev.iml" />
     </modules>
   </component>
 </project>
