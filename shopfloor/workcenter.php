@@ -13,16 +13,16 @@ require '../includes/header_end.php';
     <div class="col-md-4">
         <div class="card-box">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 workcenter-table">
                     <h4>Jobs in Queue</h4>
 
-                    <table class="tablesaw table m-b-0" data-tablesaw-sortable>
+                     <table class="tablesaw table m-b-0 tablesaw-sortable" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Job ID</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Part ID</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO ID</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Department</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Operation</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Assigned To</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Release Date</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -53,18 +53,17 @@ require '../includes/header_end.php';
                                     $so_qry = $dbconn->query("SELECT * FROM customer WHERE sales_order_num = '{$room['so_parent']}'");
                                     $so_result = $so_qry->fetch_assoc();
 
-                                    // generate the part ID
-                                    $part_id = strtoupper($room['so_parent'] . $room['room'] . "-" . $so_result['dealer_code'] . "_" . $room['room_name']);
+                                    // generate the SO ID
+                                    $so_id = strtoupper($room['so_parent'] . "-" . $room['room']);
 
-                                    // generate the operation ID
-                                    $op_id = strtoupper($ind_op['op_id'] . "_" . $so_result['dealer_code'] . '_' . $ind_op['department']);
+                                    $released = date(DATE_DEFAULT, $op_queue['created']);
 
                                     echo "<tr class='cursor-hand queue-op-start' data-op-id='{$op_queue['id']}' data-op-info='$operation_payload'
-                                            data-long-op-id='$op_id' data-long-part-id='$part_id'>";
-                                    echo "  <td>$part_id</td>";
-                                    echo "  <td>$op_id</td>";
-                                    echo "  <td>{$ind_op['job_title']}</td>"; // the operation title itself, easy!
+                                            data-long-op-id='{$ind_op['responsible_dept']}' data-long-part-id='$so_id'>";
+                                    echo "  <td>$so_id</td>";
                                     echo "  <td>{$ind_op['responsible_dept']}</td>";
+                                    echo "  <td>{$ind_op['op_id']}: {$ind_op['job_title']}</td>"; // the operation title itself, easy!
+                                    echo "  <td>$released</td>";
                                     echo "</tr>";
 
                                     $display_no_jobs -= 1;
@@ -89,14 +88,13 @@ require '../includes/header_end.php';
                 <div class="col-md-12">
                     <h4>Active Jobs</h4>
 
-                    <table class="tablesaw table m-b-0" data-tablesaw-sortable>
+                    <table class="tablesaw table m-b-0" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">Job ID</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Part ID</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="3">Started</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO ID</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Department</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Operation</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Assigned To</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Started</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -127,19 +125,15 @@ require '../includes/header_end.php';
                                         $so_qry = $dbconn->query("SELECT * FROM customer WHERE sales_order_num = '{$room['so_parent']}'");
                                         $so_result = $so_qry->fetch_assoc();
 
-                                        // generate the part ID
-                                        $part_id = strtoupper($room['so_parent'] . $room['room'] . "-" . $so_result['dealer_code'] . "_" . $room['room_name']);
-
-                                        // generate the operation ID
-                                        $op_id = strtoupper($ind_op['op_id'] . $room['room'] . "_" . $so_result['dealer_code'] . '_' . $ind_op['department']);
+                                        // generate the SO ID
+                                        $so_id = strtoupper($room['so_parent'] . "-" . $room['room']);
 
                                         echo "<tr class='cursor-hand queue-op-start' data-op-id='{$op_queue['id']}' data-op-info='$operation_payload'
-                                            data-long-op-id='$op_id' data-long-part-id='$part_id'>";
-                                        echo "  <td>$part_id</td>";
-                                        echo "  <td>$op_id</td>";
-                                        echo "  <td id='{$op_queue['start_time']}'></td>";
-                                        echo "  <td>{$ind_op['job_title']}</td>"; // the operation title itself, easy!
+                                            data-long-op-id='{$ind_op['responsible_dept']}' data-long-part-id='$so_id'>";
+                                        echo "  <td>$so_id</td>";
                                         echo "  <td>{$ind_op['responsible_dept']}</td>";
+                                        echo "  <td>{$ind_op['op_id']}: {$ind_op['job_title']}</td>"; // the operation title itself, easy!
+                                        echo "  <td id='{$op_queue['start_time']}'></td>";
                                         echo "</tr>";
 
                                         echo "<script>$('#{$op_queue['start_time']}').text(moment({$op_queue['start_time']} * 1000).fromNow())</script>";
@@ -164,14 +158,13 @@ require '../includes/header_end.php';
                 <div class="col-md-12">
                     <h4>Recently Completed Jobs</h4>
 
-                    <table class="tablesaw table m-b-0" data-tablesaw-sortable>
+                    <table class="tablesaw table m-b-0" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">Job ID</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Part ID</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="3">Completed</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO ID</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Department</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Operation</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Assigned To</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Completed</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -202,22 +195,18 @@ require '../includes/header_end.php';
                                     $so_qry = $dbconn->query("SELECT * FROM customer WHERE sales_order_num = '{$room['so_parent']}'");
                                     $so_result = $so_qry->fetch_assoc();
 
-                                    // generate the part ID
-                                    $part_id = strtoupper($room['so_parent'] . $room['room'] . "-" . $so_result['dealer_code'] . "_" . $room['room_name']);
-
-                                    // generate the operation ID
-                                    $op_id = strtoupper($ind_op['op_id'] . $room['room'] . "_" . $so_result['dealer_code'] . '_' . $ind_op['department']);
+                                    // generate the SO ID
+                                    $so_id = strtoupper($room['so_parent'] . "-" . $room['room']);
 
                                     echo "<tr class='cursor-hand queue-op-start' data-op-id='{$op_queue['id']}' data-op-info='$operation_payload'
-                                            data-long-op-id='$op_id' data-long-part-id='$part_id'>";
-                                    echo "  <td>$part_id</td>";
-                                    echo "  <td>$op_id</td>";
-                                    echo "  <td id='{$op_queue['end_time']}'></td>";
-                                    echo "  <td>{$ind_op['job_title']}</td>"; // the operation title itself, easy!
+                                            data-long-op-id='{$ind_op['responsible_dept']}' data-long-part-id='$so_id'>";
+                                    echo "  <td>$so_id</td>";
                                     echo "  <td>{$ind_op['responsible_dept']}</td>";
+                                    echo "  <td>{$ind_op['op_id']}: {$ind_op['job_title']}</td>"; // the operation title itself, easy!
+                                    echo "  <td id='{$op_queue['start_time']}'></td>";
                                     echo "</tr>";
 
-                                    echo "<script>$('#{$op_queue['end_time']}').text(moment({$op_queue['end_time']} * 1000).fromNow())</script>";
+                                    echo "<script>$('#{$op_queue['start_time']}').text(moment({$op_queue['start_time']} * 1000).fromNow())</script>";
                                 }
                             }
                         } else {

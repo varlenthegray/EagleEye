@@ -2,15 +2,7 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="1e423a02-cfa2-4114-be16-127bf13e7bc3" name="SMC GD Production" url="http://smc.smcm.us">
-        <fileTransfer host="smcm.us" port="21">
-          <advancedOptions>
-            <advancedOptions dataProtectionLevel="Private" />
-          </advancedOptions>
-          <option name="port" value="21" />
-        </fileTransfer>
-      </webServer>
-      <webServer id="5f4de726-7859-4e0e-b7d8-88e47fed9569" name="SMC Dev" url="http://dev-smc.trustedprogrammer.com/">
+      <webServer id="9f247a2f-5a45-4be3-a587-a906cbf52b20" name="SMC Dev" url="http://dev-smc.trustedprogrammer.com">
         <fileTransfer host="trustedprogrammer.com" port="22" rootFolder="/home/trustedprogrammer/domains/dev-smc.trustedprogrammer.com/public_html" accessType="SFTP">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />

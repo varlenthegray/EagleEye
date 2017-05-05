@@ -270,7 +270,7 @@ require '../includes/header_end.php';
                                 <table class="tablesaw table" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
                                     <thead>
                                     <tr>
-                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist"">SO#</th>
+                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO#</th>
                                         <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Project</th>
                                         <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Dealer/Contractor</th>
                                         <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Project Manager</th>

@@ -2,6 +2,13 @@
 <project version="4">
   <component name="PublishConfigData" autoUpload="Always" promptOnRemoteOverwrite="CHECK_CONTENT" serverName="SMC Dev" traceLevel="ERRORS" exclude=".svn;.cvs;.idea;.DS_Store;.git;.hg;.scss" autoUploadExternalChanges="true" notifyRemoteChanges="true">
     <serverData>
+      <paths name="SMC Dev">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="SMC Prod">
         <serverdata>
           <mappings>
