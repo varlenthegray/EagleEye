@@ -9,7 +9,7 @@ function searchIt($db, $table, $column, $value) {
         $addon_query = " OR dealer_code LIKE '%$value%' OR account_type LIKE '%$value%'";
     }
 
-    $qry = $db->query("SELECT DISTINCT sales_order_num, dealer_code, project, account_type, dealer_contractor, project_manager FROM $table WHERE $column LIKE '%$value%' $addon_query LIMIT 0,100");
+    $qry = $db->query("SELECT DISTINCT sales_order_num, dealer_code, project, account_type, dealer_contractor, project_manager FROM $table WHERE $column LIKE '%$value%' $addon_query ORDER BY sales_order_num DESC LIMIT 0,25");
 
     if($qry->num_rows > 0) {
         while($result = $qry->fetch_assoc()) {

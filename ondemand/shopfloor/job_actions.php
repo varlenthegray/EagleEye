@@ -233,63 +233,41 @@ switch($_REQUEST['action']) {
         }
 
         break;
-
     case 'update_brackets':
-        $bracket_id = sanitizeInput($_REQUEST['bracketID'], $dbconn);
         $room = sanitizeInput($_REQUEST['room'], $dbconn);
         $sonum = sanitizeInput($_REQUEST['sonum'], $dbconn);
 
-        $qry = $dbconn->query("SELECT description FROM brackets WHERE id = '$bracket_id'");
-        $bracket_desc = $qry->fetch_assoc(); // grab the description, should only be 1 because we're grabbing by ID
-
         // grab the individual bracket
-        $override_qry = $dbconn->query("SELECT individual_bracket_buildout FROM rooms WHERE so_parent = '$sonum' AND room = '$room'");
-        $override_desc = $override_qry->fetch_assoc();
+        $indv_bracket_qry = $dbconn->query("SELECT individual_bracket_buildout FROM rooms WHERE so_parent = '$sonum' AND room = '$room'");
+        $indv_bracket_results = $indv_bracket_qry->fetch_assoc();
 
-        // set the individual bracket description
-        $override_desc = $override_desc['individual_bracket_buildout'];
+        $op_ids = json_decode($indv_bracket_results['individual_bracket_buildout']);
 
-        if(!empty($override_desc)) { // if there is an individual bracket in place, we need to override
-            $op_ids = $override_desc; // override it
-        } else { // otherwise, there is no individual bracket in place
-            $op_ids = $bracket_desc['description']; // assign the global description to a variable
+        $final['ops'] = array();
+
+        foreach($op_ids as $ind_id) {
+            $qry = $dbconn->query("SELECT department, job_title, op_id, id FROM operations WHERE id = '$ind_id'");
+            $result = $qry->fetch_assoc();
+
+            if(!empty($result))
+                $final['ops'][] = $result;
         }
 
-        $op_ids = json_decode($op_ids);
-
-        $final['Sales'] = array();
-        $final['Pre-Production'] = array();
-        $final['Sample'] = array();
-        $final['Drawer & Doors'] = array();
-        $final['Custom'] = array();
-        $final['Box'] = array();
-
-        foreach($op_ids as $op_bracket) {
-            foreach($op_bracket as $ind_id) {
-                $qry = $dbconn->query("SELECT department, job_title, op_id, id FROM operations WHERE id = '$ind_id'");
-                $result = $qry->fetch_assoc();
-
-                if(!empty($result))
-                    $final[$result['department']][] = $result;
-            }
-        }
 
         $qry = $dbconn->query("SELECT sales_published, preproduction_published, sample_published, doordrawer_published, custom_published, box_published FROM rooms WHERE so_parent = '$sonum' AND room = '$room'");
         $result = $qry->fetch_row();
 
-        $final['Published'] = $result;
+        $final['pub'] = $result;
 
         echo json_encode($final);
 
         break;
-
     case 'save_room':
         $room = sanitizeInput($_POST['room'], $dbconn);
         $room_name = sanitizeInput($_POST['room_name'], $dbconn);
         $product_type = sanitizeInput($_POST['product_type'], $dbconn);
         $remodel_required = sanitizeInput($_POST['remodel_required'], $dbconn);
         $room_notes = sanitizeInput($_POST['room_notes'], $dbconn);
-        $assigned_bracket = sanitizeInput($_POST['assigned_bracket'], $dbconn);
         $sales_bracket = sanitizeInput($_POST['sales_bracket'], $dbconn);
         $pre_prod_bracket = sanitizeInput($_POST['pre_prod_bracket'], $dbconn);
         $sample_bracket = sanitizeInput($_POST['sample_bracket'], $dbconn);
@@ -302,7 +280,7 @@ switch($_REQUEST['action']) {
 
         if($qry->num_rows === 1) {
             $update = $dbconn->query("UPDATE rooms SET room_name = '$room_name', product_type = '$product_type', remodel_reqd = '$remodel_required', room_notes = '$room_notes',
-              assigned_bracket = '$assigned_bracket', sales_bracket = '$sales_bracket', preproduction_bracket = '$pre_prod_bracket', sample_bracket = '$sample_bracket', doordrawer_bracket = '$door_drawer_bracket',
+              sales_bracket = '$sales_bracket', preproduction_bracket = '$pre_prod_bracket', sample_bracket = '$sample_bracket', doordrawer_bracket = '$door_drawer_bracket',
               custom_bracket = '$custom_bracket', box_bracket = '$box_bracket', sales_bracket_priority = 4, preproduction_bracket_priority = 4, sample_bracket_priority = 4, 
               doordrawer_bracket_priority = 4, custom_bracket_priority = 4, box_bracket_priority = 4 WHERE so_parent = '$so_num' AND room = '$room'");
 
@@ -312,10 +290,15 @@ switch($_REQUEST['action']) {
                 dbLogSQLErr($dbconn);
             }
         } else {
-            $ind_bracket_qry = $dbconn->query("SELECT * FROM brackets WHERE id = '$assigned_bracket'");
-            $ind_bracket = $ind_bracket_qry->fetch_assoc();
+            $full_ops_qry = $dbconn->query("SELECT * FROM operations WHERE department != 'Admin'");
 
-            $bracket = $ind_bracket['description'];
+            if($full_ops_qry->num_rows > 0) {
+                while($ops = $full_ops_qry->fetch_assoc()) {
+                    $bracket[] = $ops['id'];
+                }
+            }
+
+            $bracket = json_encode($bracket);
 
             $query = $dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, remodel_reqd, room_notes, sales_bracket, 
           preproduction_bracket, sample_bracket, doordrawer_bracket, custom_bracket, box_bracket, sales_bracket_priority, preproduction_bracket_priority, 
@@ -331,7 +314,6 @@ switch($_REQUEST['action']) {
         }
 
         break;
-
     case 'edit_room':
         $room_id = sanitizeInput($_POST['roomID'], $dbconn);
 
@@ -354,7 +336,6 @@ switch($_REQUEST['action']) {
         }
 
         break;
-
     case 'update_individual_bracket':
         $bracket = sanitizeInput($_POST['payload'], $dbconn);
         $sonum = sanitizeInput($_POST['sonum'], $dbconn);
@@ -377,7 +358,6 @@ switch($_REQUEST['action']) {
         }
 
         break;
-
     case 'update_in_queue':
         $room_id = sanitizeInput($_POST['roomID']);
         $new_op_id = sanitizeInput($_POST['opID']);
@@ -410,7 +390,55 @@ switch($_REQUEST['action']) {
         }
 
         break;
+    case 'get_all_ops':
+        $qry = $dbconn->query("SELECT id, op_id, department, job_title, responsible_dept FROM operations");
 
+        $ops = null;
+
+        if($qry->num_rows > 0) {
+            while($result = $qry->fetch_assoc()) {
+                $ops[] = $result;
+            }
+        }
+
+        $ops_out = json_encode($ops);
+
+        echo $ops_out;
+
+        break;
+    case 'manage_bracket':
+        $room = sanitizeInput($_REQUEST['room'], $dbconn);
+        $sonum = sanitizeInput($_REQUEST['sonum'], $dbconn);
+
+        // grab the individual bracket
+        $indv_bracket_qry = $dbconn->query("SELECT individual_bracket_buildout FROM rooms WHERE so_parent = '$sonum' AND room = '$room'");
+        $indv_bracket_results = $indv_bracket_qry->fetch_assoc();
+
+        $op_ids = json_decode($indv_bracket_results['individual_bracket_buildout']);
+
+        // grab all operations available
+        $all_ops_qry = $dbconn->query("SELECT * FROM operations WHERE department != 'Admin' ORDER BY op_id ASC");
+
+        $output = array();
+
+        if($all_ops_qry->num_rows > 0) {
+            while($all_ops = $all_ops_qry->fetch_assoc()) {
+                if(in_array($all_ops['id'], $op_ids)) {
+                    $output[$all_ops['department']] .= "<option value='{$all_ops['id']}'>{$all_ops['op_id']}-{$all_ops['job_title']}</option>"; // create the operation as "not selected"
+                } else {
+                    $output[$all_ops['department']] .=  "<option value='{$all_ops['id']}' selected>{$all_ops['op_id']}-{$all_ops['job_title']}</option>"; // create the operation as "selected"
+                }
+            }
+        }
+
+        $qry = $dbconn->query("SELECT sales_published, preproduction_published, sample_published, doordrawer_published, custom_published, box_published FROM rooms WHERE so_parent = '$sonum' AND room = '$room'");
+        $result = $qry->fetch_row();
+
+        $output['pub'] = $result;
+
+        echo json_encode($output);
+
+        break;
     default:
         die();
 
