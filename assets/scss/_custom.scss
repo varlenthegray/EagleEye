@@ -161,14 +161,24 @@ label {
 // first row inside of each bracket - lines things up and makes it look good
 .bracket-header-custom {
   margin: 0 auto;
-  width: 80%;
+  width: 99%;
 }
 
 // fix multi-select font (why so goddamn big?)
-.ms-container .ms-selectable li.ms-elem-selectable {
-  font-size: 1em !important;
+.ms-container .ms-selectable {
+  width: 47% !important;
+
+  li.ms-elem-selectable {
+    font-size: .9em !important;
+    padding: 2px 4px !important;
+  }
 }
 
-.ms-container .ms-selection li.ms-elem-selection {
-  font-size: 1em !important;
+.ms-container .ms-selection {
+  width: 47% !important;
+
+  li.ms-elem-selection {
+    font-size: .9em !important;
+    padding: 2px 4px !important;
+  }
 }

@@ -22330,8 +22330,7 @@ label {
 
 .ms-container {
   background: transparent url("../plugins/multiselect/img/multiple-arrow.png") no-repeat 50% 50%;
-  width: 100% !important;
-  max-width: 360px !important; }
+  width: 100% !important; }
   .ms-container .ms-list {
     box-shadow: none;
     border: 1px solid rgba(19, 40, 130, 0.2); }
@@ -23170,12 +23169,18 @@ label {
 
 .bracket-header-custom {
   margin: 0 auto;
-  width: 80%; }
+  width: 99%; }
 
-.ms-container .ms-selectable li.ms-elem-selectable {
-  font-size: 1em !important; }
+.ms-container .ms-selectable {
+  width: 47% !important; }
+  .ms-container .ms-selectable li.ms-elem-selectable {
+    font-size: .9em !important;
+    padding: 2px 4px !important; }
 
-.ms-container .ms-selection li.ms-elem-selection {
-  font-size: 1em !important; }
+.ms-container .ms-selection {
+  width: 47% !important; }
+  .ms-container .ms-selection li.ms-elem-selection {
+    font-size: .9em !important;
+    padding: 2px 4px !important; }
 
 /*# sourceMappingURL=style.css.map */

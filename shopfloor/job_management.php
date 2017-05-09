@@ -351,7 +351,7 @@ require '../includes/header_end.php';
 </div>
 
 <div class="row" id="individual_room_info" style="display: none;">
-    <div class="col-md-8">
+    <div class="col-md-6">
         <div class="card-box">
             <h4 id="room_info_title">Add New Room</h4>
 
@@ -360,64 +360,159 @@ require '../includes/header_end.php';
 
                 <table style="width: 100%;">
                     <tr>
-                        <td><label for="room">Room</label></td>
-                        <td>
-                            <select name="room" id="room" class="form-control">
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="E">E</option>
-                                <option value="F">F</option>
-                                <option value="G">G</option>
-                                <option value="H">H</option>
-                                <option value="J">J</option>
-                                <option value="K">K</option>
-                                <option value="L">L</option>
-                                <option value="M">M</option>
-                                <option value="N">N</option>
-                                <option value="P">P</option>
-                                <option value="Q">Q</option>
-                                <option value="R">R</option>
-                                <option value="S">S</option>
-                                <option value="T">T</option>
-                                <option value="U">U</option>
-                                <option value="V">V</option>
-                                <option value="W">W</option>
-                                <option value="X">X</option>
-                                <option value="Y">Y</option>
-                                <option value="Z">Z</option>
-                            </select>
+                        <td style="width: 20%;">
+                            <fieldset class="form-group">
+                                <label for="room">Room</label>
+                                <select name="room" id="room" class="form-control">
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                    <option value="J">J</option>
+                                    <option value="K">K</option>
+                                    <option value="L">L</option>
+                                    <option value="M">M</option>
+                                    <option value="N">N</option>
+                                    <option value="P">P</option>
+                                    <option value="Q">Q</option>
+                                    <option value="R">R</option>
+                                    <option value="S">S</option>
+                                    <option value="T">T</option>
+                                    <option value="U">U</option>
+                                    <option value="V">V</option>
+                                    <option value="W">W</option>
+                                    <option value="X">X</option>
+                                    <option value="Y">Y</option>
+                                    <option value="Z">Z</option>
+                                </select>
+                            </fieldset>
                         </td>
-                        <td><label for="room_name">Room Name</label></td>
-                        <td>
-                            <input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name">
+                        <td style="width: 20%;">
+                            <fieldset class="form-group">
+                                <label for="iteration">Iteration</label>
+                                <input type="text" name="iteration" id="iteration" class="form-control" maxlength="5" placeholder="Iteration" value=".01">
+                            </fieldset>
                         </td>
-                        <td><label for="product_type">Product Type</label></td>
-                        <td>
-                            <select name="product_type" id="product_type" class="form-control" tabindex="5">
-                                <option value="Cabinet" selected>Cabinet</option>
-                                <option value="Closet">Closet</option>
-                                <option value="Sample">Sample</option>
-                                <option value="Display">Display</option>
-                                <option value="Add-on">Add-on</option>
-                                <option value="Warranty">Warranty</option>
-                            </select>
+                        <td style="width: 20%;">
+                            <fieldset class="form-group">
+                                <label for="room_name">Room Name</label><label for="room_name">Room Name</label>
+                                <input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name">
+                            </fieldset>
                         </td>
-                        <td><label for="remodel_required">Remodel Required</label></td>
-                        <td>
-                            <select name="remodel_required" id="remodel_required" class="form-control" tabindex="7">
-                                <option value="1">Yes</option>
-                                <option value="0" selected>No</option>
-                            </select>
+                        <td style="width: 20%;">
+                            <fieldset class="form-group">
+                                <label for="product_type">Product Type</label>
+                                <select name="product_type" id="product_type" class="form-control" tabindex="5">
+                                    <option value="Cabinet" selected>Cabinet</option>
+                                    <option value="Closet">Closet</option>
+                                    <option value="Sample">Sample</option>
+                                    <option value="Display">Display</option>
+                                    <option value="Add-on">Add-on</option>
+                                    <option value="Warranty">Warranty</option>
+                                </select>
+                            </fieldset>
+                        </td>
+                        <td style="width: 20%;">
+                            <fieldset class="form-group">
+                                <label for="remodel_required">Remodel Required</label>
+                                <select name="remodel_required" id="remodel_required" class="form-control" tabindex="7">
+                                    <option value="1">Yes</option>
+                                    <option value="0" selected>No</option>
+                                </select>
+                            </fieldset>
                         </td>
                     </tr>
                     <tr>
-                        <td><label for="room_notes">Room Notes</label></td>
-                        <td>
-                        <textarea class="form-control" id="room_notes" name="room_notes" placeholder="Room Notes" rows="3"
-                                  data-toggle="popover" data-placement="top" data-trigger="focus" title="" data-html="true"
-                                  data-content="<table style='font-size: 9px;'>
+                        <td colspan="5">&nbsp;</td>
+                    </tr>
+                    <tbody id="room_bracket">
+                        <tr>
+                            <?php
+                                function generateSingleOps($bracket) {
+                                    global $dbconn;
+                                    $output = '';
+
+                                    $qry = $dbconn->query("SELECT * FROM operations WHERE department = '$bracket' ORDER BY op_id ASC");
+
+                                    if ($qry->num_rows > 0) {
+                                        while ($result = $qry->fetch_assoc()) {
+                                            $output .= "<option value='{$result['id']}'>{$result['op_id']}-{$result['job_title']}</option>";
+                                        }
+                                    }
+
+                                    return $output;
+                                }
+                            ?>
+                            <td>&nbsp;</td>
+                            <td>
+                                <fieldset class="form-group">
+                                    <label for="sales_bracket">Sales Bracket</label>
+                                    <select id="sales_bracket" name="sales_bracket" class="form-control">
+                                        <?php echo generateSingleOps("Sales"); ?>
+                                    </select>
+                                </fieldset>
+                            </td>
+                            <td>
+                                <fieldset class="form-group">
+                                    <label for="pre_prod_bracket">Pre-production Bracket</label>
+                                    <select id="pre_prod_bracket" name="pre_prod_bracket" class="form-control">
+                                        <?php echo generateSingleOps("Pre-Production"); ?>
+                                    </select>
+                                </fieldset>
+                            </td>
+                            <td>
+                                <fieldset class="form-group">
+                                    <label for="sample_bracket">Sample Bracket</label>
+                                    <select id="sample_bracket" name="sample_bracket" class="form-control">
+                                        <?php echo generateSingleOps("Sample"); ?>
+                                    </select>
+                                </fieldset>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td>
+                                <fieldset class="form-group">
+                                    <label for="door_drawer_bracket">Door/Drawer Bracket</label>
+                                    <select id="door_drawer_bracket" name="door_drawer_bracket" class="form-control">
+                                        <?php echo generateSingleOps("Drawer & Doors"); ?>
+                                    </select>
+                                </fieldset>
+                            </td>
+                            <td>
+                                <fieldset class="form-group">
+                                    <label for="custom_bracket">Custom Bracket</label>
+                                    <select id="custom_bracket" name="custom_bracket" class="form-control">
+                                        <?php echo generateSingleOps("Custom"); ?>
+                                    </select>
+                                </fieldset>
+                            </td>
+                            <td>
+                                <fieldset class="form-group">
+                                    <label for="box_bracket">Box Bracket</label>
+                                    <select id="box_bracket" name="box_bracket" class="form-control">
+                                        <?php echo generateSingleOps("Box"); ?>
+                                    </select>
+                                </fieldset>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </tbody>
+                    <tr>
+                        <td colspan="5">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td colspan="3">
+                            <fieldset class="form-group">
+                                <label for="room_notes">Room Notes</label>
+                                <textarea class="form-control" id="room_notes" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3"
+                                          data-toggle="popover" data-placement="top" data-trigger="focus" title="" data-html="true"
+                                          data-content="<table style='font-size: 9px;'>
                                 <tr>
                                     <td>CON = Conestoga</td>
                                     <td class='text-md-right'>RW = Rework</td>
@@ -447,128 +542,17 @@ require '../includes/header_end.php';
                                     <td class='text-md-right'>WO = Work Order</td>
                                 </tr>
                             </table>" data-original-title="Abbreviations"></textarea>
+                            </fieldset>
                         </td>
-                        <td><label for="assigned_bracket">Assigned Bracket</label></td>
-                        <td>
-                            <select name="assigned_bracket" id="assigned_bracket" class="form-control">
-                                <option value="N/A" disabled selected>N/A</option>
-                                <?php
-                                $qry = $dbconn->query("SELECT * FROM brackets ORDER BY bracket_name ASC");
-
-                                if($qry->num_rows > 0) {
-                                    while($result = $qry->fetch_assoc()) {
-                                        echo "<option value='{$result['id']}'>{$result['bracket_name']}</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </td>
-                        <td colspan="2">&nbsp;</td>
+                        <td>&nbsp;</td>
                     </tr>
                     <tr>
-                        <td colspan="8">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td><label for="sales_bracket">Sales Bracket</label></td>
-                        <td>
-                            <select id="sales_bracket" name="sales_bracket" class="form-control">
-                                <option value="N/A">N/A</option>
-                                <?php
-                                $qry = $dbconn->query("SELECT * FROM operations WHERE department = 'Sales' ORDER BY op_id ASC");
-
-                                if($qry->num_rows > 0) {
-                                    while($result = $qry->fetch_assoc()) {
-                                        echo "<option value='{$result['id']}'>{$result['op_id']}-{$result['job_title']}</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </td>
-                        <td><label for="pre_prod_bracket">Pre-production Bracket</label></td>
-                        <td>
-                            <select id="pre_prod_bracket" name="pre_prod_bracket" class="form-control">
-                                <option value="N/A">N/A</option>
-                                <?php
-                                $qry = $dbconn->query("SELECT * FROM operations WHERE department = 'Pre-Production' ORDER BY op_id ASC");
-
-                                if($qry->num_rows > 0) {
-                                    while($result = $qry->fetch_assoc()) {
-                                        echo "<option value='{$result['id']}'>{$result['op_id']}-{$result['job_title']}</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </td>
-                        <td><label for="sample_bracket">Sample Bracket</label></td>
-                        <td>
-                            <select id="sample_bracket" name="sample_bracket" class="form-control">
-                                <option value="N/A">N/A</option>
-                                <?php
-                                $qry = $dbconn->query("SELECT * FROM operations WHERE department = 'Sample' ORDER BY op_id ASC");
-
-                                if($qry->num_rows > 0) {
-                                    while($result = $qry->fetch_assoc()) {
-                                        echo "<option value='{$result['id']}'>{$result['op_id']}-{$result['job_title']}</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="door_drawer_bracket">Door/Drawer Bracket</label></td>
-                        <td>
-                            <select id="door_drawer_bracket" name="door_drawer_bracket" class="form-control">
-                                <option value="N/A">N/A</option>
-                                <?php
-                                $qry = $dbconn->query("SELECT * FROM operations WHERE department = 'Drawer & Doors' ORDER BY op_id ASC");
-
-                                if($qry->num_rows > 0) {
-                                    while($result = $qry->fetch_assoc()) {
-                                        echo "<option value='{$result['id']}'>{$result['op_id']}-{$result['job_title']}</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </td>
-                        <td><label for="custom_bracket">Custom Bracket</label></td>
-                        <td>
-                            <select id="custom_bracket" name="custom_bracket" class="form-control">
-                                <option value="N/A">N/A</option>
-                                <?php
-                                $qry = $dbconn->query("SELECT * FROM operations WHERE department = 'Custom' ORDER BY op_id ASC");
-
-                                if($qry->num_rows > 0) {
-                                    while($result = $qry->fetch_assoc()) {
-                                        echo "<option value='{$result['id']}'>{$result['op_id']}-{$result['job_title']}</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </td>
-                        <td><label for="box_bracket">Box Bracket</label></td>
-                        <td>
-                            <select id="box_bracket" name="box_bracket" class="form-control">
-                                <option value="N/A">N/A</option>
-                                <?php
-                                $qry = $dbconn->query("SELECT * FROM operations WHERE department = 'Box' ORDER BY op_id ASC");
-
-                                if($qry->num_rows > 0) {
-                                    while($result = $qry->fetch_assoc()) {
-                                        echo "<option value='{$result['id']}'>{$result['op_id']}-{$result['job_title']}</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="8">&nbsp;</td>
+                        <td colspan="5">&nbsp;</td>
                     </tr>
                     <tr>
                         <td colspan="8">
                             <button type="button" id="room_save" name="room_save" class="btn btn-success waves-effect waves-light w-xs">Save</button>
-                            <button type="button" id="manage_brackets" name="manage_brackets" class="btn btn-success waves-effect waves-light w-xs">Manage Brackets</button>
+                            <button type="button" id="manage_brackets" name="manage_brackets" class="btn btn-success waves-effect waves-light w-xs">Manage Bracket</button>
                         </td>
                     </tr>
                 </table>
@@ -586,21 +570,21 @@ require '../includes/header_end.php';
 
                     <table class="bracket-adjustment-table">
                         <tr>
-                            <td class="bracket-border-top" style="width: 350px;">
+                            <td class="bracket-border-top" style="width: 400px;">
                                 <div class="row bracket-header-custom">
                                     <div class="col-md-8"><h5><label for="sales_bracket_adjustments">Sales Bracket</label></h5></div>
                                     <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" id="sales_published"> <span class="c-indicator"></span> Published</label> </div>
                                 </div>
                             </td>
-                            <td style="width:80px;">&nbsp;</td>
-                            <td class="bracket-border-top" style="width: 350px;">
+                            <td style="width:18px;">&nbsp;</td>
+                            <td class="bracket-border-top" style="width: 400px;">
                                 <div class="row bracket-header-custom">
                                     <div class="col-md-8"><h5><label for="pre_prod_bracket_adjustments">Pre-production Bracket</label></h5></div>
                                     <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pre_prod_published" id="pre_prod_published"> <span class="c-indicator"></span> Published</label> </div>
                                 </div>
                             </td>
-                            <td style="width:80px;">&nbsp;</td>
-                            <td class="bracket-border-top" style="width: 350px;">
+                            <td style="width:18px;">&nbsp;</td>
+                            <td class="bracket-border-top" style="width: 400px;">
                                 <div class="row bracket-header-custom">
                                     <div class="col-md-8"><h5><label for="sample_bracket_adjustments">Sample Bracket</label></h5></div>
                                     <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" id="sample_published"> <span class="c-indicator"></span> Published</label> </div>
@@ -626,18 +610,18 @@ require '../includes/header_end.php';
                         <tr>
                             <td class="bracket-border-top">
                                 <div class="row bracket-header-custom">
-                                    <div class="col-md-9"><h5><label for="door_drawer_bracket_adjustments">Door/Drawer Bracket</label></h5></div>
-                                    <div class="col-md-3"><label class="c-input c-checkbox"><input type="checkbox" name="door_drawer_published" id="door_drawer_published"> <span class="c-indicator"></span> Published</label> </div>
+                                    <div class="col-md-8"><h5><label for="door_drawer_bracket_adjustments">Door/Drawer Bracket</label></h5></div>
+                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="door_drawer_published" id="door_drawer_published"> <span class="c-indicator"></span> Published</label> </div>
                                 </div>
                             </td>
-                            <td style="width:80px;">&nbsp;</td>
+                            <td>&nbsp;</td>
                             <td class="bracket-border-top">
                                 <div class="row bracket-header-custom">
                                     <div class="col-md-8"><h5><label for="custom_bracket_adjustments">Custom Bracket</label></h5></div>
                                     <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" id="custom_published"> <span class="c-indicator"></span> Published</label> </div>
                                 </div>
                             </td>
-                            <td style="width:80px;">&nbsp;</td>
+                            <td>&nbsp;</td>
                             <td class="bracket-border-top">
                                 <div class="row bracket-header-custom">
                                     <div class="col-md-8"><h5><label for="box_bracket_adjustments">Box Bracket</label></h5></div>
@@ -718,18 +702,19 @@ require '../includes/header_end.php';
     }
 
     function recalculateBrackets(overrideSelected) {
-        var selectedBracket = $("#assigned_bracket").val();
-
-        $.post("/ondemand/shopfloor/job_actions.php?action=update_brackets", {bracketID: selectedBracket, room: active_room, sonum: active_so_num}, function(data) {
-            // HERE WE GO, into the rabbit hole with this!
+        $.post("/ondemand/shopfloor/job_actions.php?action=update_brackets", {room: active_room, sonum: active_so_num}, function(data) {
+            // This got much simpler, LUCKY YOU!
 
             var input = $.parseJSON(data); // grab the JSON data returned, this is a 3D array, objects inside of objects
+            var ops = input.ops;
 
             function generateOptions(department) { // generates the options based on the department provided
-                var outputOptions = "<option value='N/A'>N/A</option>"; // initial option is always N/A
+                var outputOptions = '';
 
-                $.each(input[department], function(key, value) { // for each MULTIDIMENSIONAL result inside of SALES concatenate INFORMATION
-                    outputOptions += "<option value='" + value.id + "'>" + value.op_id + "-" + value.job_title + "</option>"; // value is the object inside of the object
+                $.each(ops, function(key, value) { // for each MULTIDIMENSIONAL result inside of SALES concatenate INFORMATION
+                    if(value.department === department) {
+                        outputOptions += "<option value='" + value.id + "'>" + value.op_id + "-" + value.job_title + "</option>"; // value is the object inside of the object
+                    }
                 }); // end
 
                 return outputOptions; // send back the final output
@@ -754,12 +739,12 @@ require '../includes/header_end.php';
 
             if(overrideSelected === undefined) {
                 // select the second option inside of the list
-                $("#sales_bracket option:nth-child(2)").attr("selected", "selected"); //TODO: find a different way to select the second option, "Inefficient"
-                $("#pre_prod_bracket option:nth-child(2)").attr("selected", "selected");
-                $("#sample_bracket option:nth-child(2)").attr("selected", "selected");
-                $("#door_drawer_bracket option:nth-child(2)").attr("selected", "selected");
-                $("#custom_bracket option:nth-child(2)").attr("selected", "selected");
-                $("#box_bracket option:nth-child(2)").attr("selected", "selected");
+                $("#sales_bracket option:nth-child(1)").attr("selected", "selected"); //TODO: find a different way to select the second option, "Inefficient"
+                $("#pre_prod_bracket option:nth-child(1)").attr("selected", "selected");
+                $("#sample_bracket option:nth-child(1)").attr("selected", "selected");
+                $("#door_drawer_bracket option:nth-child(1)").attr("selected", "selected");
+                $("#custom_bracket option:nth-child(1)").attr("selected", "selected");
+                $("#box_bracket option:nth-child(1)").attr("selected", "selected");
             } else {
                 $("#sales_bracket").val(overrideSelected.sales_bracket);
                 $("#pre_prod_bracket").val(overrideSelected.preproduction_bracket);
@@ -772,6 +757,8 @@ require '../includes/header_end.php';
     }
 
     function displayRoomInfo(roomID) {
+        $("#manage_bracket").hide();
+
         $("#add_to_sonum").val(active_so_num);
 
         $.post("/ondemand/shopfloor/job_actions.php?action=edit_room", {roomID: roomID}, function(data) {
@@ -791,8 +778,6 @@ require '../includes/header_end.php';
                 recalculateBrackets(roomInfo);
 
                 $("#room_info_title").text("Edit room " + roomInfo.room + " of SO# " + active_so_num);
-
-
             } else {
                 $("body").append(data);
             }
@@ -802,41 +787,33 @@ require '../includes/header_end.php';
     }
 
     function displayBracketInfo(active_room) {
+        $("#sales_published").prop('checked', false);
+        $("#pre_prod_published").prop('checked', false);
+        $("#sample_published").prop('checked', false);
+        $("#door_drawer_published").prop('checked', false);
+        $("#custom_published").prop('checked', false);
+        $("#box_published").prop('checked', false);
+        
         $("#bracket_adjustment_title").text("SO# " + active_so_num + " ROOM " + active_room);
 
-        var selectedBracket = $("#assigned_bracket").val();
-
-        $.post("/ondemand/shopfloor/job_actions.php?action=update_brackets", {bracketID: selectedBracket, sonum: active_so_num, room: active_room}, function(data) {
-            // HERE WE GO, into the rabbit hole with this!
-
-            var input = $.parseJSON(data); // grab the JSON data returned, this is a 3D array, objects inside of objects
-
-            function generateOptions(department) { // generates the options based on the department provided
-                var outputOptions = ''; // no initial options in this case; we want only real operations
-
-                $.each(input[department], function(key, value) { // for each MULTIDIMENSIONAL result inside of SALES concatenate INFORMATION
-                    outputOptions += "<option value='" + value.id + "'>" + value.op_id + "-" + value.job_title + "</option>"; // value is the object inside of the object
-                }); // end
-
-                return outputOptions; // send back the final output
-            }
+        $.post("/ondemand/shopfloor/job_actions.php?action=manage_bracket", {sonum: active_so_num, room: active_room}, function(data) {
+            // Way easier than it was previously; thank goodness!
+            var options = $.parseJSON(data); // grab the JSON data returned, this is a 3D array, objects inside of objects
 
             // grab each of the departments and their related options
-            var salesOptions = generateOptions("Sales");
-            var preprodOptions = generateOptions("Pre-Production");
-            var sampleOptions = generateOptions("Sample");
-            var doordrawerOptions = generateOptions("Drawer & Doors");
-            var customOptions = generateOptions("Custom");
-            var boxOptions = generateOptions("Box");
+            var salesOptions = options["Sales"];
+            var preprodOptions = options["Pre-Production"];
+            var sampleOptions = options["Sample"];
+            var doordrawerOptions = options["Drawer & Doors"];
+            var customOptions = options["Custom"];
+            var boxOptions = options["Box"];
 
-            console.log(input['Published']);
-
-            if(input['Published'][0] === "1") $("#sales_published").prop('checked', true);
-            if(input['Published'][1] === "1") $("#pre_prod_published").prop('checked', true);
-            if(input['Published'][2] === "1") $("#sample_published").prop('checked', true);
-            if(input['Published'][3] === "1") $("#door_drawer_published").prop('checked', true);
-            if(input['Published'][4] === "1") $("#custom_published").prop('checked', true);
-            if(input['Published'][5] === "1") $("#box_published").prop('checked', true);
+            if(options['pub'][0] === "1") $("#sales_published").prop('checked', true);
+            if(options['pub'][1] === "1") $("#pre_prod_published").prop('checked', true);
+            if(options['pub'][2] === "1") $("#sample_published").prop('checked', true);
+            if(options['pub'][3] === "1") $("#door_drawer_published").prop('checked', true);
+            if(options['pub'][4] === "1") $("#custom_published").prop('checked', true);
+            if(options['pub'][5] === "1") $("#box_published").prop('checked', true);
 
             // find the options inside of the SALES bracket, REMOVE them, wait for that DOM update to FINISH, then ADD the options again
             $("#sales_bracket_adjustments").find("option").remove().end().append(salesOptions).multiSelect('refresh');
@@ -933,20 +910,24 @@ require '../includes/header_end.php';
             $("#add_to_sonum").val(active_so_num);
 
             $("#room").val("A");
+            $("#iteration").val(".01");
             $("#room_name").val("Kitchen");
             $("#product_type").val("Cabinet");
             $("#remodel_required").val("0");
             $("#room_notes").val("");
-            $("#assigned_bracket").val("N/A");
 
-            $("#sales_bracket").val("N/A");
-            $("#pre_prod_bracket").val("N/A");
-            $("#sample_bracket").val("N/A");
-            $("#door_drawer_bracket").val("N/A");
-            $("#custom_bracket").val("N/A");
-            $("#box_bracket").val("N/A");
+            $("#sales_bracket").find("option:eq(0)").prop("selected", true);
+            $("#pre_prod_bracket").find("option:eq(0)").prop("selected", true);
+            $("#sample_bracket").find("option:eq(0)").prop("selected", true);
+            $("#door_drawer_bracket").find("option:eq(0)").prop("selected", true);
+            $("#custom_bracket").find("option:eq(0)").prop("selected", true);
+            $("#box_bracket").find("option:eq(0)").prop("selected", true);
 
             $("#room_info_title").text("Add new room");
+
+            $.post("/ondemand/shopfloor/bracket_info.php?action=single_result", function(data) {
+                $("#room_bracket").html(data);
+            });
 
             $("#individual_room_info").show();
         })
@@ -975,7 +956,11 @@ require '../includes/header_end.php';
 
             var fullBracketAdjusted = [salesBracketAdjusted, preprodBracketAdjusted, sampleBracketAdjusted, doordrawerBracketAdjusted, customBracketAdjusted, boxBracketAdjusted];
 
+            fullBracketAdjusted = [].concat.apply([], fullBracketAdjusted);
+
             var fullBracketPayload = JSON.stringify(fullBracketAdjusted);
+
+            console.log(fullBracketPayload);
 
             var publishedString = [salesPublished, preProdPublished, samplePublished, doordrawerPublished, customPublished, boxPublished];
 
@@ -1003,25 +988,11 @@ require '../includes/header_end.php';
         .on("keyup", function() { // this is on keyboard change
             updateSearchTable($(this).val(), "sonum", "displaySO");
             $("#edit_so_info").hide();
-        })
-        .autocomplete({
-            source: "/ondemand/livesearch/general.php?search=cusonum"
-        })
-        .on("autocompleteselect", function(e, ui) {
-            updateSearchTable(ui.item.label, "sonum", "displaySO"); // this is on click of the auto-complete
-            $("#edit_so_info").hide();
         });
 
     $("#cu_project_name1")
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "project", "displaySO");
-            $("#edit_so_info").hide();
-        })
-        .autocomplete({
-            source: "/ondemand/livesearch/general.php?search=cuproject"
-        })
-        .on("autocompleteselect", function(e, ui) {
-            updateSearchTable(ui.item.label, "project", "displaySO"); // this is on click of the auto-complete
             $("#edit_so_info").hide();
         });
 
@@ -1029,25 +1000,11 @@ require '../includes/header_end.php';
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "contractor", "displaySO");
             $("#edit_so_info").hide();
-        })
-        .autocomplete({
-            source: "/ondemand/livesearch/general.php?search=cucontractor"
-        })
-        .on("autocompleteselect", function(e, ui) {
-            updateSearchTable(ui.item.label, "contractor", "displaySO"); // this is on click of the auto-complete
-            $("#edit_so_info").hide();
         });
 
     $("#cu_project_manager1")
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "project_manager", "displaySO");
-            $("#edit_so_info").hide();
-        })
-        .autocomplete({
-            source: "/ondemand/livesearch/general.php?search=cupm"
-        })
-        .on("autocompleteselect", function(e, ui) {
-            updateSearchTable(ui.item.label, "project_manager", "displaySO"); // this is on click of the auto-complete
             $("#edit_so_info").hide();
         });
 </script>
