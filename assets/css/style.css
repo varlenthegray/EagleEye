@@ -23183,4 +23183,13 @@ label {
     font-size: .9em !important;
     padding: 2px 4px !important; }
 
+@media print {
+  .topbar-main {
+    display: none !important;
+    margin: 0;
+    padding: 0; }
+
+  .wrapper {
+    padding-top: 108px; } }
+
 /*# sourceMappingURL=style.css.map */

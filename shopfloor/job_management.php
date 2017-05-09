@@ -665,7 +665,6 @@ require '../includes/header_end.php';
 <!-- Multi-select -->
 <script type="text/javascript" src="/assets/plugins/multiselect/js/jquery.multi-select.js"></script>
 
-
 <!-- Loading page content -->
 <script src="/ondemand/js/page_content_functions.js"></script>
 

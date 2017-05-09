@@ -9,6 +9,7 @@ define("TAB_TEXT", "SMCM - Dashboard"); // The text displayed in the title bar/t
 define("FOOTER_TEXT", "SMCM"); // Footer copyright name specifically
 define("DATE_TIME_DEFAULT", "M jS Y @ g:i:s A T"); // the default date/time format to use
 define("DATE_DEFAULT", "n/j/y"); // the default date format to use
+define("DATE_TIME_ABBRV", "n/j/y @ g:i:s A"); // the abbreviated date/time format to use
 define("SITE_URL", "http://smc.trustedprogrammer.com/"); // the SITE URL, used to configure header_start.php's includes
 
 // Navigation bar definitions
@@ -32,6 +33,9 @@ define("NAV_INVENTORY", "Inventory"); // Navigation menu Inventory
 
 // Accounting bar definitions
 define("NAV_ACCOUNTING", "Accounting"); // Navigation menu Accounting
+
+/// Navigation > Accounting
+define("NAV_ACCOUNTING_TIMECARDS", "Timecard Report");
 
 // Admin bar definitions
 define("NAV_ADMIN", "Admin"); // Navigation menu Admin

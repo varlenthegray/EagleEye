@@ -182,3 +182,16 @@ label {
     padding: 2px 4px !important;
   }
 }
+
+// turn off all printing of the header
+@media print {
+  .topbar-main {
+    display: none !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  .wrapper {
+    padding-top: 108px;
+  }
+}

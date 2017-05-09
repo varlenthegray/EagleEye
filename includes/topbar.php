@@ -158,8 +158,11 @@ switch($_SERVER['SCRIPT_NAME']) {
                     <li>
                         <a href="#"><i class="zmdi zmdi-dropbox"></i> <?php echo NAV_INVENTORY; ?> </a>
                     </li>
-                    <li>
+                    <li class="has-submenu">
                         <a href="#"><i class="zmdi zmdi-money-box"></i> <?php echo NAV_ACCOUNTING; ?> </a>
+                        <ul class="submenu">
+                            <li><a href="/accounting/index.php"><?php echo NAV_ACCOUNTING_TIMECARDS; ?></a></li>
+                        </ul>
                     </li>
                     <li class="has-submenu">
                         <a href="#"><i class="zmdi zmdi-accounts-list-alt"></i> <?php echo NAV_ADMIN; ?> </a>

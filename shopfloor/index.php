@@ -22,7 +22,21 @@ if(!empty($_GET['action']))
         <div class="card-box" style="min-height: 511px;">
             <div class="row">
                 <div class="col-md-12">
-                    <h4 class="pull-left">Active Operations for <span id="shop_employee_name"><?php echo $_SESSION['shop_user']['name']; ?></span></h4><h4 id="date-time" class="pull-right"></h4>
+                    <h4 class="pull-left">Active Operations for
+                        <select id="active_ops_view" name="active_ops_view">
+                            <?php
+                                echo "<option value='{$_SESSION['shop_user']['id']}'>{$_SESSION['shop_user']['name']}</option>";
+
+                                $depts = json_decode($_SESSION['shop_user']['department']);
+
+                                foreach($depts as $department) {
+                                    echo "<option value='$department'>$department</option>";
+                                }
+                            ?>
+                        </select>
+                    </h4>
+
+                    <h4 id="date-time" class="pull-right"></h4>
 
                     <table class="tablesaw table">
                         <thead>
@@ -36,7 +50,7 @@ if(!empty($_GET['action']))
                         </thead>
                         <tbody id="active_jobs_table">
                         <?php
-                        activeJobGeneration();
+                            activeJobGeneration();
                         ?>
                         </tbody>
                     </table>
