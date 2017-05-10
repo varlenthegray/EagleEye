@@ -49,31 +49,24 @@ if(!empty($_GET['action']))
                         </tr>
                         </thead>
                         <tbody id="active_jobs_table">
-                        <?php
-                            activeJobGeneration();
-                        ?>
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-6"><h4>Queue</h4></div>
-
-                <div class="col-md-6 text-md-right">
-                    <!--<label for="viewing_queue">Viewing:</label>
-                    <select name="viewing_queue" id="viewing_queue">
-                        <?php
-                            $qry = $dbconn->query("SELECT department FROM user WHERE id = '{$_SESSION['shop_user']['id']}'");
-                            $dpt_result = $qry->fetch_assoc();
-
-                            $deptartments = json_decode($dpt_result['department']);
+                <div class="col-md-6">
+                    <h4>Queue for
+                        <select name="viewing_queue" id="viewing_queue">
+                            <?php
+                            $deptartments = json_decode($_SESSION['shop_user']['department']);
 
                             foreach($deptartments as $department) {
                                 echo "<option value='$department'>$department</option>";
                             }
-                        ?>
-                    </select>-->
+                            ?>
+                        </select>
+                    </h4>
                 </div>
             </div>
 
@@ -90,9 +83,6 @@ if(!empty($_GET['action']))
                         </tr>
                         </thead>
                         <tbody id="job_queue_table">
-                        <?php
-                        queuedJobGeneration();
-                        ?>
                         </tbody>
                     </table>
                 </div>
@@ -201,20 +191,19 @@ if(!empty($_GET['action']))
     var activeJobID;
     var queueJobID;
 
+    updateActiveJobs();
+    updateQueuedJobs();
+
     function updateActiveJobs() {
         $.post("/ondemand/shopfloor/job_actions.php?action=display_active_jobs", function(data) { // grab the latest information
             $("#active_jobs_table").html(data); // display that information in the table
         });
     }
 
-    function updateQueuedJobs(filter) {
-        var filterLine = '';
+    function updateQueuedJobs() {
+        var queue = $('#viewing_queue').val();
 
-        if(filter !== undefined) {
-            filterLine = "&filter=" + filter;
-        }
-
-        $.post("/ondemand/shopfloor/job_actions.php?action=display_job_queue" + filterLine, function(data) { // grab the latest information
+        $.post("/ondemand/shopfloor/job_actions.php?action=display_job_queue", {queue: queue} , function(data) { // grab the latest information
             if(data !== '')
                 $("#job_queue_table").html(data); // display that information in the table
             else
@@ -239,6 +228,8 @@ if(!empty($_GET['action']))
         .on("click", ".queue-op-start", function() {
             var opClicked = $(this);
             queueJobID = $(this).data("op-id");
+
+            console.log("Job ID: " + queueJobID);
 
             $.post("/ondemand/shopfloor/job_actions.php?action=get_op_info", {opID: queueJobID}, function(data) {
                 if(data !== '') {
@@ -371,7 +362,7 @@ if(!empty($_GET['action']))
             }
         })
         .on("change", "#viewing_queue", function() {
-
+            updateQueuedJobs();
         });
 
     $("#modalStartJob").on("show.bs.modal", function() {
@@ -393,7 +384,7 @@ if(!empty($_GET['action']))
     setInterval(function() { // reatime(ish) updating of job information, perhaps migrate this to Node.js at some point
         updateQueuedJobs();
         updateActiveJobs();
-    }, 10000);
+    }, 5000);
 </script>
 
 <?php 

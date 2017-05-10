@@ -44,3 +44,9 @@ function dbLogDebug($code) {
     global $dbconn;
     $dbconn->query("INSERT INTO debug_log (time, message) VALUES (NOW(), '$code')");
 }
+
+function outputPHPErrs() {
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+}

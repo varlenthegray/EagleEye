@@ -85,13 +85,29 @@ switch($_REQUEST['action']) {
 
         break;
     case 'display_job_queue':
-        $filter = $_POST['filter'];
+        $queue = sanitizeInput($_REQUEST['queue']);
 
-        if(!empty($filter)) {
-            $filter = "";
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue';");
+
+        if($op_queue_qry->num_rows > 0) {
+            while($op_queue = $op_queue_qry->fetch_assoc()) {
+                $id = $op_queue['queueID'];
+                $sonum = $op_queue['so_parent'] . "-" . $op_queue['room'];
+                $department = $op_queue['responsible_dept'];
+                $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+                $release_date = date(DATE_DEFAULT, $op_queue['created']);
+                $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept']];
+                $op_info_payload = json_encode($op_info);
+
+                echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
+                echo "  <td>$sonum</td>";
+                echo "  <td>$department</td>";
+                echo "  <td>$operation</td>";
+                echo "  <td>$release_date</td>";
+                echo "  <td>&nbsp;</td>";
+                echo "</tr>";
+            }
         }
-
-        queuedJobGeneration();
 
         break;
     case 'update_active_job':

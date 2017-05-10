@@ -1,5 +1,5 @@
 <?php
-require_once ("includes/header_start.php");
+require_once ("../includes/header_start.php");
 
 $rooms = $dbconn->query("SELECT * FROM rooms");
 
@@ -15,5 +15,5 @@ while($ind_room = $rooms->fetch_assoc()) {
 
     $commit = json_encode($single_string);
 
-    //$dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$commit' WHERE id = {$ind_room['id']}");
+    $dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$commit' WHERE id = {$ind_room['id']}");
 }
