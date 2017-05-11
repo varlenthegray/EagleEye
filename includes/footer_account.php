@@ -1,3 +1,19 @@
+<!-- Footer -->
+<footer class="footer text-right">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6 pull-left">
+                <?php echo date("Y"); ?> &copy; <?php echo FOOTER_TEXT; ?>
+            </div>
+
+            <div class="col-xs-6 pull-right text-md-right">
+                <?php echo "RELEASE DATE " . RELEASE_DATE; ?>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- End Footer -->
+
 <script>
     var resizefunc = [];
 </script>

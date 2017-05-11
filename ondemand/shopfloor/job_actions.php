@@ -13,7 +13,9 @@ switch($_REQUEST['action']) {
 
             echo json_encode($output);
         } else {
-            $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'");
+            $op_queue = $qry->fetch_assoc();
+
+            $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$op_queue['']}'");
 
             if($admin_qry->num_rows === 1) {
                 $output = $admin_qry->fetch_assoc();
@@ -87,7 +89,9 @@ switch($_REQUEST['action']) {
     case 'display_job_queue':
         $queue = sanitizeInput($_REQUEST['queue']);
 
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue';");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.* 
+          FROM op_queue JOIN operations ON op_queue.operation_id = operations.id 
+          WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue';");
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {

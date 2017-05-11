@@ -38,6 +38,22 @@ require_once("config.php"); // require the config file once
 
     <!-- Global Functions JS -->
     <script src="/includes/js/functions.js"></script>
+
+    <?php
+        $server = explode(".", $_SERVER['HTTP_HOST']);
+
+        if($server[0] === 'dev-smc') {
+            echo "<style>
+                    body {
+                        background-color: #750909 !important;
+                    }
+                    
+                    .account-pages {
+                        background-color: #750909 !important;
+                    }
+                </style>";
+        }
+    ?>
 </head>
 
 

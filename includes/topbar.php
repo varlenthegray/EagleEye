@@ -12,7 +12,7 @@ switch($_SERVER['SCRIPT_NAME']) {
 
 <!-- Navigation Bar-->
 <header id="topnav">
-    <div class="topbar-main">
+    <div class="topbar-main hidden-print">
         <div class="container">
 
             <!-- LOGO -->

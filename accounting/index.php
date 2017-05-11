@@ -14,9 +14,9 @@ require '../includes/header_end.php';
         <div class="card-box">
             <div class="row">
                 <div class="col-md-12">
-                    <h4>Timecard Reporting</h4>
+                    <h4 class="hidden-print">Timecard Reporting</h4>
 
-                    <div class="col-md-1">
+                    <div class="col-md-1 hidden-print">
                         <fieldset class="form-group">
                             <label for="employee">Employee</label>
                             <select name="employee" id="employee" class="form-control">
@@ -33,14 +33,14 @@ require '../includes/header_end.php';
                         </fieldset>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-4 hidden-print">
                         <div class="form-group">
                             <label for="date_range">Date Range</label>
                             <input class="form-control input-daterange-datepicker" type="text" name="date_range" id="date_range">
                         </div>
                     </div>
 
-                    <div class="col-md-1">
+                    <div class="col-md-1 hidden-print">
                         <button type="button" class="btn btn-primary waves-effect waves-light w-xs" id="search" name="search" style="margin-top: 20px;">Search</button>
                     </div>
 

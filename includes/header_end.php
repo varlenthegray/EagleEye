@@ -47,6 +47,26 @@
     <script>
         var userTZ = '<?php echo $_SESSION['userInfo']['timezone']; ?>';
     </script>
+
+    <?php
+        $server = explode(".", $_SERVER['HTTP_HOST']);
+
+        if($server[0] === 'dev-smc') {
+            echo "<style>
+                        body {
+                            background-color: #750909 !important;
+                        }
+                        
+                        .account-pages {
+                            background-color: #750909 !important;
+                        }
+                        
+                        #topnav .topbar-main {
+                            background-color: #750909 !important;
+                        }
+                    </style>";
+        }
+    ?>
 </head>
 
 <body>
