@@ -5,59 +5,76 @@ include_once ("../../ondemand/shopfloor/job_functions.php");
 switch($_REQUEST['action']) {
     case 'get_op_info':
         $id = sanitizeInput($_REQUEST['opID']);
+        $opInfo = $_REQUEST['opInfo'];
 
-        $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
-
-        if($qry->num_rows === 1) {
+        if(!(bool)$opInfo['always_visible']) {
+            $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
             $output = $qry->fetch_assoc();
 
             echo json_encode($output);
         } else {
-            $op_queue = $qry->fetch_assoc();
+            $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'");
+            $output = $admin_qry->fetch_assoc();
 
-            $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$op_queue['']}'");
-
-            if($admin_qry->num_rows === 1) {
-                $output = $admin_qry->fetch_assoc();
-
-                echo json_encode($output);
-            }
+            echo json_encode($output);
         }
 
         break;
     case 'update_start_job':
         $id = sanitizeInput($_POST['id']);
+        $opInfo = $_REQUEST['opInfo'];
 
-        $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
+        if($opInfo['department'] !== 'Non-Billable') {
+            $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
 
-        if($qry->num_rows > 0) {
-            $results = $qry->fetch_assoc();
+            if($qry->num_rows > 0) {
+                $results = $qry->fetch_assoc();
 
-            $changes = null;
+                $changes = null;
 
-            if($results['start_time'] === null) {
-                if($dbconn->query("UPDATE op_queue SET active = TRUE, start_time = UNIX_TIMESTAMP() WHERE id = '$id'")) {
-                    $changes = ["Active"=>TRUE, "Start Time"=>time()];
-                    $final_changes = json_encode($changes);
+                if($results['start_time'] === null) {
+                    if($dbconn->query("UPDATE op_queue SET active = TRUE, start_time = UNIX_TIMESTAMP() WHERE id = '$id'")) {
+                        $changes = ["Active"=>TRUE, "Start Time"=>time()];
+                        $final_changes = json_encode($changes);
 
-                    if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())"))
-                        echo "success";
-                    else
+                        if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())"))
+                            echo "success";
+                        else
+                            dbLogSQLErr($dbconn);
+                    } else {
                         dbLogSQLErr($dbconn);
+                    }
                 } else {
-                    dbLogSQLErr($dbconn);
+                    if($dbconn->query("UPDATE op_queue SET active = TRUE, resumed_time = UNIX_TIMESTAMP() WHERE id = '$id'")) {
+                        $changes = ["Active"=>TRUE, "Resumed Time"=>time()];
+                        $final_changes = json_encode($changes);
+
+                        if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())"))
+                            echo "success - resumed";
+                        else
+                            dbLogSQLErr($dbconn);
+                    } else {
+                        dbLogSQLErr($dbconn);
+                    }
                 }
             } else {
-                if($dbconn->query("UPDATE op_queue SET active = TRUE, resumed_time = UNIX_TIMESTAMP() WHERE id = '$id'")) {
-                    $changes = ["Active"=>TRUE, "Resumed Time"=>time()];
-                    $final_changes = json_encode($changes);
+                $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'");
 
-                    if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())"))
-                        echo "success - resumed";
-                    else
-                        dbLogSQLErr($dbconn);
-                } else {
-                    dbLogSQLErr($dbconn);
+                if($admin_qry->num_rows > 0) {
+                    $admin_results = $admin_qry->fetch_assoc();
+
+                    if($admin_results['department'] === 'Admin') {
+                        $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP())");
+
+                        $inserted_id = $dbconn->insert_id;
+
+                        $changes = ["Active"=>TRUE, "Start Time"=>time()];
+                        $final_changes = json_encode($changes);
+
+                        $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())");
+
+                        echo "success";
+                    }
                 }
             }
         } else {
@@ -88,28 +105,73 @@ switch($_REQUEST['action']) {
         break;
     case 'display_job_queue':
         $queue = sanitizeInput($_REQUEST['queue']);
+        $external_brackets = ['Non-Billable'];
 
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.* 
+        if(in_array($queue, $external_brackets)) {
+            $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND department = 'Non-Billable'");
+
+            if($op_queue_qry->num_rows > 0) {
+                while($op_queue = $op_queue_qry->fetch_assoc()) {
+                    $id = $op_queue['id'];
+                    $department = $op_queue['responsible_dept'];
+                    $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+                    $release_date = date(DATE_DEFAULT, $op_queue['created']);
+                    $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
+                    $op_info_payload = json_encode($op_info);
+
+                    echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
+                    echo "  <td>Non-Billable</td>";
+                    echo "  <td>$department</td>";
+                    echo "  <td>$operation</td>";
+                    echo "  <td>Now</td>";
+                    echo "  <td>&nbsp;</td>";
+                    echo "</tr>";
+                }
+            }
+        } else {
+            $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.* 
           FROM op_queue JOIN operations ON op_queue.operation_id = operations.id 
-          WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue';");
+          WHERE (active = FALSE AND completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue');");
 
-        if($op_queue_qry->num_rows > 0) {
-            while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $id = $op_queue['queueID'];
-                $sonum = $op_queue['so_parent'] . "-" . $op_queue['room'];
-                $department = $op_queue['responsible_dept'];
-                $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
-                $release_date = date(DATE_DEFAULT, $op_queue['created']);
-                $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept']];
-                $op_info_payload = json_encode($op_info);
+            if($op_queue_qry->num_rows > 0) {
+                while($op_queue = $op_queue_qry->fetch_assoc()) {
+                    $id = $op_queue['queueID'];
+                    $sonum = $op_queue['so_parent'] . "-" . $op_queue['room'];
+                    $department = $op_queue['responsible_dept'];
+                    $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+                    $release_date = date(DATE_DEFAULT, $op_queue['created']);
+                    $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
+                    $op_info_payload = json_encode($op_info);
 
-                echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
-                echo "  <td>$sonum</td>";
-                echo "  <td>$department</td>";
-                echo "  <td>$operation</td>";
-                echo "  <td>$release_date</td>";
-                echo "  <td>&nbsp;</td>";
-                echo "</tr>";
+                    echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
+                    echo "  <td>$sonum</td>";
+                    echo "  <td>$department</td>";
+                    echo "  <td>$operation</td>";
+                    echo "  <td>$release_date</td>";
+                    echo "  <td>&nbsp;</td>";
+                    echo "</tr>";
+                }
+            }
+
+            $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND responsible_dept = '$queue' AND department != 'Non-Billable'");
+
+            if($op_queue_qry->num_rows > 0) {
+                while($op_queue = $op_queue_qry->fetch_assoc()) {
+                    $id = $op_queue['id'];
+                    $department = $op_queue['responsible_dept'];
+                    $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+                    $release_date = date(DATE_DEFAULT, $op_queue['created']);
+                    $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
+                    $op_info_payload = json_encode($op_info);
+
+                    echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
+                    echo "  <td>---------</td>";
+                    echo "  <td>$department</td>";
+                    echo "  <td>$operation</td>";
+                    echo "  <td>Now</td>";
+                    echo "  <td>&nbsp;</td>";
+                    echo "</tr>";
+                }
             }
         }
 

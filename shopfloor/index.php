@@ -190,9 +190,7 @@ if(!empty($_GET['action']))
     var jobInterval;
     var activeJobID;
     var queueJobID;
-
-    updateActiveJobs();
-    updateQueuedJobs();
+    var opInfo;
 
     function updateActiveJobs() {
         $.post("/ondemand/shopfloor/job_actions.php?action=display_active_jobs", function(data) { // grab the latest information
@@ -211,6 +209,9 @@ if(!empty($_GET['action']))
         });
     }
 
+    updateActiveJobs();
+    updateQueuedJobs();
+
     $("#clock_out").on("click", function() {
         $.post("/ondemand/shopfloor/login_actions.php?action=clock_out", function(data) {
             if(data === 'success') {
@@ -228,10 +229,9 @@ if(!empty($_GET['action']))
         .on("click", ".queue-op-start", function() {
             var opClicked = $(this);
             queueJobID = $(this).data("op-id");
+            opInfo = $(this).data("op-info");
 
-            console.log("Job ID: " + queueJobID);
-
-            $.post("/ondemand/shopfloor/job_actions.php?action=get_op_info", {opID: queueJobID}, function(data) {
+            $.post("/ondemand/shopfloor/job_actions.php?action=get_op_info", {opID: queueJobID, opInfo: opInfo}, function(data) {
                 if(data !== '') {
                     var finalNotes;
                     var jobInfo = JSON.parse(data);
@@ -292,7 +292,7 @@ if(!empty($_GET['action']))
             });
         })
         .on("click", "#start_job", function() {
-            $.post("/ondemand/shopfloor/job_actions.php?action=update_start_job", {id: queueJobID}, function(data) {
+            $.post("/ondemand/shopfloor/job_actions.php?action=update_start_job", {id: queueJobID, opInfo: opInfo}, function(data) {
                 if(data === 'success') {
                     updateActiveJobs();
                     updateQueuedJobs();
