@@ -7,7 +7,7 @@ switch($_REQUEST['action']) {
             global $dbconn;
             $output = '';
 
-            $qry = $dbconn->query("SELECT * FROM operations WHERE department = '$bracket' ORDER BY op_id ASC");
+            $qry = $dbconn->query("SELECT * FROM operations WHERE department = '$bracket' AND always_visible = FALSE ORDER BY op_id ASC");
 
             if ($qry->num_rows > 0) {
                 while ($result = $qry->fetch_assoc()) {

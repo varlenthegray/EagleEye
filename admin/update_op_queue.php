@@ -1,6 +1,12 @@
 <?php
 require_once ("../includes/header_start.php");
 
+if($_GET['action'] === 'create_cols') {
+    $dbconn->query("ALTER TABLE devsmc.op_queue ADD active_employees VARCHAR(255) NULL");
+    $dbconn->query("ALTER TABLE devsmc.op_queue ADD started_by INT(11) NULL");
+    $dbconn->query("ALTER TABLE devsmc.op_queue ADD completed_by INT(11) NULL");
+}
+
 $op_queue_qry = $dbconn->query("SELECT * FROM op_queue");
 
 if($op_queue_qry->num_rows > 0) {
@@ -41,7 +47,7 @@ if($op_queue_qry->num_rows > 0) {
 
                     $active_emp = json_encode($last_edited);
 
-                    $dbconn->query("UPDATE op_queue SET started_by = '$last_edited', active_employees = '$active_emp'");
+                    $dbconn->query("UPDATE op_queue SET started_by = '$last_edited', active_employees = '$active_emp' WHERE id = '{$op_queue['id']}'");
 
                     echo "Updated operation {$op_queue['id']} with Started By as $last_edited and active employees as $active_emp.<br />";
                 } else {

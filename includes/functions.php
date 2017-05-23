@@ -19,7 +19,7 @@ HEREDOC;
 function dbLogSQLErr($db, $toast = true) {
     $sqlerror = $db->real_escape_string($db->error);
 
-    if($qry = $db->query("INSERT INTO log (message, time, ref_page, type) VALUES ('$sqlerror', NOW(), '{$_SERVER['REQUEST_URI']}', 1")) {
+    if($qry = $db->query("INSERT INTO log_error (message, time, ref_page, type) VALUES ('$sqlerror', NOW(), '{$_SERVER['REQUEST_URI']}', 1)")) {
         $id = $db->insert_id;
 
         if(!$toast)
@@ -42,7 +42,7 @@ function sanitizeInput($input, $db = '') {
 // log a debug code
 function dbLogDebug($code) {
     global $dbconn;
-    $dbconn->query("INSERT INTO debug_log (time, message) VALUES (NOW(), '$code')");
+    $dbconn->query("INSERT INTO log_debug (time, message) VALUES (NOW(), '$code')");
 }
 
 function outputPHPErrs() {

@@ -22,10 +22,10 @@ if(!empty($_GET['action']))
         <div class="card-box" style="min-height: 511px;">
             <div class="row">
                 <div class="col-md-12">
-                    <h4 class="pull-left">Active Operations for
+                    <h4 class="pull-left"><label for="active_ops_view">Active Operations for</label>
                         <select id="active_ops_view" name="active_ops_view">
                             <?php
-                                echo "<option value='{$_SESSION['shop_user']['id']}'>{$_SESSION['shop_user']['name']}</option>";
+                                echo "<option value='self'>{$_SESSION['shop_user']['name']}</option>";
 
                                 $depts = json_decode($_SESSION['shop_user']['department']);
 
@@ -38,14 +38,14 @@ if(!empty($_GET['action']))
 
                     <h4 id="date-time" class="pull-right"></h4>
 
-                    <table class="tablesaw table">
+                    <table class="tablesaw table" data-tablesaw-mode="swipe" data-tablesaw-sortable>
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-priority="persist">Sales Order ID</th>
-                            <th scope="col">Department</th>
-                            <th scope="col">Operation</th>
-                            <th scope="col">Release Date</th>
-                            <th scope="col">Operation Time</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">Sales Order ID</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Department</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Operation</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Release Date</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="5">Operation Time</th>
                         </tr>
                         </thead>
                         <tbody id="active_jobs_table">
@@ -56,13 +56,20 @@ if(!empty($_GET['action']))
 
             <div class="row">
                 <div class="col-md-6">
-                    <h4>Queue for
+                    <h4><label for="viewing_queue">Queue for</label>
                         <select name="viewing_queue" id="viewing_queue">
                             <?php
                             $deptartments = json_decode($_SESSION['shop_user']['department']);
+                            $default = $_SESSION['shop_user']['default_queue'];
 
                             foreach($deptartments as $department) {
-                                echo "<option value='$department'>$department</option>";
+                                if($department === $default) {
+                                    $selected = 'selected';
+                                } else {
+                                    $selected = '';
+                                }
+
+                                echo "<option value='$department' $selected>$department</option>";
                             }
                             ?>
                         </select>
@@ -72,14 +79,14 @@ if(!empty($_GET['action']))
 
             <div class="row">
                 <div class="col-md-12">
-                    <table class="tablesaw table" id="queue_jobs_table">
+                    <table class="tablesaw table" data-tablesaw-mode="swipe" data-tablesaw-sortable>
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-priority="persist">Sales Order ID</th>
-                            <th scope="col">Department</th>
-                            <th scope="col">Operation</th>
-                            <th scope="col">Release Date</th>
-                            <th scope="col">Operation Time</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">Sales Order ID</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Department</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Operation</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Release Date</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="5">Operation Time</th>
                         </tr>
                         </thead>
                         <tbody id="job_queue_table">
@@ -106,76 +113,13 @@ if(!empty($_GET['action']))
 
     <!-- modal -->
     <div id="modalStartJob" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalStartJobLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="modalStartJobTitle">Start operation <span id="modalStartJobInnerTitle"></span> at <span id="start_job_time"></span>?</h4>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        <span id="start_job_originally_started">Originally Started: ?</span>
-                    </p>
-
-                    <p>
-                        <!--<span id="start_job_qty">Quantity to Complete: ?</span><br/>-->
-                        <span id="start_job_operation">Operation: ???</span><br />
-                        <span id="start_job_partid">Part ID: ???</span><br />
-                        <span id="start_job_status">Status: ???</span><br />
-                        <span id="start_job_notes">Notes: ???</span>
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="?">Start Job</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
+        <!-- for flexibility, I'm going to display this via AJAX data return -->
     </div>
     <!-- /.modal -->
 
     <!-- modal -->
     <div id="modalUpdateJob" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalUpdateJob" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title" id="modalUpdateJobHeader">Update ???</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <fieldset class="form-group">
-                                <label for="qtyCompleted">Quantity Completed</label>
-                                <input type="text" class="form-control" id="qtyCompleted" name="qtyComplete" placeholder="???"  data-toggle='tooltip' data-placement='top'>
-                            </fieldset>
-
-                            <fieldset class="form-group">
-                                <input type="radio" name="completionCode" id="completion_code1" value="Complete">
-                                <label for="completion_code1">Completed</label>
-                                <br />
-                                <input type="radio" name="completionCode" id="completion_code2" value="Partially Complete">
-                                <label for="completion_code2">Partially Completed</label>
-                                <br />
-                                <input type="radio" name="completionCode" id="completion_code3" value="Rework">
-                                <label for="completion_code3">Rework</label>
-                            </fieldset>
-                        </div>
-
-                        <div class="col-md-9">
-                            <fieldset class="form-group">
-                                <label for="notes">Notes</label>
-                                <textarea class="form-control" id="notes" name="notes" style="height: 107px" placeholder="Any notes related to the job?"></textarea>
-                            </fieldset>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary waves-effect waves-light" id="save_job_update">Complete</button>
-                </div>
-            </div>
-        </div>
+        <!-- same here, displayed via AJAX -->
     </div><!-- /.modal -->
 </div>
 
@@ -193,7 +137,9 @@ if(!empty($_GET['action']))
     var opInfo;
 
     function updateActiveJobs() {
-        $.post("/ondemand/shopfloor/job_actions.php?action=display_active_jobs", function(data) { // grab the latest information
+        var active = $("#active_ops_view").val();
+
+        $.post("/ondemand/shopfloor/job_actions.php?action=display_active_jobs", {view: active}, function(data) { // grab the latest information
             $("#active_jobs_table").html(data); // display that information in the table
         });
     }
@@ -227,144 +173,138 @@ if(!empty($_GET['action']))
 
     $("body")
         .on("click", ".queue-op-start", function() {
-            var opClicked = $(this);
             queueJobID = $(this).data("op-id");
             opInfo = $(this).data("op-info");
 
             $.post("/ondemand/shopfloor/job_actions.php?action=get_op_info", {opID: queueJobID, opInfo: opInfo}, function(data) {
-                if(data !== '') {
-                    var finalNotes;
-                    var jobInfo = JSON.parse(data);
-                    var opInfo = opClicked.data("op-info");
-                    var longOpID = opClicked.data("long-op-id");
-                    var longPartID = opClicked.data("long-part-id");
-
-                    if(jobInfo.department === 'Admin') {
-                        var opTitle = jobInfo.op_id + "-" + jobInfo.job_title;
-
-                        $("#start_job_time").html(moment().format("LT"));
-                        $('#modalStartJobInnerTitle').html(opTitle);
-                        $("#start_job_status").html("Admin Operation");
-                        $("#start_job_originally_started").html("");
-                        $("#start_job_operation").html("Operation: <b>" + opTitle + "</b>");
-                        $("#start_job_partid").html("Part ID: <b>" + opTitle + "</b>");
-
-                        $("#start_job_notes").html("This is a task unrelated to a job specifically.");
-
-                        $("#modalStartJob").modal();
-                    } else {
-                        $("#start_job_time").html(moment().format("LT"));
-
-                        if(jobInfo.start_time !== null) {
-                            var rework;
-
-                            if(jobInfo.rework === 1) {
-                                rework = "<b>Yes</b>";
-                            } else
-                                rework = "No";
-
-                            $("#start_job_status").html("Rework: <b>" + rework + "</b>");
-                            $("#start_job_originally_started").html("Originally started <b>" + moment(jobInfo.start_time * 1000).format("LLLL") + "</b>");
-                        } else {
-                            $("#start_job_status").html("Status: <b>New</b>");
-                            $("#start_job_originally_started").html("New Operation");
-                        }
-
-                        $('#modalStartJobInnerTitle').html(longOpID);
-                        //("#start_job_qty").html("Quantity to complete: <b>" + jobInfo.qty_requested + "</b>"); // NOT SETTABLE FOR NOW, DO NOT DISPLAY!
-                        $("#start_job_operation").html("Operation: <b>" + opInfo.job_title + "</b>");
-                        $("#start_job_partid").html("Part ID: <b>" + longPartID + "</b>");
-
-
-                        if(jobInfo.notes === '' || jobInfo.notes === null ) {
-                            finalNotes = "None";
-                        } else {
-                            finalNotes = jobInfo.notes;
-                        }
-
-                        $("#start_job_notes").html("Notes: <b>" + finalNotes + "</b>");
-
-                        $("#start_job").attr("data-startid", jobInfo.id);
-
-                        $("#modalStartJob").modal();
-                    }
-                }
+                $("#modalStartJob").html(data);
+            }).done(function() {
+                $("#modalStartJob").modal();
+            }).fail(function() { // if we're receiving a header error
+                $("body").append(data); // echo an error and log it
             });
         })
         .on("click", "#start_job", function() {
-            $.post("/ondemand/shopfloor/job_actions.php?action=update_start_job", {id: queueJobID, opInfo: opInfo}, function(data) {
-                if(data === 'success') {
-                    updateActiveJobs();
-                    updateQueuedJobs();
+            var other_notes_field = $("#other_notes_field").val();
+            var notes_field = $("#notes_field").val();
 
-                    displayToast("success", "Successfully started operation.", "Operation Started");
+            if($("#other_subtask").is(":checked")) {
+                if(other_notes_field.length >= 3) {
+                    $.post("/ondemand/shopfloor/job_actions.php?action=update_start_job", {id: queueJobID, opInfo: opInfo, subtask: "Other", notes: other_notes_field}, function(data) {
+                        if(data === 'success') {
+                            updateActiveJobs();
+                            updateQueuedJobs();
 
-                    $("#modalStartJob").modal('hide');
-                } else if(data === 'success - resumed') {
-                    updateActiveJobs();
-                    updateQueuedJobs();
+                            displayToast("success", "Successfully started operation.", "Operation Started");
 
-                    displayToast("success", "Successfully resumed operation.", "Operation Resumed");
+                            $("#modalStartJob").modal('hide');
+                        } else if(data === 'success - resumed') {
+                            updateActiveJobs();
+                            updateQueuedJobs();
 
-                    $("#modalStartJob").modal('hide');
+                            displayToast("success", "Successfully resumed operation.", "Operation Resumed");
+
+                            $("#modalStartJob").modal('hide');
+                        } else {
+                            $("body").append(data);
+                        }
+                    });
                 } else {
-                    $("body").append(data);
+                    displayToast("error", "Enter notes in before continuing.", "Notes Required");
                 }
-            });
-    })
-        .on("click", ".update-active-job", function() {
-            var opClicked = $(this);
-
-            activeJobID = $(this).data("op-id");
-
-            $.post("/ondemand/shopfloor/job_actions.php?action=get_op_info", {opID: activeJobID}, function(data) {
-                var jobInfo = $.parseJSON(data);
-                var opInfo = opClicked.data("op-info");
-                var longOpID = opClicked.data("long-op-id");
-                var longPartID = opClicked.data("long-part-id");
-
-                $("#modalUpdateJobHeader").html("Update operation " + longOpID + " <i>(" + opInfo.job_title + ")</i>");
-                //$("#qtyCompleted").val(jobInfo.qty_requested).attr("data-original-title", "Requested qty: " + jobInfo.qty_requested); // Don't have a quantity requested yet!
-                $("#qtyCompleted").val("1");
-                $("input[name='completionCode']").prop("checked", false);
-                $("#notes").val("");
-
-                $("#modalUpdateJob").modal();
-            })
-    })
-        .on("click", "#save_job_update", function() {
-            if(!$("input[name='completionCode']").is(':checked')) {
-                alert("Please select the completion code before marking this operation complete.");
             } else {
-                $.post("/ondemand/shopfloor/job_actions.php?action=update_active_job", {opID: activeJobID, notes: $("#notes").val(), qty: $("#qtyCompleted").val(), status: $("input[name='completionCode']:checked").val()}, function(data) {
-                    if(data === 'success' ) {
-                        displayToast("success", "Operation has been closed.", "Operation closed");
-                        $("#modalUpdateJob").modal('hide');
+                var subtask = $('input[name=nonBillableTask]:checked').val();
 
+                $.post("/ondemand/shopfloor/job_actions.php?action=update_start_job", {id: queueJobID, opInfo: opInfo, subtask: subtask, notes: notes_field}, function(data) {
+                    if(data === 'success') {
                         updateActiveJobs();
                         updateQueuedJobs();
-                    } else if(data === 'success - partial') {
-                        displayToast("info", "Operation has been marked as partially completed.", "Partially Closed Operation");
-                        $("#modalUpdateJob").modal('hide');
 
+                        displayToast("success", "Successfully started operation.", "Operation Started");
+
+                        $("#modalStartJob").modal('hide');
+                    } else if(data === 'success - resumed') {
                         updateActiveJobs();
                         updateQueuedJobs();
-                    } else if(data === 'success - rework') {
-                        displayToast("info", "Operation has been sent to the previous department.", "Operation flagged for Rework");
-                        $("#modalUpdateJob").modal('hide');
 
-                        updateActiveJobs();
-                        updateQueuedJobs();
+                        displayToast("success", "Successfully resumed operation.", "Operation Resumed");
+
+                        $("#modalStartJob").modal('hide');
                     } else {
                         $("body").append(data);
                     }
                 });
             }
+    })
+        .on("click", ".update-active-job", function() {
+            activeJobID = $(this).data("op-id");
+
+            $.post("/ondemand/shopfloor/job_actions.php?action=get_active_job", {opID: activeJobID}, function(data) {
+                $("#modalUpdateJob").html(data);
+            }).done(function() {
+                $("#modalUpdateJob").modal();
+            });
+    })
+        .on("click", "#save_job_update", function() {
+            var nb = $(this).data("nb");
+
+            if(nb) {
+                $.post("/ondemand/shopfloor/job_actions.php?action=update_active_job", {opID: activeJobID, notes: $("#notes").val(), nb: 'true'}, function(data) {
+                    updateActiveJobs();
+                    updateQueuedJobs();
+
+                    $("body").append(data);
+                    $("#modalUpdateJob").modal('hide');
+                });
+            } else {
+                if(!$("input[name='completionCode']").is(':checked')) {
+                    displayToast("error", "Please select a completion code before submission.", "No completion code");
+                    $("input[name='completionCode']").focus();
+                } else {
+                    $.post("/ondemand/shopfloor/job_actions.php?action=update_active_job", {opID: activeJobID, nb: 'false', notes: $("#notes").val(), qty: $("#qtyCompleted").val(), status: $("input[name='completionCode']:checked").val()}, function(data) {
+                        updateActiveJobs();
+                        updateQueuedJobs();
+
+                        $("body").append(data);
+                        console.log(data);
+                        $("#modalUpdateJob").modal('hide');
+                    });
+                }
+            }
         })
         .on("change", "#viewing_queue", function() {
             updateQueuedJobs();
+        })
+        .on("change", "input[name='nonBillableTask']", function() {
+            if($(this).prop("id") === 'other_subtask') {
+                $("#other_notes_section").show();
+                $("#other_notes_field").focus();
+            } else {
+                $("#other_notes_section").hide();
+            }
+        })
+        .on("keyup", "#other_notes_field", function() {
+            if($(this).val().length >= 3) {
+                $("#other_notes_field").removeClass("form-control-danger").addClass("form-control-success");
+                $("#other_notes_section").removeClass("has-danger").addClass("has-success");
+            } else {
+                $("#other_notes_field").removeClass("form-control-success").addClass("form-control-danger");
+                $("#other_notes_section").removeClass("has-success").addClass("has-danger");
+            }
+        })
+        .on("change", "#active_ops_view", function() {
+            updateActiveJobs();
+        })
+        .on("click", "#add_me", function() {
+            var id = $(this).data("taskid");
+
+            $.post("/ondemand/shopfloor/job_actions.php?action=add_me", {id: id}, function(data) {
+                $('body').append(data);
+                $("#modalUpdateJob").modal('hide');
+            });
         });
 
+    // just the modal timer, we're recording this upon execution of job so this is for "show" only
     $("#modalStartJob").on("show.bs.modal", function() {
         jobInterval = setInterval(function() {
             $("#start_job_time").html(moment().format("LT"));
@@ -375,13 +315,18 @@ if(!empty($_GET['action']))
 
     $("#date-time").html(moment().format("LLLL"));
 
+    // global time, it's a clock... what do you expect it to do?
     setInterval(function() {
         $("#date-time").html(moment().format("LLLL"));
     }, 1000);
 
+    // display the calendar... or... load it... like it says
     loadCalendarPane();
 
-    setInterval(function() { // reatime(ish) updating of job information, perhaps migrate this to Node.js at some point
+    // real-time updating of the jobs and active queue, node.js feels like overkill right now but could be migrated to that at some point
+    // note: attempting to keep codebase available to standard "web" objects only, even if that means additional refreshes sent to the server/strain
+    // yes, it's archaic, but it's totally viable and really not that bad, right? RIGHT?!
+    setInterval(function() {
         updateQueuedJobs();
         updateActiveJobs();
     }, 5000);

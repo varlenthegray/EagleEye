@@ -436,7 +436,7 @@ require '../includes/header_end.php';
                                     global $dbconn;
                                     $output = '';
 
-                                    $qry = $dbconn->query("SELECT * FROM operations WHERE department = '$bracket' ORDER BY op_id ASC");
+                                    $qry = $dbconn->query("SELECT * FROM operations WHERE department = '$bracket' AND always_visible = FALSE ORDER BY op_id ASC");
 
                                     if ($qry->num_rows > 0) {
                                         while ($result = $qry->fetch_assoc()) {
@@ -695,7 +695,6 @@ require '../includes/header_end.php';
         $.post("/ondemand/livesearch/search_results.php?search=room", {find: sonum}, function(data) {
             $("#room_search_table").html(data);
             $("#room_results_row").show();
-            $("#individual_room_info").hide();
             $("#manage_bracket").hide();
         });
     }
@@ -839,6 +838,8 @@ require '../includes/header_end.php';
                 $("body").append(data);
             }
         });
+        
+        displaySO(active_so_num);
     }
 
     $("#sales_bracket_adjustments").multiSelect({

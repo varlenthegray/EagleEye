@@ -6,7 +6,7 @@ require 'includes/header_account.php'; // initial header for the page
 if($_REQUEST['action'] === 'login') { // if we're trying to log in
     $username = $dbconn->real_escape_string($_REQUEST['username']); // get username
 
-    $user = $dbconn->query("SELECT * FROM user WHERE username = '$username'"); // fetch the username from the database
+    $user = $dbconn->query("SELECT * FROM user WHERE username = '$username' AND account_status = TRUE"); // fetch the username from the database
 
     if($user->num_rows === 1) { // grab the number of rows found, if it's 1, then we're good
         $result = $user->fetch_assoc(); // grab the user data itself
