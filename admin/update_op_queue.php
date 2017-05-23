@@ -2,9 +2,9 @@
 require_once ("../includes/header_start.php");
 
 if($_GET['action'] === 'create_cols') {
-    $dbconn->query("ALTER TABLE devsmc.op_queue ADD active_employees VARCHAR(255) NULL");
-    $dbconn->query("ALTER TABLE devsmc.op_queue ADD started_by INT(11) NULL");
-    $dbconn->query("ALTER TABLE devsmc.op_queue ADD completed_by INT(11) NULL");
+    $dbconn->query("ALTER TABLE op_queue ADD active_employees VARCHAR(255) NULL");
+    $dbconn->query("ALTER TABLE op_queue ADD started_by INT(11) NULL");
+    $dbconn->query("ALTER TABLE op_queue ADD completed_by INT(11) NULL");
 }
 
 $op_queue_qry = $dbconn->query("SELECT * FROM op_queue");
