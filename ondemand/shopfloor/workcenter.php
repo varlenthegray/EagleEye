@@ -195,11 +195,25 @@ HEREDOC;
                     // generate the SO ID
                     $so_id = strtoupper($room['so_parent'] . "-" . $room['room']);
 
+                    // obtain the list of individuals working
+                    $active_emp = json_decode($op_queue['active_employees']);
+                    $emp_list = '';
+
+                    foreach($active_emp as $emp) {
+                        $name_qry = $dbconn->query("SELECT name FROM user WHERE id = '$emp'");
+                        $name = $name_qry->fetch_assoc();
+
+                        $emp_list .= "{$name['name']}, ";
+                    }
+
+                    $emp_list = rtrim($emp_list, ", ");
+
                     echo "<tr class='cursor-hand queue-op-start' data-op-id='{$op_queue['id']}' data-op-info='$operation_payload'
                                             data-long-op-id='{$ind_op['responsible_dept']}' data-long-part-id='$so_id'>";
                     echo "  <td>$so_id</td>";
                     echo "  <td>{$ind_op['responsible_dept']}</td>";
                     echo "  <td>{$ind_op['op_id']}: {$ind_op['job_title']}</td>"; // the operation title itself, easy!
+                    echo "  <td>$emp_list</td>";
                     echo "  <td id='{$op_queue['start_time']}'></td>";
                     echo "</tr>";
 

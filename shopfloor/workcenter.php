@@ -41,10 +41,11 @@ require '../includes/header_end.php';
                     <table class="tablesaw table m-b-0" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO ID</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Department</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Operation</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Started</th>
+                            <th style="width: 10%;" scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO ID</th>
+                            <th style="width: 20%;" scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Department</th>
+                            <th style="width: 30%;" scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Operation</th>
+                            <th style="width: 20%;" scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Individual</th>
+                            <th style="width: 20%;" scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Started</th>
                         </tr>
                         </thead>
                         <tbody id="active_jobs_table"></tbody>
