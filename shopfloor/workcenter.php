@@ -3,76 +3,67 @@ require '../includes/header_start.php';
 require '../includes/header_end.php';
 ?>
 
-<!-- tablesaw-->
-<link href="/assets/plugins/tablesaw/dist/tablesaw.css" rel="stylesheet" type="text/css"/>
-
 <!-- Date & Clock -->
 <link href="/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css"/>
 
 <div class="row">
     <div class="col-md-4">
-        <div class="card-box">
-            <div class="row">
-                <div class="col-md-12 workcenter-table">
-                    <h4>Jobs in Queue</h4>
+        <div class="card-box table-responsive">
+            <div class="col-md-12 workcenter-table">
+                <h4>Jobs in Queue</h4>
 
-                     <table class="tablesaw table m-b-0 tablesaw-sortable" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap id="jobs_in_queue_mt">
-                        <thead>
+                 <table id="jobs_in_queue_global_table" class="table table-striped table-bordered" width="100%">
+                    <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO ID</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Department</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Operation</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Release Date</th>
+                            <th>SO#</th>
+                            <th>Department</th>
+                            <th>Operation</th>
+                            <th>Release Date</th>
                         </tr>
-                        </thead>
-                        <tbody id="jiq_table"></tbody>
-                    </table>
-                </div>
+                    </thead>
+                    <tbody id="jiq_table"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <div class="col-md-4">
-        <div class="card-box">
-            <div class="row">
-                <div class="col-md-12">
-                    <h4>Active Jobs</h4>
+        <div class="card-box table-responsive">
+            <div class="col-md-12">
+                <h4>Active Jobs</h4>
 
-                    <table class="tablesaw table m-b-0" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
-                        <thead>
+                <table id="active_jobs_global_table" class="table table-striped table-bordered" width="100%">
+                    <thead>
                         <tr>
-                            <th style="width: 10%;" scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO ID</th>
-                            <th style="width: 20%;" scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Department</th>
-                            <th style="width: 30%;" scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Operation</th>
-                            <th style="width: 20%;" scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Individual</th>
-                            <th style="width: 20%;" scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Started</th>
+                            <th style="width: 10%;">SO#</th>
+                            <th style="width: 20%;">Department</th>
+                            <th style="width: 30%;">Operation</th>
+                            <th style="width: 20%;">Individual</th>
+                            <th style="width: 20%;">Started/Resumed</th>
                         </tr>
-                        </thead>
-                        <tbody id="active_jobs_table"></tbody>
-                    </table>
-                </div>
+                    </thead>
+                    <tbody id="active_jobs_table"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <div class="col-md-4">
-        <div class="card-box">
-            <div class="row">
-                <div class="col-md-12">
-                    <h4>Recently Completed Jobs</h4>
+        <div class="card-box table-responsive">
+            <div class="col-md-12">
+                <h4>Recently Completed Jobs</h4>
 
-                    <table class="tablesaw table m-b-0" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
-                        <thead>
+                <table id="recently_completed_jobs_global_table" class="table table-striped table-bordered" width="100%">
+                    <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO ID</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Department</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Operation</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Completed</th>
+                            <th>SO#</th>
+                            <th>Department</th>
+                            <th>Operation</th>
+                            <th>Completed</th>
                         </tr>
-                        </thead>
-                        <tbody id="recently_completed_table"></tbody>
-                    </table>
-                </div>
+                    </thead>
+                    <tbody id="recently_completed_table"></tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -84,43 +75,17 @@ require '../includes/header_end.php';
     <!-- /.modal -->
 </div>
 
-<!--Tablesaw-->
-<script src="/assets/plugins/tablesaw/dist/tablesaw.js"></script>
-<script src="/assets/plugins/tablesaw/dist/tablesaw-init.js"></script>
-
 <!-- Date & Clock picker -->
 <script src="/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
-
 
 <!-- Loading page content -->
 <script src="/ondemand/js/page_content_functions.js"></script>
 
 <script>
-    function updateJIQ() {
-        $.post("/ondemand/shopfloor/workcenter.php?action=display_jiq", function(data) {
-            $("#jiq_table").html(data);
-        });
-    }
-
-    function updateRecentlyCompleted() {
-        $.post("/ondemand/shopfloor/workcenter.php?action=display_recently_completed", function(data) {
-            $("#recently_completed_table").html(data);
-        });
-    }
-
-    function updateActiveJobs() {
-        $.post("/ondemand/shopfloor/workcenter.php?action=display_active_jobs", function(data) {
-            $("#active_jobs_table").html(data);
-        });
-    }
-
-    updateJIQ();
-    updateRecentlyCompleted();
-    updateActiveJobs();
-
     $("body")
         .on("click", ".wc-edit-queue", function() {
-            var id = $(this).data("op-id");
+            var id = $(this).attr("id");
+            console.log(id);
 
             $.post("/ondemand/shopfloor/workcenter.php?action=view_job_in_queue", {id: id}, function(data) {
                 $("#viewJobInfo").html(data).modal('show');
@@ -141,7 +106,7 @@ require '../includes/header_end.php';
 
             $("#viewJobInfo").modal('hide');
 
-            updateJIQ();
+            jiq_table.ajax.reload(null,false);
         });
 
     $("#job_started").datetimepicker({
@@ -162,11 +127,29 @@ require '../includes/header_end.php';
         }
     });
 
+    var jiq_table = $("#jobs_in_queue_global_table").DataTable({
+        "ajax": "/ondemand/shopfloor/workcenter.php?action=display_jiq",
+        "pageLength": 25,
+        "createdRow": function(row,data,dataIndex) {
+            $(row).addClass("cursor-hand wc-edit-queue");
+        }
+    });
+
+    var active_table = $("#active_jobs_global_table").DataTable({
+        "ajax": "/ondemand/shopfloor/workcenter.php?action=display_active_jobs",
+        "pageLength": 25
+    });
+
+    var completed_table = $("#recently_completed_jobs_global_table").DataTable({
+        "ajax": "/ondemand/shopfloor/workcenter.php?action=display_recently_completed",
+        "pageLength": 25
+    });
+
     setInterval(function() {
-        updateJIQ();
-        updateRecentlyCompleted();
-        updateActiveJobs();
-    }, 10000)
+        jiq_table.ajax.reload(null,false);
+        active_table.ajax.reload(null,false);
+        completed_table.ajax.reload(null,false);
+    }, 5000);
 </script>
 
 <?php 

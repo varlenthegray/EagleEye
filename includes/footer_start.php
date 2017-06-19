@@ -1,4 +1,3 @@
-
 <!-- Footer -->
 <footer class="footer text-right">
     <div class="container">
@@ -15,11 +14,7 @@
 </footer>
 <!-- End Footer -->
 
-
 </div> <!-- container -->
-
-
-
 
 <!-- Right Sidebar -->
 <div class="side-bar right-bar">
@@ -136,11 +131,7 @@
 </div>
 <!-- /Right-bar -->
 
-
-
 </div> <!-- End wrapper -->
-
-
 
 <script>
     var resizefunc = [];
@@ -162,17 +153,13 @@
 <script type="text/javascript" src="/assets/plugins/jquery-knob/excanvas.js"></script>
 <![endif]-->
 <script src="/assets/plugins/jquery-knob/jquery.knob.js"></script>
-
-
 <script type="text/javascript" src="/assets/plugins/multiselect/js/jquery.multi-select.js"></script>
 <!-- Peity chart js -->
 <script src="/assets/plugins/peity/jquery.peity.min.js"></script>
 
-
 <!-- App js -->
 <script src="/assets/js/jquery.core.js"></script>
 <script src="/assets/js/jquery.app.js"></script>
-
 
 <!-- Calendar -->
 <script src="/assets/plugins/fullcalendar/dist/fullcalendar.min.js"></script>

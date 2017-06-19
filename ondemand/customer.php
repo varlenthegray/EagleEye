@@ -21,14 +21,19 @@ switch($_GET['action']) {
         $project_mgr = sanitizeInput($_POST['new_project_manager'], $dbconn);
         $account_type = sanitizeInput($_POST['new_account_type'], $dbconn);
 
-        if($dbconn->query("INSERT INTO customer (sales_order_num, dealer_code, org_name, addr_1, addr_2, city, state, zip, pri_phone, alt_phone_1, alt_phone_2, pri_email, alt_email, project, project_manager, account_type) 
-          VALUES ('$so_num', '$dealer_code', '$org_name', '$addr1', '$addr2', '$city', '$state', '$zip', '$pri_phone', '$alt_phone1', '$alt_phone2', '$pri_email', '$alt_email', '$project', '$project_mgr', '$account_type')"))
-            echo "success";
-        else
-            dbLogSQLErr($dbconn);
+        $existing_so = $dbconn->query("SELECT * FROM customer WHERE sales_order_num = '$so_num'");
 
-        break;
+        if($existing_so->num_rows > 0) {
+            displayToast("error", "SO already exists. Please insert a different SO number.", "SO Already Exists");
+        } else {
+            if($dbconn->query("INSERT INTO customer (sales_order_num, dealer_code, org_name, addr_1, addr_2, city, state, zip, pri_phone, alt_phone_1, alt_phone_2, pri_email, alt_email, project, project_manager, account_type) 
+          VALUES ('$so_num', '$dealer_code', '$org_name', '$addr1', '$addr2', '$city', '$state', '$zip', '$pri_phone', '$alt_phone1', '$alt_phone2', '$pri_email', '$alt_email', '$project', '$project_mgr', '$account_type')"))
+                echo "success";
+            else
+                dbLogSQLErr($dbconn);
+        }
         
+        break;
     case 'update_customer':
         $sales_order_num = sanitizeInput($_POST['sales_order_num'], $dbconn);
         $project = sanitizeInput($_POST['project'], $dbconn);
@@ -62,20 +67,6 @@ switch($_GET['action']) {
         }
         
         break;
-
-    case 'add_button':
-        $qry = $dbconn->query("SELECT DISTINCT sales_order_num FROM customer ORDER BY sales_order_num DESC LIMIT 0,1");
-
-        if($qry->num_rows > 0) {
-            $result = $qry->fetch_assoc();
-
-            echo $result['sales_order_num'] + 1;
-        } else {
-            echo 1;
-        }
-
-        break;
-
     default:
         die();
         break;

@@ -23,10 +23,6 @@ function searchIt($db, $column, $table, $term) {
     echo "]";
 }
 
-if($search === 'cusonum') {
-
-}
-
 switch($search) {
     case "cusonum":
         searchIt($dbconn, "sales_order_num", "customer", $term);
@@ -42,6 +38,10 @@ switch($search) {
 
     case "cupm":
         searchIt($dbconn, "project_manager", "customer", $term);
+        break;
+
+    case "dealerid":
+        searchIt($dbconn, "dealer_id", "dealers", $term);
         break;
 
     default:

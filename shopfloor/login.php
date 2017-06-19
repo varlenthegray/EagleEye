@@ -1,6 +1,10 @@
 <?php
 require '../includes/header_start.php';
 require '../includes/header_end.php';
+
+require("../assets/php/composer/vendor/autoload.php"); // require carbon for date formatting, http://carbon.nesbot.com/
+
+use Carbon\Carbon; // prep carbon
 ?>
 
 <!-- tablesaw-->
@@ -15,16 +19,75 @@ require '../includes/header_end.php';
                         <thead>
                         <tr>
                             <th scope="col" data-tablesaw-priority="persist">Employee</th>
+                            <th scope="col" data-tablesaw-priority="2">Logged In Time</th>
+                            <th scope="col" data-tablesaw-priority="3">Current Operations</th>
+                            <th scope="col" data-tablesaw-priority="4">Time Logged In</th>
                         </tr>
                         </thead>
                         <tbody id="room_search_table">
                         <?php
-                        $qry = $dbconn->query("SELECT * FROM user");
+                        $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE");
 
                         while($result = $qry->fetch_assoc()) {
-                            echo "<tr class='cursor-hand' data-toggle='modal' data-target='#modalLogin' data-login-id='{$result['id']}' data-login-name='{$result['name']}'>";
-                            echo "<td>{$result['name']}</td>";
-                            echo "</tr>";
+                            if($result['id'] !== '16') {
+                                $last_login_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = {$result['id']} ORDER BY time_in DESC LIMIT 0,1");
+
+                                if($last_login_qry->num_rows > 0) {
+                                    $last_login = $last_login_qry->fetch_assoc();
+
+                                    if($last_login['time_in'] > strtotime("today")) {
+                                        $time = date(TIME_ONLY, $last_login['time_in']);
+                                    } else {
+                                        $time = date(DATE_DEFAULT, $last_login['time_in']);
+                                    }
+
+                                    $time_unix = $last_login['time_in'];
+                                } else {
+                                    $time = "Never";
+                                    $time_unix = null;
+                                }
+
+                                if(!empty($time_unix)) {
+                                    $today = mktime(0,0);
+
+                                    if($time_unix >= $today) {
+                                        $carbon_time = Carbon::createFromTimestamp($time_unix);
+                                        $time_in_display = $carbon_time->diffForHumans(null,true);
+                                    } else {
+                                        $time_in_display = "Hasn't logged in today";
+                                    }
+                                } else {
+                                    $time_in_display = "Never logged in";
+                                }
+
+                                $ops_qry = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active_employees LIKE '%\"{$result['id']}\"%'");
+
+                                $final_ops = '';
+
+                                if($ops_qry->num_rows > 0) {
+                                    while($ops = $ops_qry->fetch_assoc()) {
+                                        if(!empty($ops['so_parent']) && !empty($ops['room'])) {
+                                            $so_info = "{$ops['so_parent']}{$ops['room']} - ";
+                                        } else {
+                                            $so_info = null;
+                                        }
+
+                                        $operation = $so_info . $ops['op_id'] . ": " . $ops['job_title'];
+                                        $final_ops .= $operation . ", ";
+                                    }
+                                } else {
+                                    $final_ops = "None";
+                                }
+
+                                $final_ops = rtrim($final_ops, ", ");
+
+                                echo "<tr class='cursor-hand' data-toggle='modal' data-target='#modalLogin' data-login-id='{$result['id']}' data-login-name='{$result['name']}'>";
+                                echo "<td>{$result['name']}</td>";
+                                echo "<td>$time</td>";
+                                echo "<td>$final_ops</td>";
+                                echo "<td>$time_in_display</td>";
+                                echo "</tr>";
+                            }
                         }
                         ?>
                         </tbody>

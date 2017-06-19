@@ -3,664 +3,60 @@ require '../includes/header_start.php';
 require '../includes/header_end.php';
 ?>
 
-<!-- tablesaw-->
-<link href="/assets/plugins/tablesaw/dist/tablesaw.css" rel="stylesheet" type="text/css"/>
-
 <!-- Multi-select -->
 <link href="/assets/plugins/multiselect/css/multi-select.css" rel="stylesheet" type="text/css"/>
 
+<!-- tabulator -->
+<script type="text/javascript" src="/assets/plugins/tablesorter/jquery.tablesorter.min.js"></script>
+<link href="/assets/plugins/tablesorter/themes/blue/style.css" rel="stylesheet" type="text/css"/>
 
+<!-- Search results box -->
 <div class="row">
-    <!-- Left column -->
-    <div class="col-md-6" style="min-height: 240px;">
-        <div class="col-md-12">
-            <!-- Search box -->
+    <div class="col-md-12">
+        <div class="card-box" id="search_results_card">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card-box">
-                        <ul class="nav nav-tabs m-b-10" id="searchTabs" role="tablist">
-                            <li class="nav-item" id="search1_li">
-                                <a class="nav-link active" searchid="1" id="searchTab1" data-toggle="tab" href="#search1" role="tab" aria-controls="search1" aria-expanded="true">Search 1</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="search_add_tab" data-toggle="tab" href="#" role="tab" aria-controls="search_add" aria-expanded="true"><strong>+</strong></a>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content" id="searchTabContent">
-                            <div role="tabpanel" class="tab-pane fade in active" id="search1" aria-labelledby="search1">
-                                <div id="search_accordion1">
-                                    <h3>Customer</h3>
-                                    <div class="pad-lr-12">
-                                        <div class="row">
-                                            <div class="col-md-9" style="padding-top: 5px;">
-                                                <label class="c-input c-checkbox">
-                                                    <input type="checkbox" name="cu_project_status" value="2" checked>
-                                                    <span class="c-indicator"></span>
-                                                    Quote
-                                                </label>
-                                                <label class="c-input c-checkbox">
-                                                    <input type="checkbox" name="cu_project_status" value="1" checked>
-                                                    <span class="c-indicator"></span>
-                                                    Production
-                                                </label>
-                                                <label class="c-input c-checkbox">
-                                                    <input type="checkbox" name="cu_project_status" value="3">
-                                                    <span class="c-indicator"></span>
-                                                    Closed
-                                                </label>
-                                            </div>
-
-                                            <div class="col-md-3" style="padding-bottom: 5px;">
-                                                <button class="btn waves-effect btn-primary pull-right" data-toggle="modal" data-target="#modalAddCustomer"> <i class="zmdi zmdi-account-add"></i> </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="SO #" id="cu_sales_order_num1" name="cu_sales_order_num1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Project" id="cu_project_name1" name="project_name1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Dealer/Contractor" id="cu_dealer_contractor1" name="dealer_contractor1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Project Manager" id="cu_project_manager1" name="project_manager1" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <h3>Vendor</h3>
-                                    <div class="pad-lr-12">
-                                        <div class="row">
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Sales Order #" id="vn_sales_order_num1" name="vn_sales_order_num1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Project Name" id="vn_project_name1" name="vn_project_name1" />
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Vendor" id="vn_vendor1" name="vn_vendor1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Acknowledgement #" id="vn_ack_number1" name="vn_ack_number1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Invoice Number" id="vn_invoice_num1" name="vn_invoice_num1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Date Range" id="vn_date_range1" name="vn_date_range1" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <h3>Inventory</h3>
-                                    <div class="pad-lr-12">
-                                        <div class="col-md-3 pad-lr-4">
-                                            <input class="form-control" type="text" placeholder="Sales Order #" id="inv_sales_order_num1" name="inv_sales_order_num1" />
-                                        </div>
-
-                                        <div class="col-md-3 pad-lr-4">
-                                            <input class="form-control" type="text" placeholder="Description" id="inv_description1" name="inv_description1" />
-                                        </div>
-
-                                        <div class="col-md-3 pad-lr-4">
-                                            <input class="form-control" type="text" placeholder="Part #" id="inv_part_num1" name="inv_part_num1" />
-                                        </div>
-
-                                        <div class="col-md-3 pad-lr-4">
-                                            <input class="form-control" type="text" placeholder="Date Range" id="inv_date_range1" name="inv_date_range1" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label for="global_search">Lookup: </label>
+                            <input class="form-control" type="text" placeholder="Search..." id="global_search" name="global_search" style="width: 250px;" />
+                            <button class="btn waves-effect btn-primary" id="btn_add_acct" style="margin: 0 0 0 6px;"> <i class="zmdi zmdi-account-add"></i> </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
-            <!-- End search box -->
 
-            <!-- Add Customer modal -->
-            <div id="modalAddCustomer" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddCustomerLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h4 class="modal-title" id="modalAddCustomerTitle">Add New Customer</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <form name="add_new_customer" id="add_new_customer">
-                                        <table style="width: 100%;">
-                                            <tr>
-                                                <?php
-                                                $qry = $dbconn->query("SELECT DISTINCT sales_order_num FROM customer ORDER BY sales_order_num DESC LIMIT 0,1");
-
-                                                if($qry->num_rows > 0) {
-                                                    $result = $qry->fetch_assoc();
-
-                                                    $new_so_num = $result['sales_order_num'] + 1;
-                                                } else {
-                                                    $new_so_num = 1;
-                                                }
-                                                ?>
-                                                <td><input type="text" class="form-control" id="new_so_num" name="new_so_num" placeholder="SO #" value="<?php echo $new_so_num; ?>"></td>
-                                                <td><input type="text" class="form-control" id="new_dealer_code" name="new_dealer_code" placeholder="Dealer Code"></td>
-                                                <td><input type="text" class="form-control" id="new_project_name" name="new_project_name" placeholder="Project Name"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_org_name" name="new_org_name" placeholder="Organization Name"></td>
-                                                <td><input type="text" class="form-control" id="new_dealer_contractor" name="new_dealer_contractor" placeholder="Dealer/Contractor"></td>
-                                                <td><input type="text" class="form-control" id="new_project_manager" name="new_project_manager" placeholder="Project Manager"></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="3"><input type="text" class="form-control" id="new_addr_1" name="new_addr_1" placeholder="Address 1"></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="3"><input type="text" class="form-control" id="new_addr_2" name="new_addr_2" placeholder="Address 2"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_city" name="new_city" placeholder="City"></td>
-                                                <td>
-                                                    <select class="form-control" id="new_state" name="new_state">
-                                                        <option value="AL">Alabama</option>
-                                                        <option value="AK">Alaska</option>
-                                                        <option value="AZ">Arizona</option>
-                                                        <option value="AR">Arkansas</option>
-                                                        <option value="CA">California</option>
-                                                        <option value="CO">Colorado</option>
-                                                        <option value="CT">Connecticut</option>
-                                                        <option value="DE">Delaware</option>
-                                                        <option value="FL">Florida</option>
-                                                        <option value="GA">Georgia</option>
-                                                        <option value="HI">Hawaii</option>
-                                                        <option value="ID">Idaho</option>
-                                                        <option value="IL">Illinois</option>
-                                                        <option value="IN">Indiana</option>
-                                                        <option value="IA">Iowa</option>
-                                                        <option value="KS">Kansas</option>
-                                                        <option value="KY">Kentucky</option>
-                                                        <option value="LA">Louisiana</option>
-                                                        <option value="ME">Maine</option>
-                                                        <option value="MD">Maryland</option>
-                                                        <option value="MA">Massachusetts</option>
-                                                        <option value="MI">Michigan</option>
-                                                        <option value="MN">Minnesota</option>
-                                                        <option value="MS">Mississippi</option>
-                                                        <option value="MO">Missouri</option>
-                                                        <option value="MT">Montana</option>
-                                                        <option value="NE">Nebraska</option>
-                                                        <option value="NV">Nevada</option>
-                                                        <option value="NH">New Hampshire</option>
-                                                        <option value="NJ">New Jersey</option>
-                                                        <option value="NM">New Mexico</option>
-                                                        <option value="NY">New York</option>
-                                                        <option value="NC" selected>North Carolina</option>
-                                                        <option value="ND">North Dakota</option>
-                                                        <option value="OH">Ohio</option>
-                                                        <option value="OK">Oklahoma</option>
-                                                        <option value="OR">Oregon</option>
-                                                        <option value="PA">Pennsylvania</option>
-                                                        <option value="RI">Rhode Island</option>
-                                                        <option value="SC">South Carolina</option>
-                                                        <option value="SD">South Dakota</option>
-                                                        <option value="TN">Tennessee</option>
-                                                        <option value="TX">Texas</option>
-                                                        <option value="UT">Utah</option>
-                                                        <option value="VT">Vermont</option>
-                                                        <option value="VA">Virginia</option>
-                                                        <option value="WA">Washington</option>
-                                                        <option value="WV">West Virginia</option>
-                                                        <option value="WI">Wisconsin</option>
-                                                        <option value="WY">Wyoming</option>
-                                                    </select>
-                                                </td>
-                                                <td><input type="text" class="form-control" id="new_zip" name="new_zip" placeholder="ZIP"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_phone1" name="new_phone1" placeholder="Primary Phone"></td>
-                                                <td><input type="text" class="form-control" id="new_phone2" name="new_phone2" placeholder="Alt Phone"></td>
-                                                <td><input type="text" class="form-control" id="new_phone3" name="new_phone3" placeholder="Alt Phone 2"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_email1" name="new_email1" placeholder="Primary Email Address"></td>
-                                                <td><input type="text" class="form-control" id="new_email2" name="new_email2" placeholder="Alternate Email Address"></td>
-                                                <td>
-                                                    <select name="new_account_type" id="new_account_type" class="form-control">
-                                                        <option value="R" disabled>Account Type</option>
-                                                        <option value="R" selected>Retail</option>
-                                                        <option value="W">Wholesale</option>
-                                                        <option value="D">Distribution</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary waves-effect waves-light" id="submit_new_customer">Add Customer</button>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal-dialog -->
-            </div>
-            <!-- /.modal -->
-
-            <!-- Search results box -->
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card-box" id="search_results_card" style="display: none;min-height: 294px;">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <table class="tablesaw table" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
-                                    <thead>
-                                    <tr>
-                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO#</th>
-                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Project</th>
-                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Dealer/Contractor</th>
-                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Project Manager</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="search_results_table">
-                                    <tr>
-                                        <td colspan="4">No results to display</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-12 text-md-right">
-                                <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Collapse</button>
-                                <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Print</button>
-                                <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Export</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End search results box -->
-        </div>
-    </div>
-    <!-- End left column -->
-
-    <!-- Right column -->
-    <div class="col-md-6">
-        <div class="card-box" id="cal_email_tasks" style="min-height: 511px;">
-            <!-- Loaded in by /ondemand/js/page_content_functions.js and /html/right_panel.php -->
-        </div>
-    </div>
-    <!-- End right column -->
-</div>
-
-<div class="row" id="room_results_row" style="display: none;">
-    <div class="col-md-10">
-        <div class="card-box">
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="tablesaw table" data-tablesaw-sortable>
+                    <table style="display: none;" class="table table-bordered tablesorter" id="search_results_global_table">
                         <thead>
                         <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">Room</th>
-                            <th scope="col" data-tablesaw-sortable-col>Sales</th>
-                            <th scope="col" data-tablesaw-sortable-col>Pre-Production</th>
-                            <th scope="col" data-tablesaw-sortable-col>Sample</th>
-                            <th scope="col" data-tablesaw-sortable-col>Door/Drawer</th>
-                            <th scope="col" data-tablesaw-sortable-col>Custom</th>
-                            <th scope="col" data-tablesaw-sortable-col>Box</th>
+                            <th colspan="2">SO#</th>
+                            <th>PROJECT/CUSTOMER PO</th>
+                            <th>SALESPERSON</th>
+                            <th>DEALER/CONTRACTOR</th>
+                            <th>ACCOUNT TYPE</th>
+                            <th>PROJECT MANAGER/CONTACT</th>
                         </tr>
                         </thead>
-                        <tbody id="room_search_table">
+                        <tbody id="search_results_table">
                         <tr>
-                            <td colspan="5">No results to display</td>
+                            <td colspan="7">No results to display</td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <button type="button" id="add_room" name="add_room" class="btn btn-success waves-effect waves-light w-xs">Add Room</button>
-                </div>
-
-                <div class="col-md-6 text-md-right">
-                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Collapse</button>
-                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Print</button>
-                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Export</button>
-                </div>
-            </div>
         </div>
     </div>
 </div>
+<!-- End search results box -->
 
-<div class="row" id="individual_room_info" style="display: none;">
-    <div class="col-md-6">
-        <div class="card-box">
-            <h4 id="room_info_title">Add New Room</h4>
-
-            <form name="room_adjustment" id="room_adjustment">
-                <input type="hidden" value="???" name="add_to_sonum" id="add_to_sonum">
-
-                <table style="width: 100%;">
-                    <tr>
-                        <td style="width: 20%;">
-                            <fieldset class="form-group">
-                                <label for="room">Room</label>
-                                <select name="room" id="room" class="form-control">
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="C">C</option>
-                                    <option value="D">D</option>
-                                    <option value="E">E</option>
-                                    <option value="F">F</option>
-                                    <option value="G">G</option>
-                                    <option value="H">H</option>
-                                    <option value="J">J</option>
-                                    <option value="K">K</option>
-                                    <option value="L">L</option>
-                                    <option value="M">M</option>
-                                    <option value="N">N</option>
-                                    <option value="P">P</option>
-                                    <option value="Q">Q</option>
-                                    <option value="R">R</option>
-                                    <option value="S">S</option>
-                                    <option value="T">T</option>
-                                    <option value="U">U</option>
-                                    <option value="V">V</option>
-                                    <option value="W">W</option>
-                                    <option value="X">X</option>
-                                    <option value="Y">Y</option>
-                                    <option value="Z">Z</option>
-                                </select>
-                            </fieldset>
-                        </td>
-                        <td style="width: 20%;">
-                            <fieldset class="form-group">
-                                <label for="iteration">Iteration</label>
-                                <input type="text" name="iteration" id="iteration" class="form-control" maxlength="5" placeholder="Iteration" value=".01">
-                            </fieldset>
-                        </td>
-                        <td style="width: 20%;">
-                            <fieldset class="form-group">
-                                <label for="room_name">Room Name</label><label for="room_name">Room Name</label>
-                                <input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name">
-                            </fieldset>
-                        </td>
-                        <td style="width: 20%;">
-                            <fieldset class="form-group">
-                                <label for="product_type">Product Type</label>
-                                <select name="product_type" id="product_type" class="form-control" tabindex="5">
-                                    <option value="Cabinet" selected>Cabinet</option>
-                                    <option value="Closet">Closet</option>
-                                    <option value="Sample">Sample</option>
-                                    <option value="Display">Display</option>
-                                    <option value="Add-on">Add-on</option>
-                                    <option value="Warranty">Warranty</option>
-                                </select>
-                            </fieldset>
-                        </td>
-                        <td style="width: 20%;">
-                            <fieldset class="form-group">
-                                <label for="remodel_required">Remodel Required</label>
-                                <select name="remodel_required" id="remodel_required" class="form-control" tabindex="7">
-                                    <option value="1">Yes</option>
-                                    <option value="0" selected>No</option>
-                                </select>
-                            </fieldset>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="5">&nbsp;</td>
-                    </tr>
-                    <tbody id="room_bracket">
-                        <tr>
-                            <?php
-                                function generateSingleOps($bracket) {
-                                    global $dbconn;
-                                    $output = '';
-
-                                    $qry = $dbconn->query("SELECT * FROM operations WHERE department = '$bracket' AND always_visible = FALSE ORDER BY op_id ASC");
-
-                                    if ($qry->num_rows > 0) {
-                                        while ($result = $qry->fetch_assoc()) {
-                                            $output .= "<option value='{$result['id']}'>{$result['op_id']}-{$result['job_title']}</option>";
-                                        }
-                                    }
-
-                                    return $output;
-                                }
-                            ?>
-                            <td>&nbsp;</td>
-                            <td>
-                                <fieldset class="form-group">
-                                    <label for="sales_bracket">Sales Bracket</label>
-                                    <select id="sales_bracket" name="sales_bracket" class="form-control">
-                                        <?php echo generateSingleOps("Sales"); ?>
-                                    </select>
-                                </fieldset>
-                            </td>
-                            <td>
-                                <fieldset class="form-group">
-                                    <label for="pre_prod_bracket">Pre-production Bracket</label>
-                                    <select id="pre_prod_bracket" name="pre_prod_bracket" class="form-control">
-                                        <?php echo generateSingleOps("Pre-Production"); ?>
-                                    </select>
-                                </fieldset>
-                            </td>
-                            <td>
-                                <fieldset class="form-group">
-                                    <label for="sample_bracket">Sample Bracket</label>
-                                    <select id="sample_bracket" name="sample_bracket" class="form-control">
-                                        <?php echo generateSingleOps("Sample"); ?>
-                                    </select>
-                                </fieldset>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>
-                                <fieldset class="form-group">
-                                    <label for="door_drawer_bracket">Door/Drawer Bracket</label>
-                                    <select id="door_drawer_bracket" name="door_drawer_bracket" class="form-control">
-                                        <?php echo generateSingleOps("Drawer & Doors"); ?>
-                                    </select>
-                                </fieldset>
-                            </td>
-                            <td>
-                                <fieldset class="form-group">
-                                    <label for="custom_bracket">Custom Bracket</label>
-                                    <select id="custom_bracket" name="custom_bracket" class="form-control">
-                                        <?php echo generateSingleOps("Custom"); ?>
-                                    </select>
-                                </fieldset>
-                            </td>
-                            <td>
-                                <fieldset class="form-group">
-                                    <label for="box_bracket">Box Bracket</label>
-                                    <select id="box_bracket" name="box_bracket" class="form-control">
-                                        <?php echo generateSingleOps("Box"); ?>
-                                    </select>
-                                </fieldset>
-                            </td>
-                            <td>&nbsp;</td>
-                        </tr>
-                    </tbody>
-                    <tr>
-                        <td colspan="5">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td colspan="3">
-                            <fieldset class="form-group">
-                                <label for="room_notes">Room Notes</label>
-                                <textarea class="form-control" id="room_notes" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3"
-                                          data-toggle="popover" data-placement="top" data-trigger="focus" title="" data-html="true"
-                                          data-content="<table style='font-size: 9px;'>
-                                <tr>
-                                    <td>CON = Conestoga</td>
-                                    <td class='text-md-right'>RW = Rework</td>
-                                </tr>
-                                <tr>
-                                    <td>DEL = Delivery</td>
-                                    <td class='text-md-right'>S/B = Scheduled Back</td>
-                                </tr>
-                                <tr>
-                                    <td>DPL = Diminishing Punch List</td>
-                                    <td class='text-md-right'>SEL = Selections</td>
-                                </tr>
-                                <tr>
-                                    <td>EM = Email</td>
-                                    <td class='text-md-right'>T/W = This Week</td>
-                                </tr>
-                                <tr>
-                                    <td>ETA = Estimated Time of Arrival</td>
-                                    <td class='text-md-right'>W/A = Will Advise</td>
-                                </tr>
-                                <tr>
-                                    <td>FU = Follow Up</td>
-                                    <td class='text-md-right'>W/C = Will Contact</td>
-                                </tr>
-                                <tr>
-                                    <td>N/A = Not Available</td>
-                                    <td class='text-md-right'>WO = Work Order</td>
-                                </tr>
-                            </table>" data-original-title="Abbreviations"></textarea>
-                            </fieldset>
-                        </td>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td colspan="5">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td colspan="8">
-                            <button type="button" id="room_save" name="room_save" class="btn btn-success waves-effect waves-light w-xs">Save</button>
-                            <button type="button" id="manage_brackets" name="manage_brackets" class="btn btn-success waves-effect waves-light w-xs">Manage Bracket</button>
-                        </td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-    </div>
+<!-- Add Customer modal -->
+<div id="modalAddCustomer" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddCustomerLabel" aria-hidden="true">
+    <!-- Inserted via AJAX -->
 </div>
-
-<div class="row" id="manage_bracket" style="display: none;">
-    <div class="col-md-8">
-        <div class="card-box">
-            <div class="row">
-                <div class="col-md-12">
-                    <h4>Manage Brackets (<span id="bracket_adjustment_title">SO# 736 ROOM A</span>)</h4>
-
-                    <table class="bracket-adjustment-table">
-                        <tr>
-                            <td class="bracket-border-top" style="width: 400px;">
-                                <div class="row bracket-header-custom">
-                                    <div class="col-md-8"><h5><label for="sales_bracket_adjustments">Sales Bracket</label></h5></div>
-                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" id="sales_published"> <span class="c-indicator"></span> Published</label> </div>
-                                </div>
-                            </td>
-                            <td style="width:18px;">&nbsp;</td>
-                            <td class="bracket-border-top" style="width: 400px;">
-                                <div class="row bracket-header-custom">
-                                    <div class="col-md-8"><h5><label for="pre_prod_bracket_adjustments">Pre-production Bracket</label></h5></div>
-                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pre_prod_published" id="pre_prod_published"> <span class="c-indicator"></span> Published</label> </div>
-                                </div>
-                            </td>
-                            <td style="width:18px;">&nbsp;</td>
-                            <td class="bracket-border-top" style="width: 400px;">
-                                <div class="row bracket-header-custom">
-                                    <div class="col-md-8"><h5><label for="sample_bracket_adjustments">Sample Bracket</label></h5></div>
-                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" id="sample_published"> <span class="c-indicator"></span> Published</label> </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="bracket-border-bottom">
-                                <select multiple="multiple" class="multi-select" id="sales_bracket_adjustments" name="sales_bracket_adjustments[]" data-plugin="multiselect"></select>
-                            </td>
-                            <td>&nbsp;</td>
-                            <td class="bracket-border-bottom">
-                                <select multiple="multiple" class="multi-select" id="pre_prod_bracket_adjustments" name="pre_prod_bracket_adjustments[]" data-plugin="multiselect"></select>
-                            </td>
-                            <td>&nbsp;</td>
-                            <td class="bracket-border-bottom">
-                                <select multiple="multiple" class="multi-select" id="sample_bracket_adjustments" name="sample_bracket_adjustments[]" data-plugin="multiselect"></select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="6">&nbsp;</td>
-                        </tr>
-                        <tr>
-                            <td class="bracket-border-top">
-                                <div class="row bracket-header-custom">
-                                    <div class="col-md-8"><h5><label for="door_drawer_bracket_adjustments">Door/Drawer Bracket</label></h5></div>
-                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="door_drawer_published" id="door_drawer_published"> <span class="c-indicator"></span> Published</label> </div>
-                                </div>
-                            </td>
-                            <td>&nbsp;</td>
-                            <td class="bracket-border-top">
-                                <div class="row bracket-header-custom">
-                                    <div class="col-md-8"><h5><label for="custom_bracket_adjustments">Custom Bracket</label></h5></div>
-                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" id="custom_published"> <span class="c-indicator"></span> Published</label> </div>
-                                </div>
-                            </td>
-                            <td>&nbsp;</td>
-                            <td class="bracket-border-top">
-                                <div class="row bracket-header-custom">
-                                    <div class="col-md-8"><h5><label for="box_bracket_adjustments">Box Bracket</label></h5></div>
-                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="box_published" id="box_published"> <span class="c-indicator"></span> Published</label> </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="bracket-border-bottom">
-                                <select multiple="multiple" class="multi-select" id="door_drawer_bracket_adjustments" name="door_drawer_bracket_adjustments[]" data-plugin="multiselect"></select>
-                            </td>
-                            <td>&nbsp;</td>
-                            <td class="bracket-border-bottom">
-                                <select multiple="multiple" class="multi-select" id="custom_bracket_adjustments" name="custom_bracket_adjustments[]" data-plugin="multiselect"></select>
-                            </td>
-                            <td>&nbsp;</td>
-                            <td class="bracket-border-bottom">
-                                <select multiple="multiple" class="multi-select" id="box_bracket_adjustments" name="box_bracket_adjustments[]" data-plugin="multiselect"></select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="6">&nbsp;</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <button type="button" id="bracket_adjustment_save" name="bracket_adjustment_save" class="btn btn-success waves-effect waves-light w-xs">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--Tablesaw-->
-<script src="/assets/plugins/tablesaw/dist/tablesaw.js"></script>
-<script src="/assets/plugins/tablesaw/dist/tablesaw-init.js"></script>
+<!-- /.modal -->
 
 <!-- Multi-select -->
 <script type="text/javascript" src="/assets/plugins/multiselect/js/jquery.multi-select.js"></script>
@@ -670,7 +66,6 @@ require '../includes/header_end.php';
 
 <script>
     var active_so_num = null;
-    var active_room = null;
     var active_room_id = null;
 
     loadCalendarPane(); // found in page_content_functions
@@ -687,16 +82,6 @@ require '../includes/header_end.php';
         } else {
             $("#search_results_card").hide();
         }
-    }
-
-    function displaySO(sonum) {
-        active_so_num = sonum;
-
-        $.post("/ondemand/livesearch/search_results.php?search=room", {find: sonum}, function(data) {
-            $("#room_search_table").html(data);
-            $("#room_results_row").show();
-            $("#manage_bracket").hide();
-        });
     }
 
     function recalculateBrackets(overrideSelected) {
@@ -754,77 +139,6 @@ require '../includes/header_end.php';
         });
     }
 
-    function displayRoomInfo(roomID) {
-        $("#manage_bracket").hide();
-
-        $("#add_to_sonum").val(active_so_num);
-
-        $.post("/ondemand/shopfloor/job_actions.php?action=edit_room", {roomID: roomID}, function(data) {
-            var roomInfo;
-
-            if(roomInfo = $.parseJSON(data)) {
-                active_room = roomInfo.room;
-                active_room_id = data.id;
-
-                $("#room").val(roomInfo.room);
-                $("#room_name").val(roomInfo.room_name);
-                $("#product_type").val(roomInfo.product_type);
-                $("#remodel_required").val(roomInfo.remodel_reqd);
-                $("#room_notes").val(roomInfo.room_notes);
-                $("#assigned_bracket").val(roomInfo.assigned_bracket);
-
-                recalculateBrackets(roomInfo);
-
-                $("#room_info_title").text("Edit room " + roomInfo.room + " of SO# " + active_so_num);
-            } else {
-                $("body").append(data);
-            }
-        }).done(function() {
-            $("#individual_room_info").show();
-        });
-    }
-
-    function displayBracketInfo(active_room) {
-        $("#sales_published").prop('checked', false);
-        $("#pre_prod_published").prop('checked', false);
-        $("#sample_published").prop('checked', false);
-        $("#door_drawer_published").prop('checked', false);
-        $("#custom_published").prop('checked', false);
-        $("#box_published").prop('checked', false);
-        
-        $("#bracket_adjustment_title").text("SO# " + active_so_num + " ROOM " + active_room);
-
-        $.post("/ondemand/shopfloor/job_actions.php?action=manage_bracket", {sonum: active_so_num, room: active_room}, function(data) {
-            // Way easier than it was previously; thank goodness!
-            var options = $.parseJSON(data); // grab the JSON data returned, this is a 3D array, objects inside of objects
-
-            // grab each of the departments and their related options
-            var salesOptions = options["Sales"];
-            var preprodOptions = options["Pre-Production"];
-            var sampleOptions = options["Sample"];
-            var doordrawerOptions = options["Drawer & Doors"];
-            var customOptions = options["Custom"];
-            var boxOptions = options["Box"];
-
-            if(options['pub'][0] === "1") $("#sales_published").prop('checked', true);
-            if(options['pub'][1] === "1") $("#pre_prod_published").prop('checked', true);
-            if(options['pub'][2] === "1") $("#sample_published").prop('checked', true);
-            if(options['pub'][3] === "1") $("#door_drawer_published").prop('checked', true);
-            if(options['pub'][4] === "1") $("#custom_published").prop('checked', true);
-            if(options['pub'][5] === "1") $("#box_published").prop('checked', true);
-
-            // find the options inside of the SALES bracket, REMOVE them, wait for that DOM update to FINISH, then ADD the options again
-            $("#sales_bracket_adjustments").find("option").remove().end().append(salesOptions).multiSelect('refresh');
-            $("#pre_prod_bracket_adjustments").find("option").remove().end().append(preprodOptions).multiSelect('refresh');
-            $("#sample_bracket_adjustments").find("option").remove().end().append(sampleOptions).multiSelect('refresh');
-            $("#door_drawer_bracket_adjustments").find("option").remove().end().append(doordrawerOptions).multiSelect('refresh');
-            $("#custom_bracket_adjustments").find("option").remove().end().append(customOptions).multiSelect('refresh');
-            $("#box_bracket_adjustments").find("option").remove().end().append(boxOptions).multiSelect('refresh');
-        }).done(function() {
-            $("#manage_bracket").show();
-        });
-    }
-
     function saveRoomInfo() {
         var room_info = $("#room_adjustment").serialize();
         active_room = $("#room").val();
@@ -841,36 +155,6 @@ require '../includes/header_end.php';
         
         displaySO(active_so_num);
     }
-
-    $("#sales_bracket_adjustments").multiSelect({
-        selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-        selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-    });
-
-    $("#pre_prod_bracket_adjustments").multiSelect({
-        selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-        selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-    });
-
-    $("#sample_bracket_adjustments").multiSelect({
-        selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-        selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-    });
-
-    $("#door_drawer_bracket_adjustments").multiSelect({
-        selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-        selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-    });
-
-    $("#custom_bracket_adjustments").multiSelect({
-        selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-        selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-    });
-
-    $("#box_bracket_adjustments").multiSelect({
-        selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-        selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-    });
 
     $("#search_accordion1").accordion();
 
@@ -907,29 +191,51 @@ require '../includes/header_end.php';
             $("#manage_bracket").hide();
         })
         .on("click", "#add_room", function() {
-            $("#add_to_sonum").val(active_so_num);
+            $.post("/html/shopfloor/job_management.php?action=add", {so_id: active_so_num, roomid: active_room_id}, function(data) {
+                $("#room_info_display").html(data);
+            }).done(function() {
+                $("#sales_bracket_adjustments").multiSelect({
+                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
+                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
+                });
 
-            $("#room").val("A");
-            $("#iteration").val(".01");
-            $("#room_name").val("Kitchen");
-            $("#product_type").val("Cabinet");
-            $("#remodel_required").val("0");
-            $("#room_notes").val("");
+                $("#sample_bracket_adjustments").multiSelect({
+                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
+                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
+                });
 
-            $("#sales_bracket").find("option:eq(0)").prop("selected", true);
-            $("#pre_prod_bracket").find("option:eq(0)").prop("selected", true);
-            $("#sample_bracket").find("option:eq(0)").prop("selected", true);
-            $("#door_drawer_bracket").find("option:eq(0)").prop("selected", true);
-            $("#custom_bracket").find("option:eq(0)").prop("selected", true);
-            $("#box_bracket").find("option:eq(0)").prop("selected", true);
+                $("#preprod_bracket_adjustments").multiSelect({
+                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
+                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
+                });
 
-            $("#room_info_title").text("Add new room");
+                $("#doordrawer_bracket_adjustments").multiSelect({
+                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
+                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
+                });
 
-            $.post("/ondemand/shopfloor/bracket_info.php?action=single_result", function(data) {
-                $("#room_bracket").html(data);
+                $("#laminate_bracket_adjustments").multiSelect({
+                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
+                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
+                });
+
+                $("#box_bracket_adjustments").multiSelect({
+                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
+                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
+                });
+
+                $("#custom_bracket_adjustments").multiSelect({
+                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
+                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
+                });
+
+                $("#install_bracket_adjustments").multiSelect({
+                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
+                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
+                });
+
+                $("#individual_room_info").show();
             });
-
-            $("#individual_room_info").show();
         })
         .on("click", "#room_save", function() {
             saveRoomInfo();
@@ -982,31 +288,276 @@ require '../includes/header_end.php';
                     $("body").append(data);
                 }
             })
+        })
+        .on("change", "input[name='cu_type']", function() {
+            switch($(this).val()) {
+                case 'retail':
+                    $("#add_retail_customer").show();
+                    $("#add_distributor").hide();
+
+                    break;
+                case 'distribution':
+                    $("#add_retail_customer").hide();
+                    $("#add_distributor").show();
+
+                    break;
+                case 'cutting':
+                    break;
+                default:
+                    break;
+            }
+        })
+        .on("change", "#add_notes", function() {
+            if($(this).is(":checked")) {
+                $("#room_note_visible").show();
+            } else {
+                $("#room_note_visible").hide();
+            }
+        })
+        .on("change", "input[name='viewBracket']", function() {
+            var publish = $('[id$=topublish]');
+
+            switch($(this).val()) {
+                case 'Sales':
+                    publish.hide();
+                    $("#sales_bracket_topublish").show();
+
+                    break;
+                case 'Sample':
+                    publish.hide();
+                    $("#sample_bracket_topublish").show();
+
+                    break;
+                case 'Pre-Production':
+                    publish.hide();
+                    $("#preprod_bracket_topublish").show();
+
+                    break;
+                case 'Door/Drawer':
+                    publish.hide();
+                    $("#doordrawer_bracket_topublish").show();
+
+                    break;
+                case 'Laminate':
+                    publish.hide();
+                    $("#laminate_bracket_topublish").show();
+
+                    break;
+                case 'Box':
+                    publish.hide();
+                    $("#box_bracket_topublish").show();
+
+                    break;
+                case 'Custom':
+                    publish.hide();
+                    $("#custom_bracket_topublish").show();
+
+                    break;
+                case 'Install':
+                    publish.hide();
+                    $("#install_bracket_topublish").show();
+
+                    break;
+                default:
+                    publish.hide();
+
+                    break;
+            }
+        })
+        .on("click", "#save_publish", function() {
+            switch($("input[name='viewBracket']").val()) {
+                case 'Sales':
+
+
+                    break;
+                case 'Sample':
+
+                    break;
+                case 'Pre-Production':
+
+                    break;
+                case 'Door/Drawer':
+
+                    break;
+                case 'Laminate':
+
+                    break;
+                case 'Box':
+
+                    break;
+                case 'Custom':
+
+                    break;
+                case 'Install':
+
+                    break;
+                default:
+
+                    break;
+            }
+        })
+        .on("click", "[id^=edit_]", function(e) {
+            e.stopPropagation();
+
+            active_so_num = $(this).attr("id").replace('edit_', '');
+
+            $("[id^=tr_single_room_]").hide(100);
+            $("[id^=tr_room_]").hide(100);
+
+            $("[id^=tr_edit_so_]").not("#tr_edit_so_" + active_so_num).hide(100);
+            $("[id^=div_edit_so_]").not("#div_edit_so_" + active_so_num).hide();
+
+            $("[id^=show_room_]").not("#show_room_" + active_so_num).removeClass("active_room_line");
+            $("[id^=show_single_room_]").removeClass("active_room_line");
+
+            $("#show_room_" + active_so_num).addClass("active_room_line");
+
+            $("#tr_edit_so_" + active_so_num).show();
+            $("#div_edit_so_" + active_so_num).slideDown(250);
+        })
+        .on("click", "[id^=show_room_]", function() {
+            $("[id^=show_room_]").removeClass("active_room_line");
+            $(this).addClass("active_room_line");
+            $("[id^=show_single_room_]").removeClass("active_room_line");
+            $("[id^=tr_single_room_]").hide(250);
+            $("[id^=div_single_room_]").hide(100);
+
+            active_so_num = $(this).attr("id").replace('show_room_', '');
+
+            $("[id^=tr_room_]").not("#tr_room_" + active_so_num).hide(100);
+
+            $("[id^=tr_edit_so_]").hide(100);
+            $("[id^=div_edit_so_]").hide();
+
+            $("#tr_room_" + active_so_num).show();
+            $("#div_room_" + active_so_num).slideDown(250);
+        })
+        .on("click", "[id^=show_single_room_]", function() {
+            $("[id^=show_single_room_]").removeClass("active_room_line");
+            $(this).addClass("active_room_line");
+
+            active_room_id = $(this).attr("id").replace('show_single_room_', '');
+
+            $("[id^=tr_single_room_]").not("#tr_single_room_" + active_room_id).hide(100);
+
+            $("[id^=tr_room_bracket_]").hide(250);
+            $("[id^=div_room_bracket_]").hide(100);
+
+            $("#tr_single_room_" + active_room_id).show();
+            $("#div_single_room_" + active_room_id).slideDown(250);
+        })
+        .on("click", "[id^=manage_bracket_]", function(e) {
+            e.stopPropagation();
+
+            active_room_id = $(this).attr("id").replace('manage_bracket_', '');
+
+            $("[id^=show_single_room_]").removeClass("active_room_line");
+            $("#show_single_room_" + active_room_id).addClass("active_room_line");
+
+            $("[id^=tr_single_room_]").hide(250);
+            $("[id^=div_single_room_]").hide(100);
+
+            $("[id^=tr_room_bracket_]").not("#tr_room_bracket_" + active_room_id).hide(250);
+            $("[id^=div_room_bracket_]").not("#div_room_bracket_" + active_room_id).hide(100);
+
+            $("#sales_bracket_adjustments_" + active_room_id).multiSelect();
+            $("#pre_prod_bracket_adjustments_" + active_room_id).multiSelect();
+            $("#sample_bracket_adjustments_" + active_room_id).multiSelect();
+            $("#door_drawer_bracket_adjustments_" + active_room_id).multiSelect();
+            $("#custom_bracket_adjustments_" + active_room_id).multiSelect();
+            $("#main_bracket_adjustments_" + active_room_id).multiSelect();
+            $("#shipping_bracket_adjustments_" + active_room_id).multiSelect();
+            $("#install_bracket_adjustments_" + active_room_id).multiSelect();
+
+            $("#tr_room_bracket_" + active_room_id).show();
+            $("#div_room_bracket_" + active_room_id).slideDown(250);
+        })
+        .on("click", "#btn_add_acct", function() {
+            $.post('/ondemand/shopfloor/new_customer.php', function(data) {
+                $("#modalAddCustomer").html(data);
+            }).done(function() {
+                $("#modalAddCustomer").modal('show');
+
+                $("#contractor_code").autocomplete({ // TODO: Why won't this work? JS DOM element timing mismatch?
+                    source: "/ondemand/livesearch/general.php?search=dealerid"
+                });
+            });
         });
+
+    $("#global_search").on("keyup", function() {
+        if($(this).val().length >= 1) {
+            $.post("/ondemand/livesearch/search_results.php?search=general", {find: $(this).val()}, function(data) {
+                $("#search_results_table").html(data);
+                $("#search_results_global_table").trigger("update");
+
+                if(data !== '') {
+                    $("#search_results_global_table").show();
+                } else {
+                    $("#search_results_global_table").hide();
+                }
+            });
+
+//            $("#search_results_table").tabulator("setData", "/ondemand/livesearch/search_results.php?search=gen_json&find=" + $(this).val());
+//
+//            $("#search_results_card").show();
+        } else {
+            $("#search_results_global_table").hide();
+        }
+    });
 
     $("#cu_sales_order_num1")
         .on("keyup", function() { // this is on keyboard change
             updateSearchTable($(this).val(), "sonum", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_project_name1").val("");
+            $("#cu_dealer_contractor1").val("");
+            $("#cu_project_manager1").val("");
         });
 
     $("#cu_project_name1")
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "project", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_sales_order_num1").val("");
+            $("#cu_dealer_contractor1").val("");
+            $("#cu_project_manager1").val("");
         });
 
     $("#cu_dealer_contractor1")
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "contractor", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_sales_order_num1").val("");
+            $("#cu_project_name1").val("");
+            $("#cu_project_manager1").val("");
         });
 
     $("#cu_project_manager1")
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "project_manager", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_sales_order_num1").val("");
+            $("#cu_project_name1").val("");
+            $("#cu_dealer_contractor1").val("");
         });
+
+//    $("#search_results_table").tabulator({
+//        fitColumns: true,
+//        placeholder: "No data available",
+//        columns: [
+//            {formatter: editIcon, width: 28, align: "center", tooltip: "Edit"},
+//            {title: "SO#", field: "sales_order_num", sorter: "number"},
+//            {title: "Project/Customer PO", field: "purchase_order", sorter: "string"},
+//            {title: "Salesperson", field: "salesperson", sorter: "string"},
+//            {title: "Dealer/Contractor", field: "dealer_contractor", sorter: "string"},
+//            {title: "Account Type", field: "account_type", sorter: "string"},
+//            {title: "Project Manager/Contact", field: "project_mgr_contact", sorter: "string"}
+//        ]
+//    });
 </script>
 
 <?php 

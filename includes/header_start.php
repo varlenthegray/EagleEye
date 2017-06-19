@@ -22,3 +22,4 @@ require("config.php"); // require the config file once
 
 // set the timezone for all PHP information
 date_default_timezone_set($_SESSION['userInfo']['timezone']);
+

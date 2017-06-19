@@ -252,7 +252,7 @@ HEREDOC;
                     }
 
                     if($dbconn->query("UPDATE op_queue SET active = TRUE, start_time = UNIX_TIMESTAMP(), active_employees = '$active_employees' WHERE id = '$id'")) {
-                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>'$active_employees'];
+                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees)];
                         $final_changes = json_encode($changes);
 
                         if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())"))
@@ -264,7 +264,7 @@ HEREDOC;
                     }
                 } else {
                     if($dbconn->query("UPDATE op_queue SET active = TRUE, resumed_time = UNIX_TIMESTAMP(), active_employees = '$active_employees' WHERE id = '$id'")) {
-                        $changes = ["Active"=>TRUE, "Resumed Time"=>time(), "Active Employees"=>'$active_employees'];
+                        $changes = ["Active"=>TRUE, "Resumed Time"=>time(), "Active Employees"=>json_decode($active_employees)];
                         $final_changes = json_encode($changes);
 
                         if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())"))
@@ -286,7 +286,7 @@ HEREDOC;
 
                         $inserted_id = $dbconn->insert_id;
 
-                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>$active_employees];
+                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees)];
                         $final_changes = json_encode($changes);
 
                         $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())");
@@ -306,7 +306,7 @@ HEREDOC;
 
                     $inserted_id = $dbconn->insert_id;
 
-                    $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>$active_employees, "Subtask"=>$subtask, "Notes"=>$notes];
+                    $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes];
                     $final_changes = json_encode($changes);
 
                     $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())");
@@ -327,15 +327,16 @@ HEREDOC;
                 while($self = $self_qry->fetch_assoc()) {
                     $so_id = $self['so_parent'] . "-" . $self['room'];
                     $operation = $self['op_id'] . ": " . $self['job_title'];
-                    $release_date = date('n/j/y', $self['created']);
-
+                    $start_time = ($self['resumed_time'] === null) ? date(TIME_ONLY, $self['start_time']) : date(TIME_ONLY, $self['resumed_time']);
+                    $active_time = ($self['resumed_time'] === null) ? "$('#start_{$self['start_time']}').text(moment({$self['start_time']} * 1000).fromNow(true))" : "$('#start_{$self['start_time']}').text(moment({$self['resumed_time']} * 1000).fromNow(true))";
 
                     echo "<tr class='cursor-hand update-active-job' data-op-id='{$self['opID']}'>";
                     echo "  <td>$so_id</td>";
                     echo "  <td>{$self['responsible_dept']}</td>";
                     echo "  <td>$operation</td>"; // the operation title itself, easy!
-                    echo "  <td>$release_date</td>";
-                    echo "  <td></td>";
+                    echo "  <td>$start_time</td>";
+                    echo "  <td id='start_{$self['start_time']}'></td>";
+                    echo "<script>$active_time</script>";
                     echo "</tr>";
                 }
             } else {
@@ -373,7 +374,7 @@ HEREDOC;
         $external_brackets = ['Non-Billable'];
 
         if(in_array($queue, $external_brackets)) {
-            $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND department = 'Non-Billable'");
+            $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND bracket = 'Non-Billable'");
 
             if($op_queue_qry->num_rows > 0) {
                 while($op_queue = $op_queue_qry->fetch_assoc()) {
@@ -418,7 +419,7 @@ HEREDOC;
                 }
             }
 
-            $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND responsible_dept = '$queue' AND department != 'Non-Billable'");
+            $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND responsible_dept = '$queue' AND bracket != 'Non-Billable'");
 
             if($op_queue_qry->num_rows > 0) {
                 while($op_queue = $op_queue_qry->fetch_assoc()) {
@@ -603,7 +604,7 @@ HEREDOC;
                 $active_employees = json_encode($active_emp);
 
                 if($dbconn->query("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = $active, notes = '$finalnotes', qty_completed = '$qty', partially_completed = TRUE, completed = FALSE, active_employees = '$active_employees' WHERE id = $id")) {
-                    $changed = ["End time"=>time(), "Active"=>$active, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Partially Completed"=>true, "Active Employees"=>$active_employees];
+                    $changed = ["End time"=>time(), "Active"=>$active, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Partially Completed"=>true, "Active Employees"=>json_decode($active_employees)];
                     $changed = json_encode($changed);
 
                     if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP())"))
@@ -644,7 +645,7 @@ HEREDOC;
         $final['ops'] = array();
 
         foreach($op_ids as $ind_id) {
-            $qry = $dbconn->query("SELECT department, job_title, op_id, id FROM operations WHERE id = '$ind_id'");
+            $qry = $dbconn->query("SELECT bracket, job_title, op_id, id FROM operations WHERE id = '$ind_id'");
             $result = $qry->fetch_assoc();
 
             if(!empty($result))
@@ -679,7 +680,7 @@ HEREDOC;
         if($qry->num_rows === 1) {
             $update = $dbconn->query("UPDATE rooms SET room_name = '$room_name', product_type = '$product_type', remodel_reqd = '$remodel_required', room_notes = '$room_notes',
               sales_bracket = '$sales_bracket', preproduction_bracket = '$pre_prod_bracket', sample_bracket = '$sample_bracket', doordrawer_bracket = '$door_drawer_bracket',
-              custom_bracket = '$custom_bracket', box_bracket = '$box_bracket', sales_bracket_priority = 4, preproduction_bracket_priority = 4, sample_bracket_priority = 4, 
+              custom_bracket = '$custom_bracket', main_bracket = b$box_bracketox_bracket, sales_bracket_priority = 4, preproduction_bracket_priority = 4, sample_bracket_priority = 4, 
               doordrawer_bracket_priority = 4, custom_bracket_priority = 4, box_bracket_priority = 4 WHERE so_parent = '$so_num' AND room = '$room'");
 
             if($update) {
@@ -688,7 +689,7 @@ HEREDOC;
                 dbLogSQLErr($dbconn);
             }
         } else {
-            $full_ops_qry = $dbconn->query("SELECT * FROM operations WHERE department != 'Admin'");
+            $full_ops_qry = $dbconn->query("SELECT * FROM operations WHERE bracket != 'Admin'");
 
             if($full_ops_qry->num_rows > 0) {
                 while($ops = $full_ops_qry->fetch_assoc()) {
@@ -699,10 +700,10 @@ HEREDOC;
             $bracket = json_encode($bracket);
 
             $query = $dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, remodel_reqd, room_notes, sales_bracket, 
-          preproduction_bracket, sample_bracket, doordrawer_bracket, custom_bracket, box_bracket, sales_bracket_priority, preproduction_bracket_priority, 
+          preproduction_bracket, sample_bracket, doordrawer_bracket, custom_bracket, main_bracket, sales_bracket_priority, preproduction_bracket_priority, 
           sample_bracket_priority, doordrawer_bracket_priority, custom_bracket_priority, box_bracket_priority, individual_bracket_buildout) 
           VALUES ('$so_num', '$room', '$room_name', '$product_type', '$remodel_required', '$room_notes', '$sales_bracket', '$pre_prod_bracket',
-          '$sample_bracket', '$door_drawer_bracket', '$custom_bracket', '$box_bracket', 4, 4, 4, 4, 4, 4, '$bracket')");
+          '$sample_bracket', '$door_drawer_bracket', '$custom_bracket', b$box_bracketox_bracket, 4, 4, 4, 4, 4, 4, '$bracket')");
 
             if($query) {
                 echo "success";
@@ -789,7 +790,7 @@ HEREDOC;
 
         break;
     case 'get_all_ops':
-        $qry = $dbconn->query("SELECT id, op_id, department, job_title, responsible_dept FROM operations");
+        $qry = $dbconn->query("SELECT id, op_id, bracket, job_title, responsible_dept FROM operations");
 
         $ops = null;
 
@@ -805,11 +806,10 @@ HEREDOC;
 
         break;
     case 'manage_bracket':
-        $room = sanitizeInput($_REQUEST['room'], $dbconn);
-        $sonum = sanitizeInput($_REQUEST['sonum'], $dbconn);
+        $room_id = sanitizeInput($_REQUEST['roomid']);
 
         // grab the individual bracket
-        $indv_bracket_qry = $dbconn->query("SELECT individual_bracket_buildout FROM rooms WHERE so_parent = '$sonum' AND room = '$room'");
+        $indv_bracket_qry = $dbconn->query("SELECT individual_bracket_buildout FROM rooms WHERE id = $room_id");
         $indv_bracket_results = $indv_bracket_qry->fetch_assoc();
 
         $op_ids = json_decode($indv_bracket_results['individual_bracket_buildout']);
@@ -829,7 +829,7 @@ HEREDOC;
             }
         }
 
-        $qry = $dbconn->query("SELECT sales_published, preproduction_published, sample_published, doordrawer_published, custom_published, box_published FROM rooms WHERE so_parent = '$sonum' AND room = '$room'");
+        $qry = $dbconn->query("SELECT sales_published, preproduction_published, sample_published, doordrawer_published, custom_published, main_published FROM rooms WHERE so_parent = '$sonum' AND room = '$room'");
         $result = $qry->fetch_row();
 
         $output['pub'] = $result;

@@ -1,5 +1,10 @@
 <?php
-require ("../includes/config.php");
+set_include_path("/home/trustedprogrammer/domains/dev-smc.trustedprogrammer.com/public_html/includes/");
+//set_include_path("/home/trustedprogrammer/domains/smc.trustedprogrammer.com/public_html/includes/");
+
+// flip these around when pushing to prod
+
+require ("config.php");
 
 $user_qry = $dbconn->query("SELECT * FROM user WHERE auto_clock = TRUE");
 
@@ -13,6 +18,10 @@ if($user_qry->num_rows > 0) {
             while($card = $timecards->fetch_assoc()) {
                 if($card['time_out'] === null) {
                     $dbconn->query("UPDATE timecards SET time_out = $time_out WHERE id = '{$card['id']}'");
+
+                    $desc = json_encode(["Update"=>"Timecards","Time Out"=>$time_out,"ID"=>$card['id']]);
+
+                    $dbconn->query("INSERT INTO log_cron (`desc`, time) VALUES ('$desc', UNIX_TIMESTAMP())");
                 }
             }
         }
@@ -36,8 +45,10 @@ if($user_qry->num_rows > 0) {
 
                 $dbconn->query("UPDATE op_queue SET active = $active, active_employees = '$active_employees', partially_completed = TRUE, end_time = UNIX_TIMESTAMP() WHERE id = '{$op_queue['id']}'");
 
-                $changed = ["Active"=>FALSE,"Active Employees"=>$active_employees,"Partially Completed"=>TRUE,"End Time"=>time(),"Auto-Clock"=>TRUE];
+                $changed = ["Active"=>FALSE,"Active Employees"=>$active_employees,"Partially Completed"=>TRUE,"End Time"=>time(),"Auto-Clock"=>TRUE,"ID"=>$op_queue['id']];
                 $changed = json_encode($changed);
+
+                $dbconn->query("INSERT INTO log_cron (`desc`, time) VALUES ('$changed', UNIX_TIMESTAMP())");
 
                 $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('{$op_queue['id']}', NULL, '$changed', UNIX_TIMESTAMP())");
             }

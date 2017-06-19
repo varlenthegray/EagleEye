@@ -25,7 +25,7 @@ if(!empty($_GET['action']))
                     <h4 class="pull-left"><label for="active_ops_view">Active Operations for</label>
                         <select id="active_ops_view" name="active_ops_view">
                             <?php
-                                echo "<option value='self'>{$_SESSION['shop_user']['name']}</option>";
+                                echo $_SESSION['shop_user']['name'];
 
                                 $depts = json_decode($_SESSION['shop_user']['department']);
 
@@ -44,8 +44,8 @@ if(!empty($_GET['action']))
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">Sales Order ID</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Department</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Operation</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Release Date</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="5">Operation Time</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Start/Resumed Time</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="5">Active Time</th>
                         </tr>
                         </thead>
                         <tbody id="active_jobs_table">

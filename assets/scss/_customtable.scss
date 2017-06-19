@@ -1,0 +1,13 @@
+.cust-table {
+  display: table;
+  width: 100%;
+  border: 1px solid #CCC;
+
+  .cust-tr {
+    display: table-row;
+  }
+
+  .cust-td {
+    display: table-cell;
+  }
+}

@@ -431,6 +431,10 @@ require 'includes/header_end.php';
         .on("keyup", function() { // this is on keyboard change
             updateSearchTable($(this).val(), "sonum", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_project_name1").val("");
+            $("#cu_dealer_contractor1").val("");
+            $("#cu_project_manager1").val("");
         })
         .autocomplete({
             source: "/ondemand/livesearch/general.php?search=cusonum"
@@ -444,6 +448,10 @@ require 'includes/header_end.php';
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "project", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_sales_order_num1").val("");
+            $("#cu_dealer_contractor1").val("");
+            $("#cu_project_manager1").val("");
         })
         .autocomplete({
             source: "/ondemand/livesearch/general.php?search=cuproject"
@@ -457,6 +465,10 @@ require 'includes/header_end.php';
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "contractor", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_sales_order_num1").val("");
+            $("#cu_project_name1").val("");
+            $("#cu_project_manager1").val("");
         })
         .autocomplete({
             source: "/ondemand/livesearch/general.php?search=cucontractor"
@@ -470,6 +482,10 @@ require 'includes/header_end.php';
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "project_manager", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_sales_order_num1").val("");
+            $("#cu_project_name1").val("");
+            $("#cu_dealer_contractor1").val("");
         })
         .autocomplete({
             source: "/ondemand/livesearch/general.php?search=cupm"

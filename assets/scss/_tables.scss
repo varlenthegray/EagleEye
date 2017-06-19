@@ -1,7 +1,7 @@
 table.dataTable thead .sorting:before, table.dataTable thead .sorting_asc:before,
 table.dataTable thead .sorting_desc:before, table.dataTable thead .sorting_asc_disabled:before,
 table.dataTable thead .sorting_desc_disabled:before {
-    display: none;
+    display: none !important;
 }
 
 

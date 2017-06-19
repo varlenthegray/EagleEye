@@ -48,7 +48,7 @@ require '../includes/header_end.php';
                                             </div>
 
                                             <div class="col-md-3" style="padding-bottom: 5px;">
-                                                <button class="btn waves-effect btn-primary pull-right" id="cu_add_button" data-toggle="modal" data-target="#modalAddCustomer"> <i class="zmdi zmdi-account-add"></i> </button>
+                                                <button class="btn waves-effect btn-primary pull-right" id="btn_add_acct"> <i class="zmdi zmdi-account-add"></i> </button>
                                             </div>
                                         </div>
 
@@ -130,119 +130,7 @@ require '../includes/header_end.php';
 
             <!-- Add Customer modal -->
             <div id="modalAddCustomer" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddCustomerLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h4 class="modal-title" id="modalAddCustomerTitle">Add New Customer</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <form name="add_new_customer" id="add_new_customer">
-                                        <table style="width: 100%;">
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_so_num" name="new_so_num" placeholder="SO #"></td>
-                                                <td><input type="text" class="form-control" id="new_dealer_code" name="new_dealer_code" placeholder="Dealer Code"></td>
-                                                <td><input type="text" class="form-control" id="new_project_name" name="new_project_name" placeholder="Project Name"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_org_name" name="new_org_name" placeholder="Organization Name"></td>
-                                                <td><input type="text" class="form-control" id="new_dealer_contractor" name="new_dealer_contractor" placeholder="Dealer/Contractor"></td>
-                                                <td><input type="text" class="form-control" id="new_project_manager" name="new_project_manager" placeholder="Project Manager"></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="3"><input type="text" class="form-control" id="new_addr_1" name="new_addr_1" placeholder="Address 1"></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="3"><input type="text" class="form-control" id="new_addr_2" name="new_addr_2" placeholder="Address 2"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_city" name="new_city" placeholder="City"></td>
-                                                <td>
-                                                    <select class="form-control" id="new_state" name="new_state">
-                                                        <option value="AL">Alabama</option>
-                                                        <option value="AK">Alaska</option>
-                                                        <option value="AZ">Arizona</option>
-                                                        <option value="AR">Arkansas</option>
-                                                        <option value="CA">California</option>
-                                                        <option value="CO">Colorado</option>
-                                                        <option value="CT">Connecticut</option>
-                                                        <option value="DE">Delaware</option>
-                                                        <option value="FL">Florida</option>
-                                                        <option value="GA">Georgia</option>
-                                                        <option value="HI">Hawaii</option>
-                                                        <option value="ID">Idaho</option>
-                                                        <option value="IL">Illinois</option>
-                                                        <option value="IN">Indiana</option>
-                                                        <option value="IA">Iowa</option>
-                                                        <option value="KS">Kansas</option>
-                                                        <option value="KY">Kentucky</option>
-                                                        <option value="LA">Louisiana</option>
-                                                        <option value="ME">Maine</option>
-                                                        <option value="MD">Maryland</option>
-                                                        <option value="MA">Massachusetts</option>
-                                                        <option value="MI">Michigan</option>
-                                                        <option value="MN">Minnesota</option>
-                                                        <option value="MS">Mississippi</option>
-                                                        <option value="MO">Missouri</option>
-                                                        <option value="MT">Montana</option>
-                                                        <option value="NE">Nebraska</option>
-                                                        <option value="NV">Nevada</option>
-                                                        <option value="NH">New Hampshire</option>
-                                                        <option value="NJ">New Jersey</option>
-                                                        <option value="NM">New Mexico</option>
-                                                        <option value="NY">New York</option>
-                                                        <option value="NC" selected>North Carolina</option>
-                                                        <option value="ND">North Dakota</option>
-                                                        <option value="OH">Ohio</option>
-                                                        <option value="OK">Oklahoma</option>
-                                                        <option value="OR">Oregon</option>
-                                                        <option value="PA">Pennsylvania</option>
-                                                        <option value="RI">Rhode Island</option>
-                                                        <option value="SC">South Carolina</option>
-                                                        <option value="SD">South Dakota</option>
-                                                        <option value="TN">Tennessee</option>
-                                                        <option value="TX">Texas</option>
-                                                        <option value="UT">Utah</option>
-                                                        <option value="VT">Vermont</option>
-                                                        <option value="VA">Virginia</option>
-                                                        <option value="WA">Washington</option>
-                                                        <option value="WV">West Virginia</option>
-                                                        <option value="WI">Wisconsin</option>
-                                                        <option value="WY">Wyoming</option>
-                                                    </select>
-                                                </td>
-                                                <td><input type="text" class="form-control" id="new_zip" name="new_zip" placeholder="ZIP"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_phone1" name="new_phone1" placeholder="Primary Phone"></td>
-                                                <td><input type="text" class="form-control" id="new_phone2" name="new_phone2" placeholder="Alt Phone"></td>
-                                                <td><input type="text" class="form-control" id="new_phone3" name="new_phone3" placeholder="Alt Phone 2"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_email1" name="new_email1" placeholder="Primary Email Address"></td>
-                                                <td><input type="text" class="form-control" id="new_email2" name="new_email2" placeholder="Alternate Email Address"></td>
-                                                <td>
-                                                    <select name="new_account_type" id="new_account_type" class="form-control">
-                                                        <option value="R" disabled>Account Type</option>
-                                                        <option value="R" selected>Retail</option>
-                                                        <option value="W">Wholesale</option>
-                                                        <option value="D">Distribution</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary waves-effect waves-light" id="submit_new_customer">Add Customer</button>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal-dialog -->
+                <!-- Inserted via AJAX -->
             </div>
             <!-- /.modal -->
 
@@ -470,6 +358,10 @@ require '../includes/header_end.php';
         });
     }
 
+    $.post('/ondemand/shopfloor/new_customer.php', function(data) {
+        $("#modalAddCustomer").html(data);
+    });
+
     $("#search_accordion1").accordion();
 
     $("#search_add_tab").on("click", function() {
@@ -513,20 +405,44 @@ require '../includes/header_end.php';
                 }
             });
         })
-        .on("click", "#cu_add_button", function() {
-            $.post("/ondemand/customer.php?action=add_button", function(data) {
-                if(data !== '') {
-                    $("#new_so_num").val(data);
-                    $("#new_state").val("NC").change();
-                    $("#new_account_type").val("R").change();
-                }
+        .on("click", "#btn_add_acct", function() {
+            $.post('/ondemand/shopfloor/new_customer.php', function(data) {
+                $("#modalAddCustomer").html(data);
+            }).done(function() {
+                $("#modalAddCustomer").modal('show');
+
+                $("#contractor_code").autocomplete({ // TODO: Why won't this work? JS DOM element timing mismatch?
+                    source: "/ondemand/livesearch/general.php?search=dealerid"
+                });
             });
+        })
+        .on("change", "input[name='cu_type']", function() {
+            switch($(this).val()) {
+                case 'retail':
+                    $("#add_retail_customer").show();
+                    $("#add_distributor").hide();
+
+                    break;
+                case 'distribution':
+                    $("#add_retail_customer").hide();
+                    $("#add_distributor").show();
+
+                    break;
+                case 'cutting':
+                    break;
+                default:
+                    break;
+            }
         });
 
     $("#cu_sales_order_num1")
         .on("keyup", function() { // this is on keyboard change
             updateSearchTable($(this).val(), "sonum", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_project_name1").val("");
+            $("#cu_dealer_contractor1").val("");
+            $("#cu_project_manager1").val("");
         })
         .autocomplete({
             source: "/ondemand/livesearch/general.php?search=cusonum"
@@ -540,6 +456,10 @@ require '../includes/header_end.php';
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "project", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_sales_order_num1").val("");
+            $("#cu_dealer_contractor1").val("");
+            $("#cu_project_manager1").val("");
         })
         .autocomplete({
             source: "/ondemand/livesearch/general.php?search=cuproject"
@@ -553,6 +473,10 @@ require '../includes/header_end.php';
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "contractor", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_sales_order_num1").val("");
+            $("#cu_project_name1").val("");
+            $("#cu_project_manager1").val("");
         })
         .autocomplete({
             source: "/ondemand/livesearch/general.php?search=cucontractor"
@@ -566,6 +490,10 @@ require '../includes/header_end.php';
         .on("keyup", function () { // this is on keyboard change
             updateSearchTable($(this).val(), "project_manager", "displaySO");
             $("#edit_so_info").hide();
+
+            $("#cu_sales_order_num1").val("");
+            $("#cu_project_name1").val("");
+            $("#cu_dealer_contractor1").val("");
         })
         .autocomplete({
             source: "/ondemand/livesearch/general.php?search=cupm"

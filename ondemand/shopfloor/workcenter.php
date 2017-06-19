@@ -1,5 +1,8 @@
 <?php
 require ("../../includes/header_start.php");
+require("../../assets/php/composer/vendor/autoload.php"); // require carbon for date formatting, http://carbon.nesbot.com/
+
+use Carbon\Carbon; // prep carbon
 
 $action = $_REQUEST['action'];
 
@@ -70,161 +73,112 @@ HEREDOC;
 
         break;
     case 'display_jiq':
-        // first grab the department from the system  for the user
-        $qry = $dbconn->query("SELECT department FROM user WHERE id = '{$_SESSION['shop_user']['id']}'");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id JOIN customer ON op_queue.so_parent = customer.sales_order_num WHERE active = FALSE AND completed = FALSE AND published = TRUE;");
 
-        $display_no_jobs = 0;
-
-        // for each job in the queue
-        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE active = false AND completed = false AND published = TRUE");
+        $output = array();
+        $i = 0;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $ind_op_qry = $dbconn->query("SELECT id, op_id, department, job_title, responsible_dept FROM operations WHERE id = '{$op_queue['operation_id']}'");
+                $output['data'][$i][] = $op_queue['so_parent'] . "-" . $op_queue['room'];
+                $output['data'][$i][] = $op_queue['bracket'];
+                $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+                $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['created']);
+                $output['data'][$i]['DT_RowId'] = $op_queue['op_queueID'];
 
-                if($ind_op_qry->num_rows > 0) {
-                    $ind_op = $ind_op_qry->fetch_assoc();
-
-                    // we do this job and should display it
-                    // gather room information
-                    $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$op_queue['room_id']}'");
-                    $room = $room_qry->fetch_assoc();
-
-                    $operation_payload = json_encode($ind_op); // encode the operation so that we can send it to the desired function
-
-                    // we need the customer query for the dealer code
-                    $so_qry = $dbconn->query("SELECT * FROM customer WHERE sales_order_num = '{$room['so_parent']}'");
-                    $so_result = $so_qry->fetch_assoc();
-
-                    // generate the SO ID
-                    $so_id = strtoupper($room['so_parent'] . "-" . $room['room']);
-
-                    $released = date(DATE_DEFAULT, $op_queue['created']);
-
-                    echo "<tr class='cursor-hand wc-edit-queue' data-op-id='{$op_queue['id']}' data-op-info='$operation_payload'
-                                            data-long-op-id='{$ind_op['responsible_dept']}' data-long-part-id='$so_id'>";
-                    echo "  <td>$so_id</td>";
-                    echo "  <td>{$ind_op['responsible_dept']}</td>";
-                    echo "  <td>{$ind_op['op_id']}: {$ind_op['job_title']}</td>"; // the operation title itself, easy!
-                    echo "  <td>$released</td>";
-                    echo "</tr>";
-
-                    $display_no_jobs -= 1;
-                }
+                $i += 1;
             }
+        } else {
+            $output['data'][$i][] = '---';
+            $output['data'][$i][] = '---';
+            $output['data'][$i][] = '--- None Queued ---';
+            $output['data'][$i][] = '---';
+            $output['data'][$i][] = '---';
         }
 
-        if($display_no_jobs === 7) {
-            echo "<tr><td colspan='4'>No active jobs</td></tr>";
-        }
+        echo json_encode($output);
 
         break;
     case 'display_recently_completed':
-        // first grab the department from the system  for the user
-        $qry = $dbconn->query("SELECT department FROM user WHERE id = '{$_SESSION['shop_user']['id']}'");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id JOIN customer ON op_queue.so_parent = customer.sales_order_num WHERE active = FALSE AND completed = TRUE AND published = TRUE;");
 
-        $display_no_jobs = 0;
-
-        // for each job in the queue
-        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE completed = TRUE ORDER BY end_time DESC LIMIT 0,30");
+        $output = array();
+        $i = 0;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $ind_op_qry = $dbconn->query("SELECT id, op_id, department, job_title, responsible_dept FROM operations WHERE id = '{$op_queue['operation_id']}'");
+                $output['data'][$i][] = $op_queue['so_parent'] . "-" . $op_queue['room'];
+                $output['data'][$i][] = $op_queue['bracket'];
+                $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
 
-                if($ind_op_qry->num_rows > 0) {
-                    $ind_op = $ind_op_qry->fetch_assoc();
+                $time = Carbon::createFromTimestamp($op_queue['end_time']); // grab the carbon timestamp
 
-                    // we do this job and should display it
-                    // gather room information
-                    $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$op_queue['room_id']}'");
-                    $room = $room_qry->fetch_assoc();
+                $output['data'][$i][] = $time->diffForHumans(); // obtain the difference in readable format for humans!
 
-                    $operation_payload = json_encode($ind_op); // encode the operation so that we can send it to the desired function
-
-                    // we need the customer query for the dealer code
-                    $so_qry = $dbconn->query("SELECT * FROM customer WHERE sales_order_num = '{$room['so_parent']}'");
-                    $so_result = $so_qry->fetch_assoc();
-
-                    // generate the SO ID
-                    $so_id = strtoupper($room['so_parent'] . "-" . $room['room']);
-
-                    echo "<tr class='cursor-hand queue-op-start' data-op-id='{$op_queue['id']}' data-op-info='$operation_payload'
-                                            data-long-op-id='{$ind_op['responsible_dept']}' data-long-part-id='$so_id'>";
-                    echo "  <td>$so_id</td>";
-                    echo "  <td>{$ind_op['responsible_dept']}</td>";
-                    echo "  <td>{$ind_op['op_id']}: {$ind_op['job_title']}</td>"; // the operation title itself, easy!
-                    echo "  <td id='{$op_queue['start_time']}'></td>";
-                    echo "</tr>";
-
-                    echo "<script>$('#{$op_queue['start_time']}').text(moment({$op_queue['start_time']} * 1000).fromNow())</script>";
-                }
+                $i += 1;
             }
         } else {
-            echo "<tr><td colspan='4'>No recently completed jobs</td></tr>";
+            $output['data'][$i][] = '---';
+            $output['data'][$i][] = '---';
+            $output['data'][$i][] = '--- Nothing to Show! ---';
+            $output['data'][$i][] = '---';
         }
+
+        echo json_encode($output);
 
         break;
     case 'display_active_jobs':
-        // first grab the department from the system  for the user
-        $qry = $dbconn->query("SELECT department FROM user WHERE id = '{$_SESSION['shop_user']['id']}'");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id LEFT JOIN customer ON op_queue.so_parent = customer.sales_order_num WHERE active = TRUE AND published = TRUE AND (completed = FALSE OR completed IS NULL);");
 
-        $display_no_jobs = 0;
-
-        // for each job in the queue
-        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE active = TRUE AND completed = false");
+        $output = array();
+        $i = 0;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $ind_op_qry = $dbconn->query("SELECT id, op_id, department, job_title, responsible_dept FROM operations WHERE id = '{$op_queue['operation_id']}'");
+                $output['data'][$i][] = $op_queue['so_parent'] . "-" . $op_queue['room'];
+                $output['data'][$i][] = $op_queue['bracket'];
 
-                if($ind_op_qry->num_rows > 0) {
-                    $ind_op = $ind_op_qry->fetch_assoc();
-
-                    // we do this job and should display it
-                    // gather room information
-                    $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$op_queue['room_id']}'");
-                    $room = $room_qry->fetch_assoc();
-
-                    $operation_payload = json_encode($ind_op); // encode the operation so that we can send it to the desired function
-
-                    // we need the customer query for the dealer code
-                    $so_qry = $dbconn->query("SELECT * FROM customer WHERE sales_order_num = '{$room['so_parent']}'");
-                    $so_result = $so_qry->fetch_assoc();
-
-                    // generate the SO ID
-                    $so_id = strtoupper($room['so_parent'] . "-" . $room['room']);
-
-                    // obtain the list of individuals working
-                    $active_emp = json_decode($op_queue['active_employees']);
-                    $emp_list = '';
-
-                    foreach($active_emp as $emp) {
-                        $name_qry = $dbconn->query("SELECT name FROM user WHERE id = '$emp'");
-                        $name = $name_qry->fetch_assoc();
-
-                        $emp_list .= "{$name['name']}, ";
-                    }
-
-                    $emp_list = rtrim($emp_list, ", ");
-
-                    echo "<tr class='cursor-hand queue-op-start' data-op-id='{$op_queue['id']}' data-op-info='$operation_payload'
-                                            data-long-op-id='{$ind_op['responsible_dept']}' data-long-part-id='$so_id'>";
-                    echo "  <td>$so_id</td>";
-                    echo "  <td>{$ind_op['responsible_dept']}</td>";
-                    echo "  <td>{$ind_op['op_id']}: {$ind_op['job_title']}</td>"; // the operation title itself, easy!
-                    echo "  <td>$emp_list</td>";
-                    echo "  <td id='{$op_queue['start_time']}'></td>";
-                    echo "</tr>";
-
-                    echo "<script>$('#{$op_queue['start_time']}').text(moment({$op_queue['start_time']} * 1000).fromNow())</script>";
-
-                    $display_no_jobs -= 1;
+                if(!empty($op_queue['subtask'])) {
+                    $subtask = " ({$op_queue['subtask']})";
+                } else {
+                    $subtask = NULL;
                 }
+
+                $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'] . $subtask;
+
+                $employees = json_decode($op_queue['active_employees']);
+                $active_emp = null;
+
+                foreach($employees as $employee) {
+                    $emp_qry = $dbconn->query("SELECT * FROM user WHERE id = $employee");
+                    $emp = $emp_qry->fetch_assoc();
+
+                    $active_emp .= $emp['name'] . ", ";
+                }
+
+                $active_emp = rtrim($active_emp, ", ");
+
+                $output['data'][$i][] = $active_emp;
+
+                if($op_queue['resumed_time'] !== null) {
+                    $start_resume_time = date(TIME_ONLY, $op_queue['resumed_time']);
+                } else {
+                    $start_resume_time = date(TIME_ONLY, $op_queue['start_time']);
+                }
+
+                $output['data'][$i][] = $start_resume_time;
+
+                $i += 1;
             }
         } else {
-            echo "<tr><td colspan='4'>No active jobs</td></tr>";
+            $output['data'][$i][] = '---';
+            $output['data'][$i][] = '---';
+            $output['data'][$i][] = '--- None Active ---';
+            $output['data'][$i][] = '---';
+            $output['data'][$i][] = '---';
         }
+
+        echo json_encode($output);
 
         break;
     default:

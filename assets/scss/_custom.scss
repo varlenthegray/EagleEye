@@ -195,3 +195,42 @@ label {
     font-size: .75em;
   }
 }
+
+// data-table adjustments
+.table-responsive .table {
+  margin-top: 5px; // weird, i know, but it adjusts for datatable table.
+}
+
+.table th, .table td {
+  padding: 2px;
+}
+
+table.dataTable thead th.sorting:after,
+table.dataTable thead th.sorting_asc:after,
+table.dataTable thead th.sorting_desc:after {
+  top: 0;
+}
+
+// regular table adjustments!
+.table th, .table td {
+  line-height: 2em;
+}
+
+// active room line, part of the table but not specifically
+.active_room_line {
+  background-color: #00aced;
+}
+
+.table .table {
+  background: none; // why does tables.scss have a background color for the entire table? stupid.
+}
+
+// custom table, no border and more
+.table-custom-nb {
+  border-collapse: collapse !important;
+  border: none !important;
+
+  td, tr {
+    border: none !important;
+  }
+}
