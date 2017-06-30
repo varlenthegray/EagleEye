@@ -22,19 +22,7 @@ if(!empty($_GET['action']))
         <div class="card-box" style="min-height: 511px;">
             <div class="row">
                 <div class="col-md-12">
-                    <h4 class="pull-left"><label for="active_ops_view">Active Operations for</label>
-                        <select id="active_ops_view" name="active_ops_view">
-                            <?php
-                                echo $_SESSION['shop_user']['name'];
-
-                                $depts = json_decode($_SESSION['shop_user']['department']);
-
-                                foreach($depts as $department) {
-                                    echo "<option value='$department'>$department</option>";
-                                }
-                            ?>
-                        </select>
-                    </h4>
+                    <h4 class="pull-left">Active Operations for <?php echo $_SESSION['shop_user']['name']; ?></h4>
 
                     <h4 id="date-time" class="pull-right"></h4>
 
@@ -83,9 +71,11 @@ if(!empty($_GET['action']))
                         <thead>
                         <tr>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="persist">Sales Order ID</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="6">Room</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Department</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Operation</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Release Date</th>
+                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="7">Delivery Date</th>
                             <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="5">Operation Time</th>
                         </tr>
                         </thead>
@@ -137,9 +127,7 @@ if(!empty($_GET['action']))
     var opInfo;
 
     function updateActiveJobs() {
-        var active = $("#active_ops_view").val();
-
-        $.post("/ondemand/shopfloor/job_actions.php?action=display_active_jobs", {view: active}, function(data) { // grab the latest information
+        $.post("/ondemand/shopfloor/job_actions.php?action=display_active_jobs", function(data) { // grab the latest information
             $("#active_jobs_table").html(data); // display that information in the table
         });
     }
@@ -246,9 +234,9 @@ if(!empty($_GET['action']))
             });
     })
         .on("click", "#save_job_update", function() {
-            var nb = $(this).data("nb");
+            var nb = $(this).data("nb"); // is this a non-billable job?
 
-            if(nb) {
+            if(nb) { // if this is non-billable, lets process it as such
                 $.post("/ondemand/shopfloor/job_actions.php?action=update_active_job", {opID: activeJobID, notes: $("#notes").val(), nb: 'true'}, function(data) {
                     updateActiveJobs();
                     updateQueuedJobs();

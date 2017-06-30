@@ -152,6 +152,41 @@ echo ($dbconn->query("ALTER TABLE customer ADD phys_state VARCHAR(2) NULL;")) ? 
 echo ($dbconn->query("ALTER TABLE customer ADD phys_zip VARCHAR(12) NULL;")) ? "Successful with adding physical zip.<br />" : "Error with adding physical zip.<br />";
 echo ($dbconn->query("ALTER TABLE customer ADD global_email VARCHAR(200) NULL;")) ? "Successful with adding global email.<br />" : "Error with adding global email.<br />";
 echo ($dbconn->query("ALTER TABLE customer ADD global_cell VARCHAR(20) NULL;")) ? "Successful with adding global cell.<br />" : "Error with adding global cell.<br />";
+echo ($dbconn->query("CREATE TABLE cal_holidays (id INT PRIMARY KEY AUTO_INCREMENT,unix_time INT(20));")) ? "Successful with creating calendar holiday table.<br />" : "Error with creating calendar holiday table.<br />";
 
+$holiday[] = strtotime("july 4th, 2017");
+$holiday[] = strtotime("september 4th, 2017");
+$holiday[] = strtotime("november 23rd, 2017");
+$holiday[] = strtotime("december 25th, 2017");
+$holiday[] = strtotime("jan 1, 2018");
+$holiday[] = strtotime("may 28, 2018");
+$holiday[] = strtotime("july 4, 2018");
+$holiday[] = strtotime("sep 3, 2018");
+$holiday[] = strtotime("nov 22, 2018");
+$holiday[] = strtotime("dec 25, 2018");
+$holiday[] = strtotime("jan 1, 2019");
+$holiday[] = strtotime("may 27, 2019");
+$holiday[] = strtotime("july 4, 2019");
+$holiday[] = strtotime("sep 2, 2019");
+$holiday[] = strtotime("nov 28, 2019");
+$holiday[] = strtotime("dec 25, 2019");
+$holiday[] = strtotime("jan 1, 2020");
+$holiday[] = strtotime("may 25, 2020");
+$holiday[] = strtotime("sep 7, 2020");
+$holiday[] = strtotime("nov 26, 2020");
+$holiday[] = strtotime("dec 25, 2020");
+
+foreach($holiday as $unixday) {
+    $readable_holiday = date("m/d/Y", $unixday);
+
+    echo ($dbconn->query("INSERT INTO cal_holidays (unix_time) VALUES ($unixday);")) ? "Successful with creating holiday $readable_holiday.<br />" : "Error with creating creating holiday $readable_holiday.<br />";
+}
+
+echo ($dbconn->query("ALTER TABLE dealers ADD account_type VARCHAR(15) DEFAULT 'R' NULL;")) ? "Successful with adding account_type to dealers with default of 'Retail'.<br />" : "Error with adding account_type to dealers with default of 'Retail'.<br />";
+echo ($dbconn->query("CREATE TABLE notes (id INT PRIMARY KEY AUTO_INCREMENT,note LONGTEXT,note_type VARCHAR(100),timestamp INT(15),user INT,type_id INT);")) ? "Successful with creating notes table.<br />" : "Error with creating notes table.<br />";
+echo ($dbconn->query("UPDATE customer SET dealer_code = 'A01a' WHERE project_manager = 'Robert';")) ? "Successful with setting dealer code for Robert.<br />" : "Error with setting dealer code for Robert.<br />";
+echo ($dbconn->query("UPDATE customer SET dealer_code = 'A01b' WHERE project_manager = 'Brent';")) ? "Successful with setting dealer code for Brent.<br />" : "Error with setting dealer code for Brent.<br />";
+echo ($dbconn->query("INSERT INTO dealers (dealer_id, contact, dealer_name, physical_address, physical_city, physical_state, physical_zip, shipping_address,shipping_city, shipping_state, shipping_zip, phone, email, multiplier, ship_zone, sales_rep_number, account_type) VALUES ('A01c','Jason','Stone Mountain Cabinetry','309 S. Country Club Rd','Brevard','NC','28712','309 S. Country Club Rd','Brevard','NC','28712','828.966.9000','orders@smcm.us','0','A','3','R');")) ? "Successful with creating Jason in dealers.<br />" : "Error with creating Jason in dealers.<br />";
+echo ($dbconn->query("UPDATE customer SET dealer_code = 'A01c' WHERE project_manager = 'Jason';")) ? "Successful with setting dealer code for Jason.<br />" : "Error with setting dealer code for Jason.<br />";
 
 echo "<h1>Database prepared.</h1>";

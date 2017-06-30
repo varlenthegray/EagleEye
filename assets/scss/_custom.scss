@@ -6,6 +6,7 @@
   &:hover {
     background-color: $white;
     color: $custom;
+    border-radius: 6px;
   }
 }
 
@@ -213,7 +214,11 @@ table.dataTable thead th.sorting_desc:after {
 
 // regular table adjustments!
 .table th, .table td {
-  line-height: 2em;
+  line-height: 1.7em;
+}
+
+table tbody td {
+  vertical-align: middle !important;
 }
 
 // active room line, part of the table but not specifically
@@ -233,4 +238,39 @@ table.dataTable thead th.sorting_desc:after {
   td, tr {
     border: none !important;
   }
+}
+
+.radio, .checkbox {
+  margin-bottom: 2px !important;
+}
+
+// custom UL
+.custom_ul {
+  li {
+    display: block;
+  }
+
+  ul {
+    list-style-type: none;
+    font-size: .8em;
+  }
+}
+
+// custom save button
+.save_bar {
+  z-index: 9999;
+  position: fixed;
+  left: calc(50% - 30px);
+  top: 125px;
+
+  .button {
+    font-weight: bold;
+  }
+}
+
+// faux button
+.faux_button {
+  width: 23px;
+  height: 22px;
+  line-height: 20px;
 }

@@ -10,19 +10,30 @@ require '../includes/header_end.php';
 <script type="text/javascript" src="/assets/plugins/tablesorter/jquery.tablesorter.min.js"></script>
 <link href="/assets/plugins/tablesorter/themes/blue/style.css" rel="stylesheet" type="text/css"/>
 
+<!-- tinysort -->
+<script type="text/javascript" src="/assets/plugins/tinysort/tinysort.min.js"></script>
+
+<!-- matchheight -->
+<script type="text/javascript" src="/assets/plugins/jquery.matchHeight-min.js"></script>
+
+<!-- input masking -->
+<script type="text/javascript" src="/assets/plugins/jquery.mask.min.js"></script>
+
+<!-- date picker -->
+<link href="/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
+<script src="/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
 <!-- Search results box -->
 <div class="row">
     <div class="col-md-12">
         <div class="card-box" id="search_results_card">
             <div class="row">
-                <div class="col-md-12">
-                    <form class="form-inline">
-                        <div class="form-group">
-                            <label for="global_search">Lookup: </label>
-                            <input class="form-control" type="text" placeholder="Search..." id="global_search" name="global_search" style="width: 250px;" />
-                            <button class="btn waves-effect btn-primary" id="btn_add_acct" style="margin: 0 0 0 6px;"> <i class="zmdi zmdi-account-add"></i> </button>
-                        </div>
-                    </form>
+                <div class="col-md-12 form-inline">
+                    <div class="form-group">
+                        <label for="global_search">Lookup: </label>
+                        <input class="form-control" type="text" placeholder="Search..." id="global_search" name="global_search" style="width: 250px;" />
+                        <button class="btn waves-effect btn-primary" id="btn_add_acct" style="margin: 0 0 0 6px;"> <i class="zmdi zmdi-account-add"></i> </button>
+                    </div>
                 </div>
             </div>
 
@@ -67,6 +78,7 @@ require '../includes/header_end.php';
 <script>
     var active_so_num = null;
     var active_room_id = null;
+    var timer;
 
     loadCalendarPane(); // found in page_content_functions
 
@@ -396,18 +408,18 @@ require '../includes/header_end.php';
                     break;
             }
         })
-        .on("click", "[id^=edit_]", function(e) {
+        .on("click", "[id^=edit_so_]", function(e) {
             e.stopPropagation();
 
-            active_so_num = $(this).attr("id").replace('edit_', '');
+            active_so_num = $(this).attr("id").replace('edit_so_', '');
 
             $("[id^=tr_single_room_]").hide(100);
             $("[id^=tr_room_]").hide(100);
 
-            $("[id^=tr_edit_so_]").not("#tr_edit_so_" + active_so_num).hide(100);
-            $("[id^=div_edit_so_]").not("#div_edit_so_" + active_so_num).hide();
+            $("[id^=tr_edit_so_]").not(this).hide(100);
+            $("[id^=div_edit_so_]").not(this).hide();
 
-            $("[id^=show_room_]").not("#show_room_" + active_so_num).removeClass("active_room_line");
+            $("[id^=show_room_]").not(this).removeClass("active_room_line");
             $("[id^=show_single_room_]").removeClass("active_room_line");
 
             $("#show_room_" + active_so_num).addClass("active_room_line");
@@ -417,31 +429,39 @@ require '../includes/header_end.php';
         })
         .on("click", "[id^=show_room_]", function() {
             $("[id^=show_room_]").removeClass("active_room_line");
-            $(this).addClass("active_room_line");
             $("[id^=show_single_room_]").removeClass("active_room_line");
-            $("[id^=tr_single_room_]").hide(250);
-            $("[id^=div_single_room_]").hide(100);
+            $(".add_room_trigger").removeClass("active_room_line");
+
+            $(this).addClass("active_room_line");
 
             active_so_num = $(this).attr("id").replace('show_room_', '');
 
-            $("[id^=tr_room_]").not("#tr_room_" + active_so_num).hide(100);
-
-            $("[id^=tr_edit_so_]").hide(100);
-            $("[id^=div_edit_so_]").hide();
+            $("[id^=tr_single_room_]").finish().hide(250);
+            $("[id^=div_single_room_]").finish().hide(100);
+            $("[id^=tr_edit_so_]").finish().hide(250);
+            $("[id^=div_edit_so_]").finish().hide(100);
+            $("[id^=tr_add_single_room_info_]").finish().hide(250);
+            $("[id^=div_add_single_room_info_]").finish().hide(100);
+            $("[id^=tr_room_]").not(this).finish().hide(100);
+            $("[id^=div_room_]").finish().hide(250);
 
             $("#tr_room_" + active_so_num).show();
             $("#div_room_" + active_so_num).slideDown(250);
         })
         .on("click", "[id^=show_single_room_]", function() {
             $("[id^=show_single_room_]").removeClass("active_room_line");
+            $(".add_room_trigger").removeClass("active_room_line");
+
             $(this).addClass("active_room_line");
 
             active_room_id = $(this).attr("id").replace('show_single_room_', '');
 
-            $("[id^=tr_single_room_]").not("#tr_single_room_" + active_room_id).hide(100);
+            $("[id^=tr_single_room_]").not(this).hide(100);
 
             $("[id^=tr_room_bracket_]").hide(250);
             $("[id^=div_room_bracket_]").hide(100);
+            $("[id^=tr_add_single_room_info_]").hide(250);
+            $("[id^=div_add_single_room_info_]").hide(100);
 
             $("#tr_single_room_" + active_room_id).show();
             $("#div_single_room_" + active_room_id).slideDown(250);
@@ -452,13 +472,16 @@ require '../includes/header_end.php';
             active_room_id = $(this).attr("id").replace('manage_bracket_', '');
 
             $("[id^=show_single_room_]").removeClass("active_room_line");
+            $(".add_room_trigger").removeClass("active_room_line");
             $("#show_single_room_" + active_room_id).addClass("active_room_line");
 
             $("[id^=tr_single_room_]").hide(250);
             $("[id^=div_single_room_]").hide(100);
+            $("[id^=tr_add_single_room_info_]").hide(250);
+            $("[id^=div_add_single_room_info_]").hide(100);
 
-            $("[id^=tr_room_bracket_]").not("#tr_room_bracket_" + active_room_id).hide(250);
-            $("[id^=div_room_bracket_]").not("#div_room_bracket_" + active_room_id).hide(100);
+            $("[id^=tr_room_bracket_]").not(this).hide(250);
+            $("[id^=div_room_bracket_]").not(this).hide(100);
 
             $("#sales_bracket_adjustments_" + active_room_id).multiSelect();
             $("#pre_prod_bracket_adjustments_" + active_room_id).multiSelect();
@@ -482,27 +505,144 @@ require '../includes/header_end.php';
                     source: "/ondemand/livesearch/general.php?search=dealerid"
                 });
             });
+        })
+        .on("click", ".activate_op", function() {
+            var opid = $(this).data("opid");
+            var roomid = $(this).data("roomid");
+            var soid = $(this).data("soid");
+            var opnum = $(this).parent().data("opnum");
+            var bracket = $(this).closest('ul').data("bracket");
+            var info;
+
+            info = '<li id="li_op_' + opid + '_room_' + roomid + '" data-opnum="' + opnum + '">';
+            info += '<input type="radio" name="sales_bracket_adjustments_' + roomid + '" id="op_' + opid + '_room_' + roomid +'" value="">';
+            info += '<label for="op_' + opid + '_room_' + roomid + '">' + $(this).parent().text().trim() + '</label>';
+            info += '<span class="pull-right cursor-hand text-md-center deactivate_op" data-opid="' + opid + '" data-roomid="' + roomid + '" data-soid="' + soid + '"> <i class="fa fa-arrow-circle-right" style="width: 18px;"></i></span>';
+            info += "</li>";
+
+            $("#active_so_" + soid + "_room_" + roomid + "_" + bracket).append(info);
+            tinysort("ul#active_so_" + soid + "_room_" + roomid + "_" + bracket + ">li",{data:'opnum'});
+
+            $(this).parent().remove();
+        })
+        .on("click", ".deactivate_op", function() {
+            var opid = $(this).data("opid");
+            var roomid = $(this).data("roomid");
+            var soid = $(this).data("soid");
+            var opnum = $(this).parent().data("opnum");
+            var bracket = $(this).closest('ul').data("bracket");
+            var info;
+
+            info = '<li id="li_op_' + opid + '_room_' + roomid + '" data-opnum="' + opnum + '">';
+            info += '<span class="pull-left cursor-hand text-md-center activate_op" data-opid="' + opid + '" data-roomid="' + roomid + '" data-soid="' + soid + '" style="height:18px;width:18px;"> <i class="fa fa-arrow-circle-left" style="margin:5px;"></i></span>';
+            info += '<label for="op_' + opid + '_room_' + roomid + '">' + $(this).parent().text().trim() + '</label>';
+            info += "</li>";
+
+            $("#inactive_so_" + soid + "_room_" + roomid + "_" + bracket).append(info);
+            tinysort("ul#inactive_so_" + soid + "_room_" + roomid + "_" + bracket + ">li",{data:'opnum'});
+
+            $(this).parent().remove();
+        })
+        .on("click", ".add_room_trigger", function() {
+            $("[id^=show_single_room_]").removeClass("active_room_line");
+            $(".add_room_trigger").removeClass("active_room_line");
+
+            $(this).addClass("active_room_line");
+
+            active_so_num = $(this).data('sonum');
+
+            $("[id^=tr_room_bracket_]").hide(100);
+            $("[id^=tr_single_room_]").hide(100);
+            $("[id^=tr_add_single_room_info_]").hide(250);
+            $("[id^=div_add_single_room_info_]").hide(100);
+
+            $("#tr_add_single_room_info_" + active_so_num).show();
+            $("#div_add_single_room_info_" + active_so_num).slideDown(250);
+
+        })
+        .on("click", "[id^=add_room_save_]", function() {
+            var save_info = $("#form_add_room_" + active_so_num).serialize();
+
+            $.post("/ondemand/shopfloor/gen_actions.php?action=insert_new_room&" + save_info, function(data) {
+                $("body").append(data);
+            });
+        })
+        .on("change click", ".days-to-ship", function() {
+            var dts = $(this).val();
+            var type = $(this).data('type');
+            var room_letter = $(this).data('room');
+
+            $.post("/ondemand/shopfloor/gen_actions.php?action=calc_del_date", {days_to_ship: dts}, function(data) {
+                if(type === 'add') {
+                    $("#delivery_date_add_" + active_so_num).val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + dts.toLowerCase()).data("datepicker").setDate(data);
+                } else {
+                    $("#edit_del_date_" + room_letter + "_so_" + active_so_num).val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + dts.toLowerCase()).data("datepicker").setDate(data);
+                }
+            });
+        })
+        .on("change", ".dealer_code", function() {
+            $.post("/ondemand/shopfloor/gen_actions.php?action=get_dealer_info&dealer_code=" + $(this).val(), function(data) {
+                if(data !== '') {
+                    var dealer = JSON.parse(data);
+
+                    $("#add_room_account_type_" + active_so_num).val(dealer.account_type);
+                    $("#add_room_dealer_" + active_so_num).val(dealer.dealer_name);
+                    $("#add_room_contact_" + active_so_num).val(dealer.contact);
+                    $("#add_room_phone_num_" + active_so_num).val(dealer.phone);
+                    $("#add_room_email_" + active_so_num).val(dealer.email);
+                    $("#add_room_salesperson_" + active_so_num).val(dealer.contact);
+                    $("#add_room_shipping_addr_" + active_so_num).val(dealer.shipping_address);
+                    $("#add_room_shipping_city_" + active_so_num).val(dealer.shipping_city);
+                    $("#add_room_shipping_state_" + active_so_num).val(dealer.shipping_state);
+                    $("#add_room_shipping_zip_" + active_so_num).val(dealer.shipping_zip);
+                }
+            });
+        })
+        .on("click", ".edit_room_save", function(e) {
+            e.stopPropagation();
+
+            var edit_info = $("#room_edit_" + active_room_id).serialize();
+
+            $.post("/ondemand/shopfloor/gen_actions.php?action=update_room&" + edit_info, function(data) {
+                $('body').append(data);
+            });
+        })
+        .on("click", ".add_iteration", function() {
+            console.log("Going to add iteration!");
         });
 
     $("#global_search").on("keyup", function() {
-        if($(this).val().length >= 1) {
-            $.post("/ondemand/livesearch/search_results.php?search=general", {find: $(this).val()}, function(data) {
-                $("#search_results_table").html(data);
-                $("#search_results_global_table").trigger("update");
+        var input = $(this);
 
-                if(data !== '') {
-                    $("#search_results_global_table").show();
-                } else {
-                    $("#search_results_global_table").hide();
-                }
-            });
+        clearTimeout(timer);
 
-//            $("#search_results_table").tabulator("setData", "/ondemand/livesearch/search_results.php?search=gen_json&find=" + $(this).val());
-//
-//            $("#search_results_card").show();
-        } else {
-            $("#search_results_global_table").hide();
-        }
+        timer = setTimeout(function() {
+            if(input.val().length >= 1) {
+                $.post("/ondemand/livesearch/search_results.php?search=general", {find: input.val()}, function(data) {
+                    $("#search_results_table").html(data);
+                    $("#search_results_global_table").trigger("update");
+
+                    if(data !== '') {
+                        $("#search_results_global_table").show();
+                        $('[data-toggle="tooltip"]').tooltip(); // enable tooltips
+
+                        // setup field masks
+                        $(".mask-zip").mask('00000-0000');
+                        $(".mask-phone").mask('(000) 000-0000');
+
+                        // setup date picker
+                        $(".delivery_date").datepicker({
+                            autoclose: true,
+                            todayHighlight: true
+                        }).mask('00/00/0000');
+                    } else {
+                        $("#search_results_global_table").hide();
+                    }
+                });
+            } else {
+                $("#search_results_global_table").hide();
+            }
+        }, 250);
     });
 
     $("#cu_sales_order_num1")

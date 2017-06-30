@@ -320,52 +320,28 @@ HEREDOC;
     case 'display_active_jobs':
         $filter = sanitizeInput($_REQUEST['view']);
 
-        if($filter === 'self') {
-            $self_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE");
+        $self_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE");
 
-            if($self_qry->num_rows > 0) {
-                while($self = $self_qry->fetch_assoc()) {
-                    $so_id = $self['so_parent'] . "-" . $self['room'];
-                    $operation = $self['op_id'] . ": " . $self['job_title'];
-                    $start_time = ($self['resumed_time'] === null) ? date(TIME_ONLY, $self['start_time']) : date(TIME_ONLY, $self['resumed_time']);
-                    $active_time = ($self['resumed_time'] === null) ? "$('#start_{$self['start_time']}').text(moment({$self['start_time']} * 1000).fromNow(true))" : "$('#start_{$self['start_time']}').text(moment({$self['resumed_time']} * 1000).fromNow(true))";
+        if($self_qry->num_rows > 0) {
+            while($self = $self_qry->fetch_assoc()) {
+                $so_id = $self['so_parent'] . "-" . $self['room'];
+                $operation = $self['op_id'] . ": " . $self['job_title'];
+                $start_time = ($self['resumed_time'] === null) ? date(TIME_ONLY, $self['start_time']) : date(TIME_ONLY, $self['resumed_time']);
+                $active_time = ($self['resumed_time'] === null) ? "$('#start_{$self['start_time']}').text(moment({$self['start_time']} * 1000).fromNow(true))" : "$('#start_{$self['start_time']}').text(moment({$self['resumed_time']} * 1000).fromNow(true))";
 
-                    echo "<tr class='cursor-hand update-active-job' data-op-id='{$self['opID']}'>";
-                    echo "  <td>$so_id</td>";
-                    echo "  <td>{$self['responsible_dept']}</td>";
-                    echo "  <td>$operation</td>"; // the operation title itself, easy!
-                    echo "  <td>$start_time</td>";
-                    echo "  <td id='start_{$self['start_time']}'></td>";
-                    echo "<script>$active_time</script>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr>";
-                echo "  <td colspan='5'>No active operations for you individually.</td>";
+                echo "<tr class='cursor-hand update-active-job' data-op-id='{$self['opID']}'>";
+                echo "  <td>$so_id</td>";
+                echo "  <td>{$self['responsible_dept']}</td>";
+                echo "  <td>$operation</td>"; // the operation title itself, easy!
+                echo "  <td>$start_time</td>";
+                echo "  <td id='start_{$self['start_time']}'></td>";
+                echo "<script>$active_time</script>";
                 echo "</tr>";
             }
         } else {
-            $dept_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE operations.responsible_dept = '$filter' AND active = TRUE");
-
-            if($dept_qry->num_rows > 0) {
-                while($dept = $dept_qry->fetch_assoc()) {
-                    $so_id = $dept['so_parent'] . "-" . $dept['room'];
-                    $operation = $dept['op_id'] . ": " . $dept['job_title'];
-                    $release_date = date('n/j/y', $dept['created']);
-
-                    echo "<tr class='cursor-hand update-active-job' data-op-id='{$dept['opID']}'>";
-                    echo "  <td>$so_id</td>";
-                    echo "  <td>{$dept['responsible_dept']}</td>";
-                    echo "  <td>$operation</td>"; // the operation title itself, easy!
-                    echo "  <td>$release_date</td>";
-                    echo "  <td></td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr>";
-                echo "  <td colspan='5'>No active operations for $filter.</td>";
-                echo "</tr>";
-            }
+            echo "<tr>";
+            echo "  <td colspan='5'>No active operations currently.</td>";
+            echo "</tr>";
         }
 
         break;
@@ -386,10 +362,12 @@ HEREDOC;
                     $op_info_payload = json_encode($op_info);
 
                     echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
+                    echo "  <td>&nbsp;</td>";
                     echo "  <td>Non-Billable</td>";
                     echo "  <td>$department</td>";
                     echo "  <td>$operation</td>";
                     echo "  <td>Now</td>";
+                    echo "  <td>&nbsp;</td>";
                     echo "  <td>&nbsp;</td>";
                     echo "</tr>";
                 }
@@ -410,10 +388,12 @@ HEREDOC;
                     $op_info_payload = json_encode($op_info);
 
                     echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
-                    echo "  <td>$sonum</td>";
+                    echo "  <td>{$op_queue['so_parent']}</td>";
+                    echo "  <td>{$op_queue['room']}</td>";
                     echo "  <td>$department</td>";
                     echo "  <td>$operation</td>";
                     echo "  <td>$release_date</td>";
+                    echo "  <td>&nbsp;</td>";
                     echo "  <td>&nbsp;</td>";
                     echo "</tr>";
                 }
@@ -432,9 +412,11 @@ HEREDOC;
 
                     echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
                     echo "  <td>---------</td>";
+                    echo "  <td>---</td>";
                     echo "  <td>$department</td>";
                     echo "  <td>$operation</td>";
                     echo "  <td>Now</td>";
+                    echo "  <td>&nbsp;</td>";
                     echo "  <td>&nbsp;</td>";
                     echo "</tr>";
                 }
@@ -545,9 +527,19 @@ HEREDOC;
                                 $published = 'custom_published';
                                 break;
 
-                            case 'Box':
+                            case 'Main':
                                 $bracket = 'box_bracket';
                                 $published = 'box_published';
+                                break;
+
+                            case 'Shipping':
+                                $bracket = 'shipping_bracket';
+                                $published = 'shipping_published';
+                                break;
+
+                            case 'Installation':
+                                $bracket = 'install_bracket';
+                                $published = 'install_bracket_published';
                                 break;
 
                             default:
@@ -558,9 +550,9 @@ HEREDOC;
 
                         if($comp_qry->num_rows > 0) {
                             // we've already done this operation, it's closing time for this section
-                            $dbconn->query("UPDATE rooms SET $bracket = '0' WHERE id = '{$room_results['id']}");
-
-                            echo displayToast("info", "Notice: the bracket has ended.", "Bracket Ended");
+                            if(substr($operation['op_id'], -2) === '98') {
+                                echo displayToast("info", "Notice: the bracket has been completed.", "Bracket Completed");
+                            }
                         } else {
                             // time to find out if the bracket is published
                             if((bool)$room_results[$published] === true) {

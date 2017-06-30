@@ -23063,7 +23063,8 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
   cursor: pointer; }
   .cursor-hand:hover {
     background-color: #ffffff;
-    color: #132882; }
+    color: #132882;
+    border-radius: 6px; }
 
 .card-block {
   padding: 5px; }
@@ -23203,7 +23204,10 @@ table.dataTable thead th.sorting_desc:after {
   top: 0; }
 
 .table th, .table td {
-  line-height: 2em; }
+  line-height: 1.7em; }
+
+table tbody td {
+  vertical-align: middle !important; }
 
 .active_room_line {
   background-color: #00aced; }
@@ -23216,6 +23220,28 @@ table.dataTable thead th.sorting_desc:after {
   border: none !important; }
   .table-custom-nb td, .table-custom-nb tr {
     border: none !important; }
+
+.radio, .checkbox {
+  margin-bottom: 2px !important; }
+
+.custom_ul li {
+  display: block; }
+.custom_ul ul {
+  list-style-type: none;
+  font-size: .8em; }
+
+.save_bar {
+  z-index: 9999;
+  position: fixed;
+  left: calc(50% - 30px);
+  top: 125px; }
+  .save_bar .button {
+    font-weight: bold; }
+
+.faux_button {
+  width: 23px;
+  height: 22px;
+  line-height: 20px; }
 
 .cust-table {
   display: table;
