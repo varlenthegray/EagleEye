@@ -16,7 +16,7 @@ require '../includes/header_end.php';
                     <thead>
                         <tr>
                             <th>SO#</th>
-                            <th>Department</th>
+                            <th>Bracket</th>
                             <th>Operation</th>
                             <th>Release Date</th>
                         </tr>
@@ -36,7 +36,7 @@ require '../includes/header_end.php';
                     <thead>
                         <tr>
                             <th style="width: 10%;">SO#</th>
-                            <th style="width: 20%;">Department</th>
+                            <th style="width: 20%;">Bracket</th>
                             <th style="width: 30%;">Operation</th>
                             <th style="width: 20%;">Individual</th>
                             <th style="width: 20%;">Started/Resumed</th>
@@ -57,7 +57,7 @@ require '../includes/header_end.php';
                     <thead>
                         <tr>
                             <th>SO#</th>
-                            <th>Department</th>
+                            <th>Bracket</th>
                             <th>Operation</th>
                             <th>Completed</th>
                         </tr>

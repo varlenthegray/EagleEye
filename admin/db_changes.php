@@ -1,14 +1,14 @@
 <?php
 require ("../includes/header_start.php");
 
-echo ($dbconn->query("ALTER TABLE log_cron CHANGE name `desc` TEXT;")) ? "Successfully altered Cron Table.<br />" : "Error altering Cron Table.<br />";
+echo ($dbconn->query("ALTER TABLE log_cron CHANGE name desc TEXT;")) ? "Successfully altered Cron Table.<br />" : "<b>Error</b> altering Cron Table.<br />";
 echo ($dbconn->query("CREATE TABLE dealers (id INT PRIMARY KEY AUTO_INCREMENT,dealer_id VARCHAR(10),contact VARCHAR(150),dealer_name VARCHAR(150),physical_address VARCHAR(150),physical_city VARCHAR(50),physical_state VARCHAR(2),physical_zip VARCHAR(10),shipping_address VARCHAR(150),shipping_city VARCHAR(50),shipping_state VARCHAR(2),shipping_zip VARCHAR(10),phone VARCHAR(15),
     email VARCHAR(150),
     multiplier DOUBLE,
     ship_zone CHAR,
-    sales_rep_number INT(5));")) ? "Successfully created Dealers table.<br />" : "Error creating Cron Table.<br />";
-echo ($dbconn->query("ALTER TABLE rooms ADD iteration DOUBLE DEFAULT .01 NULL")) ? "Successful with alter Rooms table ADD iteration.<br />" : "Error with alter Rooms table ADD iteration.<br />";
-echo ($dbconn->query("INSERT INTO `dealers` (`id`, `dealer_id`, `contact`, `dealer_name`, `physical_address`, `physical_city`, `physical_state`, `physical_zip`, `shipping_address`, `shipping_city`, `shipping_state`, `shipping_zip`, `phone`, `email`, `multiplier`, `ship_zone`, `sales_rep_number`) VALUES
+    sales_rep_number INT(5));")) ? "Successfully created Dealers table.<br />" : "<b>Error</b> creating Dealers Table.<br />";
+echo ($dbconn->query("ALTER TABLE rooms ADD iteration DOUBLE DEFAULT .01 NULL")) ? "Successful with alter Rooms table ADD iteration.<br />" : "<b>Error</b> with alter Rooms table ADD iteration.<br />";
+echo ($dbconn->query("INSERT INTO dealers (id, dealer_id, contact, dealer_name, physical_address, physical_city, physical_state, physical_zip, shipping_address, shipping_city, shipping_state, shipping_zip, phone, email, multiplier, ship_zone, sales_rep_number) VALUES
 (1, 'A01a', 'Robert Grieves', 'Stone Mountain Cabinetry', '309 S. Country Club Rd', 'Brevard', 'NC', '', '309 S. Country Club Rd', 'Brevard', 'NC', '', '828.966.9000', 'orders@smcm.us', 0, 'A', 1),
 (2, 'A01b', 'Brent Chapman', 'Stone Mountain Cabinetry', '309 S. Country Club Rd', 'Brevard', 'NC', '', '309 S. Country Club Rd', 'Brevard', 'NC', '', '828.966.9000', 'orders@smcm.us', 0, 'A', 2),
 (3, 'A02a', 'Dave Parks', 'Distinctive Cabinetry', '3990 NC Hwy 105', 'Banner Elk', 'NC', '', '125 Dick Watson Rd', 'Deep Gap', 'NC', '', '828.898.9633', 'dave@design105.com', 0.391, 'B', 3),
@@ -27,15 +27,15 @@ echo ($dbconn->query("INSERT INTO `dealers` (`id`, `dealer_id`, `contact`, `deal
 (16, 'A13b', 'Cam McCamy', 'Criterion Sales', '145 W Sycamore Ave ', 'Wake Forest', 'NC', '', '145 W Sycamore Ave ', 'Wake Forest', 'NC', '', '919.270.0966', 'citerioncam@gmail.com', 0.407, 'C', 4),
 (17, 'A13c', 'Phil Cowart', 'Criterion Sales', '1838 Brogdon St. ', 'Savannah', 'GA', '', '1838 Brogdon St. ', 'Savannah', 'GA', '', '912.660.4091', 'philcowart@gmail.com', 0.407, 'C', 5),
 (18, 'A13d', 'Christopher Sink', 'Criterion Sales', '', '', '', '', '', '', '', '', '704.634.6817', 'chrissink@gmail.com', 0.407, 'C', 6),
-(19, 'A14', 'State Interiors', 'State Interiors ', '200 A Trade Street', 'Greer', 'SC', '29651', '200 A Trade Street', 'Greer', 'SC', '29651', '864.655.7486', 'thom@e3cabinets.com', 0.407, 'B', 1);")) ? "Successful with insert information into Dealers.<br />" : "Error with insert information into Dealers.<br />";
-echo ($dbconn->query("ALTER TABLE `dealers` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20")) ? "Successful with alter table Dealers modify Auto Increment.<br />" : "Error with alter table Dealers modify Auto Increment.<br />";
-echo ($dbconn->query("ALTER TABLE customer MODIFY job_type VARCHAR(4)")) ? "Successful with alter table Customer modify job type to varchar 4.<br />" : "Error with alter table Customer modify job type to varchar 4.<br />";
-echo ($dbconn->query("UPDATE customer SET job_type = '$'")) ? "Successful with update customer set job type to $.<br />" : "Error with update customer set job type to $.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD salesperson VARCHAR(75) NULL")) ? "Successful with alter table customer add salesperson.<br />" : "Error with alter table customer add salesperson.<br />";
-echo ($dbconn->query("ALTER TABLE user ADD hourly BOOLEAN DEFAULT 1 NULL")) ? "Successful with alter table user add hourly as true.<br />" : "Error with alter table user add hourly as true.<br />";
-echo ($dbconn->query("UPDATE user SET hourly = 0 WHERE id = 1 OR id = 7 OR id = 8 OR id = 9 OR id = 14")) ? "Successful with updating salary employees to salary.<br />" : "Error with updating salary employees to salary.<br />";
-echo ($dbconn->query("CREATE TABLE vin_schema (id INT PRIMARY KEY AUTO_INCREMENT,segment VARCHAR(50),`key` VARCHAR(50),value VARCHAR(100))")) ? "Successful with create table Vin Schema.<br />" : "Error with create table Vin Schema.<br />";
-echo ($dbconn->query("INSERT INTO `vin_schema` (`id`, `segment`, `key`, `value`) VALUES
+(19, 'A14', 'State Interiors', 'State Interiors ', '200 A Trade Street', 'Greer', 'SC', '29651', '200 A Trade Street', 'Greer', 'SC', '29651', '864.655.7486', 'thom@e3cabinets.com', 0.407, 'B', 1);")) ? "Successful with insert information into Dealers.<br />" : "<b>Error</b> with insert information into Dealers.<br />";
+echo ($dbconn->query("ALTER TABLE dealers MODIFY id int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20")) ? "Successful with alter table Dealers modify Auto Increment.<br />" : "<b>Error</b> with alter table Dealers modify Auto Increment.<br />";
+echo ($dbconn->query("ALTER TABLE customer MODIFY job_type VARCHAR(4)")) ? "Successful with alter table Customer modify job type to varchar 4.<br />" : "<b>Error</b> with alter table Customer modify job type to varchar 4.<br />";
+echo ($dbconn->query("UPDATE customer SET job_type = '$'")) ? "Successful with update customer set job type to $.<br />" : "<b>Error</b> with update customer set job type to $.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD salesperson VARCHAR(75) NULL")) ? "Successful with alter table customer add salesperson.<br />" : "<b>Error</b> with alter table customer add salesperson.<br />";
+echo ($dbconn->query("ALTER TABLE user ADD hourly BOOLEAN DEFAULT 1 NULL")) ? "Successful with alter table user add hourly as true.<br />" : "<b>Error</b> with alter table user add hourly as true.<br />";
+echo ($dbconn->query("UPDATE user SET hourly = 0 WHERE id = 1 OR id = 7 OR id = 8 OR id = 9 OR id = 14")) ? "Successful with updating salary employees to salary.<br />" : "<b>Error</b> with updating salary employees to salary.<br />";
+echo ($dbconn->query("CREATE TABLE vin_schema (id INT PRIMARY KEY AUTO_INCREMENT,segment VARCHAR(50),`key` VARCHAR(50),value VARCHAR(100))")) ? "Successful with create table Vin Schema.<br />" : "<b>Error</b> with create table Vin Schema.<br />";
+echo ($dbconn->query("INSERT INTO vin_schema (id, segment, `key`, value) VALUES
 (1, 'product_type', 'Cabinets', 'C'),
 (2, 'product_type', 'Closet', 'L'),
 (3, 'product_type', 'Sample', 'S'),
@@ -45,25 +45,25 @@ echo ($dbconn->query("INSERT INTO `vin_schema` (`id`, `segment`, `key`, `value`)
 (7, 'days_to_ship', 'Green', 'G'),
 (8, 'days_to_ship', 'Yellow', 'Y'),
 (9, 'days_to_ship', 'Orange', 'N'),
-(10, 'days_to_ship', 'Red', 'R')")) ? "Successful with insert into Vin Schema.<br />" : "Error with insert into Vin Schema.<br />";
-echo ($dbconn->query("ALTER TABLE `vin_schema` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11")) ? "Successful with alter Vin Schema auto-increment number.<br />" : "Error with alter Vin Schema auto-increment number.<br />";
-echo ($dbconn->query("ALTER TABLE rooms ADD order_status CHAR NULL")) ? "Successful with alter table rooms add order status.<br />" : "Error with alter table rooms add order status.<br />";
-echo ($dbconn->query("ALTER TABLE customer DROP job_type")) ? "Successful with alter table customer drop job type.<br />" : "Error with alter table customer drop job type.<br />";
-echo ($dbconn->query("UPDATE rooms SET order_status = '$'")) ? "Successful with update rooms set order status to $.<br />" : "Error with update rooms set order status to $.<br />";
-echo ($dbconn->query("ALTER TABLE rooms ADD days_to_ship VARCHAR(10) DEFAULT 'Green' NULL")) ? "Successful with alter table rooms add days to ship with value Green.<br />" : "Error with alter table rooms add days to ship with value Green.<br />";
-echo ($dbconn->query("ALTER TABLE operations CHANGE department bracket VARCHAR(50) NOT NULL;")) ? "Successful with alter table operations change department to bracket varchar 50.<br />" : "Error with alter table operations change department to bracket varchar 50.<br />";
-echo ($dbconn->query("ALTER TABLE rooms ADD shipping_bracket TINYINT(4) NULL;")) ? "Successful with alter table rooms add shipping bracket.<br />" : "Error with alter table rooms add shipping bracket.<br />";
-echo ($dbconn->query("ALTER TABLE rooms ADD shipping_bracket_priority TINYINT(4) NULL;")) ? "Successful with alter table rooms add shipping bracket priority.<br />" : "Error with alter table rooms add shipping bracket priority.<br />";
-echo ($dbconn->query("ALTER TABLE rooms ADD shipping_published BOOLEAN DEFAULT 0 NULL;")) ? "Successful with alter table rooms add shipping published.<br />" : "Error with alter table rooms add shipping published.<br />";
-echo ($dbconn->query("ALTER TABLE rooms ADD install_bracket TINYINT(4) NULL;")) ? "Successful with alter table rooms add install bracket.<br />" : "Error with alter table rooms add install bracket.<br />";
-echo ($dbconn->query("ALTER TABLE rooms ADD install_bracket_priority TINYINT(4) NULL;")) ? "Successful with alter table rooms add install bracket priority.<br />" : "Error with alter table rooms add install bracket priority.<br />";
-echo ($dbconn->query("ALTER TABLE rooms ADD install_bracket_published BOOLEAN DEFAULT 0 NULL;")) ? "Successful with alter table rooms add install bracket published.<br />" : "Error with alter table rooms add install bracket published.<br />";
-echo ($dbconn->query("ALTER TABLE rooms CHANGE box_bracket main_bracket TINYINT(4) NOT NULL;")) ? "Successful with alter table rooms change box bracket to main bracket.<br />" : "Error with alter table rooms change box bracket to main bracket.<br />";
-echo ($dbconn->query("ALTER TABLE rooms CHANGE box_bracket_priority main_bracket_priority TINYINT(4) NOT NULL;")) ? "Successful with alter table rooms change box bracket priority to main bracket priority.<br />" : "Error with alter table rooms change box bracket priority to main bracket priority.<br />";
-echo ($dbconn->query("ALTER TABLE rooms CHANGE box_published main_published TINYINT(1) DEFAULT '0';")) ? "Successful with alter table rooms change box bracket published to main bracket published.<br />" : "Error with alter table rooms change box bracket published to main bracket published.<br />";
-echo ($dbconn->query("UPDATE rooms SET install_bracket_priority = 4, shipping_bracket_priority = 4, install_bracket = 15, shipping_bracket = 66;")) ? "Successful with update rooms set install & shipping priority and ops.<br />" : "Error with update rooms set install & shipping priority and ops.<br />";
-echo ($dbconn->query("TRUNCATE operations;")) ? "Successful with altering table rooms add delivery date.<br />" : "Error with altering table rooms add delivery date.<br />";
-echo ($dbconn->query("INSERT INTO `operations` (`id`, `op_id`, `bracket`, `job_title`, `icon`, `color`, `responsible_dept`, `sub_tasks`, `always_visible`) VALUES
+(10, 'days_to_ship', 'Red', 'R')")) ? "Successful with insert into Vin Schema.<br />" : "<b>Error</b> with insert into Vin Schema.<br />";
+echo ($dbconn->query("ALTER TABLE vin_schema MODIFY id int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11")) ? "Successful with alter Vin Schema auto-increment number.<br />" : "<b>Error</b> with alter Vin Schema auto-increment number.<br />";
+echo ($dbconn->query("ALTER TABLE rooms ADD order_status CHAR NULL")) ? "Successful with alter table rooms add order status.<br />" : "<b>Error</b> with alter table rooms add order status.<br />";
+echo ($dbconn->query("ALTER TABLE customer DROP job_type")) ? "Successful with alter table customer drop job type.<br />" : "<b>Error</b> with alter table customer drop job type.<br />";
+echo ($dbconn->query("UPDATE rooms SET order_status = '$'")) ? "Successful with update rooms set order status to $.<br />" : "<b>Error</b> with update rooms set order status to $.<br />";
+echo ($dbconn->query("ALTER TABLE rooms ADD days_to_ship VARCHAR(10) DEFAULT 'Green' NULL")) ? "Successful with alter table rooms add days to ship with value Green.<br />" : "<b>Error</b> with alter table rooms add days to ship with value Green.<br />";
+echo ($dbconn->query("ALTER TABLE operations CHANGE department bracket VARCHAR(50) NOT NULL;")) ? "Successful with alter table operations change department to bracket varchar 50.<br />" : "<b>Error</b> with alter table operations change department to bracket varchar 50.<br />";
+echo ($dbconn->query("ALTER TABLE rooms ADD shipping_bracket TINYINT(4) NULL;")) ? "Successful with alter table rooms add shipping bracket.<br />" : "<b>Error</b> with alter table rooms add shipping bracket.<br />";
+echo ($dbconn->query("ALTER TABLE rooms ADD shipping_bracket_priority TINYINT(4) NULL;")) ? "Successful with alter table rooms add shipping bracket priority.<br />" : "<b>Error</b> with alter table rooms add shipping bracket priority.<br />";
+echo ($dbconn->query("ALTER TABLE rooms ADD shipping_published BOOLEAN DEFAULT 0 NULL;")) ? "Successful with alter table rooms add shipping published.<br />" : "<b>Error</b> with alter table rooms add shipping published.<br />";
+echo ($dbconn->query("ALTER TABLE rooms ADD install_bracket TINYINT(4) NULL;")) ? "Successful with alter table rooms add install bracket.<br />" : "<b>Error</b> with alter table rooms add install bracket.<br />";
+echo ($dbconn->query("ALTER TABLE rooms ADD install_bracket_priority TINYINT(4) NULL;")) ? "Successful with alter table rooms add install bracket priority.<br />" : "<b>Error</b> with alter table rooms add install bracket priority.<br />";
+echo ($dbconn->query("ALTER TABLE rooms ADD install_bracket_published BOOLEAN DEFAULT 0 NULL;")) ? "Successful with alter table rooms add install bracket published.<br />" : "<b>Error</b> with alter table rooms add install bracket published.<br />";
+echo ($dbconn->query("ALTER TABLE rooms CHANGE box_bracket main_bracket TINYINT(4) NOT NULL;")) ? "Successful with alter table rooms change box bracket to main bracket.<br />" : "<b>Error</b> with alter table rooms change box bracket to main bracket.<br />";
+echo ($dbconn->query("ALTER TABLE rooms CHANGE box_bracket_priority main_bracket_priority TINYINT(4) NOT NULL;")) ? "Successful with alter table rooms change box bracket priority to main bracket priority.<br />" : "<b>Error</b> with alter table rooms change box bracket priority to main bracket priority.<br />";
+echo ($dbconn->query("ALTER TABLE rooms CHANGE box_published main_published TINYINT(1) DEFAULT '0';")) ? "Successful with alter table rooms change box bracket published to main bracket published.<br />" : "<b>Error</b> with alter table rooms change box bracket published to main bracket published.<br />";
+echo ($dbconn->query("UPDATE rooms SET install_bracket_priority = 4, shipping_bracket_priority = 4, install_bracket = 15, shipping_bracket = 66;")) ? "Successful with update rooms set install & shipping priority and ops.<br />" : "<b>Error</b> with update rooms set install & shipping priority and ops.<br />";
+echo ($dbconn->query("TRUNCATE operations;")) ? "Successful with altering table rooms add delivery date.<br />" : "<b>Error</b> with altering table rooms add delivery date.<br />";
+echo ($dbconn->query("INSERT INTO operations (id, op_id, bracket, job_title, icon, color, responsible_dept, sub_tasks, always_visible) VALUES
   (1, '110', 'Sales', 'Initial Meeting', 'zmdi zmdi-money', 'rgba(91,255,120,.75)', 'Project Manager', NULL, 0),
   (3, '120', 'Sales', 'Basic Design', 'zmdi zmdi-money', 'rgba(91,255,120,.75)', 'Design', NULL, 0),
   (4, '125', 'Sales', 'Review with Sales Lead', 'zmdi zmdi-money', 'rgba(91,255,120,.75)', 'Project Manager', NULL, 0),
@@ -136,23 +136,23 @@ echo ($dbconn->query("INSERT INTO `operations` (`id`, `op_id`, `bracket`, `job_t
   (97, '598', 'Main', 'Bracket Completed', 'zmdi zmdi-window-maximize', 'rgba(91,255,120,.75)', 'N/A', NULL, 0),
   (98, '698', 'Custom', 'Bracket Completed', 'zmdi zmdi-puzzle-piece', 'rgba(91,255,120,.75)', 'N/A', NULL, 0),
   (99, '798', 'Installation', 'Bracket Completed', 'zmdi zmdi-money', 'rgba(91,255,120,.75)', 'N/A', NULL, 0),
-  (100, '898', 'Shipping', 'Bracket Completed', 'zmdi zmdi-window-maximize', 'rgba(91,255,120,.75)', 'N/A', NULL, 0);")) ? "Successful with insert into operations ALL operations.<br />" : "Error with insert into operations ALL operations.<br />";
-echo ($dbconn->query("ALTER TABLE rooms ADD delivery_date INT(20) NULL;")) ? "Successful with altering table rooms add delivery date.<br />" : "Error with altering table rooms add delivery date.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD contact_1 VARCHAR(100) NULL;")) ? "Successful with adding contact 1.<br />" : "Error with adding contact 1.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD contact_1_cell VARCHAR(20) NULL;")) ? "Successful with adding contact 1 cell.<br />" : "Error with adding contact 1 cell.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD contact_1_business_ph VARCHAR(20) NULL;")) ? "Successful with adding contact 1 business phone.<br />" : "Error with adding contact 1 business phone.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD contact_1_email VARCHAR(200) NULL;")) ? "Successful with adding contact 1 email.<br />" : "Error with adding contact 1 email.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD contact_2 VARCHAR(100) NULL;")) ? "Successful with adding contact 2.<br />" : "Error with adding contact 2.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD contact_2_cell VARCHAR(20) NULL;")) ? "Successful with adding contact 2 cell.<br />" : "Error with adding contact 2 cell.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD contact_2_business_ph VARCHAR(20) NULL;")) ? "Successful with adding contact 2 business phone.<br />" : "Error with adding contact 2 business phone.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD contact_2_email VARCHAR(200) NULL;")) ? "Successful with adding contact 2 email.<br />" : "Error with adding contact 2 email.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD phys_addr VARCHAR(255) NULL;")) ? "Successful with adding physical address.<br />" : "Error with adding physical address.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD phys_city VARCHAR(100) NULL;")) ? "Successful with adding physical city.<br />" : "Error with adding physical city.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD phys_state VARCHAR(2) NULL;")) ? "Successful with adding physical state.<br />" : "Error with adding physical state.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD phys_zip VARCHAR(12) NULL;")) ? "Successful with adding physical zip.<br />" : "Error with adding physical zip.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD global_email VARCHAR(200) NULL;")) ? "Successful with adding global email.<br />" : "Error with adding global email.<br />";
-echo ($dbconn->query("ALTER TABLE customer ADD global_cell VARCHAR(20) NULL;")) ? "Successful with adding global cell.<br />" : "Error with adding global cell.<br />";
-echo ($dbconn->query("CREATE TABLE cal_holidays (id INT PRIMARY KEY AUTO_INCREMENT,unix_time INT(20));")) ? "Successful with creating calendar holiday table.<br />" : "Error with creating calendar holiday table.<br />";
+  (100, '898', 'Shipping', 'Bracket Completed', 'zmdi zmdi-window-maximize', 'rgba(91,255,120,.75)', 'N/A', NULL, 0);")) ? "Successful with insert into operations ALL operations.<br />" : "<b>Error</b> with insert into operations ALL operations.<br />";
+echo ($dbconn->query("ALTER TABLE rooms ADD delivery_date INT(20) NULL;")) ? "Successful with altering table rooms add delivery date.<br />" : "<b>Error</b> with altering table rooms add delivery date.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD contact_1 VARCHAR(100) NULL;")) ? "Successful with adding contact 1.<br />" : "<b>Error</b> with adding contact 1.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD contact_1_cell VARCHAR(20) NULL;")) ? "Successful with adding contact 1 cell.<br />" : "<b>Error</b> with adding contact 1 cell.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD contact_1_business_ph VARCHAR(20) NULL;")) ? "Successful with adding contact 1 business phone.<br />" : "<b>Error</b> with adding contact 1 business phone.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD contact_1_email VARCHAR(200) NULL;")) ? "Successful with adding contact 1 email.<br />" : "<b>Error</b> with adding contact 1 email.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD contact_2 VARCHAR(100) NULL;")) ? "Successful with adding contact 2.<br />" : "<b>Error</b> with adding contact 2.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD contact_2_cell VARCHAR(20) NULL;")) ? "Successful with adding contact 2 cell.<br />" : "<b>Error</b> with adding contact 2 cell.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD contact_2_business_ph VARCHAR(20) NULL;")) ? "Successful with adding contact 2 business phone.<br />" : "<b>Error</b> with adding contact 2 business phone.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD contact_2_email VARCHAR(200) NULL;")) ? "Successful with adding contact 2 email.<br />" : "<b>Error</b> with adding contact 2 email.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD phys_addr VARCHAR(255) NULL;")) ? "Successful with adding physical address.<br />" : "<b>Error</b> with adding physical address.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD phys_city VARCHAR(100) NULL;")) ? "Successful with adding physical city.<br />" : "<b>Error</b> with adding physical city.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD phys_state VARCHAR(2) NULL;")) ? "Successful with adding physical state.<br />" : "<b>Error</b> with adding physical state.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD phys_zip VARCHAR(12) NULL;")) ? "Successful with adding physical zip.<br />" : "<b>Error</b> with adding physical zip.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD global_email VARCHAR(200) NULL;")) ? "Successful with adding global email.<br />" : "<b>Error</b> with adding global email.<br />";
+echo ($dbconn->query("ALTER TABLE customer ADD global_cell VARCHAR(20) NULL;")) ? "Successful with adding global cell.<br />" : "<b>Error</b> with adding global cell.<br />";
+echo ($dbconn->query("CREATE TABLE cal_holidays (id INT PRIMARY KEY AUTO_INCREMENT,unix_time INT(20));")) ? "Successful with creating calendar holiday table.<br />" : "<b>Error</b> with creating calendar holiday table.<br />";
 
 $holiday[] = strtotime("july 4th, 2017");
 $holiday[] = strtotime("september 4th, 2017");
@@ -179,14 +179,33 @@ $holiday[] = strtotime("dec 25, 2020");
 foreach($holiday as $unixday) {
     $readable_holiday = date("m/d/Y", $unixday);
 
-    echo ($dbconn->query("INSERT INTO cal_holidays (unix_time) VALUES ($unixday);")) ? "Successful with creating holiday $readable_holiday.<br />" : "Error with creating creating holiday $readable_holiday.<br />";
+    echo ($dbconn->query("INSERT INTO cal_holidays (unix_time) VALUES ($unixday);")) ? "Successful with creating holiday $readable_holiday.<br />" : "<b>Error</b> with creating creating holiday $readable_holiday.<br />";
 }
 
-echo ($dbconn->query("ALTER TABLE dealers ADD account_type VARCHAR(15) DEFAULT 'R' NULL;")) ? "Successful with adding account_type to dealers with default of 'Retail'.<br />" : "Error with adding account_type to dealers with default of 'Retail'.<br />";
-echo ($dbconn->query("CREATE TABLE notes (id INT PRIMARY KEY AUTO_INCREMENT,note LONGTEXT,note_type VARCHAR(100),timestamp INT(15),user INT,type_id INT);")) ? "Successful with creating notes table.<br />" : "Error with creating notes table.<br />";
-echo ($dbconn->query("UPDATE customer SET dealer_code = 'A01a' WHERE project_manager = 'Robert';")) ? "Successful with setting dealer code for Robert.<br />" : "Error with setting dealer code for Robert.<br />";
-echo ($dbconn->query("UPDATE customer SET dealer_code = 'A01b' WHERE project_manager = 'Brent';")) ? "Successful with setting dealer code for Brent.<br />" : "Error with setting dealer code for Brent.<br />";
-echo ($dbconn->query("INSERT INTO dealers (dealer_id, contact, dealer_name, physical_address, physical_city, physical_state, physical_zip, shipping_address,shipping_city, shipping_state, shipping_zip, phone, email, multiplier, ship_zone, sales_rep_number, account_type) VALUES ('A01c','Jason','Stone Mountain Cabinetry','309 S. Country Club Rd','Brevard','NC','28712','309 S. Country Club Rd','Brevard','NC','28712','828.966.9000','orders@smcm.us','0','A','3','R');")) ? "Successful with creating Jason in dealers.<br />" : "Error with creating Jason in dealers.<br />";
-echo ($dbconn->query("UPDATE customer SET dealer_code = 'A01c' WHERE project_manager = 'Jason';")) ? "Successful with setting dealer code for Jason.<br />" : "Error with setting dealer code for Jason.<br />";
+echo ($dbconn->query("ALTER TABLE dealers ADD account_type VARCHAR(15) DEFAULT 'R' NULL;")) ? "Successful with adding account_type to dealers with default of 'Retail'.<br />" : "<b>Error</b> with adding account_type to dealers with default of 'Retail'.<br />";
+echo ($dbconn->query("CREATE TABLE notes (id INT PRIMARY KEY AUTO_INCREMENT,note LONGTEXT,note_type VARCHAR(100),timestamp INT(15),user INT,type_id INT);")) ? "Successful with creating notes table.<br />" : "<b>Error</b> with creating notes table.<br />";
+echo ($dbconn->query("UPDATE customer SET dealer_code = 'A01a' WHERE project_manager = 'Robert';")) ? "Successful with setting dealer code for Robert.<br />" : "<b>Error</b> with setting dealer code for Robert.<br />";
+echo ($dbconn->query("UPDATE customer SET dealer_code = 'A01b' WHERE project_manager = 'Brent';")) ? "Successful with setting dealer code for Brent.<br />" : "<b>Error</b> with setting dealer code for Brent.<br />";
+echo ($dbconn->query("INSERT INTO dealers (dealer_id, contact, dealer_name, physical_address, physical_city, physical_state, physical_zip, shipping_address,shipping_city, shipping_state, shipping_zip, phone, email, multiplier, ship_zone, sales_rep_number, account_type) VALUES ('A01c','Jason','Stone Mountain Cabinetry','309 S. Country Club Rd','Brevard','NC','28712','309 S. Country Club Rd','Brevard','NC','28712','828.966.9000','orders@smcm.us','0','A','3','R');")) ? "Successful with creating Jason in dealers.<br />" : "<b>Error</b> with creating Jason in dealers.<br />";
+echo ($dbconn->query("UPDATE customer SET dealer_code = 'A01c' WHERE project_manager = 'Jason';")) ? "Successful with setting dealer code for Jason.<br />" : "<b>Error</b> with setting dealer code for Jason.<br />";
+echo ($dbconn->query("UPDATE op_queue SET operation_id = 3 WHERE operation_id = 2;")) ? "Successful with moving Drawing and Revision to Basic Design.<br />" : "<b>Error</b> with moving Drawing and Revision to Basic Design.<br />";
+echo ($dbconn->query("UPDATE op_queue SET operation_id = 83 WHERE operation_id = 11;")) ? "Successful with moving Sample Door Order to Sample Door Request.<br />" : "<b>Error</b> with moving Sample Door Order to Sample Door Request.<br />";
+echo ($dbconn->query("UPDATE op_queue SET operation_id = 83 WHERE operation_id = 12;")) ? "Successful with moving Sample Door Approval to Sample Door Request.<br />" : "<b>Error</b> with moving Sample Door Approval to Sample Door Request.<br />";
+echo ($dbconn->query("UPDATE op_queue SET operation_id = 85 WHERE operation_id = 18;")) ? "Successful with adjusting Acknowledgement (Pre-Prod)'s ID.<br />" : "<b>Error</b> with adjusting Acknowledgement (Pre-Prod)'s ID.<br />";
+echo ($dbconn->query("UPDATE op_queue SET operation_id = 21 WHERE operation_id = 20;")) ? "Successful with moving Department of Sales (Pre-Prod) to Engineering Inspection.<br />" : "<b>Error</b> with moving Department of Sales (Pre-Prod) to Engineering Inspection.<br />";
+echo ($dbconn->query("UPDATE op_queue SET operation_id = 89 WHERE operation_id = 22;")) ? "Successful with moving Department of Sales (Pre-Prod) to Review & Release to Main/Custom.<br />" : "<b>Error</b> with moving Department of Sales (Pre-Prod) to Review & Release to Main/Custom.<br />";
+echo ($dbconn->query("UPDATE op_queue SET operation_id = 95 WHERE operation_id = 30;")) ? "Successful with moving Release to Production to Bracket Completed.<br />" : "<b>Error</b> with moving Release to Production to Bracket Completed.<br />";
+echo ($dbconn->query("ALTER TABLE op_queue ADD iteration DOUBLE DEFAULT 0.01 NULL;")) ? "Successful with adding Iteration to op_queue.<br />" : "<b>Error</b> with adding Iteration to op_queue.<br />";
+echo ($dbconn->query("ALTER TABLE op_queue ADD otf_created BOOLEAN DEFAULT 0 NULL;")) ? "Successful with adding otf_created to op_queue.<br />" : "<b>Error</b> with adding otf_created to op_queue.<br />";
+echo ($dbconn->query("UPDATE operations SET sub_tasks = NULL WHERE id = 71;")) ? "Successful with clearing sub-tasks from Engineer.<br />" : "<b>Error</b> with clearing sub-tasks from Engineer.<br />";
+echo ($dbconn->query("INSERT INTO operations (id, op_id, bracket, job_title, icon, color, responsible_dept, sub_tasks, always_visible) VALUES (NULL, '000', 'Non-Billable', 'Non-Billable', 'zmdi zmdi-money-off', 'rgba(183,20,20,.75)', 'Project Manager', NULL, '1'), (NULL, '000', 'Non-Billable', 'Non-Billable', 'zmdi zmdi-money-off', 'rgba(183,20,20,.75)', 'Design', NULL, '1'), (NULL, '000', 'Non-Billable', 'Non-Billable', 'zmdi zmdi-money-off', 'rgba(183,20,20,.75)', 'Sales Administrator', NULL, '1'), (NULL, '000', 'Non-Billable', 'Non-Billable', 'zmdi zmdi-money-off', 'rgba(183,20,20,.75)', 'Finishing', NULL, '1'), (NULL, '000', 'Non-Billable', 'Non-Billable', 'zmdi zmdi-money-off', 'rgba(183,20,20,.75)', 'Accounting', NULL, '1'), (NULL, '000', 'Special', 'On The Fly', 'zmdi zmdi-money-off', 'rgba(183,20,20,.75)', 'Global', NULL, '1');")) ? "Successful with inserting Non-Billable for new departments and creating OTF.<br />" : "<b>Error</b> with inserting Non-Billable for new departments and creating OTF.<br />";
+echo ($dbconn->query("UPDATE operations SET bracket = 'Non-Billable' WHERE id = 79 OR id = 78 OR id = 82 OR id = 80 OR id = 76 OR id = 75 OR id = 74 OR id = 69;")) ? "Successful with setting operations as Non-Billable.<br />" : "<b>Error</b> with setting operations as Non-Billable.<br />";
+echo ($dbconn->query("UPDATE operations SET sub_tasks = '[\"Morning Task (10 Mins)\",\"LEAN (30 Mins)\",\"Inventory (15 Mins)\",\"Meeting (10 Mins)\",\"Training (30 Mins)\",\"Equipment Maint (15 Mins)\"]' WHERE id = 105 OR id = 102 OR id = 104 OR id = 103 OR id = 101;")) ? "Successful with setting sub-tasks for any that had none.<br />" : "<b>Error</b> with setting sub-tasks for any that had none.<br />";
+echo ($dbconn->query("DELETE FROM operations WHERE id = 79 OR id = 104;")) ? "Successful with removing duplicate operations.<br />" : "<b>Error</b> with removing duplicate operations.<br />";
+echo ($dbconn->query("UPDATE user SET department = '[\"Accounting\",\"Assembly\",\"Box\",\"Custom\",\"Design\",\"Engineering\",\"Finishing\",\"Production Administrator\",\"Project Manager\",\"Sales Administrator\",\"Shop Foreman\",\"Global\"]' WHERE id = 1 OR id = 7 OR id = 8;")) ? "Successful with updating ALL departments on Ben, Robert and Cindy.<br />" : "<b>Error</b> with removing duplicate operations.<br />";
+echo ($dbconn->query("UPDATE user SET department = '[\"Assembly\",\"Box\",\"Custom\",\"Design\",\"Engineering\",\"Finishing\",\"Production Administrator\",\"Project Manager\",\"Sales Administrator\",\"Shop Foreman\",\"Global\"]' WHERE id = 9 OR id = 10 OR id = 14 OR id = 18;")) ? "Successful with updating all EXCLUDING Accounting on Shane, Jason, Ron and CT.<br />" : "<b>Error</b> with updating all EXCLUDING Accounting on Shane, Jason, Ron and CT.<br />";
+echo ($dbconn->query("UPDATE user SET department = '[\"Assembly\",\"Box\",\"Custom\",\"Design\",\"Finishing\",\"Production Administrator\",\"Shop Foreman\",\"Global\"]' WHERE id = 11 OR id = 12 OR id = 13 OR id = 15;")) ? "Successful with updating production operations on Joe, Michael, Josh and Chris.<br />" : "<b>Error</b> with updating production operations on Joe, Michael, Josh and Chris.<br />";
+echo ($dbconn->query("UPDATE operations SET bracket = 'Drawer & Doors' WHERE id = 96;")) ? "Successful with changing Door & Drawer to Drawer & Doors for Bracket Completed op.<br />" : "<b>Error</b> with changing Door & Drawer to Drawer & Doors for Bracket Completed op.<br />";
+
 
 echo "<h1>Database prepared.</h1>";

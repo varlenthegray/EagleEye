@@ -1,26 +1,29 @@
 <?php
 include_once ("../../includes/header_start.php");
 include_once ("../../ondemand/shopfloor/job_functions.php");
+require ("../../assets/php/composer/vendor/autoload.php"); // require carbon for date formatting, http://carbon.nesbot.com/
+
+use Carbon\Carbon; // prep carbon
 
 switch($_REQUEST['action']) {
     case 'get_op_info':
         $id = sanitizeInput($_REQUEST['opID']);
-        $opInfo = $_REQUEST['opInfo'];
+        $op = sanitizeInput($_REQUEST['op']);
 
-        if(!(bool)$opInfo['always_visible']) {
-            $op_query = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
+        if(!is_numeric(strpos($op, "000: "))) { // if not an op in the 000's (always visible op)
+            $op_query = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE op_queue.id = '$id';");
 
             if($op_query->num_rows === 1) {
                 $op_queue = $op_query->fetch_assoc();
 
-                $operation = $opInfo['op_id'] . ": " . $opInfo['job_title'];
+                $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
                 $current_time = date("g:i A");
                 $so_name = $op_queue['so_parent'] . "-" . $op_queue['room'];
 
                 if(!empty($op_queue['start_time'])) {
                     $originally_started = "<p>Originally Started " . date(DATE_TIME_ABBRV, $op_queue['start_time'] . "</p>");
                 } else {
-                    $originally_started = "Unknown";
+                    $originally_started = null;
                 }
 
                 $status = (!(bool)$op_queue['rework']) ? "New" : "Rework";
@@ -49,7 +52,7 @@ switch($_REQUEST['action']) {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="$id">Start Job</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="$id">Start Operation</button>
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
@@ -59,37 +62,38 @@ HEREDOC;
                 dbLogSQLErr($dbconn);
             }
         } else {
-            $op_query = $dbconn->query("SELECT * FROM operations WHERE id = '{$opInfo['id']}'");
+            $op_query = $dbconn->query("SELECT * FROM operations WHERE id = '$id'");
 
             if($op_query->num_rows === 1) {
                 $op_info = $op_query->fetch_assoc();
 
-                if(!empty($op_info['sub_tasks'])) {
-                    $sub_tasks = json_decode($op_info['sub_tasks']);
+                if($id !== '106') { // if it's not "on the fly"
+                    if(!empty($op_info['sub_tasks'])) {
+                        $sub_tasks = json_decode($op_info['sub_tasks']);
 
-                    $operation = $opInfo['op_id'] . ": " . $opInfo['job_title'];
-                    $current_time = date("g:i A");
-                    $responsible_dept = $opInfo['responsible_dept'];
+                        $operation = $op_info['op_id'] . ": " . $op_info['job_title'];
+                        $current_time = date("g:i A");
+                        $responsible_dept = $op_info['responsible_dept'];
 
-                    if(!empty($sub_tasks)) {
-                        $sub_tasklist = '';
+                        if(!empty($sub_tasks)) {
+                            $sub_tasklist = '';
 
-                        foreach($sub_tasks as $task) {
-                            $task_id = explode("(", $task);
-                            $task_id_readable = str_replace(" ", "_", $task_id['0']);
+                            foreach($sub_tasks as $task) {
+                                $task_id = explode("(", $task);
+                                $task_id_readable = str_replace(" ", "_", $task_id['0']);
 
-                            $task_id_readable = strtolower(rtrim($task_id_readable, "_("));
-                            $task_id = rtrim($task_id['0'], "(");
+                                $task_id_readable = strtolower(rtrim($task_id_readable, "_("));
+                                $task_id = rtrim($task_id['0'], "(");
 
-                            $sub_tasklist .= "<div class='radio'><input type='radio' class='form-control' id='$task_id_readable' name='nonBillableTask' value='$task_id' /> <label for='$task_id_readable'>$task</label></div>";
+                                $sub_tasklist .= "<div class='radio'><input type='radio' class='form-control' id='$task_id_readable' name='nonBillableTask' value='$task_id' /> <label for='$task_id_readable'>$task</label></div>";
+                            }
+                        } else {
+                            $sub_tasklist = null;
                         }
-                    } else {
-                        $sub_tasklist = null;
-                    }
 
-                    $sub_tasklist .= "<div class='radio'><input type='radio' class='form-control' id='other_subtask' name='nonBillableTask' value='Other' /> <label for='other_subtask'>Other</label></div>";
+                        $sub_tasklist .= "<div class='radio'><input type='radio' class='form-control' id='other_subtask' name='nonBillableTask' value='Other' /> <label for='other_subtask'>Other</label></div>";
 
-                    echo <<<HEREDOC
+                        echo <<<HEREDOC
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -109,19 +113,18 @@ HEREDOC;
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success waves-effect waves-light pull-left" id="add_me" data-startid="$id">Add Me</button>
                             <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
                             <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="$id">Start Operation</button>
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
 HEREDOC;
-                } else {
-                    $operation = $opInfo['op_id'] . ": " . $opInfo['job_title'];
-                    $current_time = date("g:i A");
-                    $responsible_dept = $opInfo['responsible_dept'];
+                    } else {
+                        $operation = $op_info['op_id'] . ": " . $op_info['job_title'];
+                        $current_time = date("g:i A");
+                        $responsible_dept = $op_info['responsible_dept'];
 
-                    echo <<<HEREDOC
+                        echo <<<HEREDOC
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -139,6 +142,78 @@ HEREDOC;
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
                             <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="$id">Start Operation</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+HEREDOC;
+                    }
+                } else { // if it is "on the fly"
+                    $current_time = date("g:i A");
+                    $responsible_dept = $op_info['responsible_dept'];
+                    $all_ops = null;
+
+                    $ops_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = FALSE ORDER BY op_id ASC");
+
+                    while($op = $ops_qry->fetch_assoc()) {
+                        $all_ops .= "<option value='{$op['id']}'>{$op['op_id']}: {$op['job_title']}</option>";
+                    }
+
+                    echo <<<HEREDOC
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="modalStartJobTitle">Start an "On Thy Fly" operation at <span id="start_job_time">$current_time</span>?</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="otf_so_num">SO#</label>
+                                                <input type="text" class="form-control" id="otf_so_num" name="otf_so_num" placeholder="SO Number">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="otf_room">Room</label>
+                                                <input type="text" class="form-control" id="otf_room" name="otf_room" placeholder="Room Letter" maxlength="1">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="otf_iteration">Iteration</label>
+                                                <input type="text" class="form-control" id="otf_iteration" name="otf_iteration" placeholder="Iteration" maxlength="4" value="0.01">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="otf_operation">Operation</label>
+                                                <select class="form-control" id="otf_operation" name="otf_operation">
+                                                    $all_ops
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6" style="height: 116px;">
+                                    <div class="form-group">
+                                        <label for="otf_notes">Notes</label>
+                                        <textarea name="otf_notes" id="otf_notes" class="form-control" placeholder="Notes regarding operation." style="height: 86px;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="$id" data-otf="true">Start Operation</button>
                         </div>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
@@ -227,30 +302,42 @@ HEREDOC;
         break;
     case 'update_start_job':
         $id = sanitizeInput($_POST['id']);
-        $opInfo = $_REQUEST['opInfo'];
+        $operation = $_REQUEST['operation'];
         $ae[] = $_SESSION['shop_user']['id'];
         $active_employees = json_encode($ae);
         $subtask = sanitizeInput($_POST['subtask']);
         $notes = sanitizeInput($_POST['notes']);
         $time = date(DATE_TIME_ABBRV);
+        $otf = sanitizeInput($_REQUEST['otf']);
+        $otf_so = sanitizeInput($_REQUEST['otf_so_num']);
+        $otf_room = sanitizeInput($_REQUEST['otf_room']);
+        $otf_op = sanitizeInput($_REQUEST['otf_op']);
+        $otf_notes = sanitizeInput($_REQUEST['otf_notes']);
+        $otf_iteration = sanitizeInput($_REQUEST['otf_iteration']);
 
-        $notes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />";
+        if($otf === 'yes') {
+            $otf_notes = "$otf_notes [$time - {$_SESSION['shop_user']['name']}]<br />";
+        } else {
+            $notes = "$notes [$time - {$_SESSION['shop_user']['name']} <i>OTF Created</i>]<br />";
+        }
 
-        if(!(bool)$opInfo['always_visible']) {
-            $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
+        if(!is_numeric(strpos($operation, "000:"))) { // if this is not a triple-zero operation
+            $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the existing op queue id
 
-            if($qry->num_rows > 0) {
-                $results = $qry->fetch_assoc();
+            if($qry->num_rows > 0) {  // if we were able to find the operation inside of the queue
+                $results = $qry->fetch_assoc(); // grab the information
 
-                $changes = null;
+                $changes = null; // our changes are nothing presently
 
-                if($results['start_time'] === null) {
-                    $active = json_decode($results['active_employees']);
+                $active = json_decode($results['active_employees']); // grab the current list of active employees
 
-                    if(!empty($active)) {
-                        $active_employees = json_encode(array_push($active, $_SESSION['shop_user']['id']));
-                    }
+                if(!empty($active)) { // if there are any active employees
+                    $active[] = $_SESSION['shop_user']['id'];
+                }
 
+                $active_employees = json_encode($active);
+
+                if($results['start_time'] === null) { // if this op queue item has never been started
                     if($dbconn->query("UPDATE op_queue SET active = TRUE, start_time = UNIX_TIMESTAMP(), active_employees = '$active_employees' WHERE id = '$id'")) {
                         $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees)];
                         $final_changes = json_encode($changes);
@@ -262,7 +349,7 @@ HEREDOC;
                     } else {
                         dbLogSQLErr($dbconn);
                     }
-                } else {
+                } else { // if the operation has been started previously
                     if($dbconn->query("UPDATE op_queue SET active = TRUE, resumed_time = UNIX_TIMESTAMP(), active_employees = '$active_employees' WHERE id = '$id'")) {
                         $changes = ["Active"=>TRUE, "Resumed Time"=>time(), "Active Employees"=>json_decode($active_employees)];
                         $final_changes = json_encode($changes);
@@ -275,13 +362,16 @@ HEREDOC;
                         dbLogSQLErr($dbconn);
                     }
                 }
-            } else {
-                $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'");
+            } else { // we were unable to find an operation in the queue that existed
+                dbLogSQLErr($dbconn); // gonna throw an error here...
 
-                if($admin_qry->num_rows > 0) {
+                // i don't think this needs to be here, it shouldn't really ever fall into this catch here...
+                /*$admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'"); // grab the op information
+
+                if($admin_qry->num_rows > 0) { // if we were able to obtain the op itself
                     $admin_results = $admin_qry->fetch_assoc();
 
-                    if((bool)$admin_results['always_visible']) {
+                    if((bool)$admin_results['always_visible']) { // if the op is set to always visible
                         $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees')");
 
                         $inserted_id = $dbconn->insert_id;
@@ -293,135 +383,171 @@ HEREDOC;
 
                         echo "success";
                     }
-                }
+                }*/
             }
-        } else {
-            $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'");
+        } else { // this is a triple-zero op
+            if($otf === 'yes') { // this is an on-the-fly operation
+                // first check to see if anything exists in the op queue with this operation id, room, so# and iteration
+                $exists_qry = $dbconn->query("SELECT * FROM op_queue WHERE so_parent = '$otf_so' AND room = '$otf_room' AND operation_id = '$otf_op' AND iteration = '$otf_iteration' AND published = TRUE AND completed = FALSE");
 
-            if($admin_qry->num_rows > 0) {
-                $admin_results = $admin_qry->fetch_assoc();
+                if($exists_qry->num_rows > 0) { // if the operation already exists
+                    echo displayToast("error", "Unable to create On The Fly operation. Already exists.", "Op Exists");
+                } else { // this is a brand new operation!
+                    $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$otf_so' AND room = '$otf_room' AND iteration = '$otf_iteration'");
 
-                if((bool)$admin_results['always_visible']) {
-                    $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, started_by, subtask, notes) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '{$_SESSION['shop_user']['id']}', '$subtask', '$notes')");
+                    if($room_qry->num_rows > 0) {
+                        $room = $room_qry->fetch_assoc();
 
-                    $inserted_id = $dbconn->insert_id;
+                        $room_id = $room['id'];
+                    } else {
+                        $room_id = null;
+                    }
 
-                    $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes];
-                    $final_changes = json_encode($changes);
+                    $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$otf_op'"); // grab the normal op info
 
-                    $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())");
+                    if($op_qry->num_rows > 0) { // if we were able to get the operation
+                        $operation = $op_qry->fetch_assoc();
 
-                    echo "success";
+                        // create the op queue listing to be able to update information
+                        $dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, iteration, operation_id, start_time, active, created, active_employees, started_by, notes, otf_created) 
+                            VALUES ('$room_id', '$otf_so', '$otf_room', '$otf_iteration', '{$operation['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '{$_SESSION['shop_user']['id']}', '$otf_notes', TRUE)");
+
+                        $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
+
+                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes, "OTF"=>'true'];
+                        $final_changes = json_encode($changes);
+
+                        $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())");
+
+                        echo "success - otf";
+                    } else {
+                        dbLogSQLErr($dbconn);
+                    }
+                }
+            } else { // this is not an on-the-fly op
+                $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'"); // grab the normal op info
+
+                if($admin_qry->num_rows > 0) { // if we were able to get the operation
+                    $admin_results = $admin_qry->fetch_assoc();
+
+                    if((bool)$admin_results['always_visible']) { // check to confirm this is an always visible op
+                        // create the op queue listing to be able to update information
+                        $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, started_by, subtask, notes) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '{$_SESSION['shop_user']['id']}', '$subtask', '$notes')");
+
+                        $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
+
+                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes];
+                        $final_changes = json_encode($changes);
+
+                        $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())");
+
+                        echo "success";
+                    } else {
+                        echo displayToast("error", "Unable to properly start this operation (not always visible).", "Error Starting Operation.");
+                    }
+                } else {
+                    dbLogSQLErr($dbconn);
                 }
             }
         }
 
         break;
     case 'display_active_jobs':
-        $filter = sanitizeInput($_REQUEST['view']);
+        $output = array();
+        $i = 0;
 
         $self_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE");
 
         if($self_qry->num_rows > 0) {
             while($self = $self_qry->fetch_assoc()) {
-                $so_id = $self['so_parent'] . "-" . $self['room'];
                 $operation = $self['op_id'] . ": " . $self['job_title'];
                 $start_time = ($self['resumed_time'] === null) ? date(TIME_ONLY, $self['start_time']) : date(TIME_ONLY, $self['resumed_time']);
-                $active_time = ($self['resumed_time'] === null) ? "$('#start_{$self['start_time']}').text(moment({$self['start_time']} * 1000).fromNow(true))" : "$('#start_{$self['start_time']}').text(moment({$self['resumed_time']} * 1000).fromNow(true))";
 
-                echo "<tr class='cursor-hand update-active-job' data-op-id='{$self['opID']}'>";
-                echo "  <td>$so_id</td>";
-                echo "  <td>{$self['responsible_dept']}</td>";
-                echo "  <td>$operation</td>"; // the operation title itself, easy!
-                echo "  <td>$start_time</td>";
-                echo "  <td id='start_{$self['start_time']}'></td>";
-                echo "<script>$active_time</script>";
-                echo "</tr>";
+                $time = Carbon::createFromTimestamp($self['start_time']); // grab the carbon timestamp
+
+                $output['data'][$i][] = $self['so_parent'];
+                $output['data'][$i][] = $self['room'];
+                $output['data'][$i][] = $self['responsible_dept'];
+                $output['data'][$i][] = $operation;
+                $output['data'][$i][] = $start_time;
+                $output['data'][$i][] = $time->diffForHumans(null,true); // obtain the difference in readable format for humans!
+                $output['data'][$i]['DT_RowId'] = $self['opID'];
+
+                $i += 1;
             }
         } else {
-            echo "<tr>";
-            echo "  <td colspan='5'>No active operations currently.</td>";
-            echo "</tr>";
+            $output['data'][$i][] = "---------";
+            $output['data'][$i][] = "---------";
+            $output['data'][$i][] = "No current active operations";
+            $output['data'][$i][] = "";
+            $output['data'][$i][] = "";
+            $output['data'][$i][] = "";
+
+            $i += 1;
         }
+
+        echo json_encode($output);
 
         break;
     case 'display_job_queue':
         $queue = sanitizeInput($_REQUEST['queue']);
         $external_brackets = ['Non-Billable'];
 
-        if(in_array($queue, $external_brackets)) {
-            $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND bracket = 'Non-Billable'");
+        $output = array();
+        $i = 0;
 
-            if($op_queue_qry->num_rows > 0) {
-                while($op_queue = $op_queue_qry->fetch_assoc()) {
-                    $id = $op_queue['id'];
-                    $department = $op_queue['responsible_dept'];
-                    $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
-                    $release_date = date(DATE_DEFAULT, $op_queue['created']);
-                    $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
-                    $op_info_payload = json_encode($op_info);
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.* 
+              FROM op_queue JOIN operations ON op_queue.operation_id = operations.id 
+              WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue' AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) ORDER BY so_parent, room ASC;");
 
-                    echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
-                    echo "  <td>&nbsp;</td>";
-                    echo "  <td>Non-Billable</td>";
-                    echo "  <td>$department</td>";
-                    echo "  <td>$operation</td>";
-                    echo "  <td>Now</td>";
-                    echo "  <td>&nbsp;</td>";
-                    echo "  <td>&nbsp;</td>";
-                    echo "</tr>";
-                }
-            }
-        } else {
-            $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.* 
-          FROM op_queue JOIN operations ON op_queue.operation_id = operations.id 
-          WHERE (active = FALSE AND completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue');");
+        if($op_queue_qry->num_rows > 0) {
+            while($op_queue = $op_queue_qry->fetch_assoc()) {
+                $id = $op_queue['queueID'];
+                $sonum = $op_queue['so_parent'] . "-" . $op_queue['room'];
+                $department = $op_queue['responsible_dept'];
+                $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+                $release_date = date(DATE_DEFAULT, $op_queue['created']);
+                $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
+                $op_info_payload = json_encode($op_info);
 
-            if($op_queue_qry->num_rows > 0) {
-                while($op_queue = $op_queue_qry->fetch_assoc()) {
-                    $id = $op_queue['queueID'];
-                    $sonum = $op_queue['so_parent'] . "-" . $op_queue['room'];
-                    $department = $op_queue['responsible_dept'];
-                    $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
-                    $release_date = date(DATE_DEFAULT, $op_queue['created']);
-                    $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
-                    $op_info_payload = json_encode($op_info);
+                $output['data'][$i][] = $op_queue['so_parent'];
+                $output['data'][$i][] = $op_queue['room'];
+                $output['data'][$i][] = $department;
+                $output['data'][$i][] = $operation;
+                $output['data'][$i][] = $release_date;
+                $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i]['DT_RowId'] = $id;
 
-                    echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
-                    echo "  <td>{$op_queue['so_parent']}</td>";
-                    echo "  <td>{$op_queue['room']}</td>";
-                    echo "  <td>$department</td>";
-                    echo "  <td>$operation</td>";
-                    echo "  <td>$release_date</td>";
-                    echo "  <td>&nbsp;</td>";
-                    echo "  <td>&nbsp;</td>";
-                    echo "</tr>";
-                }
-            }
-
-            $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND responsible_dept = '$queue' AND bracket != 'Non-Billable'");
-
-            if($op_queue_qry->num_rows > 0) {
-                while($op_queue = $op_queue_qry->fetch_assoc()) {
-                    $id = $op_queue['id'];
-                    $department = $op_queue['responsible_dept'];
-                    $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
-                    $release_date = date(DATE_DEFAULT, $op_queue['created']);
-                    $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
-                    $op_info_payload = json_encode($op_info);
-
-                    echo "<tr class='cursor-hand queue-op-start' data-op-id='$id' data-op-info='$op_info_payload' data-long-op-id='$operation' data-long-part-id='$sonum'>";
-                    echo "  <td>---------</td>";
-                    echo "  <td>---</td>";
-                    echo "  <td>$department</td>";
-                    echo "  <td>$operation</td>";
-                    echo "  <td>Now</td>";
-                    echo "  <td>&nbsp;</td>";
-                    echo "  <td>&nbsp;</td>";
-                    echo "</tr>";
-                }
+                $i += 1;
             }
         }
+
+        $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND responsible_dept = '$queue' ORDER BY job_title ASC");
+
+        if($op_queue_qry->num_rows > 0) {
+            while($op_queue = $op_queue_qry->fetch_assoc()) {
+                $id = $op_queue['id'];
+                $department = $op_queue['responsible_dept'];
+                $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+                $release_date = date(DATE_DEFAULT, $op_queue['created']);
+                $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
+                $op_info_payload = json_encode($op_info);
+
+                $output['data'][$i][] = "---------";
+                $output['data'][$i][] = "---";
+                $output['data'][$i][] = $department;
+                $output['data'][$i][] = $operation;
+                $output['data'][$i][] = "Now";
+                $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i]['DT_RowId'] = $id;
+
+                $i += 1;
+            }
+        }
+
+        echo json_encode($output);
 
         break;
     case 'update_active_job':
@@ -463,7 +589,7 @@ HEREDOC;
                 die();
             }
         } else { // it's not a nonbillable item
-            $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
+            $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the item from the operation queue
             $op_queue = $op_queue_qry->fetch_assoc();
 
             $time = date(DATE_TIME_ABBRV); // grab the current time
@@ -495,78 +621,80 @@ HEREDOC;
 
                         $next_operation = $ind_bracket[$loc]; // obtain that operation ID itself
 
-                        // determine if we've done this operation already and it's closing the bracket or not
-                        $comp_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = '$next_operation' AND room_id = '{$op_queue['room_id']}'");
+                        $next_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$next_operation'"); // grab the next operation information
 
-                        $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$next_operation'");
-                        $operation = $op_qry->fetch_assoc();
+                        if($next_op_qry->num_rows > 0) { // as a note, at this point we've already "closed" the operation, this is to determine what op is next in line and to open it if needed
+                            $next_op = $next_op_qry->fetch_assoc();
 
-                        switch($operation['department']) {
-                            case 'Sales':
-                                $bracket = 'sales_bracket';
-                                $published = 'sales_published';
-                                break;
+                            switch($next_op['bracket']) {
+                                case 'Sales':
+                                    $bracket = 'sales_bracket';
+                                    $published = 'sales_published';
+                                    break;
 
-                            case 'Pre-Production':
-                                $bracket = 'preproduction_bracket';
-                                $published = 'preproduction_published';
-                                break;
+                                case 'Pre-Production':
+                                    $bracket = 'preproduction_bracket';
+                                    $published = 'preproduction_published';
+                                    break;
 
-                            case 'Sample':
-                                $bracket = 'sample_bracket';
-                                $published = 'sample_published';
-                                break;
+                                case 'Sample':
+                                    $bracket = 'sample_bracket';
+                                    $published = 'sample_published';
+                                    break;
 
-                            case 'Drawer & Doors':
-                                $bracket = 'doordrawer_bracket';
-                                $published = 'doordrawer_published';
-                                break;
+                                case 'Drawer & Doors':
+                                    $bracket = 'doordrawer_bracket';
+                                    $published = 'doordrawer_published';
+                                    break;
 
-                            case 'Custom':
-                                $bracket = 'custom_bracket';
-                                $published = 'custom_published';
-                                break;
+                                case 'Custom':
+                                    $bracket = 'custom_bracket';
+                                    $published = 'custom_published';
+                                    break;
 
-                            case 'Main':
-                                $bracket = 'box_bracket';
-                                $published = 'box_published';
-                                break;
+                                case 'Main':
+                                    $bracket = 'box_bracket';
+                                    $published = 'box_published';
+                                    break;
 
-                            case 'Shipping':
-                                $bracket = 'shipping_bracket';
-                                $published = 'shipping_published';
-                                break;
+                                case 'Shipping':
+                                    $bracket = 'shipping_bracket';
+                                    $published = 'shipping_published';
+                                    break;
 
-                            case 'Installation':
-                                $bracket = 'install_bracket';
-                                $published = 'install_bracket_published';
-                                break;
+                                case 'Installation':
+                                    $bracket = 'install_bracket';
+                                    $published = 'install_bracket_published';
+                                    break;
 
-                            default:
-                                $bracket = 'sales_bracket';
-                                $published = 'sales_published';
-                                break;
-                        }
-
-                        if($comp_qry->num_rows > 0) {
-                            // we've already done this operation, it's closing time for this section
-                            if(substr($operation['op_id'], -2) === '98') {
-                                echo displayToast("info", "Notice: the bracket has been completed.", "Bracket Completed");
+                                default:
+                                    $bracket = 'sales_bracket';
+                                    $published = 'sales_published';
+                                    break;
                             }
-                        } else {
-                            // time to find out if the bracket is published
-                            if((bool)$room_results[$published] === true) {
-                                // bracket IS published
-                                if($dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, start_time, end_priority, end_time, active, 
-                                  completed, rework, notes, qty_requested, qty_completed, qty_rework, resumed_time, resumed_priority, partially_completed, created, active_employees, 
-                                  started_by, completed_by, subtask) VALUES ('{$op_queue['room_id']}', '{$room_results['so_parent']}', '{$room_results['room']}', '$next_operation',
-                                  4, NULL, NULL, NULL, FALSE, FALSE, FALSE, NULL, 1, NULL, NULL, NULL, NULL, 0, UNIX_TIMESTAMP(), NULL, NULL, NULL, NULL)")) {
+
+                            if($next_op['job_title'] === 'Bracket Completed') { // bracket's completed
+                                // update the room to the "completed" operation
+                                $dbconn->query("UPDATE rooms SET $bracket = '$next_operation' WHERE id = '$room_id'"); // set the operation inside of the bracket
+
+                                echo displayToast("info", "Notice: the bracket has been completed.", "Bracket Completed"); // update user, end of situation
+                            } else { // we're incrementing the job as long as the bracket is still published!
+                                // time to find out if the bracket is published
+                                if((bool)$room_results[$published] === true) {
+                                    // bracket IS published
+                                    if($dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, start_time, end_priority, end_time, active, 
+                                          completed, rework, notes, qty_requested, qty_completed, qty_rework, resumed_time, resumed_priority, partially_completed, created, active_employees, 
+                                          started_by, completed_by, subtask) VALUES ('{$op_queue['room_id']}', '{$room_results['so_parent']}', '{$room_results['room']}', '$next_operation',
+                                          4, NULL, NULL, NULL, FALSE, FALSE, FALSE, NULL, 1, NULL, NULL, NULL, NULL, 0, UNIX_TIMESTAMP(), NULL, NULL, NULL, NULL)")) {
+                                        $dbconn->query("UPDATE rooms SET $bracket = '$next_operation' WHERE id = '$room_id'"); // set the operation inside of the bracket
+
                                         echo displayToast("success", "Operation has been closed.", "Operation closed");
                                     } else {
                                         dbLogSQLErr($dbconn);
                                     }
-                            } else { // bracket is NOT published
-                                echo displayToast("info", "Notice: The next bracket is not published yet.", "Notice");
+                                } else { // bracket is NOT published
+                                    echo displayToast("info", "Notice: The next bracket is not published yet.", "Notice");
+                                }
                             }
                         }
                     } else {

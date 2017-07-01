@@ -27,35 +27,37 @@ require '../includes/header_end.php';
 <div class="row">
     <div class="col-md-12">
         <div class="card-box" id="search_results_card">
-            <div class="row">
-                <div class="col-md-12 form-inline">
-                    <div class="form-group">
-                        <label for="global_search">Lookup: </label>
-                        <input class="form-control" type="text" placeholder="Search..." id="global_search" name="global_search" style="width: 250px;" />
-                        <button class="btn waves-effect btn-primary" id="btn_add_acct" style="margin: 0 0 0 6px;"> <i class="zmdi zmdi-account-add"></i> </button>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12 form-inline">
+                        <div class="form-group">
+                            <label for="global_search">Lookup: </label>
+                            <input class="form-control" type="text" placeholder="Search..." id="global_search" name="global_search" style="width: 250px;" />
+                            <button class="btn waves-effect btn-primary" id="btn_add_acct" style="margin: 0 0 0 6px;"> <i class="zmdi zmdi-account-add"></i> </button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <table style="display: none;" class="table table-bordered tablesorter" id="search_results_global_table">
-                        <thead>
-                        <tr>
-                            <th colspan="2">SO#</th>
-                            <th>PROJECT/CUSTOMER PO</th>
-                            <th>SALESPERSON</th>
-                            <th>DEALER/CONTRACTOR</th>
-                            <th>ACCOUNT TYPE</th>
-                            <th>PROJECT MANAGER/CONTACT</th>
-                        </tr>
-                        </thead>
-                        <tbody id="search_results_table">
-                        <tr>
-                            <td colspan="7">No results to display</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <div class="row">
+                    <div class="col-md-12">
+                        <table style="display: none;" class="table table-bordered tablesorter" id="search_results_global_table">
+                            <thead>
+                            <tr>
+                                <th colspan="2">SO#</th>
+                                <th>PROJECT/CUSTOMER PO</th>
+                                <th>SALESPERSON</th>
+                                <th>DEALER/CONTRACTOR</th>
+                                <th>ACCOUNT TYPE</th>
+                                <th>PROJECT MANAGER/CONTACT</th>
+                            </tr>
+                            </thead>
+                            <tbody id="search_results_table">
+                            <tr>
+                                <td colspan="7">No results to display</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

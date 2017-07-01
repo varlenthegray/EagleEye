@@ -4,7 +4,7 @@
   cursor: pointer;
 
   &:hover {
-    background-color: $white;
+    background-color: rgba(204,204,204,.5) !important;
     color: $custom;
     border-radius: 6px;
   }
@@ -17,6 +17,7 @@
 
 .card-box {
   padding: 5px;
+  overflow: auto;
 
   &:hover {
     background-color: $gold;

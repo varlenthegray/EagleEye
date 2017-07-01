@@ -13,110 +13,112 @@ use Carbon\Carbon; // prep carbon
 <div class="row" id="default_login_form">
     <div class="col-md-6">
         <div class="card-box">
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="tablesaw table">
-                        <thead>
-                        <tr>
-                            <th scope="col" data-tablesaw-priority="persist">Employee</th>
-                            <th scope="col" data-tablesaw-priority="2">Logged In Time</th>
-                            <th scope="col" data-tablesaw-priority="3">Current Operations</th>
-                            <th scope="col" data-tablesaw-priority="4">Time Logged In</th>
-                        </tr>
-                        </thead>
-                        <tbody id="room_search_table">
-                        <?php
-                        $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE");
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table id="individual_login" class="table table-striped table-bordered" width="100%">
+                            <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Logged In Time</th>
+                                <th>Current Operations</th>
+                                <th>Time Logged In</th>
+                            </tr>
+                            </thead>
+                            <tbody id="room_search_table">
+                            <?php
+                            $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE");
 
-                        while($result = $qry->fetch_assoc()) {
-                            if($result['id'] !== '16') {
-                                $last_login_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = {$result['id']} ORDER BY time_in DESC LIMIT 0,1");
+                            while($result = $qry->fetch_assoc()) {
+                                if($result['id'] !== '16') {
+                                    $last_login_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = {$result['id']} ORDER BY time_in DESC LIMIT 0,1");
 
-                                if($last_login_qry->num_rows > 0) {
-                                    $last_login = $last_login_qry->fetch_assoc();
+                                    if($last_login_qry->num_rows > 0) {
+                                        $last_login = $last_login_qry->fetch_assoc();
 
-                                    if($last_login['time_in'] > strtotime("today")) {
-                                        $time = date(TIME_ONLY, $last_login['time_in']);
-                                    } else {
-                                        $time = date(DATE_DEFAULT, $last_login['time_in']);
-                                    }
-
-                                    $time_unix = $last_login['time_in'];
-                                } else {
-                                    $time = "Never";
-                                    $time_unix = null;
-                                }
-
-                                if(!empty($time_unix)) {
-                                    $today = mktime(0,0);
-
-                                    if($time_unix >= $today) {
-                                        $carbon_time = Carbon::createFromTimestamp($time_unix);
-                                        $time_in_display = $carbon_time->diffForHumans(null,true);
-                                    } else {
-                                        $time_in_display = "Hasn't logged in today";
-                                    }
-                                } else {
-                                    $time_in_display = "Never logged in";
-                                }
-
-                                $ops_qry = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active_employees LIKE '%\"{$result['id']}\"%'");
-
-                                $final_ops = '';
-
-                                if($ops_qry->num_rows > 0) {
-                                    while($ops = $ops_qry->fetch_assoc()) {
-                                        if(!empty($ops['so_parent']) && !empty($ops['room'])) {
-                                            $so_info = "{$ops['so_parent']}{$ops['room']} - ";
+                                        if($last_login['time_in'] > strtotime("today")) {
+                                            $time = date(TIME_ONLY, $last_login['time_in']);
                                         } else {
-                                            $so_info = null;
+                                            $time = date(DATE_DEFAULT, $last_login['time_in']);
                                         }
 
-                                        $operation = $so_info . $ops['op_id'] . ": " . $ops['job_title'];
-                                        $final_ops .= $operation . ", ";
+                                        $time_unix = $last_login['time_in'];
+                                    } else {
+                                        $time = "Never";
+                                        $time_unix = null;
                                     }
-                                } else {
-                                    $final_ops = "None";
+
+                                    if(!empty($time_unix)) {
+                                        $today = mktime(0,0);
+
+                                        if($time_unix >= $today) {
+                                            $carbon_time = Carbon::createFromTimestamp($time_unix);
+                                            $time_in_display = $carbon_time->diffForHumans(null,true);
+                                        } else {
+                                            $time_in_display = "Hasn't logged in today";
+                                        }
+                                    } else {
+                                        $time_in_display = "Never logged in";
+                                    }
+
+                                    $ops_qry = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active_employees LIKE '%\"{$result['id']}\"%'");
+
+                                    $final_ops = '';
+
+                                    if($ops_qry->num_rows > 0) {
+                                        while($ops = $ops_qry->fetch_assoc()) {
+                                            if(!empty($ops['so_parent']) && !empty($ops['room'])) {
+                                                $so_info = "{$ops['so_parent']}{$ops['room']} - ";
+                                            } else {
+                                                $so_info = null;
+                                            }
+
+                                            $operation = $so_info . $ops['op_id'] . ": " . $ops['job_title'];
+                                            $final_ops .= $operation . ", ";
+                                        }
+                                    } else {
+                                        $final_ops = "None";
+                                    }
+
+                                    $final_ops = rtrim($final_ops, ", ");
+
+                                    echo "<tr class='cursor-hand' data-toggle='modal' data-target='#modalLogin' data-login-id='{$result['id']}' data-login-name='{$result['name']}'>";
+                                    echo "<td>{$result['name']}</td>";
+                                    echo "<td>$time</td>";
+                                    echo "<td>$final_ops</td>";
+                                    echo "<td>$time_in_display</td>";
+                                    echo "</tr>";
                                 }
-
-                                $final_ops = rtrim($final_ops, ", ");
-
-                                echo "<tr class='cursor-hand' data-toggle='modal' data-target='#modalLogin' data-login-id='{$result['id']}' data-login-name='{$result['name']}'>";
-                                echo "<td>{$result['name']}</td>";
-                                echo "<td>$time</td>";
-                                echo "<td>$final_ops</td>";
-                                echo "<td>$time_in_display</td>";
-                                echo "</tr>";
                             }
-                        }
-                        ?>
-                        </tbody>
-                    </table>
+                            ?>
+                            </tbody>
+                        </table>
 
-                    <!-- modal -->
-                    <div id="modalLogin" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLoginLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                    <h4 class="modal-title" id="modalLoginName">Login As Ben</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="row">
-                                        <div class="col-md-12 text-md-center">
-                                            <h4>Enter PIN Code</h4>
+                        <!-- modal -->
+                        <div id="modalLogin" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLoginLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <h4 class="modal-title" id="modalLoginName">Login As Ben</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-12 text-md-center">
+                                                <h4>Enter PIN Code</h4>
 
-                                            <input type="password" autocomplete="off" name="pin" placeholder="PIN" maxlength="4" id="loginPin" class="text-md-center">
+                                                <input type="password" autocomplete="off" name="pin" placeholder="PIN" maxlength="4" id="loginPin" class="text-md-center">
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                                    <button type="button" class="btn btn-primary waves-effect waves-light" id="clock_in">Clock In</button>
-                                </div>
-                            </div><!-- /.modal-content -->
-                        </div><!-- /.modal-dialog -->
-                    </div><!-- /.modal -->
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-primary waves-effect waves-light" id="clock_in">Clock In</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                    </div>
                 </div>
             </div>
         </div>
