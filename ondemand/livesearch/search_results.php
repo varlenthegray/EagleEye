@@ -153,16 +153,22 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
                 $selected = '';
             }
 
+            if((int)substr($op['op_id'], -2) !== 98) {
+                $deactivate = "<span class=\"pull-right cursor-hand text-md-center deactivate_op\" data-opid=\"{$op['id']}\" data-roomid=\"{$room['id']}\" data-soid=\"{$room['so_parent']}\"> <i class=\"fa fa-arrow-circle-right\" style=\"width: 18px;\"></i> </button>";
+            } else {
+                $deactivate = null;
+            }
+
             $left_info .= <<<HEREDOC
-            <li id="li_$op_room_id" data-opnum="{$op['op_id']}">
-                <input type="radio" name="{$bracket_def}_adjustments_{$room['id']}" id="$op_room_id" value="" $selected>
+            <li class="active_ops_{$room['id']}" data-opnum="{$op['op_id']}" data-opid="{$op['id']}" data-roomid="{$room['id']}">
+                <input type="radio" name="{$bracket_def}" id="$op_room_id" value="{$op['id']}" $selected>
                 <label for="$op_room_id">{$op['op_id']}-{$op['job_title']}</label>
-                <span class="pull-right cursor-hand text-md-center deactivate_op" data-opid="{$op['id']}" data-roomid="{$room['id']}" data-soid="{$room['so_parent']}"> <i class="fa fa-arrow-circle-right" style="width: 18px;"></i> </button>
+                $deactivate
             </li>
 HEREDOC;
         } else {
             $right_info .= <<<HEREDOC
-                <li id="li_$op_room_id" data-opnum="{$op['op_id']}">
+                <li class="inactive_ops_{$room['id']}" data-opnum="{$op['op_id']}" data-opid="{$op['id']}" data-roomid="{$room['id']}">
                     <span class="pull-left cursor-hand activate_op" style="height:18px;width:18px;" data-opid="{$op['id']}" data-roomid="{$room['id']}" data-soid="{$room['so_parent']}"> <i class="fa fa-arrow-circle-left pull-left" style="margin:5px;"></i></span>
                     {$op['op_id']}-{$op['job_title']}
                 </li>
@@ -175,14 +181,14 @@ HEREDOC;
         <div class="row">
             <div class="col-md-6 custom_ul" style="border-right: 2px solid #000;">
                 <h3 class="text-md-center">Active</h3>
-                <ul class="radio" id="active_<?php echo $so_room_id; ?>_<?php echo $bracket_def; ?>" data-bracket="<?php echo $bracket_def; ?>">
+                <ul class="radio" class="activeops_<?php echo "{$room['id']}"; ?>" id="activeops_<?php echo "{$room['id']}_$bracket_def"; ?>" data-bracket="<?php echo $bracket_def; ?>">
                     <?php echo $left_info; ?>
                 </ul>
             </div>
 
             <div class="col-md-6 custom_ul">
                 <h3 class="text-md-center">Inactive</h3>
-                <ul style="padding: 0;" id="inactive_<?php echo $so_room_id; ?>_<?php echo $bracket_def; ?>" data-bracket="<?php echo $bracket_def; ?>">
+                <ul style="padding: 0;" class="inactiveops_<?php echo "{$room['id']}"; ?>" id="inactiveops_<?php echo "{$room['id']}_$bracket_def"; ?>" data-bracket="<?php echo $bracket_def; ?>">
                     <?php echo $right_info; ?>
                 </ul>
             </div>
@@ -421,8 +427,8 @@ switch ($search) {
                                     echo "  <td class='$doorPriority'>$doorBrackettName $door_published</td>";
                                     echo "  <td class='$mainPriority'>$mainBracketName $main_published</td>";
                                     echo "  <td class='$customsPriority'>$customsBracketName $customs_published</td>";
-                                    echo "  <td class='$installPriority'>$installBracketName $install_published</td>";
                                     echo "  <td class='$shippingPriority'>$shippingBracketName $shipping_published</td>";
+                                    echo "  <td class='$installPriority'>$installBracketName $install_published</td>";
                                     echo "</tr>";
 
                                     /** BEGIN SINGLE ROOM DISPLAY */
@@ -609,7 +615,7 @@ switch ($search) {
                                                                 <td>
                                                                     <div class="input-group">
                                                                         <input type="text" class="form-control" id="edit_iteration_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly>
-                                                                        <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
+                                                                        <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['id']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -690,128 +696,394 @@ switch ($search) {
                                     <?php echo "</div></td>";
                                     echo "</tr>";
 
-                                    /** BEGIN DISPLAY OF MANAGE BRACKET */
-                                    echo "<tr id='tr_room_bracket_{$room['id']}' style='display: none;'>";
-                                    echo "  <td colspan='12'><div id='div_room_bracket_{$room['id']}' style='display: none;'>";
+                                        /** BEGIN DISPLAY OF MANAGE BRACKET */
+                                        echo "<tr id='tr_room_bracket_{$room['id']}' style='display: none;'>";
+                                        echo "  <td colspan='12'><div id='div_room_bracket_{$room['id']}' style='display: none;'>";
 
-                                    $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%'");
-                                    $dealer = $dealer_qry->fetch_assoc();
-                                    ?>
+                                        $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%'");
+                                        $dealer = $dealer_qry->fetch_assoc();
+                                        ?>
 
-                                    <div class="col-md-12">
-                                        <div class="row">
-                                            <div class="col-md-6 col-md-offset-2">
-                                                <form id="form_bracket_<?php echo $room['id']; ?>">
-                                                    <table width="100%" class="bracket-adjustment-table">
-                                                        <tr>
-                                                            <td style="width: 49.8%;" class="bracket-border-top">
-                                                                <div class="row bracket-header-custom">
-                                                                    <div class="col-md-8"><h5><label for="sales_bracket_adjustments_<?php echo $room['id']; ?>">Sales Bracket</label></h5></div>
-                                                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published_<?php echo $room['id']; ?>" id="sales_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sales_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                </div>
-                                                            </td>
-                                                            <td style="background-color:#eceeef;"></td>
-                                                            <td style="width: 49.8%;" class="bracket-border-top">
-                                                                <div class="row bracket-header-custom">
-                                                                    <div class="col-md-8"><h5><label for="sample_bracket_adjustments_<?php echo $room['id']; ?>">Sample Bracket</label></h5></div>
-                                                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published_<?php echo $room['id']; ?>" id="sample_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sample_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="bracket-border-bottom">
-                                                                <?php displayBracketOpsMgmt('Sales', $room, $individual_bracket); ?>
-                                                            </td>
-                                                            <td style="background-color: #eceeef;">&nbsp;</td>
-                                                            <td class="bracket-border-bottom">
-                                                                <?php displayBracketOpsMgmt('Sample', $room, $individual_bracket); ?>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="bracket-border-top">
-                                                                <div class="row bracket-header-custom">
-                                                                    <div class="col-md-8"><h5><label for="pre_prod_bracket_adjustments_<?php echo $room['id']; ?>">Pre-production Bracket</label></h5></div>
-                                                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pre_prod_published_<?php echo $room['id']; ?>" id="pre_prod_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['preproduction_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                </div>
-                                                            </td>
-                                                            <td style="background-color: #eceeef;">&nbsp;</td>
-                                                            <td class="bracket-border-top">
-                                                                <div class="row bracket-header-custom">
-                                                                    <div class="col-md-8"><h5><label for="door_drawer_bracket_adjustments_<?php echo $room['id']; ?>">Door/Drawer Bracket</label></h5></div>
-                                                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="door_drawer_published_<?php echo $room['id']; ?>" id="door_drawer_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['doordrawer_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="bracket-border-bottom">
-                                                                <?php displayBracketOpsMgmt('Pre-Production', $room, $individual_bracket); ?>
-                                                            </td>
-                                                            <td style="background-color: #eceeef;">&nbsp;</td>
-                                                            <td class="bracket-border-bottom">
-                                                                <?php displayBracketOpsMgmt('Drawer & Doors', $room, $individual_bracket); ?>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="bracket-border-top">
-                                                                <div class="row bracket-header-custom">
-                                                                    <div class="col-md-8"><h5><label for="main_bracket_adjustments_<?php echo $room['id']; ?>">Main Bracket</label></h5></div>
-                                                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="box_published_<?php echo $room['id']; ?>" id="box_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['main_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                </div>
-                                                            </td>
-                                                            <td style="background-color: #eceeef;">&nbsp;</td>
-                                                            <td class="bracket-border-top">
-                                                                <div class="row bracket-header-custom">
-                                                                    <div class="col-md-8"><h5><label for="custom_bracket_adjustments_<?php echo $room['id']; ?>">Custom Bracket</label></h5></div>
-                                                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published_<?php echo $room['id']; ?>" id="custom_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['custom_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="bracket-border-bottom">
-                                                                <?php displayBracketOpsMgmt('Main', $room, $individual_bracket); ?>
-                                                            </td>
-                                                            <td style="background-color: #eceeef;">&nbsp;</td>
-                                                            <td class="bracket-border-bottom">
-                                                                <?php displayBracketOpsMgmt('Custom', $room, $individual_bracket); ?>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="bracket-border-top">
-                                                                <div class="row bracket-header-custom">
-                                                                    <div class="col-md-8"><h5><label for="shipping_bracket_adjustments_<?php echo $room['id']; ?>">Shipping Bracket</label></h5></div>
-                                                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shipping_published_<?php echo $room['id']; ?>" id="shipping_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['shipping_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                </div>
-                                                            </td>
-                                                            <td style="background-color: #eceeef;">&nbsp;</td>
-                                                            <td class="bracket-border-top">
-                                                                <div class="row bracket-header-custom">
-                                                                    <div class="col-md-8"><h5><label for="install_bracket_adjustments_<?php echo $room['id']; ?>">Install Bracket</label></h5></div>
-                                                                    <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published_<?php echo $room['id']; ?>" id="install_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['install_bracket_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td class="bracket-border-bottom">
-                                                                <?php displayBracketOpsMgmt('Shipping', $room, $individual_bracket); ?>
-                                                            </td>
-                                                            <td style="background-color: #eceeef;">&nbsp;</td>
-                                                            <td class="bracket-border-bottom">
-                                                                <?php displayBracketOpsMgmt('Installation', $room, $individual_bracket); ?>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="col-md-6 col-md-offset-2">
+                                                    <form id="form_bracket_<?php echo $room['id']; ?>">
+                                                        <table width="100%" class="bracket-adjustment-table">
+                                                            <tr>
+                                                                <td style="width: 49.8%;" class="bracket-border-top">
+                                                                    <div class="row bracket-header-custom">
+                                                                        <div class="col-md-8"><h5><label for="sales_bracket_adjustments_<?php echo $room['id']; ?>">Sales Bracket</label></h5></div>
+                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" value="1" id="sales_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sales_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="background-color:#eceeef;"></td>
+                                                                <td style="width: 49.8%;" class="bracket-border-top">
+                                                                    <div class="row bracket-header-custom">
+                                                                        <div class="col-md-8"><h5><label for="sample_bracket_adjustments_<?php echo $room['id']; ?>">Sample Bracket</label></h5></div>
+                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" value="1" id="sample_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sample_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="bracket-border-bottom">
+                                                                    <?php displayBracketOpsMgmt('Sales', $room, $individual_bracket); ?>
+                                                                </td>
+                                                                <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                <td class="bracket-border-bottom">
+                                                                    <?php displayBracketOpsMgmt('Sample', $room, $individual_bracket); ?>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="bracket-border-top">
+                                                                    <div class="row bracket-header-custom">
+                                                                        <div class="col-md-8"><h5><label for="pre_prod_bracket_adjustments_<?php echo $room['id']; ?>">Pre-production Bracket</label></h5></div>
+                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="preprod_published" value="1" id="pre_prod_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['preproduction_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                <td class="bracket-border-top">
+                                                                    <div class="row bracket-header-custom">
+                                                                        <div class="col-md-8"><h5><label for="door_drawer_bracket_adjustments_<?php echo $room['id']; ?>">Door/Drawer Bracket</label></h5></div>
+                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="door_drawer_published" value="1" id="door_drawer_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['doordrawer_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="bracket-border-bottom">
+                                                                    <?php displayBracketOpsMgmt('Pre-Production', $room, $individual_bracket); ?>
+                                                                </td>
+                                                                <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                <td class="bracket-border-bottom">
+                                                                    <?php displayBracketOpsMgmt('Drawer & Doors', $room, $individual_bracket); ?>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="bracket-border-top">
+                                                                    <div class="row bracket-header-custom">
+                                                                        <div class="col-md-8"><h5><label for="main_bracket_adjustments_<?php echo $room['id']; ?>">Main Bracket</label></h5></div>
+                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="main_published" value="1" id="main_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['main_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                <td class="bracket-border-top">
+                                                                    <div class="row bracket-header-custom">
+                                                                        <div class="col-md-8"><h5><label for="custom_bracket_adjustments_<?php echo $room['id']; ?>">Custom Bracket</label></h5></div>
+                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" value="1" id="custom_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['custom_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="bracket-border-bottom">
+                                                                    <?php displayBracketOpsMgmt('Main', $room, $individual_bracket); ?>
+                                                                </td>
+                                                                <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                <td class="bracket-border-bottom">
+                                                                    <?php displayBracketOpsMgmt('Custom', $room, $individual_bracket); ?>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="bracket-border-top">
+                                                                    <div class="row bracket-header-custom">
+                                                                        <div class="col-md-8"><h5><label for="shipping_bracket_adjustments_<?php echo $room['id']; ?>">Shipping Bracket</label></h5></div>
+                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shipping_published" value="1" id="shipping_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['shipping_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                    </div>
+                                                                </td>
+                                                                <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                <td class="bracket-border-top">
+                                                                    <div class="row bracket-header-custom">
+                                                                        <div class="col-md-8"><h5><label for="install_bracket_adjustments_<?php echo $room['id']; ?>">Install Bracket</label></h5></div>
+                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published" value="1" id="install_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['install_bracket_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="bracket-border-bottom">
+                                                                    <?php displayBracketOpsMgmt('Shipping', $room, $individual_bracket); ?>
+                                                                </td>
+                                                                <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                <td class="bracket-border-bottom">
+                                                                    <?php displayBracketOpsMgmt('Installation', $room, $individual_bracket); ?>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
 
-                                                    <div class="col-md-12 text-md-right" style="margin: 10px 0;">
-                                                        <button type="button" class="btn btn-primary waves-effect waves-light w-xs" id="save_bracket_<?php echo $room['id']; ?>">Save</button>
+                                                        <div class="col-md-12 text-md-right" style="margin: 10px 0;">
+                                                            <button type="button" class="btn btn-primary waves-effect waves-light w-xs save_bracket" data-roomid="<?php echo $room['id']; ?>">Save</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <?php echo "</div></td>";
+                                        echo "</tr>";
+                                        /** END DISPLAY OF MANAGE BRACKET */
+
+                                        /** BEGIN DISPLAY OF ADD ITERATION */
+                                        echo "<tr id='tr_iteration_{$room['id']}' style='display: none;'>";
+                                        echo "  <td colspan='10'><div id='div_iteration_{$room['id']}' style='display: none;'>";
+
+                                        $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%' ORDER BY dealer_id ASC");
+                                        $dealer = $dealer_qry->fetch_assoc();
+                                        ?>
+
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <form id="room_add_iteration_<?php echo $room['id']; ?>">
+                                                    <div class="col-md-12">
+                                                        <h4>Adding Iteration...</h4>
+
+                                                        <div class="col-md-3">
+                                                            <form>
+                                                                <table width="100%" class="table table-custom-nb">
+                                                                    <tr>
+                                                                        <td><label for="dealer_code">Dealer Code</label></td>
+                                                                        <td>
+                                                                            <select class="form-control dealer_code" name="dealer_code" readonly>
+                                                                                <?php
+
+                                                                                $dealers_qry = $dbconn->query("SELECT * FROM dealers");
+
+                                                                                while($dealers = $dealers_qry->fetch_assoc()) {
+                                                                                    $selected = ($dealers['dealer_id'] === $result['dealer_code']) ? "selected" : "";
+                                                                                    echo "<option value='{$dealers['id']}' $selected>{$dealers['dealer_id']} ({$dealers['contact']} of {$dealers['dealer_name']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="account_type">Account Type</label></td>
+                                                                        <td>
+                                                                            <select readonly class="form-control" id="edit_account_type_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="account_type" value="<?php echo $result['account_type']; ?>">
+                                                                                <option value="R" <?php echo ($result['account_type'] === 'R') ? "selected" : null; ?>>Retail</option>
+                                                                                <option value="W" <?php echo ($result['account_type'] === 'W') ? "selected" : null; ?>>Wholesale</option>
+                                                                                <option value="D" <?php echo ($result['account_type'] === 'D') ? "selected" : null; ?>>Distribution</option>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="dealer">Dealer</label></td>
+                                                                        <td><input readonly type="text" class="form-control" id="edit_dealer_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="dealer" placeholder="Dealer" value="<?php echo $dealer['dealer_name']; ?>"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="contact">Contact</label></td>
+                                                                        <td><input readonly type="text" class="form-control" id="edit_contact_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="contact" placeholder="Contact" value="<?php echo $dealer['contact']; ?>"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="phone_number">Phone Number</label></td>
+                                                                        <td><input readonly type="text" class="form-control" id="edit_phone_num_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="phone_number" placeholder="Phone Number" value="<?php echo $dealer['phone']; ?>"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="email">Email</label></td>
+                                                                        <td><input readonly type="text" class="form-control" id="edit_email_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="email" placeholder="Email" value="<?php echo $dealer['email']; ?>"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="salesperson">Salesperson</label></td>
+                                                                        <td><input readonly type="text" class="form-control" id="edit_salesperson_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="salesperson" placeholder="Salesperson" value="<?php echo $dealer['contact']; ?>"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="shipping_addr">Shipping Address</label></td>
+                                                                        <td><input readonly type="text" class="form-control" id="edit_shipping_addr_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="shipping_addr" placeholder="Shipping Address" value="<?php echo $dealer['shipping_address']; ?>"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2"><input readonly type="text" class="form-control pull-left" id="edit_city_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="city" style="width: 33.3%;" placeholder="City" value="<?php echo $dealer['physical_city']; ?>"><select readonly class="form-control pull-left" id="edit_state_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" style="width: 33.3%;" name="p_state">
+                                                                                <option value="AL" <?php echo ($dealer['physical_state'] === 'AL') ? "selected" : null; ?>>Alabama</option>
+                                                                                <option value="AK" <?php echo ($dealer['physical_state'] === 'AK') ? "selected" : null; ?>>Alaska</option>
+                                                                                <option value="AR" <?php echo ($dealer['physical_state'] === 'AR') ? "selected" : null; ?>>Arkansas</option>
+                                                                                <option value="CA" <?php echo ($dealer['physical_state'] === 'CA') ? "selected" : null; ?>>California</option>
+                                                                                <option value="CO" <?php echo ($dealer['physical_state'] === 'CO') ? "selected" : null; ?>>Colorado</option>
+                                                                                <option value="CT" <?php echo ($dealer['physical_state'] === 'CT') ? "selected" : null; ?>>Connecticut</option>
+                                                                                <option value="DE" <?php echo ($dealer['physical_state'] === 'DE') ? "selected" : null; ?>>Delaware</option>
+                                                                                <option value="FL" <?php echo ($dealer['physical_state'] === 'FL') ? "selected" : null; ?>>Florida</option>
+                                                                                <option value="GA" <?php echo ($dealer['physical_state'] === 'GA') ? "selected" : null; ?>>Georgia</option>
+                                                                                <option value="HI" <?php echo ($dealer['physical_state'] === 'HI') ? "selected" : null; ?>>Hawaii</option>
+                                                                                <option value="ID" <?php echo ($dealer['physical_state'] === 'ID') ? "selected" : null; ?>>Idaho</option>
+                                                                                <option value="IL" <?php echo ($dealer['physical_state'] === 'IL') ? "selected" : null; ?>>Illinois</option>
+                                                                                <option value="IN" <?php echo ($dealer['physical_state'] === 'IN') ? "selected" : null; ?>>Indiana</option>
+                                                                                <option value="IA" <?php echo ($dealer['physical_state'] === 'IA') ? "selected" : null; ?>>Iowa</option>
+                                                                                <option value="KS" <?php echo ($dealer['physical_state'] === 'KS') ? "selected" : null; ?>>Kansas</option>
+                                                                                <option value="KY" <?php echo ($dealer['physical_state'] === 'KY') ? "selected" : null; ?>>Kentucky</option>
+                                                                                <option value="LA" <?php echo ($dealer['physical_state'] === 'LA') ? "selected" : null; ?>>Louisiana</option>
+                                                                                <option value="ME" <?php echo ($dealer['physical_state'] === 'ME') ? "selected" : null; ?>>Maine</option>
+                                                                                <option value="MD" <?php echo ($dealer['physical_state'] === 'MD') ? "selected" : null; ?>>Maryland</option>
+                                                                                <option value="MA" <?php echo ($dealer['physical_state'] === 'MA') ? "selected" : null; ?>>Massachusetts</option>
+                                                                                <option value="MI" <?php echo ($dealer['physical_state'] === 'MI') ? "selected" : null; ?>>Michigan</option>
+                                                                                <option value="MN" <?php echo ($dealer['physical_state'] === 'MN') ? "selected" : null; ?>>Minnesota</option>
+                                                                                <option value="MS" <?php echo ($dealer['physical_state'] === 'MS') ? "selected" : null; ?>>Mississippi</option>
+                                                                                <option value="MO" <?php echo ($dealer['physical_state'] === 'MO') ? "selected" : null; ?>>Missouri</option>
+                                                                                <option value="MT" <?php echo ($dealer['physical_state'] === 'MT') ? "selected" : null; ?>>Montana</option>
+                                                                                <option value="NE" <?php echo ($dealer['physical_state'] === 'NE') ? "selected" : null; ?>>Nebraska</option>
+                                                                                <option value="NV" <?php echo ($dealer['physical_state'] === 'NV') ? "selected" : null; ?>>Nevada</option>
+                                                                                <option value="NH" <?php echo ($dealer['physical_state'] === 'NH') ? "selected" : null; ?>>New Hampshire</option>
+                                                                                <option value="NJ" <?php echo ($dealer['physical_state'] === 'NJ') ? "selected" : null; ?>>New Jersey</option>
+                                                                                <option value="NM" <?php echo ($dealer['physical_state'] === 'NM') ? "selected" : null; ?>>New Mexico</option>
+                                                                                <option value="NY" <?php echo ($dealer['physical_state'] === 'NY') ? "selected" : null; ?>>New York</option>
+                                                                                <option value="NC" <?php echo ($dealer['physical_state'] === 'NC') ? "selected" : null; ?>>North Carolina</option>
+                                                                                <option value="ND" <?php echo ($dealer['physical_state'] === 'ND') ? "selected" : null; ?>>North Dakota</option>
+                                                                                <option value="OH" <?php echo ($dealer['physical_state'] === 'OH') ? "selected" : null; ?>>Ohio</option>
+                                                                                <option value="OK" <?php echo ($dealer['physical_state'] === 'OK') ? "selected" : null; ?>>Oklahoma</option>
+                                                                                <option value="OR" <?php echo ($dealer['physical_state'] === 'OR') ? "selected" : null; ?>>Oregon</option>
+                                                                                <option value="PA" <?php echo ($dealer['physical_state'] === 'PA') ? "selected" : null; ?>>Pennsylvania</option>
+                                                                                <option value="RI" <?php echo ($dealer['physical_state'] === 'RI') ? "selected" : null; ?>>Rhode Island</option>
+                                                                                <option value="SC" <?php echo ($dealer['physical_state'] === 'SC') ? "selected" : null; ?>>South Carolina</option>
+                                                                                <option value="SD" <?php echo ($dealer['physical_state'] === 'SD') ? "selected" : null; ?>>South Dakota</option>
+                                                                                <option value="TN" <?php echo ($dealer['physical_state'] === 'TN') ? "selected" : null; ?>>Tennessee</option>
+                                                                                <option value="TX" <?php echo ($dealer['physical_state'] === 'TX') ? "selected" : null; ?>>Texas</option>
+                                                                                <option value="UT" <?php echo ($dealer['physical_state'] === 'UT') ? "selected" : null; ?>>Utah</option>
+                                                                                <option value="VT" <?php echo ($dealer['physical_state'] === 'VT') ? "selected" : null; ?>>Vermont</option>
+                                                                                <option value="VA" <?php echo ($dealer['physical_state'] === 'VA') ? "selected" : null; ?>>Virginia</option>
+                                                                                <option value="WA" <?php echo ($dealer['physical_state'] === 'WA') ? "selected" : null; ?>>Washington</option>
+                                                                                <option value="WV" <?php echo ($dealer['physical_state'] === 'WV') ? "selected" : null; ?>>West Virginia</option>
+                                                                                <option value="WI" <?php echo ($dealer['physical_state'] === 'WI') ? "selected" : null; ?>>Wisconsin</option>
+                                                                                <option value="WY" <?php echo ($dealer['physical_state'] === 'WY') ? "selected" : null; ?>>Wyoming</option>
+                                                                            </select><input readonly type="text" class="form-control pull-left" id="edit_zip_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="zip" style="width: 33.3%;" placeholder="ZIP" value="<?php echo $dealer['physical_zip']; ?>"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <?php
+                                                                        if(!empty($room['delivery_date'])) {
+                                                                            switch ($room['days_to_ship']) {
+                                                                                case 'Green':
+                                                                                    $status_color = "job-color-green";
+
+                                                                                    break;
+                                                                                case 'Yellow':
+                                                                                    $status_color = "job-color-yellow";
+
+                                                                                    break;
+                                                                                case 'Orange':
+                                                                                    $status_color = "job-color-orange";
+
+                                                                                    break;
+                                                                                case 'Red':
+                                                                                    $status_color = "job-color-red";
+
+                                                                                    break;
+                                                                                default:
+                                                                                    $status_color = "job-color-green";
+
+                                                                                    break;
+                                                                            }
+                                                                        } else {
+                                                                            $status_color = null;
+                                                                        }
+                                                                        ?>
+                                                                        <td><label for="delivery_date">Delivery Date</label></td>
+                                                                        <td>
+                                                                            <div class="input-group">
+                                                                                <input type="text" class="form-control delivery_date <?php echo $status_color; ?>" id="iteration_del_date_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="delivery_date" placeholder="Delivery Date" value="<?php echo (!empty($room['delivery_date'])) ? date("m/d/Y", $room['delivery_date']) : ""; ?>">
+                                                                                <span class="input-group-addon bg-custom b-0"><i class="icon-calender"></i></span>
+                                                                            </div>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </form>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <table width="100%" class="table table-custom-nb">
+                                                                <tr>
+                                                                    <td><label for="room">Room</label></td>
+                                                                    <td><input type="text" class="form-control" id="edit_room_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="room" placeholder="Room" value="<?php echo $room['room']; ?>" readonly></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="product_type">Product Type</label></td>
+                                                                    <td>
+                                                                        <select class="form-control" id="edit_product_type_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="product_type" value="<?php echo $room['product_type']; ?>">
+                                                                            <option value="Cabinet">Cabinet</option>
+                                                                            <option value="Closet">Closet</option>
+                                                                            <option value="Sample">Sample</option>
+                                                                            <option value="Display">Display</option>
+                                                                            <option value="Add-on">Add-on</option>
+                                                                            <option value="Warranty">Warranty</option>
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="iteration">Iteration</label></td>
+                                                                    <td>
+                                                                        <div class="input-group">
+                                                                            <input type="text" class="form-control" id="edit_iteration_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration'] + 0.01; ?>" readonly>
+                                                                            <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="order_status">Order Status</label></td>
+                                                                    <td>
+                                                                        <select class="form-control" id="edit_order_status_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="order_status">
+                                                                            <option value="#" <?php echo ($room['order_status'] === '#') ? "selected" : null; ?>>Quote</option>
+                                                                            <option value="$" <?php echo ($room['order_status'] === '$') ? "selected" : null; ?>>Job</option>
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="days_to_ship">Days to Ship</label></td>
+                                                                    <td>
+                                                                        <select class="form-control days-to-ship" id="edit_days_to_ship_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="days_to_ship" data-type="iteration" data-room="<?php echo $room['room']; ?>">
+                                                                            <option value="Green" <?php echo ($room['days_to_ship'] === 'Green') ? "selected" : null; ?>>Green (34)</option>
+                                                                            <option value="Yellow" <?php echo ($room['days_to_ship'] === 'Yellow') ? "selected" : null; ?>>Yellow (14)</option>
+                                                                            <option value="Orange" <?php echo ($room['days_to_ship'] === 'Orange') ? "selected" : null; ?>>Orange (10)</option>
+                                                                            <option value="Red" <?php echo ($room['days_to_ship'] === 'Red') ? "selected" : null; ?>>Red (5)</option>
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="room_name">Room Name</label></td>
+                                                                    <td><input type="text" class="form-control" id="edit_room_name_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <fieldset class="form-group">
+                                                                <label for="room_notes">Room Notes</label>
+                                                                <textarea class="form-control"  id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['sales_order_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3" data-toggle="popover" data-placement="top" data-trigger="focus" title="" data-html="true" data-content="<table style='font-size: 9px;'>
+                            <tr>
+                                <td>CON = Conestoga</td>
+                                <td class='text-md-right'>RW = Rework</td>
+                            </tr>
+                            <tr>
+                                <td>DEL = Delivery</td>
+                                <td class='text-md-right'>S/B = Scheduled Back</td>
+                            </tr>
+                            <tr>
+                                <td>DPL = Diminishing Punch List</td>
+                                <td class='text-md-right'>SEL = Selections</td>
+                            </tr>
+                            <tr>
+                                <td>EM = Email</td>
+                                <td class='text-md-right'>T/W = This Week</td>
+                            </tr>
+                            <tr>
+                                <td>ETA = Estimated Time of Arrival</td>
+                                <td class='text-md-right'>W/A = Will Advise</td>
+                            </tr>
+                            <tr>
+                                <td>FU = Follow Up</td>
+                                <td class='text-md-right'>W/C = Will Contact</td>
+                            </tr>
+                            <tr>
+                                <td>N/A = Not Available</td>
+                                <td class='text-md-right'>WO = Work Order</td>
+                            </tr>
+                        </table>" data-original-title="Abbreviations"></textarea>
+                                                            </fieldset>
+                                                        </div>
+
+                                                        <input type="hidden" name="sonum" value="<?php echo $result['sales_order_num']; ?>">
+                                                        <input type="hidden" name="room" value="<?php echo $room['room']; ?>">
+                                                        <input type="hidden" name="roomid" value="<?php echo $room['id']; ?>">
+
+                                                        <div class="col-md-12 text-md-right" style="margin: 10px 0;">
+                                                            <button type="button" class="btn btn-primary waves-effect waves-light w-xs iteration_save">Save</button>
+                                                        </div>
                                                     </div>
                                                 </form>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <?php echo "</div></td>";
-                                    echo "</tr>";
-                                    /** END DISPLAY OF MANAGE BRACKET */
+                                        <?php echo "</div></td>";
+                                        echo "</tr>";
+                                        /** END DISPLAY OF ADD ITERATION */
                                     /** END SINGLE ROOM DISPLAY */
                                 }
                             }
@@ -831,12 +1103,12 @@ switch ($search) {
                                 <div class="row">
                                     <div class="col-md-12">
                                         <form id="form_add_room_<?php echo $result['sales_order_num']; ?>">
-                                            <div class="col-md-3">
+                                            <div class="col-md-4">
                                                     <table width="100%" class="table table-custom-nb">
                                                         <tr>
                                                             <td><label for="dealer_code">Dealer Code</label></td>
                                                             <td>
-                                                                <select class="form-control dealer_code" name="dealer_code">
+                                                                <select class="form-control dealer_code" name="dealer_code" readonly>
                                                                     <?php
                                                                     $dealers_qry = $dbconn->query("SELECT * FROM dealers");
 
@@ -851,7 +1123,7 @@ switch ($search) {
                                                         <tr>
                                                             <td><label for="account_type">Account Type</label></td>
                                                             <td>
-                                                                <select class="form-control" name="account_type" id="add_room_account_type_<?php echo $result['sales_order_num']; ?>">
+                                                                <select class="form-control" name="account_type" id="add_room_account_type_<?php echo $result['sales_order_num']; ?>" readonly>
                                                                     <option value="R">Retail</option>
                                                                     <option value="W">Wholesale</option>
                                                                     <option value="D">Distribution</option>
@@ -864,30 +1136,30 @@ switch ($search) {
                                                                 $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '{$result['dealer_code']}%'");
                                                                 $dealer = $dealer_qry->fetch_assoc();
                                                             ?>
-                                                            <td><input type="text" class="form-control" name="dealer" placeholder="Dealer" value="<?php echo $dealer['dealer_name']; ?>" id="add_room_dealer_<?php echo $result['sales_order_num']; ?>"></td>
+                                                            <td><input type="text" class="form-control" name="dealer" placeholder="Dealer" value="<?php echo $dealer['dealer_name']; ?>" id="add_room_dealer_<?php echo $result['sales_order_num']; ?>" readonly></td>
                                                         </tr>
                                                         <tr>
                                                             <td><label for="contact">Contact</label></td>
-                                                            <td><input type="text" class="form-control" name="contact" placeholder="Contact" value="<?php echo $dealer['contact']; ?>" id="add_room_contact_<?php echo $result['sales_order_num']; ?>"></td>
+                                                            <td><input type="text" class="form-control" name="contact" placeholder="Contact" value="<?php echo $dealer['contact']; ?>" id="add_room_contact_<?php echo $result['sales_order_num']; ?>" readonly></td>
                                                         </tr>
                                                         <tr>
                                                             <td><label for="phone_number">Phone Number</label></td>
-                                                            <td><input type="text" class="form-control mask-phone" name="phone_number" placeholder="Phone Number" value="<?php echo $dealer['phone']; ?>" id="add_room_phone_num_<?php echo $result['sales_order_num']; ?>"></td>
+                                                            <td><input type="text" class="form-control mask-phone" name="phone_number" placeholder="Phone Number" value="<?php echo $dealer['phone']; ?>" id="add_room_phone_num_<?php echo $result['sales_order_num']; ?>" readonly></td>
                                                         </tr>
                                                         <tr>
                                                             <td><label for="email">Email</label></td>
-                                                            <td><input type="text" class="form-control" name="email" placeholder="Email" value="<?php echo $dealer['email']; ?>" id="add_room_email_<?php echo $result['sales_order_num']; ?>"></td>
+                                                            <td><input type="text" class="form-control" name="email" placeholder="Email" value="<?php echo $dealer['email']; ?>" id="add_room_email_<?php echo $result['sales_order_num']; ?>" readonly></td>
                                                         </tr>
                                                         <tr>
                                                             <td><label for="salesperson">Salesperson</label></td>
-                                                            <td><input type="text" class="form-control" name="salesperson" placeholder="Salesperson" value="<?php echo $result['salesperson']; ?>" id="add_room_salesperson_<?php echo $result['sales_order_num']; ?>"></td>
+                                                            <td><input type="text" class="form-control" name="salesperson" placeholder="Salesperson" value="<?php echo $result['salesperson']; ?>" id="add_room_salesperson_<?php echo $result['sales_order_num']; ?>" readonly></td>
                                                         </tr>
                                                         <tr>
                                                             <td><label for="shipping_addr">Shipping Address</label></td>
-                                                            <td><input type="text" class="form-control" name="shipping_addr" placeholder="Shipping Address" value="<?php echo $dealer['shipping_address']; ?>" id="add_room_shipping_addr_<?php echo $result['sales_order_num']; ?>"></td>
+                                                            <td><input type="text" class="form-control" name="shipping_addr" placeholder="Shipping Address" value="<?php echo $dealer['shipping_address']; ?>" id="add_room_shipping_addr_<?php echo $result['sales_order_num']; ?>" readonly></td>
                                                         </tr>
                                                         <tr>
-                                                            <td colspan="2"><input type="text" class="form-control pull-left" name="city" style="width: 33.3%;" placeholder="City" value="<?php echo $dealer['shipping_city']; ?>" id="add_room_shipping_city_<?php echo $result['sales_order_num']; ?>"><select class="form-control pull-left" style="width: 33.3%;" name="p_state" id="add_room_shipping_state_<?php echo $result['sales_order_num']; ?>">
+                                                            <td colspan="2"><input type="text" class="form-control pull-left" name="city" style="width: 33.3%;" placeholder="City" value="<?php echo $dealer['shipping_city']; ?>" id="add_room_shipping_city_<?php echo $result['sales_order_num']; ?>" readonly><select readonly class="form-control pull-left" style="width: 33.3%;" name="p_state" id="add_room_shipping_state_<?php echo $result['sales_order_num']; ?>">
                                                                     <option value="AL">Alabama</option>
                                                                     <option value="AK">Alaska</option>
                                                                     <option value="AR">Arkansas</option>
@@ -937,7 +1209,7 @@ switch ($search) {
                                                                     <option value="WV">West Virginia</option>
                                                                     <option value="WI">Wisconsin</option>
                                                                     <option value="WY">Wyoming</option>
-                                                                </select><input type="text" class="form-control pull-left mask-zip" name="zip" style="width: 33.3%;" placeholder="ZIP" value="<?php echo $dealer['shipping_zip']; ?>" id="add_room_shipping_zip_<?php echo $result['sales_order_num']; ?>"></td>
+                                                                </select><input readonly type="text" class="form-control pull-left mask-zip" name="zip" style="width: 33.3%;" placeholder="ZIP" value="<?php echo $dealer['shipping_zip']; ?>" id="add_room_shipping_zip_<?php echo $result['sales_order_num']; ?>"></td>
                                                         </tr>
                                                         <tr>
                                                             <td><label for="delivery_date">Delivery Date</label></td>
@@ -1097,7 +1369,7 @@ switch ($search) {
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-10">
-                            <form id="form_so_<?php echo $room['id']; ?>">
+                            <form id="form_so_<?php echo $result['sales_order_num']; ?>">
                                 <table width="100%" class="table table-custom-nb">
                                     <tr>
                                         <td width="8%"><label for="account_type">Account Type</label></td>
@@ -1138,10 +1410,20 @@ switch ($search) {
                                     <tr>
                                         <td colspan="2">&nbsp;</td>
                                         <td><label for="contractor_code">Contractor Code</label></td>
-                                        <td><input type="text" name="contractor_code" class="form-control" placeholder="Contractor Code" id="contractor_code" value="<?php echo $result['dealer_code']; ?>"></td>
+                                        <td>
+                                            <select name="contractor_code" id="contractor_code" class="form-control" value="<?php echo $result['dealer_code']; ?>">
+                                                <?php
+                                                    $dealer_qry = $dbconn->query("SELECT * FROM dealers");
+
+                                                    while($dealer = $dealer_qry->fetch_assoc()) {
+                                                        echo "<option value='{$dealer['dealer_id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
+                                                    }
+                                                ?>
+                                            </select>
+                                        </td>
                                         <td colspan="2">&nbsp;</td>
                                         <td><label for="p_landline">Project Landline</label></td>
-                                        <td><input type="text" name="p_landline" class="form-control" placeholder="Project Landline" id="p_landline" value="<?php echo $result['pri_phone']; ?>"></td>
+                                        <td><input type="text" name="p_landline" class="form-control mask-phone" placeholder="Project Landline" id="p_landline" value="<?php echo $result['pri_phone']; ?>"></td>
                                         <td colspan="6">
                                             <table width="100%">
                                                 <tr>
@@ -1197,7 +1479,7 @@ switch ($search) {
                                                             <option value="WI" <?php echo ($result['state'] === 'WI') ? "selected" : null; ?>>Wisconsin</option>
                                                             <option value="WY" <?php echo ($result['state'] === 'WY') ? "selected" : null; ?>>Wyoming</option>
                                                         </select></td>
-                                                    <td width="33.3%"><input type="text" name="p_zip" class="form-control" placeholder="Zip" id="p_zip" value="<?php echo $result['zip']; ?>"></td>
+                                                    <td width="33.3%"><input type="text" name="p_zip" class="form-control mask-zip" placeholder="Zip" id="p_zip" value="<?php echo $result['zip']; ?>"></td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -1209,9 +1491,9 @@ switch ($search) {
                                         <td><label for="contact_1">Contact 1</label></td>
                                         <td><input type="text" name="contact_1" class="form-control" placeholder="Contact 1" id="contact_1" value="<?php echo $result['contact_1']; ?>"></td>
                                         <td><label for="cell_1">Cell Phone</label></td>
-                                        <td><input type="text" name="cell_1" class="form-control" placeholder="Cell Phone" id="cell_1" value="<?php echo $result['contact_1_cell']; ?>"></td>
+                                        <td><input type="text" name="cell_1" class="form-control mask-phone" placeholder="Cell Phone" id="cell_1" value="<?php echo $result['contact_1_cell']; ?>"></td>
                                         <td><label for="business_1">Business Phone</label></td>
-                                        <td><input type="text" name="business_1" class="form-control" placeholder="Business Phone" id="business_1" value="<?php echo $result['contact_1_business_ph']; ?>"></td>
+                                        <td><input type="text" name="business_1" class="form-control mask-phone" placeholder="Business Phone" id="business_1" value="<?php echo $result['contact_1_business_ph']; ?>"></td>
                                         <td><label for="email_1">Email Address</label></td>
                                         <td><input type="text" name="email_1" class="form-control" placeholder="Email Address" id="email_1" value="<?php echo $result['contact_1_email']; ?>"></td>
                                     </tr>
@@ -1219,9 +1501,9 @@ switch ($search) {
                                         <td><label for="contact_2">Contact 2</label></td>
                                         <td><input type="text" name="contact_2" class="form-control" placeholder="Contact 2" id="contact_2" value="<?php echo $result['contact_2']; ?>"></td>
                                         <td><label for="cell_2">Cell Phone</label></td>
-                                        <td><input type="text" name="cell_2" class="form-control" placeholder="Cell Phone" id="cell_2" value="<?php echo $result['contact_2_cell']; ?>"></td>
+                                        <td><input type="text" name="cell_2" class="form-control mask-phone" placeholder="Cell Phone" id="cell_2" value="<?php echo $result['contact_2_cell']; ?>"></td>
                                         <td><label for="business_2">Business Phone</label></td>
-                                        <td><input type="text" name="business_2" class="form-control" placeholder="Business Phone" id="business_2" value="<?php echo $result['contact_2_business_ph']; ?>"></td>
+                                        <td><input type="text" name="business_2" class="form-control mask-phone" placeholder="Business Phone" id="business_2" value="<?php echo $result['contact_2_business_ph']; ?>"></td>
                                         <td><label for="email_2">Email Address</label></td>
                                         <td><input type="text" name="email_2" class="form-control" placeholder="Email Address" id="email_2" value="<?php echo $result['contact_2_email']; ?>"></td>
                                     </tr>
@@ -1235,6 +1517,11 @@ switch ($search) {
                                         <td><input type="text" name="ph_city" class="form-control" placeholder="Physical City" id="ph_city" value="<?php echo $result['phys_city']; ?>"></td>
                                         <td><label for="ph_state">Physical State</label></td>
                                         <td><select class="form-control" id="ph_state" name="ph_state">
+                                                <?php
+                                                    if(empty($result['phys_state'])) {
+                                                        $nc_selected = " selected";
+                                                    }
+                                                ?>
                                                 <option value="AL" <?php echo ($result['phys_state'] === 'AL') ? "selected" : null; ?>>Alabama</option>
                                                 <option value="AK" <?php echo ($result['phys_state'] === 'AK') ? "selected" : null; ?>>Alaska</option>
                                                 <option value="AR" <?php echo ($result['phys_state'] === 'AR') ? "selected" : null; ?>>Arkansas</option>
@@ -1266,7 +1553,7 @@ switch ($search) {
                                                 <option value="NJ" <?php echo ($result['phys_state'] === 'NJ') ? "selected" : null; ?>>New Jersey</option>
                                                 <option value="NM" <?php echo ($result['phys_state'] === 'NM') ? "selected" : null; ?>>New Mexico</option>
                                                 <option value="NY" <?php echo ($result['phys_state'] === 'NY') ? "selected" : null; ?>>New York</option>
-                                                <option value="NC" <?php echo ($result['phys_state'] === 'NC') ? "selected" : null; ?>>North Carolina</option>
+                                                <option value="NC" <?php echo ($result['phys_state'] === 'NC') ? "selected" : null; echo $nc_selected; ?>>North Carolina</option>
                                                 <option value="ND" <?php echo ($result['phys_state'] === 'ND') ? "selected" : null; ?>>North Dakota</option>
                                                 <option value="OH" <?php echo ($result['phys_state'] === 'OH') ? "selected" : null; ?>>Ohio</option>
                                                 <option value="OK" <?php echo ($result['phys_state'] === 'OK') ? "selected" : null; ?>>Oklahoma</option>
@@ -1286,7 +1573,7 @@ switch ($search) {
                                                 <option value="WY" <?php echo ($result['phys_state'] === 'WY') ? "selected" : null; ?>>Wyoming</option>
                                                 </select></td>
                                         <td><label for="ph_zip">Physical Zip</label></td>
-                                        <td><input type="text" name="ph_zip" class="form-control" placeholder="Physical Zip" id="ph_zip" value="<?php echo $result['phys_zip']; ?>"></td>
+                                        <td><input type="text" name="ph_zip" class="form-control mask-zip" placeholder="Physical Zip" id="ph_zip" value="<?php echo $result['phys_zip']; ?>"></td>
                                     </tr>
                                     <tr style="height: 5px;">
                                         <td colspan="11"></td>
@@ -1295,12 +1582,14 @@ switch ($search) {
                                         <td><label for="email_address">Email Address</label></td>
                                         <td><input type="text" name="email_address" class="form-control pull-right" placeholder="Email Address" id="email_address" value="<?php echo $result['global_email']; ?>"></td>
                                         <td><label for="cell_phone">Cell Phone</label></td>
-                                        <td><input type="text" name="cell_phone" class="form-control" placeholder="Cell Phone" id="cell_phone" value="<?php echo $result['global_cell']; ?>"></td>
+                                        <td><input type="text" name="cell_phone" class="form-control mask-phone" placeholder="Cell Phone" id="cell_phone" value="<?php echo $result['global_cell']; ?>"></td>
                                     </tr>
                                 </table>
 
+                                <input type="hidden" name="so_num" value="<?php echo $result['sales_order_num']; ?>">
+
                                 <div class="col-md-12 text-md-right" style="margin: 10px 0;">
-                                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs" id="save_so_<?php echo $result['sales_order_num']; ?>">Save</button>
+                                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs save_so" data-sonum="<?php echo $result['sales_order_num']; ?>">Save</button>
                                 </div>
                             </form>
                         </div>

@@ -331,11 +331,9 @@ HEREDOC;
 
                 $active = json_decode($results['active_employees']); // grab the current list of active employees
 
-                if(!empty($active)) { // if there are any active employees
-                    $active[] = $_SESSION['shop_user']['id'];
-                }
+                $active[] = $_SESSION['shop_user']['id']; // add individual to the list of active employees
 
-                $active_employees = json_encode($active);
+                $active_employees = json_encode($active); // re-encode it for saving
 
                 if($results['start_time'] === null) { // if this op queue item has never been started
                     if($dbconn->query("UPDATE op_queue SET active = TRUE, start_time = UNIX_TIMESTAMP(), active_employees = '$active_employees' WHERE id = '$id'")) {
@@ -466,7 +464,7 @@ HEREDOC;
                 $time = Carbon::createFromTimestamp($self['start_time']); // grab the carbon timestamp
 
                 $output['data'][$i][] = $self['so_parent'];
-                $output['data'][$i][] = $self['room'];
+                $output['data'][$i][] = "{$self['room']}-{$self['iteration']}";
                 $output['data'][$i][] = $self['responsible_dept'];
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = $start_time;
@@ -511,7 +509,7 @@ HEREDOC;
                 $op_info_payload = json_encode($op_info);
 
                 $output['data'][$i][] = $op_queue['so_parent'];
-                $output['data'][$i][] = $op_queue['room'];
+                $output['data'][$i][] = "{$op_queue['room']}-{$op_queue['iteration']}";
                 $output['data'][$i][] = $department;
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = $release_date;

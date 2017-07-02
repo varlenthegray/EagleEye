@@ -85,13 +85,14 @@ require '../includes/header_end.php';
     $("body")
         .on("click", ".wc-edit-queue", function() {
             var id = $(this).attr("id");
-            console.log(id);
 
-            $.post("/ondemand/shopfloor/workcenter.php?action=view_job_in_queue", {id: id}, function(data) {
+            window.location.replace("/shopfloor/job_management.php?lookup=" + id);
+
+            /*$.post("/ondemand/shopfloor/workcenter.php?action=view_job_in_queue", {id: id}, function(data) {
                 $("#viewJobInfo").html(data).modal('show');
             }).fail(function() {
                 $("body").append(data);
-            });
+            });*/
         })
         .on("click", "#wc-jiq-update", function() {
             if(!$("#published").is(":checked")) {

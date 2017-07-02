@@ -157,17 +157,8 @@ switch($_SERVER['SCRIPT_NAME']) {
                         <ul class="submenu">
                             <li><a href="/shopfloor/index.php"><?php echo NAV_INDIVIDUAL; ?></a></li>
                             <li><a href="/shopfloor/workcenter.php"><?php echo NAV_WORKCENTER; ?></a></li>
-                            <li class="has-submenu">
-                                <a href="#"><?php echo NAV_BRACKET_MGMT; ?></a>
-                                <ul class="submenu">
-                                    <li><a href="/shopfloor/bracket_builder.php"><?php echo NAV_BRACKET_NEW; ?></a></li>
-                                    <li><a href="#"><?php echo NAV_BRACKET_LIST; ?></a></li>
-                                </ul>
-                            </li>
                             <li><a href="/shopfloor/job_management.php">Job Management</a></li>
-                            <li><a href="/shopfloor/sales_order.php">Sales Orders</a></li>
-                            <li><a href="/ondemand/shopfloor/login_actions.php?action=logout"
-                                   id="shop_logout_link"><?php echo NAV_SHOP_LOGOUT; ?></a></li>
+                            <li><a href="/ondemand/shopfloor/login_actions.php?action=logout" id="shop_logout_link"><?php echo NAV_SHOP_LOGOUT; ?></a></li>
                         </ul>
                     </li>
                     <li>

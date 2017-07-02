@@ -32,7 +32,7 @@ require '../includes/header_end.php';
                     <div class="col-md-12 form-inline">
                         <div class="form-group">
                             <label for="global_search">Lookup: </label>
-                            <input class="form-control" type="text" placeholder="Search..." id="global_search" name="global_search" style="width: 250px;" />
+                            <input class="form-control" type="text" placeholder="Search..." id="global_search" name="global_search" style="width: 250px;" value="<?php echo $_GET['lookup']; ?>" />
                             <button class="btn waves-effect btn-primary" id="btn_add_acct" style="margin: 0 0 0 6px;"> <i class="zmdi zmdi-account-add"></i> </button>
                         </div>
                     </div>
@@ -170,6 +170,34 @@ require '../includes/header_end.php';
         displaySO(active_so_num);
     }
 
+    var term = '<?php echo $_GET['lookup']; ?>';
+
+    // on document load
+    if(term !== '') {
+        // if there is a lookup code provided
+        $.post("/ondemand/livesearch/search_results.php?search=general", {find: term}, function(data) {
+            $("#search_results_table").html(data);
+            $("#search_results_global_table").trigger("update");
+
+            if(data !== '') {
+                $("#search_results_global_table").show();
+                $('[data-toggle="tooltip"]').tooltip(); // enable tooltips
+
+                // setup field masks
+                $(".mask-zip").mask('00000-0000');
+                $(".mask-phone").mask('(000) 000-0000');
+
+                // setup date picker
+                $(".delivery_date").datepicker({
+                    autoclose: true,
+                    todayHighlight: true
+                }).mask('00/00/0000');
+            } else {
+                $("#search_results_global_table").hide();
+            }
+        });
+    }
+
     $("#search_accordion1").accordion();
 
     $("#search_add_tab").on("click", function() {
@@ -177,239 +205,6 @@ require '../includes/header_end.php';
     });
 
     $("body")
-        .on("click", "[id^=searchTab]", function(e) { // this allows for the automation of search tabs
-            var accordion = "search_accordion" + e.target.getAttribute("searchid"); // add more accordions
-
-            setTimeout(function() {
-                $("#" + accordion).accordion("refresh"); // refresh the accordion on click of tab
-            }, 200);
-        })
-        .on("click", "#submit_new_customer", function() {
-            var cuData = $("#add_new_customer").serialize();
-
-            $.post("/ondemand/customer.php?action=add_new", cuData, function(data) {
-                if(data === 'success') {
-                    displayToast("success", "Inserted new customer information successfully!", "Added Customer");
-
-                    $("[id^='new_']").val("");
-                    $("#new_state").val("NC").change();
-
-                    $("#modalAddCustomer").modal('hide');
-                } else {
-                    $("body").append(data);
-                }
-            });
-        })
-        .on("change", "#assigned_bracket", function() { // hey uh, this... i'm sorry... this one is bad - it assigns all bracket information dynamically...
-            recalculateBrackets();
-            $("#manage_bracket").hide();
-        })
-        .on("click", "#add_room", function() {
-            $.post("/html/shopfloor/job_management.php?action=add", {so_id: active_so_num, roomid: active_room_id}, function(data) {
-                $("#room_info_display").html(data);
-            }).done(function() {
-                $("#sales_bracket_adjustments").multiSelect({
-                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-                });
-
-                $("#sample_bracket_adjustments").multiSelect({
-                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-                });
-
-                $("#preprod_bracket_adjustments").multiSelect({
-                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-                });
-
-                $("#doordrawer_bracket_adjustments").multiSelect({
-                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-                });
-
-                $("#laminate_bracket_adjustments").multiSelect({
-                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-                });
-
-                $("#box_bracket_adjustments").multiSelect({
-                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-                });
-
-                $("#custom_bracket_adjustments").multiSelect({
-                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-                });
-
-                $("#install_bracket_adjustments").multiSelect({
-                    selectableHeader: "<div class='bracket-adjustment-header'>Active Operations</div>",
-                    selectionHeader: "<div class='bracket-adjustment-header'>Inactive Operations</div>"
-                });
-
-                $("#individual_room_info").show();
-            });
-        })
-        .on("click", "#room_save", function() {
-            saveRoomInfo();
-        })
-        .on("click", "#manage_brackets", function() {
-            saveRoomInfo();
-
-            displayBracketInfo(active_room);
-        })
-        .on("click", "#bracket_adjustment_save", function() {
-            var salesBracketAdjusted = $("#sales_bracket_adjustments").find('option').not(':selected').map(function () { return this.value; }).get();
-            var preprodBracketAdjusted = $("#pre_prod_bracket_adjustments").find('option').not(':selected').map(function () { return this.value; }).get();
-            var sampleBracketAdjusted = $("#sample_bracket_adjustments").find('option').not(':selected').map(function () { return this.value; }).get();
-            var doordrawerBracketAdjusted = $("#door_drawer_bracket_adjustments").find('option').not(':selected').map(function () { return this.value; }).get();
-            var customBracketAdjusted = $("#custom_bracket_adjustments").find('option').not(':selected').map(function () { return this.value; }).get();
-            var boxBracketAdjusted = $("#box_bracket_adjustments").find('option').not(':selected').map(function () { return this.value; }).get();
-
-            var salesPublished = $("#sales_published").is(":checked");
-            var preProdPublished = $("#pre_prod_published").is(":checked");
-            var samplePublished = $("#sample_published").is(":checked");
-            var doordrawerPublished = $("#door_drawer_published").is(":checked");
-            var customPublished = $("#custom_published").is(":checked");
-            var boxPublished = $("#box_published").is(":checked");
-
-            var fullBracketAdjusted = [salesBracketAdjusted, preprodBracketAdjusted, sampleBracketAdjusted, doordrawerBracketAdjusted, customBracketAdjusted, boxBracketAdjusted];
-
-            fullBracketAdjusted = [].concat.apply([], fullBracketAdjusted);
-
-            var fullBracketPayload = JSON.stringify(fullBracketAdjusted);
-
-            console.log(fullBracketPayload);
-
-            var publishedString = [salesPublished, preProdPublished, samplePublished, doordrawerPublished, customPublished, boxPublished];
-
-            var publishedPayload = JSON.stringify(publishedString);
-
-            $.post("/ondemand/shopfloor/job_actions.php?action=update_individual_bracket", {payload: fullBracketPayload, sonum: active_so_num, room: active_room, published: publishedPayload}, function(data) {
-                if(data === 'success') {
-                    displayToast("success", "Successfully updated bracket for room " + active_room + " on SO# " + active_so_num + ".", "Updated Bracket")
-                } else {
-                    $("body").append(data);
-                }
-            });
-        })
-        .on("change", "#box_bracket", function() {
-            $.post("/ondemand/shopfloor/job_actions.php?action=update_in_queue", {roomID: active_room_id, opID: $(this).val()}, function(data) {
-                if(data === "success") {
-                    displayToast("success", "Updated assigned operation.", "Operation Updated");
-                } else {
-                    $("body").append(data);
-                }
-            })
-        })
-        .on("change", "input[name='cu_type']", function() {
-            switch($(this).val()) {
-                case 'retail':
-                    $("#add_retail_customer").show();
-                    $("#add_distributor").hide();
-
-                    break;
-                case 'distribution':
-                    $("#add_retail_customer").hide();
-                    $("#add_distributor").show();
-
-                    break;
-                case 'cutting':
-                    break;
-                default:
-                    break;
-            }
-        })
-        .on("change", "#add_notes", function() {
-            if($(this).is(":checked")) {
-                $("#room_note_visible").show();
-            } else {
-                $("#room_note_visible").hide();
-            }
-        })
-        .on("change", "input[name='viewBracket']", function() {
-            var publish = $('[id$=topublish]');
-
-            switch($(this).val()) {
-                case 'Sales':
-                    publish.hide();
-                    $("#sales_bracket_topublish").show();
-
-                    break;
-                case 'Sample':
-                    publish.hide();
-                    $("#sample_bracket_topublish").show();
-
-                    break;
-                case 'Pre-Production':
-                    publish.hide();
-                    $("#preprod_bracket_topublish").show();
-
-                    break;
-                case 'Door/Drawer':
-                    publish.hide();
-                    $("#doordrawer_bracket_topublish").show();
-
-                    break;
-                case 'Laminate':
-                    publish.hide();
-                    $("#laminate_bracket_topublish").show();
-
-                    break;
-                case 'Box':
-                    publish.hide();
-                    $("#box_bracket_topublish").show();
-
-                    break;
-                case 'Custom':
-                    publish.hide();
-                    $("#custom_bracket_topublish").show();
-
-                    break;
-                case 'Install':
-                    publish.hide();
-                    $("#install_bracket_topublish").show();
-
-                    break;
-                default:
-                    publish.hide();
-
-                    break;
-            }
-        })
-        .on("click", "#save_publish", function() {
-            switch($("input[name='viewBracket']").val()) {
-                case 'Sales':
-
-
-                    break;
-                case 'Sample':
-
-                    break;
-                case 'Pre-Production':
-
-                    break;
-                case 'Door/Drawer':
-
-                    break;
-                case 'Laminate':
-
-                    break;
-                case 'Box':
-
-                    break;
-                case 'Custom':
-
-                    break;
-                case 'Install':
-
-                    break;
-                default:
-
-                    break;
-            }
-        })
         .on("click", "[id^=edit_so_]", function(e) {
             e.stopPropagation();
 
@@ -485,15 +280,6 @@ require '../includes/header_end.php';
             $("[id^=tr_room_bracket_]").not(this).hide(250);
             $("[id^=div_room_bracket_]").not(this).hide(100);
 
-            $("#sales_bracket_adjustments_" + active_room_id).multiSelect();
-            $("#pre_prod_bracket_adjustments_" + active_room_id).multiSelect();
-            $("#sample_bracket_adjustments_" + active_room_id).multiSelect();
-            $("#door_drawer_bracket_adjustments_" + active_room_id).multiSelect();
-            $("#custom_bracket_adjustments_" + active_room_id).multiSelect();
-            $("#main_bracket_adjustments_" + active_room_id).multiSelect();
-            $("#shipping_bracket_adjustments_" + active_room_id).multiSelect();
-            $("#install_bracket_adjustments_" + active_room_id).multiSelect();
-
             $("#tr_room_bracket_" + active_room_id).show();
             $("#div_room_bracket_" + active_room_id).slideDown(250);
         })
@@ -515,15 +301,20 @@ require '../includes/header_end.php';
             var opnum = $(this).parent().data("opnum");
             var bracket = $(this).closest('ul').data("bracket");
             var info;
+            var deactivate = '';
 
-            info = '<li id="li_op_' + opid + '_room_' + roomid + '" data-opnum="' + opnum + '">';
-            info += '<input type="radio" name="sales_bracket_adjustments_' + roomid + '" id="op_' + opid + '_room_' + roomid +'" value="">';
+            if(String(opnum).slice(-2) !== '98') {
+                deactivate = '<span class="pull-right cursor-hand text-md-center deactivate_op" data-opid="' + opid + '" data-roomid="' + roomid + '" data-soid="' + soid + '"> <i class="fa fa-arrow-circle-right" style="width: 18px;"></i></span>';
+            }
+
+            info = '<li class="active_ops_' + roomid + '" id="active_ops_' + roomid +'" data-opnum="' + opnum + '" data-opid="' + opid + '">';
+            info += '<input type="radio" name="sales_bracket" id="op_' + opid + '_room_' + roomid +'" value="' + opid + '">';
             info += '<label for="op_' + opid + '_room_' + roomid + '">' + $(this).parent().text().trim() + '</label>';
-            info += '<span class="pull-right cursor-hand text-md-center deactivate_op" data-opid="' + opid + '" data-roomid="' + roomid + '" data-soid="' + soid + '"> <i class="fa fa-arrow-circle-right" style="width: 18px;"></i></span>';
+            info += deactivate;
             info += "</li>";
 
-            $("#active_so_" + soid + "_room_" + roomid + "_" + bracket).append(info);
-            tinysort("ul#active_so_" + soid + "_room_" + roomid + "_" + bracket + ">li",{data:'opnum'});
+            $("#activeops_" + roomid + "_" + bracket).append(info);
+            tinysort("ul#activeops_" + roomid + "_" + bracket + ">li",{data:'opnum'});
 
             $(this).parent().remove();
         })
@@ -535,13 +326,13 @@ require '../includes/header_end.php';
             var bracket = $(this).closest('ul').data("bracket");
             var info;
 
-            info = '<li id="li_op_' + opid + '_room_' + roomid + '" data-opnum="' + opnum + '">';
+            info = '<li class="inactive_ops_' + roomid + '" id="inactive_ops_' + roomid +'" data-opnum="' + opnum + '" data-opid="' + opid + '">';
             info += '<span class="pull-left cursor-hand text-md-center activate_op" data-opid="' + opid + '" data-roomid="' + roomid + '" data-soid="' + soid + '" style="height:18px;width:18px;"> <i class="fa fa-arrow-circle-left" style="margin:5px;"></i></span>';
             info += '<label for="op_' + opid + '_room_' + roomid + '">' + $(this).parent().text().trim() + '</label>';
             info += "</li>";
 
-            $("#inactive_so_" + soid + "_room_" + roomid + "_" + bracket).append(info);
-            tinysort("ul#inactive_so_" + soid + "_room_" + roomid + "_" + bracket + ">li",{data:'opnum'});
+            $("#inactiveops_" + roomid + "_" + bracket).append(info);
+            tinysort("ul#inactiveops_" + roomid + "_" + bracket + ">li",{data:'opnum'});
 
             $(this).parent().remove();
         })
@@ -577,6 +368,8 @@ require '../includes/header_end.php';
             $.post("/ondemand/shopfloor/gen_actions.php?action=calc_del_date", {days_to_ship: dts}, function(data) {
                 if(type === 'add') {
                     $("#delivery_date_add_" + active_so_num).val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + dts.toLowerCase()).data("datepicker").setDate(data);
+                } else if(type === 'iteration') {
+                    $("#iteration_del_date_" + room_letter + "_so_" + active_so_num).val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + dts.toLowerCase()).data("datepicker").setDate(data);
                 } else {
                     $("#edit_del_date_" + room_letter + "_so_" + active_so_num).val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + dts.toLowerCase()).data("datepicker").setDate(data);
                 }
@@ -609,8 +402,51 @@ require '../includes/header_end.php';
                 $('body').append(data);
             });
         })
-        .on("click", ".add_iteration", function() {
-            console.log("Going to add iteration!");
+        .on("click", ".add_iteration", function(e) {
+            e.stopPropagation();
+
+            active_room_id = $(this).data('roomid');
+
+            $("[id^=show_single_room_]").removeClass("active_room_line");
+            $(".add_room_trigger").removeClass("active_room_line");
+            $("#show_single_room_" + active_room_id).addClass("active_room_line");
+
+            $("[id^=tr_single_room_]").hide(250);
+            $("[id^=div_single_room_]").hide(100);
+            $("[id^=tr_add_single_room_info_]").hide(250);
+            $("[id^=div_add_single_room_info_]").hide(100);
+
+            $("[id^=tr_iteration_]").not(this).hide(250);
+            $("[id^=div_iteration_]").not(this).hide(100);
+
+            $("#tr_iteration_" + active_room_id).show();
+            $("#div_iteration_" + active_room_id).slideDown(250);
+        })
+        .on("click", ".save_bracket", function() {
+            var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
+            var selected_ops = $("#form_bracket_" + active_room_id).serialize();
+
+            active_ops = JSON.stringify(active_ops);
+
+            $.post("/ondemand/shopfloor/gen_actions.php?action=save_active_ops&" + selected_ops, {active_ops: active_ops, roomid: active_room_id}, function(data) {
+                $('body').append(data);
+            });
+        })
+        .on("click", ".save_so", function() {
+            var so_info = $("#form_so_" + active_so_num).serialize();
+
+            $.post('/ondemand/shopfloor/gen_actions.php?action=save_so&' + so_info, function(data) {
+                $("body").append(data);
+            });
+        })
+        .on("click", ".iteration_save", function(e) {
+            e.stopPropagation();
+
+            var iteration_info = $("#room_add_iteration_" + active_room_id).serialize();
+
+            $.post("/ondemand/shopfloor/gen_actions.php?action=add_iteration&" + iteration_info, function(data) {
+                $('body').append(data);
+            });
         });
 
     $("#global_search").on("keyup", function() {

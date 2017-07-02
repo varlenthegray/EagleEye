@@ -80,11 +80,11 @@ HEREDOC;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $output['data'][$i][] = $op_queue['so_parent'] . "-" . $op_queue['room'];
-                $output['data'][$i][] = $op_queue['bracket'];
+                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
+                $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['bracket']} <span class='tooltiptext'>{$op_queue['responsible_dept']} Team</span></div>";
                 $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
                 $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['created']);
-                $output['data'][$i]['DT_RowId'] = $op_queue['op_queueID'];
+                $output['data'][$i]['DT_RowId'] = $op_queue['so_parent'];
 
                 $i += 1;
             }
@@ -107,7 +107,7 @@ HEREDOC;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $output['data'][$i][] = $op_queue['so_parent'] . "-" . $op_queue['room'];
+                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
                 $output['data'][$i][] = $op_queue['bracket'];
                 $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
 
@@ -135,7 +135,7 @@ HEREDOC;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $output['data'][$i][] = $op_queue['so_parent'] . "-" . $op_queue['room'];
+                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
                 $output['data'][$i][] = $op_queue['bracket'];
 
                 if(!empty($op_queue['subtask'])) {
