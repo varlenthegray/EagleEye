@@ -84,6 +84,8 @@
                             background-color: #750909 !important;
                         }
                     </style>";
+        } else {
+            echo "<script>$.fn.dataTable.ext.errMode = 'throw';</script>";
         }
     ?>
 </head>
