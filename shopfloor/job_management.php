@@ -3,18 +3,8 @@ require '../includes/header_start.php';
 require '../includes/header_end.php';
 ?>
 
-<!-- Multi-select -->
-<link href="/assets/plugins/multiselect/css/multi-select.css" rel="stylesheet" type="text/css"/>
-
-<!-- tabulator -->
-<script type="text/javascript" src="/assets/plugins/tablesorter/jquery.tablesorter.min.js"></script>
-<link href="/assets/plugins/tablesorter/themes/blue/style.css" rel="stylesheet" type="text/css"/>
-
 <!-- tinysort -->
 <script type="text/javascript" src="/assets/plugins/tinysort/tinysort.min.js"></script>
-
-<!-- matchheight -->
-<script type="text/javascript" src="/assets/plugins/jquery.matchHeight-min.js"></script>
 
 <!-- input masking -->
 <script type="text/javascript" src="/assets/plugins/jquery.mask.min.js"></script>
@@ -71,108 +61,13 @@ require '../includes/header_end.php';
 </div>
 <!-- /.modal -->
 
-<!-- Multi-select -->
-<script type="text/javascript" src="/assets/plugins/multiselect/js/jquery.multi-select.js"></script>
-
-<!-- Loading page content -->
-<script src="/ondemand/js/page_content_functions.js"></script>
-
 <script>
     var active_so_num = null;
     var active_room_id = null;
     var timer;
-
-    loadCalendarPane(); // found in page_content_functions
-
-    function updateSearchTable(field, search, functn) {
-        if(field.length >= 1) {
-            $.post("/ondemand/livesearch/search_results.php?search=" + search, {find: field, functn: functn}, function(data) {
-                $("#search_results_table").html(data);
-
-                if(data !== '') {
-                    $("#search_results_card").show();
-                }
-            });
-        } else {
-            $("#search_results_card").hide();
-        }
-    }
-
-    function recalculateBrackets(overrideSelected) {
-        $.post("/ondemand/shopfloor/job_actions.php?action=update_brackets", {room: active_room, sonum: active_so_num}, function(data) {
-            // This got much simpler, LUCKY YOU!
-
-            var input = $.parseJSON(data); // grab the JSON data returned, this is a 3D array, objects inside of objects
-            var ops = input.ops;
-
-            function generateOptions(department) { // generates the options based on the department provided
-                var outputOptions = '';
-
-                $.each(ops, function(key, value) { // for each MULTIDIMENSIONAL result inside of SALES concatenate INFORMATION
-                    if(value.department === department) {
-                        outputOptions += "<option value='" + value.id + "'>" + value.op_id + "-" + value.job_title + "</option>"; // value is the object inside of the object
-                    }
-                }); // end
-
-                return outputOptions; // send back the final output
-            }
-
-            // grab each of the departments and their related options
-            var salesOptions = generateOptions("Sales");
-            var preprodOptions = generateOptions("Pre-Production");
-            var sampleOptions = generateOptions("Sample");
-            var doordrawerOptions = generateOptions("Drawer & Doors");
-            var customOptions = generateOptions("Custom");
-            var boxOptions = generateOptions("Box");
-
-            // find the options inside of the SALES bracket, REMOVE them, wait for that DOM update to FINISH, then ADD the options again
-            $("#sales_bracket").find("option").remove().end().append(salesOptions);
-            
-            $("#pre_prod_bracket").find("option").remove().end().append(preprodOptions); //FIND ALLOWS YOU TO PICK THE SUB!
-            $("#sample_bracket").find("option").remove().end().append(sampleOptions);
-            $("#door_drawer_bracket").find("option").remove().end().append(doordrawerOptions);
-            $("#custom_bracket").find("option").remove().end().append(customOptions);
-            $("#box_bracket").find("option").remove().end().append(boxOptions);
-
-            if(overrideSelected === undefined) {
-                // select the second option inside of the list
-                $("#sales_bracket option:nth-child(1)").attr("selected", "selected"); //TODO: find a different way to select the second option, "Inefficient"
-                $("#pre_prod_bracket option:nth-child(1)").attr("selected", "selected");
-                $("#sample_bracket option:nth-child(1)").attr("selected", "selected");
-                $("#door_drawer_bracket option:nth-child(1)").attr("selected", "selected");
-                $("#custom_bracket option:nth-child(1)").attr("selected", "selected");
-                $("#box_bracket option:nth-child(1)").attr("selected", "selected");
-            } else {
-                $("#sales_bracket").val(overrideSelected.sales_bracket);
-                $("#pre_prod_bracket").val(overrideSelected.preproduction_bracket);
-                $("#sample_bracket").val(overrideSelected.sample_bracket);
-                $("#door_drawer_bracket").val(overrideSelected.doordrawer_bracket);
-                $("#custom_bracket").val(overrideSelected.custom_bracket);
-                $("#box_bracket").val(overrideSelected.box_bracket);
-            }
-        });
-    }
-
-    function saveRoomInfo() {
-        var room_info = $("#room_adjustment").serialize();
-        active_room = $("#room").val();
-
-        $.post("/ondemand/shopfloor/job_actions.php?action=save_room", room_info, function(data) {
-            if(data === 'success') {
-                displayToast("success", "Added new room to SO# " + active_so_num, "New Room Added");
-            } else if(data === 'success - update') {
-                displayToast("info", "Updated room on existing SO#", "Updated room");
-            } else {
-                $("body").append(data);
-            }
-        });
-        
-        displaySO(active_so_num);
-    }
-
     var term = '<?php echo $_GET['lookup']; ?>';
 
-    // on document load
+    // check for default search term
     if(term !== '') {
         // if there is a lookup code provided
         $.post("/ondemand/livesearch/search_results.php?search=general", {find: term}, function(data) {
@@ -198,13 +93,47 @@ require '../includes/header_end.php';
         });
     }
 
-    $("#search_accordion1").accordion();
-
-    $("#search_add_tab").on("click", function() {
-        searchCounter = generateTab(searchCounter);
-    });
-
     $("body")
+        .on("click", "#submit_new_customer", function() {
+            var cuData = $("#add_new_customer").serialize();
+
+            $.post("/ondemand/customer.php?action=add_new", cuData, function(data) {
+                if(data === 'success') {
+                    displayToast("success", "Inserted new customer information successfully!", "Added Customer");
+
+                    $("[id^='new_']").val("");
+                    $("#new_state").val("NC").change();
+
+                    $("#modalAddCustomer").modal('hide');
+                } else {
+                    $("body").append(data);
+                }
+            });
+        })
+        .on("change", "input[name='cu_type']", function() {
+            var add_rc = $("#add_retail_customer");
+            var add_dist = $("#add_distributor");
+
+            switch($(this).val()) {
+                case 'retail':
+                    add_rc.show();
+                    add_dist.hide();
+
+                    break;
+                case 'distribution':
+                    add_rc.hide();
+                    add_dist.show();
+
+                    break;
+                case 'cutting':
+                    add_rc.hide();
+                    add_dist.show();
+
+                    break;
+                default:
+                    break;
+            }
+        })
         .on("click", "[id^=edit_so_]", function(e) {
             e.stopPropagation();
 
@@ -482,60 +411,6 @@ require '../includes/header_end.php';
             }
         }, 250);
     });
-
-    $("#cu_sales_order_num1")
-        .on("keyup", function() { // this is on keyboard change
-            updateSearchTable($(this).val(), "sonum", "displaySO");
-            $("#edit_so_info").hide();
-
-            $("#cu_project_name1").val("");
-            $("#cu_dealer_contractor1").val("");
-            $("#cu_project_manager1").val("");
-        });
-
-    $("#cu_project_name1")
-        .on("keyup", function () { // this is on keyboard change
-            updateSearchTable($(this).val(), "project", "displaySO");
-            $("#edit_so_info").hide();
-
-            $("#cu_sales_order_num1").val("");
-            $("#cu_dealer_contractor1").val("");
-            $("#cu_project_manager1").val("");
-        });
-
-    $("#cu_dealer_contractor1")
-        .on("keyup", function () { // this is on keyboard change
-            updateSearchTable($(this).val(), "contractor", "displaySO");
-            $("#edit_so_info").hide();
-
-            $("#cu_sales_order_num1").val("");
-            $("#cu_project_name1").val("");
-            $("#cu_project_manager1").val("");
-        });
-
-    $("#cu_project_manager1")
-        .on("keyup", function () { // this is on keyboard change
-            updateSearchTable($(this).val(), "project_manager", "displaySO");
-            $("#edit_so_info").hide();
-
-            $("#cu_sales_order_num1").val("");
-            $("#cu_project_name1").val("");
-            $("#cu_dealer_contractor1").val("");
-        });
-
-//    $("#search_results_table").tabulator({
-//        fitColumns: true,
-//        placeholder: "No data available",
-//        columns: [
-//            {formatter: editIcon, width: 28, align: "center", tooltip: "Edit"},
-//            {title: "SO#", field: "sales_order_num", sorter: "number"},
-//            {title: "Project/Customer PO", field: "purchase_order", sorter: "string"},
-//            {title: "Salesperson", field: "salesperson", sorter: "string"},
-//            {title: "Dealer/Contractor", field: "dealer_contractor", sorter: "string"},
-//            {title: "Account Type", field: "account_type", sorter: "string"},
-//            {title: "Project Manager/Contact", field: "project_mgr_contact", sorter: "string"}
-//        ]
-//    });
 </script>
 
 <?php 

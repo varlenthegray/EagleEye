@@ -60,7 +60,7 @@ use Carbon\Carbon; // prep carbon
                                             $time_in_display = $carbon_time->diffForHumans(null,true);
                                         } else {
                                             if($result['id'] === '7' || $result['id'] === '8') {
-                                                $time_in_display = "&nbsp;";
+                                                $time_in_display = "";
                                             } else {
                                                 $time_in_display = "Hasn't logged in today";
                                             }

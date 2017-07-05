@@ -221,8 +221,8 @@ if($qry->num_rows > 0) {
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <input type="text" name="billing_account" class="form-control pull-left" placeholder="ACH Account #" id="billing_account" style="width: 50%;">
-                                    <input type="text" name="billing_routing" class="form-control pull-right" placeholder="ACH Routing #" id="billing_routing" style="width: 50%;">
+                                    <input type="text" name="billing_account" autocomplete="off" class="form-control pull-left" placeholder="ACH Account #" id="billing_account" style="width: 50%;">
+                                    <input type="text" name="billing_routing" autocomplete="off" class="form-control pull-right" placeholder="ACH Routing #" id="billing_routing" style="width: 50%;">
                                 </td>
                             </tr>
                             <tr style="height: 5px;">
@@ -477,9 +477,9 @@ if($qry->num_rows > 0) {
                                 <td colspan="3"></td>
                             </tr>
                             <tr>
-                                <td><input type="text" name="billing_account" class="form-control pull-left" placeholder="ACH Account #" id="billing_account"></td>
-                                <td><input type="text" name="billing_routing" class="form-control pull-right" placeholder="ACH Routing #" id="billing_routing"></td>
-                                <td><input type="text" name="tax_id" class="form-control pull-right" placeholder="Tax ID" id="tax_id"></td>
+                                <td><input type="text" name="billing_account" class="form-control pull-left" placeholder="ACH Account #" id="billing_account" autocomplete="off"></td>
+                                <td><input type="text" name="billing_routing" class="form-control pull-right" placeholder="ACH Routing #" id="billing_routing" autocomplete="off"></td>
+                                <td><input type="text" name="tax_id" class="form-control pull-right" placeholder="Tax ID" id="tax_id" autocomplete="off"></td>
                             </tr>
                             <tr style="height: 5px;">
                                 <td colspan="3"></td>
