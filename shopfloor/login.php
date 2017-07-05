@@ -27,7 +27,7 @@ use Carbon\Carbon; // prep carbon
                             </thead>
                             <tbody id="room_search_table">
                             <?php
-                            $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE");
+                            $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE;");
 
                             while($result = $qry->fetch_assoc()) {
                                 if($result['id'] !== '16') {
@@ -39,7 +39,11 @@ use Carbon\Carbon; // prep carbon
                                         if($last_login['time_in'] > strtotime("today")) {
                                             $time = date(TIME_ONLY, $last_login['time_in']);
                                         } else {
-                                            $time = date(DATE_DEFAULT, $last_login['time_in']);
+                                            if($result['id'] === '7' || $result['id'] === '8') {
+                                                $time = '';
+                                            } else {
+                                                $time = date(DATE_DEFAULT, $last_login['time_in']);
+                                            }
                                         }
 
                                         $time_unix = $last_login['time_in'];
@@ -55,7 +59,11 @@ use Carbon\Carbon; // prep carbon
                                             $carbon_time = Carbon::createFromTimestamp($time_unix);
                                             $time_in_display = $carbon_time->diffForHumans(null,true);
                                         } else {
-                                            $time_in_display = "Hasn't logged in today";
+                                            if($result['id'] === '7' || $result['id'] === '8') {
+                                                $time_in_display = "&nbsp;";
+                                            } else {
+                                                $time_in_display = "Hasn't logged in today";
+                                            }
                                         }
                                     } else {
                                         $time_in_display = "Never logged in";
