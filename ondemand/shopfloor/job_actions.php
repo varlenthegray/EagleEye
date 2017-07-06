@@ -252,6 +252,25 @@ HEREDOC;
                                             <input type='radio' name='completionCode' id='completion_code3' value='Rework'>
                                             <label for='completion_code3'>Rework</label>
                                         </fieldset>
+                                        
+                                        <fieldset class='form-group rework_reason_group' style='display:none;'>
+                                            <label for='rework_reason'>Reason for Rework</label>
+                                            <select class='form-control' id='rework_reason'>
+                                                <optgroup label='Material/Hardware'>
+                                                    <option value='MW'>MW</option>
+                                                    <option value='MD'>MD</option>
+                                                </optgroup>
+                                                <optgroup label='Workmanship'>
+                                                    <option value='WU'>WU</option>
+                                                    <option value='WT'>WT</option>
+                                                </optgroup>
+                                                <optgroup label='Equipment'>
+                                                    <option value='EB'>EB</option>
+                                                    <option value='EM'>EM</option>
+                                                    <option value='ET'>ET</option>
+                                                </optgroup>
+                                            </select>
+                                        </fieldset>
                                     </div>";
 
                 $nb = 'false';
@@ -286,7 +305,6 @@ HEREDOC;
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success waves-effect waves-light pull-left" id="add_me" data-taskid="$id">Add Me</button>
                     <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
                     <button type="button" class="btn btn-primary waves-effect waves-light" id="save_job_update" data-id="$id" data-nb="$nb">Complete</button>
                 </div>
@@ -610,90 +628,146 @@ HEREDOC;
 
                     // if we're able to insert into the audit trail successfully
                     if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP())")) {
-                        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$op_queue['room_id']}'"); // find the room associated with this operation
-                        $room_results = $room_qry->fetch_assoc(); // information on the room itself
+                        // figure out if the bracket is published
+                        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$room_id'");
+                        $room = $room_qry->fetch_assoc();
 
-                        $ind_bracket = json_decode($room_results['individual_bracket_buildout']); // decode the JSON string containing the operations
+                        // next, grab the individual bracket and blow it to smitherines
+                        $full_bracket = json_decode($room['individual_bracket_buildout']);
 
-                        $loc = array_search($op_queue['operation_id'], $ind_bracket) + 1; // find the next operation in the chain
+                        // now, we find out what the next op is that we're progressing to
+                        $next_op_pos = array_search($op_queue['operation_id'], $full_bracket) + 1;
+                        $next_op = $full_bracket[$next_op_pos]; // grab the next op in the "bracket"
 
-                        $next_operation = $ind_bracket[$loc]; // obtain that operation ID itself
+                        // get the individual op info
+                        $next_op_info_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$next_op'");
+                        $next_op_info = $next_op_info_qry->fetch_assoc();
 
-                        $next_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$next_operation'"); // grab the next operation information
+                        $cur_op_info_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$op_queue['operation_id']}'");
+                        $cur_op_info = $cur_op_info_qry->fetch_assoc();
 
-                        if($next_op_qry->num_rows > 0) { // as a note, at this point we've already "closed" the operation, this is to determine what op is next in line and to open it if needed
-                            $next_op = $next_op_qry->fetch_assoc();
-
-                            switch($next_op['bracket']) {
+                        // find out if the brackets are the same for the next op vs this op
+                        if($next_op_info['bracket'] === $cur_op_info['bracket']) {
+                            // brackets match, is the bracket that we're currently in published?
+                            switch($next_op_info['bracket']) {
                                 case 'Sales':
                                     $bracket = 'sales_bracket';
                                     $published = 'sales_published';
                                     break;
-
                                 case 'Pre-Production':
                                     $bracket = 'preproduction_bracket';
                                     $published = 'preproduction_published';
                                     break;
-
                                 case 'Sample':
                                     $bracket = 'sample_bracket';
                                     $published = 'sample_published';
                                     break;
-
                                 case 'Drawer & Doors':
                                     $bracket = 'doordrawer_bracket';
                                     $published = 'doordrawer_published';
                                     break;
-
                                 case 'Custom':
                                     $bracket = 'custom_bracket';
                                     $published = 'custom_published';
                                     break;
-
                                 case 'Main':
-                                    $bracket = 'box_bracket';
-                                    $published = 'box_published';
+                                    $bracket = 'main_bracket';
+                                    $published = 'main_published';
                                     break;
-
                                 case 'Shipping':
                                     $bracket = 'shipping_bracket';
                                     $published = 'shipping_published';
                                     break;
-
                                 case 'Installation':
                                     $bracket = 'install_bracket';
                                     $published = 'install_bracket_published';
                                     break;
-
                                 default:
                                     $bracket = 'sales_bracket';
                                     $published = 'sales_published';
                                     break;
                             }
 
-                            if($next_op['job_title'] === 'Bracket Completed') { // bracket's completed
-                                // update the room to the "completed" operation
-                                $dbconn->query("UPDATE rooms SET $bracket = '$next_operation' WHERE id = '$room_id'"); // set the operation inside of the bracket
+                            // grab the room and see if the bracket is published
+                            $bracket_pub = $room[$published];
 
-                                echo displayToast("info", "Notice: the bracket has been completed.", "Bracket Completed"); // update user, end of situation
-                            } else { // we're incrementing the job as long as the bracket is still published!
-                                // time to find out if the bracket is published
-                                if((bool)$room_results[$published] === true) {
-                                    // bracket IS published
-                                    if($dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, start_time, end_priority, end_time, active, 
-                                          completed, rework, notes, qty_requested, qty_completed, qty_rework, resumed_time, resumed_priority, partially_completed, created, active_employees, 
-                                          started_by, completed_by, subtask) VALUES ('{$op_queue['room_id']}', '{$room_results['so_parent']}', '{$room_results['room']}', '$next_operation',
-                                          4, NULL, NULL, NULL, FALSE, FALSE, FALSE, NULL, 1, NULL, NULL, NULL, NULL, 0, UNIX_TIMESTAMP(), NULL, NULL, NULL, NULL)")) {
-                                        $dbconn->query("UPDATE rooms SET $bracket = '$next_operation' WHERE id = '$room_id'"); // set the operation inside of the bracket
+                            if((bool)$bracket_pub) { // indeed, bracket is published and we can continue on!
+                                // now we need to create the ops and/or activate the appropriate ops based on what's selected (and deactivate any old ones) if bracket is published
+                                $ops = array();
 
-                                        echo displayToast("success", "Operation has been closed.", "Operation closed");
-                                    } else {
-                                        dbLogSQLErr($dbconn);
+                                // bracket is published, time to build the bracket operations
+                                $all_bracket_ops_qry = $dbconn->query("SELECT * FROM operations WHERE bracket = '$bracket' AND always_visible = FALSE");
+
+                                // create an array of all the ops
+                                // ToDo: Verify this will not cause issues setting x98 operations
+                                while($all_bracket_ops = $all_bracket_ops_qry->fetch_assoc()) {
+                                    // if the operation is not an x98 operation then add it to the array, otherwise exclude it
+                                    if((int)substr($all_bracket_ops['op_id'], -2) !== 98) {
+                                        $ops[] = $all_bracket_ops['id'];
                                     }
-                                } else { // bracket is NOT published
-                                    echo displayToast("info", "Notice: The next bracket is not published yet.", "Notice");
                                 }
+
+                                // grab all operations in the queue for this room that are not OTF
+                                $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE room_id = '$room_id' AND otf_created = FALSE");
+
+                                // if we were able to find any operations in the queue
+                                if($op_queue_qry->num_rows > 0) {
+                                    // for every operation
+                                    while($op_queue = $op_queue_qry->fetch_assoc()) {
+                                        // lets find out if this operation is part of the bracket
+                                        if(in_array($op_queue['operation_id'], $ops)) {
+                                            // it's part of the bracket, is it the next operation?
+                                            if($op_queue['operation_id'] === $next_op) {
+                                                // it is this operation, is it unpublished?
+                                                if(!(bool)$op_queue['published']) {
+                                                    // ToDo: Has this been verified that the operation we're republishing is NOT one that has already been completed?
+                                                    // publish it, foo!
+                                                    $dbconn->query("UPDATE op_queue SET published = TRUE where id = '{$op_queue['id']}'");
+                                                }
+                                            } else {
+                                                echo "Everything in the queue did NOT match this op, so we've deactivated ALL OF IT!";
+                                                // nope, it's part of the queue but it's not this operation, lets unpublish it!
+                                                $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['id']}'");
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    // no operations exist in the queue for this room that are NOT OTF! BLANK SLATE BABY!
+
+                                    // grab the room information for creation of the queued operation
+                                    $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$room_id'");
+                                    $room = $room_qry->fetch_assoc();
+
+                                    // now, create the operation that SHOULD be active
+                                    $dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, active, completed, rework, qty_requested, 
+                                     partially_completed, created, iteration) VALUES ('$room_id', '{$room['so_parent']}', '{$room['room']}', '$next_op', 4, FALSE, FALSE, FALSE, 1, FALSE, 
+                                      UNIX_TIMESTAMP(), '{$room['iteration']}')");
+                                }
+
+                                // we've deactivated and/or published all operations related to the queue, now lets create the operation in the queue if it's not there
+                                $ind_op_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = '$next_op' AND room_id = '$room_id'");
+
+                                if($ind_op_qry->num_rows === 0) {
+                                    // grab the room information for creation of the queued operation
+                                    $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$room_id'");
+                                    $room = $room_qry->fetch_assoc();
+
+                                    // now, create the operation that SHOULD be active
+                                    $dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, active, completed, rework, qty_requested, 
+                                     partially_completed, created, iteration) VALUES ('$room_id', '{$room['so_parent']}', '{$room['room']}', '$next_op', 4, FALSE, FALSE, FALSE, 1, FALSE, 
+                                      UNIX_TIMESTAMP(), '{$room['iteration']}')");
+
+                                    $dbconn->query("UPDATE rooms SET $bracket = '$next_op' WHERE id = '$room_id'");
+
+                                    echo displayToast("success", "Successfully completed operation.<br /> Moved on to {$next_op_info['op_id']}: {$next_op_info['job_title']} in {$next_op_info['responsible_dept']}.", "Operation Completed");
+                                } else {
+                                    displayToast("error", "Found operations in the queue still active.", "Active Operation Error");
+                                }
+                            } else {
+                                echo displayToast("warning", "Bracket is no longer published.", "Bracket Unpublished");
                             }
+                        } else {
+                            echo displayToast("info", "Bracket is now closed.", "Bracket Closed");
                         }
                     } else {
                         dbLogSQLErr($dbconn);

@@ -45,6 +45,7 @@ function dbLogDebug($code) {
     $dbconn->query("INSERT INTO log_debug (time, message) VALUES (NOW(), '$code')");
 }
 
+// display error codes on page
 function outputPHPErrs() {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);

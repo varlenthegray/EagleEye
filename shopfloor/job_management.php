@@ -357,6 +357,8 @@ require '../includes/header_end.php';
 
             active_ops = JSON.stringify(active_ops);
 
+            console.log(selected_ops);
+
             $.post("/ondemand/shopfloor/gen_actions.php?action=save_active_ops&" + selected_ops, {active_ops: active_ops, roomid: active_room_id}, function(data) {
                 $('body').append(data);
             });

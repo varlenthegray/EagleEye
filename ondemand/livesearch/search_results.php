@@ -744,7 +744,7 @@ switch ($search) {
                                                                 <td class="bracket-border-top">
                                                                     <div class="row bracket-header-custom">
                                                                         <div class="col-md-8"><h5><label for="door_drawer_bracket_adjustments_<?php echo $room['id']; ?>">Door/Drawer Bracket</label></h5></div>
-                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="door_drawer_published" value="1" id="door_drawer_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['doordrawer_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="doordrawer_published" value="1" id="doordrawer_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['doordrawer_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
                                                                     </div>
                                                                 </td>
                                                             </tr>

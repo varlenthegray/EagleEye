@@ -3,7 +3,7 @@ require_once ("../../includes/header_start.php");
 
 function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
     global $dbconn;
-    
+
     // now we need to create the ops and/or activate the appropriate ops based on what's selected (and deactivate any old ones) if bracket is published
     if((bool)$bracket_pub) {
         $ops = array();
@@ -214,42 +214,48 @@ switch($_REQUEST['action']) {
         $ops = $_REQUEST['active_ops'];
         $roomid = sanitizeInput($_REQUEST['roomid']);
 
-        $sales_op = sanitizeInput($_REQUEST['sales_bracket']);
-        $sample_op = sanitizeInput($_REQUEST['sample_bracket']);
-        $preprod_op = sanitizeInput($_REQUEST['preproduction_bracket']);
-        $doordrawer_op = sanitizeInput($_REQUEST['doordrawer_bracket']);
-        $main_op = sanitizeInput($_REQUEST['main_bracket']);
-        $custom_op = sanitizeInput($_REQUEST['custom_bracket']);
-        $shipping_op = sanitizeInput($_REQUEST['shipping_bracket']);
-        $install_op = sanitizeInput($_REQUEST['install_bracket']);
+        $active_qry = $dbconn->query("SELECT * FROM op_queue WHERE room_id = '$roomid' AND active = TRUE;");
 
-        $sales_pub = (!empty($_REQUEST['sales_published'])) ? sanitizeInput($_REQUEST['sales_published']) : 0;
-        $sample_pub = (!empty($_REQUEST['sample_published'])) ? sanitizeInput($_REQUEST['sample_published']) : 0;
-        $preprod_pub = (!empty($_REQUEST['preprod_published'])) ? sanitizeInput($_REQUEST['preprod_published']) : 0;
-        $doordrawer_pub = (!empty($_REQUEST['doordrawer_published'])) ? sanitizeInput($_REQUEST['doordrawer_published']) : 0;
-        $main_pub = (!empty($_REQUEST['main_published'])) ? sanitizeInput($_REQUEST['main_published']) : 0;
-        $custom_pub = (!empty($_REQUEST['custom_published'])) ? sanitizeInput($_REQUEST['custom_published']) : 0;
-        $shipping_pub = (!empty($_REQUEST['shipping_published'])) ? sanitizeInput($_REQUEST['shipping_published']) : 0;
-        $install_pub = (!empty($_REQUEST['install_published'])) ? sanitizeInput($_REQUEST['install_published']) : 0;
+        if($active_qry->num_rows === 0) {
+            $sales_op = sanitizeInput($_REQUEST['sales_bracket']);
+            $sample_op = sanitizeInput($_REQUEST['sample_bracket']);
+            $preprod_op = sanitizeInput($_REQUEST['preproduction_bracket']);
+            $doordrawer_op = sanitizeInput($_REQUEST['doordrawer_bracket']);
+            $main_op = sanitizeInput($_REQUEST['main_bracket']);
+            $custom_op = sanitizeInput($_REQUEST['custom_bracket']);
+            $shipping_op = sanitizeInput($_REQUEST['shipping_bracket']);
+            $install_op = sanitizeInput($_REQUEST['install_bracket']);
 
-        if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$roomid'")) {
-            $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op',
+            $sales_pub = (!empty($_REQUEST['sales_published'])) ? sanitizeInput($_REQUEST['sales_published']) : 0;
+            $sample_pub = (!empty($_REQUEST['sample_published'])) ? sanitizeInput($_REQUEST['sample_published']) : 0;
+            $preprod_pub = (!empty($_REQUEST['preprod_published'])) ? sanitizeInput($_REQUEST['preprod_published']) : 0;
+            $doordrawer_pub = (!empty($_REQUEST['doordrawer_published'])) ? sanitizeInput($_REQUEST['doordrawer_published']) : 0;
+            $main_pub = (!empty($_REQUEST['main_published'])) ? sanitizeInput($_REQUEST['main_published']) : 0;
+            $custom_pub = (!empty($_REQUEST['custom_published'])) ? sanitizeInput($_REQUEST['custom_published']) : 0;
+            $shipping_pub = (!empty($_REQUEST['shipping_published'])) ? sanitizeInput($_REQUEST['shipping_published']) : 0;
+            $install_pub = (!empty($_REQUEST['install_published'])) ? sanitizeInput($_REQUEST['install_published']) : 0;
+
+            if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$roomid'")) {
+                $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op',
              custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
               preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
                install_bracket_published = '$install_pub' WHERE id = '$roomid'");
 
-            createOpQueue($sales_pub, 'Sales', $sales_op, $roomid);
-            createOpQueue($sample_pub, 'Sample', $sample_op, $roomid);
-            createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $roomid);
-            createOpQueue($doordrawer_pub, 'Drawer & Doors', $doordrawer_op, $roomid);
-            createOpQueue($main_pub, 'Main', $main_op, $roomid);
-            createOpQueue($custom_pub, 'Custom', $custom_op, $roomid);
-            createOpQueue($shipping_pub, 'Shipping', $shipping_op, $roomid);
-            createOpQueue($install_pub, 'Installation', $install_op, $roomid);
+                createOpQueue($sales_pub, 'Sales', $sales_op, $roomid);
+                createOpQueue($sample_pub, 'Sample', $sample_op, $roomid);
+                createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $roomid);
+                createOpQueue($doordrawer_pub, 'Drawer & Doors', $doordrawer_op, $roomid);
+                createOpQueue($main_pub, 'Main', $main_op, $roomid);
+                createOpQueue($custom_pub, 'Custom', $custom_op, $roomid);
+                createOpQueue($shipping_pub, 'Shipping', $shipping_op, $roomid);
+                createOpQueue($install_pub, 'Installation', $install_op, $roomid);
 
-            echo displayToast("success", "Successfully updated the bracket.", "Bracket Updated");
+                echo displayToast("success", "Successfully updated the bracket.", "Bracket Updated");
+            } else {
+                dbLogSQLErr($dbconn);
+            }
         } else {
-            dbLogSQLErr($dbconn);
+            echo displayToast("error", "Unable to update brackets, there is an active operation for this room.", "Active Operation");
         }
 
         break;

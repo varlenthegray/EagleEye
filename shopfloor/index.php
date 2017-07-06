@@ -324,6 +324,10 @@ if(!empty($_GET['action']))
         })
         .on("keyup", "#otf_room", function() {
             $(this).val($(this).val().toUpperCase());
+        })
+        .on("click", ".completion_code3", function() {
+            $(".rework_reason_group").show();
+            $("#rework_reason").focus();
         });
 
     // just the modal timer, we're recording this upon execution of job so this is for "show" only
