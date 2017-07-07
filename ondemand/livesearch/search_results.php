@@ -141,7 +141,6 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
 
     $left_info = '';
     $right_info = '';
-    $so_room_id = "so_{$room['so_parent']}_room_{$room['id']}";
 
     while($op = $op_qry->fetch_assoc()) {
         $op_room_id = "op_{$op['id']}_room_{$room['id']}";

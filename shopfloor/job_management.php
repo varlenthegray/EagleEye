@@ -23,7 +23,7 @@ require '../includes/header_end.php';
                         <div class="form-group">
                             <label for="global_search">Lookup: </label>
                             <input class="form-control" type="text" placeholder="Search..." id="global_search" name="global_search" style="width: 250px;" value="<?php echo $_GET['lookup']; ?>" />
-                            <button class="btn waves-effect btn-primary" id="btn_add_acct" style="margin: 0 0 0 6px;"> <i class="zmdi zmdi-account-add"></i> </button>
+                            <button class="btn waves-effect btn-primary" id="btn_add_acct" style="margin: 0 0 0 6px;"> <i class="zmdi zmdi-account-add m-r-5"></i><span>Add SO</span></button>
                         </div>
                     </div>
                 </div>
@@ -237,7 +237,7 @@ require '../includes/header_end.php';
             }
 
             info = '<li class="active_ops_' + roomid + '" id="active_ops_' + roomid +'" data-opnum="' + opnum + '" data-opid="' + opid + '">';
-            info += '<input type="radio" name="sales_bracket" id="op_' + opid + '_room_' + roomid +'" value="' + opid + '">';
+            info += '<input type="radio" name="' + bracket + '" id="op_' + opid + '_room_' + roomid +'" value="' + opid + '">';
             info += '<label for="op_' + opid + '_room_' + roomid + '">' + $(this).parent().text().trim() + '</label>';
             info += deactivate;
             info += "</li>";

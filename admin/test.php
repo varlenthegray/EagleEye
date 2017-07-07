@@ -1,29 +1,61 @@
 <?php
 require ("../includes/header_start.php");
 
-if($_GET['action'] === 'json') {
-    $json_qry = $dbconn->query("SELECT * FROM rooms WHERE id = 11");
-    $json = $json_qry->fetch_assoc();
+// first, grab the room
+$room_qry = $dbconn->query("SELECT * FROM rooms");
 
-    print_r($json['individual_bracket_buildout']);
-    die();
+function addBC($bracket, $full_bracket, $op) {
+    global $dbconn;
+
+    // find all operations available in sales
+    $ops_qry = $dbconn->query("SELECT * FROM operations WHERE bracket = '$bracket'");
+
+    $sales_ops = array();
+
+    while($ops = $ops_qry->fetch_assoc()) {
+        // add them to the sales ops array
+        $sales_ops[] = $ops['id'];
+    }
+
+    $ind_sales_bracket = array();
+
+    // now find all ops within the individual bracket buildout that fit within sales ops
+    foreach($full_bracket as $ind_op) {
+        if(in_array($ind_op, $sales_ops)) {
+            $ind_sales_bracket[] = $ind_op;
+        }
+    }
+
+    if((int)end($ind_sales_bracket) !== $op) {
+        array_push($ind_sales_bracket, $op);
+    }
+
+    return $ind_sales_bracket;
 }
 
-require ("../includes/header_end.php");
-?>
+while($room = $room_qry->fetch_assoc()) {
+    $output = '';
+    $final = '';
 
-<div id="output" style="color:#FFF;font-weight:bold;"></div>
+    // now, explode the bracket
+    $full_bracket = json_decode($room['individual_bracket_buildout']);
 
-<script>
-    $.post("/admin/test.php?action=json", function(data) {
-        var json = JSON.parse(data);
+    $final[] = addBC('Sales', $full_bracket, 93);
+    $final[] = addBC('Sample', $full_bracket, 94);
+    $final[] = addBC('Pre-Production', $full_bracket, 95);
+    $final[] = addBC('Drawer & Doors', $full_bracket, 96);
+    $final[] = addBC('Main', $full_bracket, 97);
+    $final[] = addBC('Custom', $full_bracket, 98);
+    $final[] = addBC('Installation', $full_bracket, 99);
+    $final[] = addBC('Shipping', $full_bracket, 100);
 
-        console.log(json);
-    });
-</script>
+    foreach($final as $individual) {
+        foreach($individual as $op) {
+            $output[] = (int)$op;
+        }
+    }
 
+    $output_final = json_encode($output);
 
-<?php
-require ("../includes/footer_start.php");
-require ("../includes/footer_end.php");
-?>
+    $dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$output_final' WHERE id = '{$room['id']}'");
+}

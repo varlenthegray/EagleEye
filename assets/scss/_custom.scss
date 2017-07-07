@@ -152,6 +152,12 @@ label {
   border: solid $brand-primary;
   border-width: 3px 3px 0 3px;
   border-radius: 5px 5px 0 0;
+  background-color: $brand-primary;
+  color: $white;
+
+  .c-input {
+    color: $white;
+  }
 }
 
 .bracket-border-bottom {
