@@ -1,4 +1,4 @@
-<script src="https://chatwee-api.com/v2/script/595faf5abd616ddd3a8b456f.js"></script>
+<!--<script src="https://chatwee-api.com/v2/script/595faf5abd616ddd3a8b456f.js"></script>-->
 
 <!-- Footer -->
 <footer class="footer text-right">
