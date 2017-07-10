@@ -371,45 +371,42 @@ require '../includes/header_end.php';
             $.post("/ondemand/shopfloor/gen_actions.php?action=add_iteration&" + iteration_info, function(data) {
                 $('body').append(data);
             });
+        })
+        .on("keyup", "#global_search", function() {
+            var input = $(this);
+
+            clearTimeout(timer);
+
+            timer = setTimeout(function() {
+                if(input.val().length >= 1) {
+                    $.post("/ondemand/livesearch/search_results.php?search=general", {find: input.val()}, function(data) {
+                        console.log(data);
+
+                        $("#search_results_table").html(data);
+                        $("#search_results_global_table").trigger("update");
+
+                        if(data !== '') {
+                            $("#search_results_global_table").show();
+                            $('[data-toggle="tooltip"]').tooltip(); // enable tooltips
+
+                            // setup field masks
+                            $(".mask-zip").mask('00000-0000');
+                            $(".mask-phone").mask('(000) 000-0000');
+
+                            // setup date picker
+                            $(".delivery_date").datepicker({
+                                autoclose: true,
+                                todayHighlight: true
+                            }).mask('00/00/0000');
+                        } else {
+                            $("#search_results_global_table").hide();
+                        }
+                    });
+                } else {
+                    $("#search_results_global_table").hide();
+                }
+            }, 500);
         });
-
-    $("#global_search").on("keyup", function() {
-        console.log("Global Search is triggering.");
-
-        var input = $(this);
-
-        clearTimeout(timer);
-
-        timer = setTimeout(function() {
-            if(input.val().length >= 1) {
-                $.post("/ondemand/livesearch/search_results.php?search=general", {find: input.val()}, function(data) {
-                    console.log(data);
-
-                    $("#search_results_table").html(data);
-                    $("#search_results_global_table").trigger("update");
-
-                    if(data !== '') {
-                        $("#search_results_global_table").show();
-                        $('[data-toggle="tooltip"]').tooltip(); // enable tooltips
-
-                        // setup field masks
-                        $(".mask-zip").mask('00000-0000');
-                        $(".mask-phone").mask('(000) 000-0000');
-
-                        // setup date picker
-                        $(".delivery_date").datepicker({
-                            autoclose: true,
-                            todayHighlight: true
-                        }).mask('00/00/0000');
-                    } else {
-                        $("#search_results_global_table").hide();
-                    }
-                });
-            } else {
-                $("#search_results_global_table").hide();
-            }
-        }, 500);
-    });
 </script>
 
 <?php 
