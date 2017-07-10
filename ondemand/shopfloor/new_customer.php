@@ -1,12 +1,12 @@
 <?php
 require ("../../includes/header_start.php");
 
-$qry = $dbconn->query("SELECT DISTINCT sales_order_num FROM customer ORDER BY sales_order_num DESC LIMIT 0,1");
+$qry = $dbconn->query("SELECT DISTINCT so_num FROM sales_order ORDER BY so_num DESC LIMIT 0,1");
 
 if($qry->num_rows > 0) {
     $result = $qry->fetch_assoc();
 
-    $next_so = $result['sales_order_num'] + 1;
+    $next_so = $result['so_num'] + 1;
 } else {
     $next_so = 1;
 }

@@ -213,13 +213,7 @@ require '../includes/header_end.php';
         })
         .on("click", "#btn_add_acct", function() {
             $.post('/ondemand/shopfloor/new_customer.php', function(data) {
-                $("#modalAddCustomer").html(data);
-            }).done(function() {
-                $("#modalAddCustomer").modal('show');
-
-                $("#contractor_code").autocomplete({ // TODO: Why won't this work? JS DOM element timing mismatch?
-                    source: "/ondemand/livesearch/general.php?search=dealerid"
-                });
+                $("#modalAddCustomer").html(data).modal('show');
             });
         })
         .on("click", ".activate_op", function() {
@@ -380,6 +374,8 @@ require '../includes/header_end.php';
         });
 
     $("#global_search").on("keyup", function() {
+        console.log("Global Search is triggering.");
+
         var input = $(this);
 
         clearTimeout(timer);
@@ -387,6 +383,8 @@ require '../includes/header_end.php';
         timer = setTimeout(function() {
             if(input.val().length >= 1) {
                 $.post("/ondemand/livesearch/search_results.php?search=general", {find: input.val()}, function(data) {
+                    console.log(data);
+
                     $("#search_results_table").html(data);
                     $("#search_results_global_table").trigger("update");
 
@@ -410,7 +408,7 @@ require '../includes/header_end.php';
             } else {
                 $("#search_results_global_table").hide();
             }
-        }, 250);
+        }, 500);
     });
 </script>
 

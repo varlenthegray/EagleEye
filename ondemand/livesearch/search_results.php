@@ -198,16 +198,16 @@ HEREDOC;
 
 switch ($search) {
     case "sonum":
-        searchIt("customer", "sales_order_num", $find);
+        searchIt("sales_order", "so_num", $find);
         break;
     case "project":
-        searchIt("customer", "project", $find);
+        searchIt("sales_order", "project", $find);
         break;
     case "contractor":
-        searchIt("customer", "project", $find);
+        searchIt("sales_order", "contractor_dealer_code", $find);
         break;
     case "project_manager":
-        searchIt("customer", "project_manager", $find);
+        searchIt("sales_order", "project_manager", $find);
         break;
     case "room":
         $qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$find'");
@@ -259,7 +259,7 @@ switch ($search) {
 
         break;
     case "edit_so_num":
-        $qry = $dbconn->query("SELECT * FROM customer WHERE sales_order_num = '$find'");
+        $qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$find'");
 
         if($qry->num_rows > 0) {
             $result = $qry->fetch_assoc();
@@ -271,10 +271,10 @@ switch ($search) {
 
         break;
     case "general":
-        $qry = $dbconn->query("SELECT * FROM customer WHERE sales_order_num LIKE 
-            '%$find%' OR project LIKE '%$find%' OR dealer_code LIKE '%$find%'
-            OR account_type LIKE '%$find%' OR dealer_contractor LIKE '%$find%' OR project_manager LIKE '%$find%'
-            ORDER BY sales_order_num DESC LIMIT 0,25");
+        echo "Hello";
+        $qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num LIKE 
+            '%$find%' OR project LIKE '%$find%' OR contractor_dealer_code LIKE '%$find%'
+            OR project_mgr LIKE '%$find%' ORDER BY so_num DESC LIMIT 0,25");
 
         if($qry->num_rows > 0) {
             while($result = $qry->fetch_assoc()) {
@@ -1604,10 +1604,9 @@ switch ($search) {
 
         break;
     case "gen_json":
-        $qry = $dbconn->query("SELECT * FROM customer WHERE sales_order_num LIKE 
-            '%$find%' OR project LIKE '%$find%' OR dealer_code LIKE '%$find%'
-            OR account_type LIKE '%$find%' OR dealer_contractor LIKE '%$find%' OR project_manager LIKE '%$find%'
-            ORDER BY sales_order_num DESC");
+        $qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num LIKE 
+            '%$find%' OR project LIKE '%$find%' OR contractor_dealer_code LIKE '%$find%'
+            OR project_mgr LIKE '%$find%' ORDER BY so_num DESC LIMIT 0,25");
 
         $return = array();
 

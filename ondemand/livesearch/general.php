@@ -25,19 +25,19 @@ function searchIt($db, $column, $table, $term) {
 
 switch($search) {
     case "cusonum":
-        searchIt($dbconn, "sales_order_num", "customer", $term);
+        searchIt($dbconn, "so_num", "sales_order", $term);
         break;
 
     case "cuproject":
-        searchit($dbconn, "project", "customer", $term);
+        searchit($dbconn, "project", "sales_order", $term);
         break;
 
     case "cucontractor":
-        searchIt($dbconn, "dealer_contractor", "customer", $term);
+        searchIt($dbconn, "contractor_dealer_code", "sales_order", $term);
         break;
 
     case "cupm":
-        searchIt($dbconn, "project_manager", "customer", $term);
+        searchIt($dbconn, "project_manager", "sales_order", $term);
         break;
 
     case "dealerid":

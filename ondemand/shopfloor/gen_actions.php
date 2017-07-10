@@ -286,6 +286,7 @@ switch($_REQUEST['action']) {
         $cell_phone = sanitizeInput($_REQUEST['cell_phone']);
         $so_num = sanitizeInput($_REQUEST['so_num']);
 
+        // TODO: FIX THIS! OUTDATED!
         $dbconn->query("UPDATE customer SET account_type = '$account_type', salesperson = '$salesperson', dealer_contractor = '$contractor', project = '$project', addr_1 = '$project_addr',
          dealer_code = '$contractor_code', pri_phone = '$p_landline', city = '$p_city', state = '$p_state', zip = '$p_zip', contact_1 = '$contact_1', contact_1_cell = '$cell_1', contact_1_business_ph = '$business_1',
           contact_1_email = '$email_1', contact_2 = '$contact_2', contact_2_cell = '$cell_2', contact_2_business_ph = '$business_2', contact_2_email = '$email_2', phys_addr = '$physical_addr', phys_city = '$ph_city',
