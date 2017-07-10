@@ -405,7 +405,7 @@ require '../includes/header_end.php';
                 } else {
                     $("#search_results_global_table").hide();
                 }
-            }, 500);
+            }, 400);
         });
 </script>
 

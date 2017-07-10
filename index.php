@@ -66,11 +66,11 @@ require 'includes/header_end.php';
                                     <table id="active_jobs_global_table" class="table table-striped table-bordered" width="100%">
                                         <thead>
                                         <tr>
-                                            <th style="width: 10%;">SO#</th>
+                                            <th style="width: 15%;">SO#</th>
                                             <th style="width: 20%;">Bracket</th>
                                             <th style="width: 30%;">Operation</th>
                                             <th style="width: 20%;">Individual</th>
-                                            <th style="width: 20%;">Started/Resumed</th>
+                                            <th style="width: 15%;">Started/Resumed</th>
                                         </tr>
                                         </thead>
                                         <tbody id="active_jobs_table"></tbody>
