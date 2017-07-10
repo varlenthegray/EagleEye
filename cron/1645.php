@@ -1,6 +1,6 @@
 <?php
-set_include_path("/home/trustedprogrammer/domains/dev-smc.trustedprogrammer.com/public_html/includes/");
-//set_include_path("/home/trustedprogrammer/domains/smc.trustedprogrammer.com/public_html/includes/");
+//set_include_path("/home/trustedprogrammer/domains/dev-smc.trustedprogrammer.com/public_html/includes/");
+set_include_path("/home/trustedprogrammer/domains/smc.trustedprogrammer.com/public_html/includes/");
 
 // flip these around when pushing to prod
 
