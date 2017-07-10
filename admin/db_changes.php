@@ -76,6 +76,20 @@ if($admin_flag_qry->num_rows > 0) {
                     project_mgr_email VARCHAR(255),delivery_addr VARCHAR(255),delivery_city VARCHAR(100),delivery_state VARCHAR(2),delivery_zip VARCHAR(10),tax_id VARCHAR(20),physical_addr VARCHAR(255),
                      physical_city VARCHAR(100),physical_state VARCHAR(2),physical_zip VARCHAR(10),business_cell VARCHAR(15),business_email VARCHAR(255),business_landline VARCHAR(15),delivery_landline VARCHAR(15));")) ?
                       "Successful with creating sales order table.<br />" : "<b>Error</b> with creating sales order table.<br />";
+
+        /** Inserting Sales Order information from the Customer table */
+        $cu_qry = $dbconn->query("SELECT * FROM customer");
+
+        while($cu = $cu_qry->fetch_assoc()) {
+            $dbconn->query("INSERT INTO sales_order (so_num, salesperson, contractor_dealer_code, project, 
+             project_addr, project_city, project_state, project_zip, project_landline, project_cell, project_mgr) 
+              VALUES ('{$cu['sales_order_num']}', '{$cu['project_manager']}', '{$cu['dealer_code']}', '{$cu['project']}', 
+               '{$cu['addr_1']} {$cu['addr_2']}', '{$cu['city']}', '{$cu['state']}', '{$cu['zip']}', '{$cu['pri_phone']}', 
+                '{$cu['alt_phone_1']}', '{$cu['project_manager']}')");
+                }
+
+        /** End of inserting Sales Order information from the Customer table */
+
 //        echo ($dbconn->query()) ? "Successful with creating sales order table.<br />" : "<b>Error</b> with creating sales order table.<br />";
 
 
