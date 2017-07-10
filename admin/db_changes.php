@@ -7,7 +7,6 @@ if($admin_flag_qry->num_rows > 0) {
     $admin_flag = $admin_flag_qry->fetch_assoc();
 
     if(!(bool)$admin_flag['value']) {
-        //echo ($dbconn->query("CREATE TABLE rework_log (id INT PRIMARY KEY AUTO_INCREMENT,code_id INT,reporting_uid INT,previous_uid INT,notes INT,cur_oid INT,new_oid INT,timestamp INT(15));")) ? "Successful with creating rework_log table.<br />" : "<b>Error</b> with creating rework_log table.<br />";
         // first, grab the room
         $room_qry = $dbconn->query("SELECT * FROM rooms");
 
@@ -68,6 +67,17 @@ if($admin_flag_qry->num_rows > 0) {
         }
 
         echo "Added 'Bracket Completed' to every bracket for every room.<br />";
+        echo ($dbconn->query("CREATE TABLE sales_order (id INT PRIMARY KEY AUTO_INCREMENT,so_num INT,salesperson VARCHAR(100),contractor_dealer_code VARCHAR(10),
+               project VARCHAR(150),project_email VARCHAR(255),project_addr VARCHAR(255),project_city VARCHAR(100),project_state VARCHAR(2),project_zip VARCHAR(10),
+                project_landline VARCHAR(15),project_cell VARCHAR(15),contact1_name VARCHAR(100),contact1_cell VARCHAR(15),contact1_business_ph VARCHAR(15),contact1_email VARCHAR(255),
+                 contact2_name VARCHAR(100),contact2_cell VARCHAR(15),contact2_business_ph VARCHAR(15),contact2_email VARCHAR(255),billing_contact VARCHAR(100),billing_landline VARCHAR(15),
+                  billing_cell VARCHAR(15),billing_addr VARCHAR(255),billing_city VARCHAR(100),billing_state VARCHAR(2),billing_zip VARCHAR(10),ach_account_num VARCHAR(20),ach_routing_num VARCHAR(20),
+                   mailing_addr VARCHAR(255),mailing_city VARCHAR(100),mailing_state VARCHAR(2),mailing_zip VARCHAR(10),mailing_landline VARCHAR(15),project_mgr VARCHAR(100),project_mgr_cell VARCHAR(15),
+                    project_mgr_email VARCHAR(255),delivery_addr VARCHAR(255),delivery_city VARCHAR(100),delivery_state VARCHAR(2),delivery_zip VARCHAR(10),tax_id VARCHAR(20),physical_addr VARCHAR(255),
+                     physical_city VARCHAR(100),physical_state VARCHAR(2),physical_zip VARCHAR(10),business_cell VARCHAR(15),business_email VARCHAR(255),business_landline VARCHAR(15),delivery_landline VARCHAR(15));")) ?
+                      "Successful with creating sales order table.<br />" : "<b>Error</b> with creating sales order table.<br />";
+//        echo ($dbconn->query()) ? "Successful with creating sales order table.<br />" : "<b>Error</b> with creating sales order table.<br />";
+
 
         echo "<h1>Database prepared.</h1>";
 

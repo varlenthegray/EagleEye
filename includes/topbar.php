@@ -38,6 +38,12 @@ switch($_SERVER['SCRIPT_NAME']) {
                         <!-- End mobile menu toggle-->
                     </li>
 
+                    <li class="nav-item hidden-sm-down">
+                        <form role="search" class="navbar-left app-search pull-left hidden-xs" _lpchecked="1">
+                            <input type="text" placeholder="Search..." class="form-control" id="global_search" name="global_search"><a href=""><i class="fa fa-search"></i></a>
+                        </form>
+                    </li>
+
                     <li class="nav-item notification-list">
                         <a class="nav-link arrow-none waves-light waves-effect" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-email noti-icon"></i></a>
                     </li>

@@ -33,8 +33,8 @@ if($qry->num_rows > 0) {
                         </div>
                     </div>
 
-                    <form name="add_retail_customer" id="add_retail_customer" style="display: none;">
-                        <table style="width: 100%;">
+                    <form id="add_retail_customer" style="display:none;">
+                        <table style="width:100%;">
                             <tr>
                                 <td style="width: 33.3%;">
                                     <select class="form-control" id="salesperson" name="salesperson">
@@ -45,28 +45,38 @@ if($qry->num_rows > 0) {
                                         <option value="Shane">Shane</option>
                                     </select>
                                 </td>
-                                <td style="width: 33.3%;"><input type="text" name="contractor_code" class="form-control" placeholder="Contractor Code" id="contractor_code"></td>
-                                <td style="width: 33.3%;"><input type="text" name="contractor" placeholder="Contractor" class="form-control" id="contractor" /></td>
+                                <td style="width: 33.3%;">
+                                    <select class="form-control" id="contractor_dealer_code" name="contractor_dealer_code">
+                                        <?php
+                                        $dealer_qry = $dbconn->query("SELECT * FROM dealers");
+
+                                        while($dealer = $dealer_qry->fetch_assoc()) {
+                                            echo "<option value='{$dealer['id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </td>
+                                <td style="width: 33.3%;">&nbsp;</td>
                             </tr>
                             <tr style="height: 5px;">
                                 <td colspan="3"></td>
                             </tr>
                             <tr>
                                 <td colspan="3">
-                                    <input type="text" name="project" class="form-control pull-left" placeholder="Project" id="project" style="width: 50%;" />
-                                    <input type="text" name="email_address" class="form-control pull-right" placeholder="Email Address" id="email_address" style="width: 50%;" />
+                                    <input type="text" name="project_name" class="form-control pull-left" placeholder="Project" id="project_name" style="width: 50%;" />
+                                    <input type="text" name="project_email" class="form-control pull-right" placeholder="Email Address" id="project_email" style="width: 50%;" />
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2"><input type="text" name="project_addr" class="form-control" placeholder="Project Address" id="project_addr"></td>
-                                <td><input type="text" name="cell_phone" class="form-control" placeholder="Cell Phone" id="cell_phone"></td>
+                                <td><input type="text" name="project_cell" class="form-control" placeholder="Cell Phone" id="project_cell"></td>
                             </tr>
                             <tr>
                                 <td colspan="2">
                                     <table style="width: 100%;">
                                         <tr>
-                                            <td style="width: 33.3%;"><input type="text" name="city" class="form-control" placeholder="City" id="city"></td>
-                                            <td style="width: 33.3%;"><select class="form-control" id="state" name="state">
+                                            <td style="width: 33.3%;"><input type="text" name="project_city" class="form-control" placeholder="City" id="project_city"></td>
+                                            <td style="width: 33.3%;"><select class="form-control" id="project_state" name="project_state">
                                                     <option value="AL">Alabama</option>
                                                     <option value="AK">Alaska</option>
                                                     <option value="AZ">Arizona</option>
@@ -118,11 +128,11 @@ if($qry->num_rows > 0) {
                                                     <option value="WI">Wisconsin</option>
                                                     <option value="WY">Wyoming</option>
                                                 </select></td>
-                                            <td style="width: 33.3%;"><input type="text" name="zip" class="form-control" placeholder="Zip" id="zip"></td>
+                                            <td style="width: 33.3%;"><input type="text" name="project_zip" class="form-control" placeholder="Zip" id="project_zip"></td>
                                         </tr>
                                     </table>
                                 </td>
-                                <td><input type="text" name="landline" class="form-control" placeholder="Landline" id="landline"></td>
+                                <td><input type="text" name="project_landline" class="form-control" placeholder="Landline" id="project_landline"></td>
                             </tr>
                             <tr style="height: 5px;">
                                 <td colspan="3"></td>
@@ -306,8 +316,8 @@ if($qry->num_rows > 0) {
                         </table>
                     </form>
 
-                    <form name="add_distributor" id="add_distributor" style="display: none;"> <!-- TODO: Finish add distributor -->
-                        <table style="width: 100%;">
+                    <form id="add_distributor_cc" style="display:none;">
+                        <table style="width:100%;">
                             <tr>
                                 <td style="width: 33.3%;">
                                     <select class="form-control" id="salesperson" name="salesperson">
@@ -316,21 +326,34 @@ if($qry->num_rows > 0) {
                                         <option value="Criterion Sales">Criterion Sales</option>
                                     </select>
                                 </td>
-                                <td style="width: 33.3%;"><input type="text" name="dealer" placeholder="Dealer" class="form-control" id="dealer" /></td>
-                                <td style="width: 33.3%;"><input type="text" name="dealer_code" class="form-control" placeholder="Dealer Code" id="dealer_code"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" name="business_1" class="form-control" placeholder="Business Phone" id="business_1"></td>
-                                <td><input type="text" name="cell_1" class="form-control" placeholder="Cell Phone" id="cell_1"></td>
-                                <td><input type="text" name="email_1" class="form-control" placeholder="Email Address" id="email_1"></td>
+                                <td style="width: 33.3%;">
+                                    <select class="form-control" id="contractor_dealer_code" name="contractor_dealer_code">
+                                        <?php
+                                            $dealer_qry = $dbconn->query("SELECT * FROM dealers");
+
+                                            while($dealer = $dealer_qry->fetch_assoc()) {
+                                                echo "<option value='{$dealer['id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
+                                            }
+                                        ?>
+                                    </select>
+                                </td>
+                                <td style="width: 33.3%;">&nbsp;</td>
                             </tr>
                             <tr style="height: 5px;">
                                 <td colspan="3"></td>
                             </tr>
                             <tr>
-                                <td><input type="text" name="project" class="form-control" placeholder="Project/Customer PO" id="project" /></td>
-                                <td><input type="text" name="phone_1" class="form-control" placeholder="Phone Number" id="phone_1" /></td>
-                                <td><input type="text" name="email_1" class="form-control" placeholder="Email Address" id="email_1" /></td>
+                                <td><input type="text" name="business_landline" class="form-control" placeholder="Business Phone" id="business_landline"></td>
+                                <td><input type="text" name="business_cell" class="form-control" placeholder="Cell Phone" id="business_cell"></td>
+                                <td><input type="text" name="business_email" class="form-control" placeholder="Email Address" id="business_email"></td>
+                            </tr>
+                            <tr style="height: 5px;">
+                                <td colspan="3"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" name="project_name" class="form-control" placeholder="Project/Customer PO" id="project_name" /></td>
+                                <td><input type="text" name="project_cell" class="form-control" placeholder="Cell Phone (Project)" id="project_cell" /></td>
+                                <td><input type="text" name="project_email" class="form-control" placeholder="Email Address" id="project_email" /></td>
                             </tr>
                             <tr style="height: 5px;">
                                 <td colspan="3"></td>
@@ -400,7 +423,7 @@ if($qry->num_rows > 0) {
                                         </tr>
                                     </table>
                                 </td>
-                                <td><input type="text" name="landline" class="form-control" placeholder="Landline" id="landline"></td>
+                                <td><input type="text" name="delivery_landline" class="form-control" placeholder="Landline" id="delivery_landline"></td>
                             </tr>
                             <tr style="height: 5px;">
                                 <td colspan="3"></td>
@@ -492,8 +515,8 @@ if($qry->num_rows > 0) {
                                 <td colspan="2">
                                     <table style="width: 100%;">
                                         <tr>
-                                            <td style="width: 33.3%;"><input type="text" name="mailing_city" class="form-control" placeholder="City" id="mailing_city"></td>
-                                            <td style="width: 33.3%;"><select class="form-control" id="mailing_state" name="mailing_state">
+                                            <td style="width: 33.3%;"><input type="text" name="physical_city" class="form-control" placeholder="City" id="physical_city"></td>
+                                            <td style="width: 33.3%;"><select class="form-control" id="physical_state" name="physical_state">
                                                     <option value="AL">Alabama</option>
                                                     <option value="AK">Alaska</option>
                                                     <option value="AZ">Arizona</option>
@@ -545,7 +568,7 @@ if($qry->num_rows > 0) {
                                                     <option value="WI">Wisconsin</option>
                                                     <option value="WY">Wyoming</option>
                                                 </select></td>
-                                            <td style="width: 33.3%;"><input type="text" name="mailing_zip" class="form-control" placeholder="Zip" id="mailing_zip"></td>
+                                            <td style="width: 33.3%;"><input type="text" name="physical_zip" class="form-control" placeholder="Zip" id="physical_zip"></td>
                                         </tr>
                                     </table>
                                 </td>

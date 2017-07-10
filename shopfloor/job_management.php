@@ -95,24 +95,23 @@ require '../includes/header_end.php';
 
     $("body")
         .on("click", "#submit_new_customer", function() {
-            var cuData = $("#add_new_customer").serialize();
+            var cuData;
 
-            $.post("/ondemand/customer.php?action=add_new", cuData, function(data) {
-                if(data === 'success') {
-                    displayToast("success", "Inserted new customer information successfully!", "Added Customer");
+            if($("input[name='cu_type']:checked").val() === 'retail') {
+                cuData = $("#add_retail_customer").serialize();
+            } else {
+                cuData = $("#add_distributor_cc").serialize();
+            }
 
-                    $("[id^='new_']").val("");
-                    $("#new_state").val("NC").change();
+            $.post("/ondemand/shopfloor/job_actions.php?action=add_customer&" + cuData, {new_so_num: $("#new_so_num").val()}, function(data) {
+                $("body").append(data);
 
-                    $("#modalAddCustomer").modal('hide');
-                } else {
-                    $("body").append(data);
-                }
+                $("#modalAddCustomer").modal('hide');
             });
         })
         .on("change", "input[name='cu_type']", function() {
             var add_rc = $("#add_retail_customer");
-            var add_dist = $("#add_distributor");
+            var add_dist = $("#add_distributor_cc");
 
             switch($(this).val()) {
                 case 'retail':

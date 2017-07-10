@@ -1,355 +1,152 @@
 <?php
 require 'includes/header_start.php';
 require 'includes/header_end.php';
+
+/** TODO: Implement search results based on search */
 ?>
 
 <!-- tablesaw-->
 <link href="/assets/plugins/tablesaw/dist/tablesaw.css" rel="stylesheet" type="text/css"/>
 
-<script src="includes/js/searchTab.js"></script>
-
-<script>
-    var searchCounter = 2;
-</script>
+<!-- Date & Clock -->
+<link href="/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css"/>
 
 <div class="row">
-    <!-- Left column -->
-    <div class="col-md-6" style="min-height: 240px;">
-        <div class="col-md-12">
-            <!-- Search box -->
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card-box">
-                        <ul class="nav nav-tabs m-b-10" id="searchTabs" role="tablist">
-                            <li class="nav-item" id="search1_li">
-                                <a class="nav-link active" searchid="1" id="searchTab1" data-toggle="tab" href="#search1" role="tab" aria-controls="search1" aria-expanded="true">Search 1</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="search_add_tab" data-toggle="tab" href="#" role="tab" aria-controls="search_add" aria-expanded="true"><strong>+</strong></a>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content" id="searchTabContent">
-                            <div role="tabpanel" class="tab-pane fade in active" id="search1" aria-labelledby="search1">
-                                <div id="search_accordion1">
-                                    <h3>Customer</h3>
-                                    <div class="pad-lr-12">
-                                        <div class="row">
-                                            <div class="col-md-9" style="padding-top: 5px;">
-                                                <label class="c-input c-checkbox">
-                                                    <input type="checkbox" name="cu_project_status" value="2" checked>
-                                                    <span class="c-indicator"></span>
-                                                    Quote
-                                                </label>
-                                                <label class="c-input c-checkbox">
-                                                    <input type="checkbox" name="cu_project_status" value="1" checked>
-                                                    <span class="c-indicator"></span>
-                                                    Production
-                                                </label>
-                                                <label class="c-input c-checkbox">
-                                                    <input type="checkbox" name="cu_project_status" value="3">
-                                                    <span class="c-indicator"></span>
-                                                    Closed
-                                                </label>
-                                            </div>
-
-                                            <div class="col-md-3" style="padding-bottom: 5px;">
-                                                <button class="btn waves-effect btn-primary pull-right" data-toggle="modal" data-target="#modalAddCustomer"> <i class="zmdi zmdi-account-add"></i> </button>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="SO #" id="cu_sales_order_num1" name="cu_sales_order_num1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Project" id="cu_project_name1" name="project_name1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Dealer/Contractor" id="cu_dealer_contractor1" name="dealer_contractor1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Project Manager" id="cu_project_manager1" name="project_manager1" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <h3>Vendor</h3>
-                                    <div class="pad-lr-12">
-                                        <div class="row">
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Sales Order #" id="vn_sales_order_num1" name="vn_sales_order_num1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Project Name" id="vn_project_name1" name="vn_project_name1" />
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Vendor" id="vn_vendor1" name="vn_vendor1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Acknowledgement #" id="vn_ack_number1" name="vn_ack_number1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Invoice Number" id="vn_invoice_num1" name="vn_invoice_num1" />
-                                            </div>
-
-                                            <div class="col-md-3 pad-lr-4">
-                                                <input class="form-control" type="text" placeholder="Date Range" id="vn_date_range1" name="vn_date_range1" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <h3>Inventory</h3>
-                                    <div class="pad-lr-12">
-                                        <div class="col-md-3 pad-lr-4">
-                                            <input class="form-control" type="text" placeholder="Sales Order #" id="inv_sales_order_num1" name="inv_sales_order_num1" />
-                                        </div>
-
-                                        <div class="col-md-3 pad-lr-4">
-                                            <input class="form-control" type="text" placeholder="Description" id="inv_description1" name="inv_description1" />
-                                        </div>
-
-                                        <div class="col-md-3 pad-lr-4">
-                                            <input class="form-control" type="text" placeholder="Part #" id="inv_part_num1" name="inv_part_num1" />
-                                        </div>
-
-                                        <div class="col-md-3 pad-lr-4">
-                                            <input class="form-control" type="text" placeholder="Date Range" id="inv_date_range1" name="inv_date_range1" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End search box -->
-
-            <!-- Add Customer modal -->
-            <div id="modalAddCustomer" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddCustomerLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h4 class="modal-title" id="modalAddCustomerTitle">Add New Customer</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <form name="add_new_customer" id="add_new_customer">
-                                        <table style="width: 100%;">
-                                            <tr>
-                                                <?php
-                                                $qry = $dbconn->query("SELECT DISTINCT sales_order_num FROM customer ORDER BY sales_order_num DESC LIMIT 0,1");
-
-                                                if($qry->num_rows > 0) {
-                                                    $result = $qry->fetch_assoc();
-
-                                                    $new_so_num = $result['sales_order_num'] + 1;
-                                                } else {
-                                                    $new_so_num = 1;
-                                                }
-                                                ?>
-                                                <td><input type="text" class="form-control" id="new_so_num" name="new_so_num" placeholder="SO #" value="<?php echo $new_so_num; ?>"></td>
-                                                <td><input type="text" class="form-control" id="new_dealer_code" name="new_dealer_code" placeholder="Dealer Code"></td>
-                                                <td><input type="text" class="form-control" id="new_project_name" name="new_project_name" placeholder="Project Name"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_org_name" name="new_org_name" placeholder="Organization Name"></td>
-                                                <td><input type="text" class="form-control" id="new_dealer_contractor" name="new_dealer_contractor" placeholder="Dealer/Contractor"></td>
-                                                <td><input type="text" class="form-control" id="new_project_manager" name="new_project_manager" placeholder="Project Manager"></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="3"><input type="text" class="form-control" id="new_addr_1" name="new_addr_1" placeholder="Address 1"></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="3"><input type="text" class="form-control" id="new_addr_2" name="new_addr_2" placeholder="Address 2"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_city" name="new_city" placeholder="City"></td>
-                                                <td>
-                                                    <select class="form-control" id="new_state" name="new_state">
-                                                        <option value="AL">Alabama</option>
-                                                        <option value="AK">Alaska</option>
-                                                        <option value="AZ">Arizona</option>
-                                                        <option value="AR">Arkansas</option>
-                                                        <option value="CA">California</option>
-                                                        <option value="CO">Colorado</option>
-                                                        <option value="CT">Connecticut</option>
-                                                        <option value="DE">Delaware</option>
-                                                        <option value="FL">Florida</option>
-                                                        <option value="GA">Georgia</option>
-                                                        <option value="HI">Hawaii</option>
-                                                        <option value="ID">Idaho</option>
-                                                        <option value="IL">Illinois</option>
-                                                        <option value="IN">Indiana</option>
-                                                        <option value="IA">Iowa</option>
-                                                        <option value="KS">Kansas</option>
-                                                        <option value="KY">Kentucky</option>
-                                                        <option value="LA">Louisiana</option>
-                                                        <option value="ME">Maine</option>
-                                                        <option value="MD">Maryland</option>
-                                                        <option value="MA">Massachusetts</option>
-                                                        <option value="MI">Michigan</option>
-                                                        <option value="MN">Minnesota</option>
-                                                        <option value="MS">Mississippi</option>
-                                                        <option value="MO">Missouri</option>
-                                                        <option value="MT">Montana</option>
-                                                        <option value="NE">Nebraska</option>
-                                                        <option value="NV">Nevada</option>
-                                                        <option value="NH">New Hampshire</option>
-                                                        <option value="NJ">New Jersey</option>
-                                                        <option value="NM">New Mexico</option>
-                                                        <option value="NY">New York</option>
-                                                        <option value="NC" selected>North Carolina</option>
-                                                        <option value="ND">North Dakota</option>
-                                                        <option value="OH">Ohio</option>
-                                                        <option value="OK">Oklahoma</option>
-                                                        <option value="OR">Oregon</option>
-                                                        <option value="PA">Pennsylvania</option>
-                                                        <option value="RI">Rhode Island</option>
-                                                        <option value="SC">South Carolina</option>
-                                                        <option value="SD">South Dakota</option>
-                                                        <option value="TN">Tennessee</option>
-                                                        <option value="TX">Texas</option>
-                                                        <option value="UT">Utah</option>
-                                                        <option value="VT">Vermont</option>
-                                                        <option value="VA">Virginia</option>
-                                                        <option value="WA">Washington</option>
-                                                        <option value="WV">West Virginia</option>
-                                                        <option value="WI">Wisconsin</option>
-                                                        <option value="WY">Wyoming</option>
-                                                    </select>
-                                                </td>
-                                                <td><input type="text" class="form-control" id="new_zip" name="new_zip" placeholder="ZIP"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_phone1" name="new_phone1" placeholder="Primary Phone"></td>
-                                                <td><input type="text" class="form-control" id="new_phone2" name="new_phone2" placeholder="Alt Phone"></td>
-                                                <td><input type="text" class="form-control" id="new_phone3" name="new_phone3" placeholder="Alt Phone 2"></td>
-                                            </tr>
-                                            <tr>
-                                                <td><input type="text" class="form-control" id="new_email1" name="new_email1" placeholder="Primary Email Address"></td>
-                                                <td><input type="text" class="form-control" id="new_email2" name="new_email2" placeholder="Alternate Email Address"></td>
-                                                <td>
-                                                    <select name="new_account_type" id="new_account_type" class="form-control">
-                                                        <option value="R" disabled>Account Type</option>
-                                                        <option value="R" selected>Retail</option>
-                                                        <option value="W">Wholesale</option>
-                                                        <option value="D">Distribution</option>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary waves-effect waves-light" id="submit_new_customer">Add Customer</button>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal-dialog -->
-            </div>
-            <!-- /.modal -->
-
-            <!-- Search results box -->
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card-box" id="search_results_card" style="display: none;min-height: 294px;">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <table class="tablesaw table" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
-                                    <thead>
-                                    <tr>
-                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">SO#</th>
-                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Project</th>
-                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Dealer/Contractor</th>
-                                        <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Project Manager</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="search_results_table">
-                                    <tr>
-                                        <td colspan="4">No results to display</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-12 text-md-right">
-                                <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Collapse</button>
-                                <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Print</button>
-                                <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Export</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End search results box -->
-        </div>
-    </div>
-    <!-- End left column -->
-
-    <!-- Right column -->
-    <div class="col-md-6">
-        <div class="card-box" id="cal_email_tasks" style="min-height: 511px;">
-            <!-- Loaded in by /ondemand/js/page_content_functions.js and /html/right_panel.php -->
-        </div>
-    </div>
-    <!-- End right column -->
-</div>
-
-<div class="row" id="room_results_row" style="display: none;">
-    <div class="col-md-8">
-        <div class="card-box">
-            <div class="row">
-                <div class="col-md-12">
-                    <table class="tablesaw table" data-tablesaw-mode="swipe" data-tablesaw-sortable data-tablesaw-minimap>
-                        <thead>
-                        <tr>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-sortable-default-col data-tablesaw-priority="persist">Room</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="3">Sample</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="2">Main</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="1">Door/Drawer</th>
-                            <th scope="col" data-tablesaw-sortable-col data-tablesaw-priority="4">Customs</th>
-                        </tr>
-                        </thead>
-                        <tbody id="room_search_table">
-                        <tr>
-                            <td colspan="5">No results to display</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-12 text-md-right">
-                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Collapse</button>
-                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Print</button>
-                    <button type="button" class="btn btn-primary waves-effect waves-light w-xs">Export</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row" id="gantt_chart_row" style="display: none;">
     <div class="col-md-12">
         <div class="card-box">
-            <div id="job_status_gantt" style="height: 200px;"></div>
+        <ul class="nav nav-tabs m-b-10" id="mainTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="production-tab" data-toggle="tab" href="#production" role="tab" aria-controls="production" aria-expanded="true">Production</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="calendar-tab" data-toggle="tab" href="#calendar" role="tab" aria-controls="calendar">Calendar</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="email-tab" data-toggle="tab" href="#email" role="tab" aria-controls="email">Email</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="text-tab" data-toggle="tab" href="#text" role="tab" aria-controls="text">Text</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="workcenter-tab" data-toggle="tab" href="#workcenter" role="tab" aria-controls="workcenter">Workcenter</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="wall-tab" data-toggle="tab" href="#wall" role="tab" aria-controls="wall">Wall</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="mainTabContent">
+            <div role="tabpanel" class="tab-pane fade in active" id="production" aria-labelledby="home-tab">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card-box table-responsive">
+                                <div class="col-md-12 workcenter-table">
+                                    <h4>Jobs in Queue</h4>
+
+                                    <table id="jobs_in_queue_global_table" class="table table-striped table-bordered" width="100%">
+                                        <thead>
+                                        <tr>
+                                            <th>SO#</th>
+                                            <th>Bracket</th>
+                                            <th>Operation</th>
+                                            <th>Release Date</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="jiq_table"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card-box table-responsive">
+                                <div class="col-md-12">
+                                    <h4>Active Jobs</h4>
+
+                                    <table id="active_jobs_global_table" class="table table-striped table-bordered" width="100%">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 10%;">SO#</th>
+                                            <th style="width: 20%;">Bracket</th>
+                                            <th style="width: 30%;">Operation</th>
+                                            <th style="width: 20%;">Individual</th>
+                                            <th style="width: 20%;">Started/Resumed</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="active_jobs_table"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card-box table-responsive">
+                                <div class="col-md-12">
+                                    <h4>Recently Completed Jobs</h4>
+
+                                    <table id="recently_completed_jobs_global_table" class="table table-striped table-bordered" width="100%">
+                                        <thead>
+                                        <tr>
+                                            <th>SO#</th>
+                                            <th>Bracket</th>
+                                            <th>Operation</th>
+                                            <th>Completed</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="recently_completed_table"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- modal -->
+                        <div id="viewJobInfo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="viewJobInfoLabel" aria-hidden="true">
+
+                        </div>
+                        <!-- /.modal -->
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="calendar" role="tabpanel" aria-labelledby="profile-tab">
+                <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla
+                    single-origin coffee squid. Exercitation +1 labore velit, blog sartorial
+                    PBR leggings next level wes anderson artisan four loko farm-to-table
+                    craft beer twee. Qui photo booth letterpress, commodo enim craft beer
+                    mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud
+                    organic, assumenda labore aesthetic magna delectus mollit. Keytar
+                    helvetica VHS salvia yr, vero magna velit sapiente labore stumptown.
+                    Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts
+                    beard ut DIY ethical culpa terry richardson biodiesel. Art party
+                    scenester stumptown, tumblr butcher vero sint qui sapiente accusamus
+                    tattooed echo park.</p>
+            </div>
+            <div class="tab-pane fade" id="email" role="tabpanel" aria-labelledby="email-tab">
+                <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out
+                    mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade.
+                    Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard
+                    locavore carles etsy salvia banksy hoodie helvetica. DIY synth PBR
+                    banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg
+                    banh mi whatever gluten-free, carles pitchfork biodiesel fixie etsy
+                    retro mlkshk vice blog. Scenester cred you probably haven't heard of
+                    them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu synth
+                    chambray yr.</p>
+            </div>
+            <div class="tab-pane fade" id="text" role="tabpanel" aria-labelledby="text-tab">
+                <p>Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party
+                    before they sold out master cleanse gluten-free squid scenester freegan
+                    cosby sweater. Fanny pack portland seitan DIY, art party locavore wolf
+                    cliche high life echo park Austin. Cred vinyl keffiyeh DIY salvia PBR,
+                    banh mi before they sold out farm-to-table VHS viral locavore cosby
+                    sweater. Lomo wolf viral, mustache readymade thundercats keffiyeh craft
+                    beer marfa ethical. Wolf salvia freegan, sartorial keffiyeh echo park
+                    vegan.</p>
+            </div>
+            <div class="tab-pane fade" id="workcenter" role="tabpanel" aria-labelledby="workcenter-tab">
+                <p>Workcenter tab.</p>
+            </div>
+            <div class="tab-pane fade" id="wall" role="tabpanel" aria-labelledby="wall-tab">
+                <p>Wall tab.</p>
+            </div>
         </div>
     </div>
 </div>
@@ -365,135 +162,76 @@ require 'includes/header_end.php';
 <script src="/assets/plugins/amcharts/themes/custom.js"></script>
 <script src="/assets/plugins/amcharts/plugins/dataloader/dataloader.min.js" type="text/javascript"></script>
 
-<!-- Loading page content -->
-<script src="/ondemand/js/page_content_functions.js"></script>
+<!-- Date & Clock picker -->
+<script src="/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
 
 <script>
-    loadCalendarPane(); // found in page_content_functions
+    $("body")
+        .on("click", ".wc-edit-queue", function() {
+            /*
+            var id = $(this).attr("id");
 
-    function updateSearchTable(field, search, functn) {
-        if(field.length >= 1) {
-            $.post("/ondemand/livesearch/search_results.php?search=" + search, {find: field, functn: functn}, function(data) {
-                $("#search_results_table").html(data);
+            window.location.replace("/shopfloor/job_management.php?lookup=" + id);*/
 
-                if(data !== '') {
-                    $("#search_results_card").show();
-                }
-            });
-        } else {
-            $("#search_results_card").hide();
-        }
-    }
+            window.location.replace("")
+        })
+        .on("click", "#wc-jiq-update", function() {
+            if(!$("#published").is(":checked")) {
+                var id = $(this).data("id");
 
-    function displaySO(sonum) {
-        $.post("/ondemand/livesearch/search_results.php?search=room", {find: sonum}, function(data) {
-            $("#room_search_table").html(data);
-            $("#room_results_row").show();
+                $.post("/ondemand/shopfloor/workcenter.php?action=update_queued_job", {id: id}, function(data) {
+                    $('body').append(data);
+                });
+            } else {
+                displayToast("info", "Nothing to change.", "No changes");
+            }
+
+            $("#viewJobInfo").modal('hide');
+
+            jiq_table.ajax.reload(null,false);
         });
-    }
 
-    function displayRoomInfo(room_id) {
-        $("#gantt_chart_row").show();
-    }
-
-    $("#search_accordion1").accordion();
-
-    $("#search_add_tab").on("click", function() {
-        searchCounter = generateTab(searchCounter);
+    $("#job_started").datetimepicker({
+        icons: {
+            time: "fa fa-clock-o",
+            date: "fa fa-calendar",
+            up: "fa fa-arrow-up",
+            down: "fa fa-arrow-down"
+        }
     });
 
-    $("body")
-        .on("click", "[id^=searchTab]", function(e) { // this allows for the automation of search tabs
-            var accordion = "search_accordion" + e.target.getAttribute("searchid"); // add more accordions
+    $("#job_completed").datetimepicker({
+        icons: {
+            time: "fa fa-clock-o",
+            date: "fa fa-calendar",
+            up: "fa fa-arrow-up",
+            down: "fa fa-arrow-down"
+        }
+    });
 
-            setTimeout(function() {
-                $("#" + accordion).accordion("refresh"); // refresh the accordion on click of tab
-            }, 200);
-        })
-        .on("click", "#submit_new_customer", function() {
-            var cuData = $("#add_new_customer").serialize();
+    var jiq_table = $("#jobs_in_queue_global_table").DataTable({
+        "ajax": "/ondemand/shopfloor/workcenter.php?action=display_jiq",
+        "pageLength": 25,
+        "createdRow": function(row,data,dataIndex) {
+            $(row).addClass("cursor-hand wc-edit-queue");
+        }
+    });
 
-            $.post("/ondemand/customer.php?action=add_new", cuData, function(data) {
-                if(data === 'success') {
-                    displayToast("success", "Inserted new customer information successfully!", "Added Customer");
+    var active_table = $("#active_jobs_global_table").DataTable({
+        "ajax": "/ondemand/shopfloor/workcenter.php?action=display_active_jobs",
+        "pageLength": 25
+    });
 
-                    $("[id^='new_']").val("");
-                    $("#new_state").val("NC").change();
+    var completed_table = $("#recently_completed_jobs_global_table").DataTable({
+        "ajax": "/ondemand/shopfloor/workcenter.php?action=display_recently_completed",
+        "pageLength": 25
+    });
 
-                    $("#modalAddCustomer").modal('hide');
-                } else {
-                    $("body").append(data);
-                }
-            });
-        });
-
-    $("#cu_sales_order_num1")
-        .on("keyup", function() { // this is on keyboard change
-            updateSearchTable($(this).val(), "sonum", "displaySO");
-            $("#edit_so_info").hide();
-
-            $("#cu_project_name1").val("");
-            $("#cu_dealer_contractor1").val("");
-            $("#cu_project_manager1").val("");
-        })
-        .autocomplete({
-            source: "/ondemand/livesearch/general.php?search=cusonum"
-        })
-        .on("autocompleteselect", function(e, ui) {
-            updateSearchTable(ui.item.label, "sonum", "displaySO"); // this is on click of the auto-complete
-            $("#edit_so_info").hide();
-        });
-
-    $("#cu_project_name1")
-        .on("keyup", function () { // this is on keyboard change
-            updateSearchTable($(this).val(), "project", "displaySO");
-            $("#edit_so_info").hide();
-
-            $("#cu_sales_order_num1").val("");
-            $("#cu_dealer_contractor1").val("");
-            $("#cu_project_manager1").val("");
-        })
-        .autocomplete({
-            source: "/ondemand/livesearch/general.php?search=cuproject"
-        })
-        .on("autocompleteselect", function(e, ui) {
-            updateSearchTable(ui.item.label, "project", "displaySO"); // this is on click of the auto-complete
-            $("#edit_so_info").hide();
-        });
-
-    $("#cu_dealer_contractor1")
-        .on("keyup", function () { // this is on keyboard change
-            updateSearchTable($(this).val(), "contractor", "displaySO");
-            $("#edit_so_info").hide();
-
-            $("#cu_sales_order_num1").val("");
-            $("#cu_project_name1").val("");
-            $("#cu_project_manager1").val("");
-        })
-        .autocomplete({
-            source: "/ondemand/livesearch/general.php?search=cucontractor"
-        })
-        .on("autocompleteselect", function(e, ui) {
-            updateSearchTable(ui.item.label, "contractor", "displaySO"); // this is on click of the auto-complete
-            $("#edit_so_info").hide();
-        });
-
-    $("#cu_project_manager1")
-        .on("keyup", function () { // this is on keyboard change
-            updateSearchTable($(this).val(), "project_manager", "displaySO");
-            $("#edit_so_info").hide();
-
-            $("#cu_sales_order_num1").val("");
-            $("#cu_project_name1").val("");
-            $("#cu_dealer_contractor1").val("");
-        })
-        .autocomplete({
-            source: "/ondemand/livesearch/general.php?search=cupm"
-        })
-        .on("autocompleteselect", function(e, ui) {
-            updateSearchTable(ui.item.label, "project_manager", "displaySO"); // this is on click of the auto-complete
-            $("#edit_so_info").hide();
-        });
+    setInterval(function() {
+        jiq_table.ajax.reload(null,false);
+        active_table.ajax.reload(null,false);
+        completed_table.ajax.reload(null,false);
+    }, 5000);
 
     var ganttChart = AmCharts.makeChart( "job_status_gantt", {
         "type": "gantt",
