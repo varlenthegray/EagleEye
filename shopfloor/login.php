@@ -37,7 +37,11 @@ use Carbon\Carbon; // prep carbon
                                         $last_login = $last_login_qry->fetch_assoc();
 
                                         if($last_login['time_in'] > strtotime("today")) {
-                                            $time = date(TIME_ONLY, $last_login['time_in']);
+                                            if($result['id'] === '7' || $result['id'] === '8') {
+                                                $time_in_display = "";
+                                            } else {
+                                                $time = date(TIME_ONLY, $last_login['time_in']);
+                                            }
                                         } else {
                                             if($result['id'] === '7' || $result['id'] === '8') {
                                                 $time = '';
@@ -56,8 +60,12 @@ use Carbon\Carbon; // prep carbon
                                         $today = mktime(0,0);
 
                                         if($time_unix >= $today) {
-                                            $carbon_time = Carbon::createFromTimestamp($time_unix);
-                                            $time_in_display = $carbon_time->diffForHumans(null,true);
+                                            if($result['id'] === '7' || $result['id'] === '8') {
+                                                $time_in_display = "";
+                                            } else {
+                                                $carbon_time = Carbon::createFromTimestamp($time_unix);
+                                                $time_in_display = $carbon_time->diffForHumans(null, true);
+                                            }
                                         } else {
                                             if($result['id'] === '7' || $result['id'] === '8') {
                                                 $time_in_display = "";
