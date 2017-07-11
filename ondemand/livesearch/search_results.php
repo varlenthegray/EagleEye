@@ -365,12 +365,10 @@ switch ($search) {
                                     $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$room['product_type']}'");
                                     $vin_result = $vin_qry->fetch_assoc();
 
-                                    $iteration = 1 + $room['iteration'];
-
                                     $ship_days_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'days_to_ship' AND `key` = '{$room['days_to_ship']}'");
                                     $ship_days = $ship_days_qry->fetch_assoc();
 
-                                    $room_name = "{$room['room']}-{$vin_result['value']}$iteration-{$room['order_status']}{$ship_days['value']}: {$room['room_name']}";
+                                    $room_name = "{$room['room']}-{$vin_result['value']}{$room['iteration']}-{$room['order_status']}{$ship_days['value']}: {$room['room_name']}";
 
                                     $salesPriority = determinePriority($room['sales_bracket_priority']);
                                     $preprodPriority = determinePriority($room['preproduction_bracket_priority']);
@@ -416,9 +414,11 @@ switch ($search) {
                                     $shipping_published = checkPublished('shipping');
                                     $install_published = checkPublished('install_bracket');
 
+                                    $tab = ($room['iteration'] > 1.01) ? "<div class='pull-left' style='width:15px;'>&nbsp</div>" : null;
+
                                     echo "<tr class='cursor-hand' id='show_single_room_{$room['id']}'>";
                                     echo "  <td style='width: 26px;'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td>";
-                                    echo "  <td>$room_name</td>";
+                                    echo "  <td>{$tab}{$room_name}</td>";
                                     echo "  <td class='$salesPriority'>$salesBracketName $sales_published</td>";
                                     echo "  <td class='$samplePriority'>$sampleBracketName $sample_published</td>";
                                     echo "  <td class='$preprodPriority'>$preprodBracketName $preprod_published</td>";

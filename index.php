@@ -1,8 +1,6 @@
 <?php
 require 'includes/header_start.php';
 require 'includes/header_end.php';
-
-/** TODO: Implement search results based on search */
 ?>
 
 <!-- tablesaw-->
