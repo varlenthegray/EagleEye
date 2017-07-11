@@ -81,7 +81,7 @@ HEREDOC;
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
                 if(substr($op_queue['op_id'], -2) !== '98') {
-                    $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']} ({$op_queue['op_queueID']})";
+                    $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
                     $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['bracket']} <span class='tooltiptext'>{$op_queue['responsible_dept']} Team</span></div>";
                     $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
                     $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['created']);
