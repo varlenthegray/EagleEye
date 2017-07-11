@@ -143,7 +143,8 @@ require '../includes/header_end.php';
 
     var completed_table = $("#recently_completed_jobs_global_table").DataTable({
         "ajax": "/ondemand/shopfloor/workcenter.php?action=display_recently_completed",
-        "pageLength": 25
+        "pageLength": 25,
+        "order": [[3, "desc"]]
     });
 
     setInterval(function() {

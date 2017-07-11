@@ -102,7 +102,7 @@ HEREDOC;
 
         break;
     case 'display_recently_completed':
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active = FALSE AND completed = TRUE;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active = FALSE AND completed = TRUE ORDER BY op_queue.end_time DESC;");
 
         $output = array();
         $i = 0;
@@ -115,7 +115,8 @@ HEREDOC;
 
                 $time = Carbon::createFromTimestamp($op_queue['end_time']); // grab the carbon timestamp
 
-                $output['data'][$i][] = $time->diffForHumans(); // obtain the difference in readable format for humans!
+                //$output['data'][$i][] = $time->diffForHumans(); // obtain the difference in readable format for humans!
+                $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['end_time']); // meh, readable format breaks the completed date
 
                 $i += 1;
             }
