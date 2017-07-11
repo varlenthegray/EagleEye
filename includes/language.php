@@ -3,7 +3,7 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define("RELEASE_DATE", "7/10/17");
+define("RELEASE_DATE", "7/11/17");
 
 
 // Global definitions

@@ -1000,7 +1000,7 @@ switch ($search) {
                                                                     <td><label for="iteration">Iteration</label></td>
                                                                     <td>
                                                                         <div class="input-group">
-                                                                            <input type="text" class="form-control" id="edit_iteration_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration'] + 0.01; ?>" readonly>
+                                                                            <input type="text" class="form-control" id="edit_iteration_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration'] + 1.01; ?>" readonly>
                                                                             <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
                                                                         </div>
                                                                     </td>
@@ -1271,7 +1271,7 @@ switch ($search) {
                                                     </tr>
                                                     <tr>
                                                         <td><label for="iteration">Iteration</label></td>
-                                                        <td><input type="text" class="form-control" name="iteration" placeholder="Iteration" value="0.01" readonly></td>
+                                                        <td><input type="text" class="form-control" name="iteration" placeholder="Iteration" value="1.01" readonly></td>
                                                     </tr>
                                                     <tr>
                                                         <td><label for="order_status">Order Status</label></td>
