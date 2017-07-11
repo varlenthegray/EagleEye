@@ -81,7 +81,7 @@ HEREDOC;
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
                 if(substr($op_queue['op_id'], -2) !== '98') {
-                    $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
+                    $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']} ({$op_queue['op_queueID']})";
                     $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['bracket']} <span class='tooltiptext'>{$op_queue['responsible_dept']} Team</span></div>";
                     $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
                     $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['created']);
@@ -102,7 +102,7 @@ HEREDOC;
 
         break;
     case 'display_recently_completed':
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id JOIN sales_order ON op_queue.so_parent = sales_order.so_num WHERE active = FALSE AND completed = TRUE AND published = TRUE ORDER BY end_time DESC;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active = FALSE AND completed = TRUE;");
 
         $output = array();
         $i = 0;
