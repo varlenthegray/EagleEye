@@ -16,6 +16,7 @@ require '../includes/header_end.php';
                     <thead>
                         <tr>
                             <th>SO#</th>
+                            <th>Room Name</th>
                             <th>Bracket</th>
                             <th>Operation</th>
                             <th>Release Date</th>
@@ -35,11 +36,12 @@ require '../includes/header_end.php';
                 <table id="active_jobs_global_table" class="table table-striped table-bordered" width="100%">
                     <thead>
                         <tr>
-                            <th style="width: 15%;">SO#</th>
-                            <th style="width: 20%;">Bracket</th>
-                            <th style="width: 30%;">Operation</th>
-                            <th style="width: 20%;">Individual</th>
-                            <th style="width: 15%;">Started/Resumed</th>
+                            <th>SO#</th>
+                            <th>Room Name</th>
+                            <th>Bracket</th>
+                            <th>Operation</th>
+                            <th>Individual</th>
+                            <th>Started/Resumed</th>
                         </tr>
                     </thead>
                     <tbody id="active_jobs_table"></tbody>
@@ -57,6 +59,7 @@ require '../includes/header_end.php';
                     <thead>
                         <tr>
                             <th>SO#</th>
+                            <th>Room Name</th>
                             <th>Bracket</th>
                             <th>Operation</th>
                             <th>Completed</th>
@@ -87,12 +90,6 @@ require '../includes/header_end.php';
             var id = $(this).attr("id");
 
             window.location.replace("/shopfloor/job_management.php?lookup=" + id);
-
-            /*$.post("/ondemand/shopfloor/workcenter.php?action=view_job_in_queue", {id: id}, function(data) {
-                $("#viewJobInfo").html(data).modal('show');
-            }).fail(function() {
-                $("body").append(data);
-            });*/
         })
         .on("click", "#wc-jiq-update", function() {
             if(!$("#published").is(":checked")) {

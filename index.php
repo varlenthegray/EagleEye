@@ -55,6 +55,7 @@ require 'includes/header_end.php';
                                         <thead>
                                         <tr>
                                             <th>SO#</th>
+                                            <th>Room Name</th>
                                             <th>Bracket</th>
                                             <th>Operation</th>
                                             <th>Release Date</th>
@@ -74,11 +75,12 @@ require 'includes/header_end.php';
                                     <table id="active_jobs_global_table" class="table table-striped table-bordered" width="100%">
                                         <thead>
                                         <tr>
-                                            <th style="width: 15%;">SO#</th>
-                                            <th style="width: 20%;">Bracket</th>
-                                            <th style="width: 30%;">Operation</th>
-                                            <th style="width: 20%;">Individual</th>
-                                            <th style="width: 15%;">Started/Resumed</th>
+                                            <th>SO#</th>
+                                            <th>Room Name</th>
+                                            <th>Bracket</th>
+                                            <th>Operation</th>
+                                            <th>Individual</th>
+                                            <th>Started/Resumed</th>
                                         </tr>
                                         </thead>
                                         <tbody id="active_jobs_table"></tbody>
@@ -96,6 +98,7 @@ require 'includes/header_end.php';
                                         <thead>
                                         <tr>
                                             <th>SO#</th>
+                                            <th>Room Name</th>
                                             <th>Bracket</th>
                                             <th>Operation</th>
                                             <th>Completed</th>
@@ -570,17 +573,20 @@ require 'includes/header_end.php';
         "pageLength": 25,
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand wc-edit-queue");
-        }
+        },
+        "paging": false
     });
 
     var active_table = $("#active_jobs_global_table").DataTable({
         "ajax": "/ondemand/shopfloor/workcenter.php?action=display_active_jobs",
-        "pageLength": 25
+        "pageLength": 25,
+        "paging": false
     });
 
     var completed_table = $("#recently_completed_jobs_global_table").DataTable({
         "ajax": "/ondemand/shopfloor/workcenter.php?action=display_recently_completed",
-        "pageLength": 25
+        "pageLength": 50,
+        "order": [[4, "desc"]]
     });
 
     setInterval(function() {

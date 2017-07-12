@@ -2,6 +2,8 @@
 require ("../../includes/header_start.php");
 require("../../assets/php/composer/vendor/autoload.php"); // require carbon for date formatting, http://carbon.nesbot.com/
 
+outputPHPErrs();
+
 use Carbon\Carbon; // prep carbon
 
 $action = $_REQUEST['action'];
@@ -73,7 +75,7 @@ HEREDOC;
 
         break;
     case 'display_jiq':
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id JOIN sales_order ON op_queue.so_parent = sales_order.so_num WHERE active = FALSE AND completed = FALSE AND published = TRUE;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.so_parent AS op_queueSOParent, op_queue.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id JOIN sales_order ON op_queue.so_parent = sales_order.so_num WHERE active = FALSE AND completed = FALSE AND published = TRUE ORDER BY op_queue.so_parent DESC, operations.op_id DESC;");
 
         $output = array();
         $i = 0;
@@ -81,7 +83,11 @@ HEREDOC;
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
                 if(substr($op_queue['op_id'], -2) !== '98') {
-                    $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
+                    $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$op_queue['product_type']}'");
+                    $vin_schema = $vin_schema_qry->fetch_assoc();
+
+                    $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$vin_schema['value']}{$op_queue['iteration']}";
+                    $output['data'][$i][] = $op_queue['room_name'];
                     $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['bracket']} <span class='tooltiptext'>{$op_queue['responsible_dept']} Team</span></div>";
                     $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
                     $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['created']);
@@ -93,6 +99,7 @@ HEREDOC;
         } else {
             $output['data'][$i][] = '---';
             $output['data'][$i][] = '---';
+            $output['data'][$i][] = '---';
             $output['data'][$i][] = '--- None Queued ---';
             $output['data'][$i][] = '---';
             $output['data'][$i][] = '---';
@@ -102,18 +109,22 @@ HEREDOC;
 
         break;
     case 'display_recently_completed':
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active = FALSE AND completed = TRUE ORDER BY op_queue.end_time DESC;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.so_parent AS op_queueSOParent, op_queue.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active = FALSE AND completed = TRUE ORDER BY op_queue.end_time,  op_queue.so_parent DESC, operations.op_id DESC;");
 
         $output = array();
         $i = 0;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
+                $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$op_queue['product_type']}'");
+                $vin_schema = $vin_schema_qry->fetch_assoc();
+
+                $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$vin_schema['value']}{$op_queue['iteration']}";
+                $output['data'][$i][] = $op_queue['room_name'];
                 $output['data'][$i][] = $op_queue['bracket'];
                 $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
 
-                $time = Carbon::createFromTimestamp($op_queue['end_time']); // grab the carbon timestamp
+                //$time = Carbon::createFromTimestamp($op_queue['end_time']); // grab the carbon timestamp
 
                 //$output['data'][$i][] = $time->diffForHumans(); // obtain the difference in readable format for humans!
                 $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['end_time']); // meh, readable format breaks the completed date
@@ -121,6 +132,7 @@ HEREDOC;
                 $i += 1;
             }
         } else {
+            $output['data'][$i][] = '---';
             $output['data'][$i][] = '---';
             $output['data'][$i][] = '---';
             $output['data'][$i][] = '--- Nothing to Show! ---';
@@ -131,14 +143,24 @@ HEREDOC;
 
         break;
     case 'display_active_jobs':
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id LEFT JOIN sales_order ON op_queue.so_parent = sales_order.so_num WHERE active = TRUE AND published = TRUE AND (completed = FALSE OR completed IS NULL);");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.so_parent AS op_queueSOParent, op_queue.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id LEFT JOIN sales_order ON op_queue.so_parent = sales_order.so_num WHERE active = TRUE AND published = TRUE AND (completed = FALSE OR completed IS NULL) ORDER BY op_queue.so_parent DESC, operations.op_id DESC;");
 
         $output = array();
         $i = 0;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
+                $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$op_queue['product_type']}'");
+                $vin_schema = $vin_schema_qry->fetch_assoc();
+
+                if((bool)$op_queue['otf_created']) {
+                    $tag = 'OTF';
+                } else {
+                    $tag = "{$vin_schema['value']}{$op_queue['iteration']}";
+                }
+
+                $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-$tag";
+                $output['data'][$i][] = $op_queue['room_name'];
                 $output['data'][$i][] = $op_queue['bracket'];
 
                 if(!empty($op_queue['subtask'])) {
@@ -174,6 +196,7 @@ HEREDOC;
                 $i += 1;
             }
         } else {
+            $output['data'][$i][] = '---';
             $output['data'][$i][] = '---';
             $output['data'][$i][] = '---';
             $output['data'][$i][] = '--- None Active ---';
