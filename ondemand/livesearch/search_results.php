@@ -704,7 +704,7 @@ switch ($search) {
 
                                         <div class="col-md-12">
                                             <div class="row">
-                                                <div class="col-md-6 col-md-offset-2">
+                                                <div class="col-md-7 col-md-offset-1">
                                                     <form id="form_bracket_<?php echo $room['id']; ?>">
                                                         <table width="100%" class="bracket-adjustment-table">
                                                             <tr>

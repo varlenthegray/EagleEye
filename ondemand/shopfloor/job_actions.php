@@ -546,13 +546,13 @@ HEREDOC;
         $output = array();
         $i = 0;
 
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.* 
-              FROM op_queue JOIN operations ON op_queue.operation_id = operations.id 
-              WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue' AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) ORDER BY so_parent, room ASC;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.*, rooms.* FROM op_queue
+              JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id
+               WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
+                AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) ORDER BY op_queue.so_parent, op_queue.room ASC;");
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $id = $op_queue['queueID'];
                 $sonum = $op_queue['so_parent'] . "-" . $op_queue['room'];
                 $department = $op_queue['responsible_dept'];
                 $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
@@ -560,14 +560,16 @@ HEREDOC;
                 $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
                 $op_info_payload = json_encode($op_info);
 
-                $output['data'][$i][] = $op_queue['so_parent'];
-                $output['data'][$i][] = "{$op_queue['room']}-{$op_queue['iteration']}";
+                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$op_queue['product_type']}'");
+                $vin = $vin_qry->fetch_assoc();
+
+                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$vin['value']}{$op_queue['iteration']}";
                 $output['data'][$i][] = $department;
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = $release_date;
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i]['DT_RowId'] = $id;
+                $output['data'][$i]['DT_RowId'] = $op_queue['queueID'];
 
                 $i += 1;
             }
@@ -585,7 +587,6 @@ HEREDOC;
                 $op_info_payload = json_encode($op_info);
 
                 $output['data'][$i][] = "---------";
-                $output['data'][$i][] = "---";
                 $output['data'][$i][] = $department;
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = "Now";

@@ -77,7 +77,7 @@ use Carbon\Carbon; // prep carbon
                                         $time_in_display = "Never logged in";
                                     }
 
-                                    $ops_qry = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active_employees LIKE '%\"{$result['id']}\"%'");
+                                    $ops_qry = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active_employees LIKE '%\"{$result['id']}\"%' AND active = TRUE");
 
                                     $final_ops = '';
 

@@ -129,7 +129,6 @@ switch($_SERVER['SCRIPT_NAME']) {
     </div>
     <!-- end topbar-main -->
 
-
     <div class="navbar-custom">
         <div class="container">
             <div id="navigation">
@@ -138,59 +137,38 @@ switch($_SERVER['SCRIPT_NAME']) {
                     <?php
                         if($_SESSION['userInfo']['account_type'] === '6') {
                     ?>
-                        <li>
-                            <a href="/shopfloor/index.php"><i class="zmdi zmdi-assignment"></i>
-                                <span><?php echo NAV_INDIVIDUAL; ?></span></a>
-                        </li>
-                        <li>
-                            <a href="/ondemand/shopfloor/login_actions.php?action=logout"
-                               id="shop_logout_link"><i class="zmdi zmdi-time-restore-setting"></i>
-                                <span><?php echo NAV_SHOP_LOGOUT; ?></span></a></li>
+                        <li><a href="/shopfloor/index.php"><i class="zmdi zmdi-assignment"></i><span><?php echo NAV_INDIVIDUAL; ?></span></a></li>
+                        <li><a href="/ondemand/shopfloor/login_actions.php?action=logout" id="shop_logout_link"><i class="zmdi zmdi-time-restore-setting"></i><span><?php echo NAV_SHOP_LOGOUT; ?></span></a></li>
                     <?php
                         } else {
                     ?>
+                    <li id="nav_dashboard"><a><i class="zmdi zmdi-view-dashboard m-r-5"></i><span><?php echo NAV_DASHBOARD; ?></span></a></li>
+                    <li id="nav_workcenter"><a><i class="zmdi zmdi-assignment m-r-5"></i><span><?php echo NAV_WORKCENTER; ?></span></a></li>
+                    <li id="nav_timecard"><a><i class="zmdi zmdi-time m-r-5"></i><span><?php echo NAV_ACCOUNTING_TIMECARDS; ?></span></a></li>
+                    <li id="nav_job-management"><a><i class="zmdi zmdi-case-download m-r-5"></i><span><?php echo NAV_JOBMANAGEMENT; ?></span></a></li>
+                    <?php
+                        if((int)$_SESSION['userInfo']['account_type'] <= 1) {
+                    ?>
+                    <li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>
+                    <li class="has-submenu">
+                        <a><i class="zmdi zmdi-accounts-list-alt"></i>Admin</a>
+                        <ul class="submenu">
+                            <li id="nav_kpi"><a><i class="zmdi zmdi-time-interval m-r-5"></i><?php echo NAV_KPI; ?></a></li>
+                            <li id="nav_pbp"><a><i class="zmdi zmdi-trending-up m-r-5"></i><?php echo NAV_PBP; ?></a></li>
+                            <li id="nav_reports"><a><i class="zmdi zmdi-assignment m-r-5"></i><?php echo NAV_REPORTS; ?></a></li>
+                            <li id="nav_adduser"><a><i class="zmdi zmdi-accounts-add m-r-5"></i><?php echo NAV_ADDUSER; ?></a></li>
+                        </ul>
+                    </li>
 
-                    <li>
-                        <a href="/index.php"><i class="zmdi zmdi-view-dashboard"></i>
-                            <span> <?php echo NAV_DASHBOARD; ?> </span> </a>
-                    </li>
-                    <li>
-                        <a href="/pricing/index.php"><i class="zmdi zmdi-store"></i>
-                            <span> <?php echo NAV_PRICINGPROGRAM; ?> </span> </a>
-                    </li>
                     <li class="has-submenu">
-                        <a href="#"><i class="zmdi zmdi-assignment"></i> <?php echo NAV_SHOPFLOOR; ?> </a>
+                        <a><i class="zmdi zmdi zmdi-code-setting"></i>WIP</a>
                         <ul class="submenu">
-                            <li><a href="/shopfloor/index.php"><?php echo NAV_INDIVIDUAL; ?></a></li>
-                            <li><a href="/shopfloor/workcenter.php"><?php echo NAV_WORKCENTER; ?></a></li>
-                            <li><a href="/shopfloor/job_management.php">Job Management</a></li>
-                            <li><a href="/ondemand/shopfloor/login_actions.php?action=logout" id="shop_logout_link"><?php echo NAV_SHOP_LOGOUT; ?></a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#"><i class="zmdi zmdi-dropbox"></i> <?php echo NAV_INVENTORY; ?> </a>
-                    </li>
-                    <li class="has-submenu">
-                        <a href="#"><i class="zmdi zmdi-money-box"></i> <?php echo NAV_ACCOUNTING; ?> </a>
-                        <ul class="submenu">
-                            <li><a href="/accounting/index.php"><?php echo NAV_ACCOUNTING_TIMECARDS; ?></a></li>
-                        </ul>
-                    </li>
-                    <li class="has-submenu">
-                        <a href="#"><i class="zmdi zmdi-accounts-list-alt"></i> <?php echo NAV_ADMIN; ?> </a>
-                        <ul class="submenu">
-                            <li><a href="#"><?php echo NAV_KPI; ?></a></li>
-                            <li><a href="#"><?php echo NAV_PBP; ?></a></li>
-                            <li><a href="#"><?php echo NAV_REPORTS; ?></a></li>
-                        </ul>
-                    </li>
-                    <li class="has-submenu">
-                        <a href="#"><i class="zmdi zmdi-globe-lock"></i> <?php echo NAV_CPANEL; ?> </a>
-                        <ul class="submenu">
-                            <li><a href="/cp/add_user.php"><?php echo NAV_ADDUSER; ?></a></li>
+                            <li id="nav_inventory"><a><i class="zmdi zmdi-dropbox m-r-5"></i><?php echo NAV_INVENTORY; ?></a></li>
+                            <li id="nav_pricing"><a><i class="zmdi zmdi-store m-r-5"></i><?php echo NAV_PRICINGPROGRAM; ?></a></li>
                         </ul>
                     </li>
                     <?php
+                            }
                         }
                     ?>
                 </ul>
@@ -198,6 +176,8 @@ switch($_SERVER['SCRIPT_NAME']) {
             </div>
         </div>
     </div>
+
+    <div class="js_loading" style="display: none;"><i class='fa fa-3x fa-spin fa-spinner'></i></div>
 </header>
 <!-- End Navigation Bar-->
 

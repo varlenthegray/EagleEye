@@ -72,9 +72,8 @@ if(!empty($_GET['action']))
                         <table id="jiq_individual_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
-                                <th width="5%">SO#</th>
-                                <th width="5%">Room</th>
-                                <th width="20%">Department</th>
+                                <th width="8%">SO#</th>
+                                <th width="17%">Department</th>
                                 <th width="31%">Operation</th>
                                 <th width="13%">Release Date</th>
                                 <th width="13%">Delivery Date</th>

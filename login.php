@@ -14,12 +14,18 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
         if(password_verify($_REQUEST['password'],$result['password'])) { // seems the password is valid too
             $_SESSION['valid'] = true; // set the session as valid
             $_SESSION['userInfo'] = $result;
-            ?>
-            <script type="text/javascript">
-                displayToast("success", "We have logged you in, please wait one moment while your dashboard loads...", "Successful Login", true);
 
-                setTimeout(function() {window.location.replace("index.php")}, 700); // give them a slight delay to see the success message
-            </script>
+            if($result['id'] !== '16') {
+                $_SESSION['shop_user'] = $result;
+                $_SESSION['shop_active'] = true;
+
+                echo "<script type='text/javascript'>window.location.replace('index.php?login=true');</script>";
+            } else {
+                echo "<script type='text/javascript'>window.location.replace('shopfloor/login.php');</script>";
+            }
+
+            ?>
+
             <?php
         } else {
             ?>

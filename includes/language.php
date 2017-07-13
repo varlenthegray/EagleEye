@@ -3,7 +3,7 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define("RELEASE_DATE", "7/12/17");
+define("RELEASE_DATE", "7/13/17");
 
 
 // Global definitions
@@ -50,3 +50,5 @@ define("NAV_REPORTS", "Reports"); // Navigation menu Reports
 // Navigation > CPanel
 define("NAV_CPANEL", "CPanel"); // Control panel section
 define("NAV_ADDUSER", "Add User"); // Control Panel -> Add User
+
+define("NAV_JOBMANAGEMENT", "Job Management"); // Job Management page
