@@ -353,4 +353,10 @@ $("body")
         $.post("/ondemand/shopfloor/gen_actions.php?action=add_iteration&" + iteration_info, function(data) {
             $('body').append(data);
         });
+    })
+    .on("keyup keypress", "#global_search", function(e) {
+        if(e.keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
     });
