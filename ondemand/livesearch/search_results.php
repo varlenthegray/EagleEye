@@ -273,7 +273,7 @@ switch ($search) {
     case "general":
         $qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num LIKE 
             '%$find%' OR project LIKE '%$find%' OR contractor_dealer_code LIKE '%$find%'
-            OR project_mgr LIKE '%$find%' ORDER BY so_num DESC LIMIT 0,25");
+            OR project_mgr LIKE '%$find%' ORDER BY so_num DESC");
 
         if($qry->num_rows > 0) {
             while($result = $qry->fetch_assoc()) {

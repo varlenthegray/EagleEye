@@ -175,7 +175,7 @@ if(!empty($_GET['action']))
     $("body")
         .on("click", ".display-queued-job-info", function() {
             queueID = $(this).attr("id");
-            operation = $(this).find('td:nth-child(4)').text();
+            operation = $(this).find('td:nth-child(3)').text();
 
             $.post("/ondemand/shopfloor/job_actions.php?action=get_op_info", {opID: queueID, op: operation}, function(data) {
                 $("#modalStartJob").html(data);
