@@ -347,3 +347,21 @@ table tbody td {
     background-color: rgba(0,0,0,.2);
   }
 }
+
+// search bar location change
+.app-search {
+  .form-control {
+    margin-top: 4px;
+    color: rgba(170,170,170,.8);
+
+    &:focus {
+      margin-top: 4px;
+      color: rgba(170,170,170,.8);
+    }
+  }
+
+  a {
+    color: rgba(19,40,130,.5);
+    top: 4px;
+  }
+}

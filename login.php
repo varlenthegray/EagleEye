@@ -19,7 +19,10 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
                 $_SESSION['shop_user'] = $result;
                 $_SESSION['shop_active'] = true;
 
-                echo "<script type='text/javascript'>window.location.replace('index.php?login=true');</script>";
+                $dbconn->query("UPDATE user SET last_login = UNIX_TIMESTAMP() WHERE id = {$result['id']}");
+                $_SESSION['userInfo']['justLoggedIn'] = true;
+
+                echo "<script type='text/javascript'>window.location.replace('index.php');</script>";
             } else {
                 echo "<script type='text/javascript'>window.location.replace('shopfloor/login.php');</script>";
             }

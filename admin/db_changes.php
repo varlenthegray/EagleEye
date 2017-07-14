@@ -7,8 +7,7 @@ if($admin_flag_qry->num_rows > 0) {
     $admin_flag = $admin_flag_qry->fetch_assoc();
 
     if(!(bool)$admin_flag['value']) {
-        echo ($dbconn->query("UPDATE rooms SET iteration = iteration + 1;")) ? "Successful with updating iteration to +1.<br />" : "<b>Error</b> with updating iteration to +1.<br />";
-        echo ($dbconn->query("ALTER TABLE op_queue ADD assigned_time DOUBLE NULL;")) ? "Successful with altering op_queue adding assigned_time setting default to 72 (hours).<br />" : "<b>Error</b> with altering op_queue adding assigned_time setting default to 72 (hours).<br />";
+        echo ($dbconn->query("ALTER TABLE user MODIFY last_login VARCHAR(20);UPDATE user SET last_login = NULL;ALTER TABLE user MODIFY last_login INT(15);")) ? "Successful with modifying the last login to INT instead of DATE.<br />" : "<b>Error</b> with modifying the last login to INT instead of DATE.<br />";
 
         echo "<h1>Database prepared.</h1>";
 

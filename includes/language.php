@@ -3,7 +3,7 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define("RELEASE_DATE", "7/13/17");
+define("RELEASE_DATE", "7/14/17");
 
 
 // Global definitions
@@ -39,7 +39,7 @@ define("NAV_INVENTORY", "Inventory"); // Navigation menu Inventory
 define("NAV_ACCOUNTING", "Accounting"); // Navigation menu Accounting
 
 /// Navigation > Accounting
-define("NAV_ACCOUNTING_TIMECARDS", "Timecard Report");
+define("NAV_ACCOUNTING_TIMECARDS", "Timecards");
 
 // Admin bar definitions
 define("NAV_ADMIN", "Admin"); // Navigation menu Admin

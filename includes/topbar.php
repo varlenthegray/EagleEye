@@ -14,7 +14,6 @@ switch($_SERVER['SCRIPT_NAME']) {
 <header id="topnav">
     <div class="topbar-main hidden-print">
         <div class="container">
-
             <!-- LOGO -->
             <div class="topbar-left">
                 <a href="/index.php" class="logo">
@@ -36,12 +35,6 @@ switch($_SERVER['SCRIPT_NAME']) {
                             </div>
                         </a>
                         <!-- End mobile menu toggle-->
-                    </li>
-
-                    <li class="nav-item hidden-sm-down">
-                        <form role="search" class="navbar-left app-search pull-left hidden-xs" _lpchecked="1">
-                            <input type="text" placeholder="Search..." class="form-control" id="global_search" name="global_search"><a href=""><i class="fa fa-search"></i></a>
-                        </form>
                     </li>
 
                     <li class="nav-item notification-list">
@@ -144,8 +137,8 @@ switch($_SERVER['SCRIPT_NAME']) {
                     ?>
                     <li id="nav_dashboard"><a><i class="zmdi zmdi-view-dashboard m-r-5"></i><span><?php echo NAV_DASHBOARD; ?></span></a></li>
                     <li id="nav_workcenter"><a><i class="zmdi zmdi-assignment m-r-5"></i><span><?php echo NAV_WORKCENTER; ?></span></a></li>
-                    <li id="nav_timecard"><a><i class="zmdi zmdi-time m-r-5"></i><span><?php echo NAV_ACCOUNTING_TIMECARDS; ?></span></a></li>
                     <li id="nav_job-management"><a><i class="zmdi zmdi-case-download m-r-5"></i><span><?php echo NAV_JOBMANAGEMENT; ?></span></a></li>
+                    <li id="nav_timecard"><a><i class="zmdi zmdi-time m-r-5"></i><span><?php echo NAV_ACCOUNTING_TIMECARDS; ?></span></a></li>
                     <?php
                         if((int)$_SESSION['userInfo']['account_type'] <= 1) {
                     ?>
@@ -173,6 +166,10 @@ switch($_SERVER['SCRIPT_NAME']) {
                     ?>
                 </ul>
                 <!-- End navigation menu  -->
+
+                <form role="search" style="float: right;" class="navbar-left app-search pull-left hidden-xs" _lpchecked="1">
+                    <input type="text" placeholder="Search..." class="form-control" id="global_search" name="global_search"><a href=""><i class="fa fa-search"></i></a>
+                </form>
             </div>
         </div>
     </div>
