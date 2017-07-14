@@ -52,3 +52,4 @@ define("NAV_CPANEL", "CPanel"); // Control panel section
 define("NAV_ADDUSER", "Add User"); // Control Panel -> Add User
 
 define("NAV_JOBMANAGEMENT", "Job Management"); // Job Management page
+define("NAV_EMPLOYEELOGIN", "Employees"); // List of employees and ability to impersonate

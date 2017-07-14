@@ -88,6 +88,12 @@ require 'includes/header_end.php';
                 $(".js_loading").hide();
             });
         })
+        .on("click", "#nav_employees", function() {
+            $(".js_loading").show();
+            $("#main_body").load("/html/employees.php", function() {
+                $(".js_loading").hide();
+            });
+        })
     ;
 </script>
 
