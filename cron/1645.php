@@ -6,27 +6,29 @@ set_include_path("/home/trustedprogrammer/domains/smc.trustedprogrammer.com/publ
 
 require ("config.php");
 
+// select all auto-clockout users
 $user_qry = $dbconn->query("SELECT * FROM user WHERE auto_clock = TRUE");
 
+// if there is more than 1
 if($user_qry->num_rows > 0) {
     while($user = $user_qry->fetch_assoc()) {
-        // Execute auto-logoff in the system
+        // Execute auto-logoff in the system for timecard specifically
         $timecards = $dbconn->query("SELECT * FROM timecards WHERE time_out IS NULL AND employee = '{$user['id']}'");
-        $time_out = mktime(16, 45, 0);
+
+        // create the time of 4:45PM, running as root so it needs to be based on UTC
+        $time_out = mktime(20, 45, 0);
 
         if($timecards->num_rows > 0) {
             while($card = $timecards->fetch_assoc()) {
-                if($card['time_out'] === null) {
-                    $dbconn->query("UPDATE timecards SET time_out = $time_out WHERE id = '{$card['id']}'");
+                $dbconn->query("UPDATE timecards SET time_out = $time_out WHERE id = '{$card['id']}'");
 
-                    $desc = json_encode(["Update"=>"Timecards","Time Out"=>$time_out,"ID"=>$card['id']]);
+                $desc = json_encode(["Update"=>"Timecards","Time Out"=>$time_out,"ID"=>$card['id']]);
 
-                    $dbconn->query("INSERT INTO log_cron (`desc`, time) VALUES ('$desc', UNIX_TIMESTAMP())");
-                }
+                $dbconn->query("INSERT INTO log_cron (`desc`, time) VALUES ('$desc', UNIX_TIMESTAMP())");
             }
         }
 
-        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE active = TRUE AND start_time IS NOT NULL AND active_employees LIKE '%\"{$user['id']}\"%'");
+        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE active = TRUE AND active_employees LIKE '%\"{$user['id']}\"%'");
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
