@@ -53,6 +53,16 @@ require 'includes/header_end.php';
 <!-- End global Search loading, required for global search to work -->
 
 <script>
+    var indv_dt_interval;
+    var indv_auto_interval;
+    var wc_auto_interval;
+
+    function clearIntervals() {
+        clearInterval(indv_dt_interval);
+        clearInterval(indv_auto_interval);
+        clearInterval(wc_auto_interval);
+    }
+
     $("#main_body").load("/html/individual_op.php", function() {
         $(".js_loading").hide();
     });
@@ -65,32 +75,50 @@ require 'includes/header_end.php';
             });
         })
         .on("click", "#nav_pricing", function() {
+            clearIntervals();
+
             $(".js_loading").show();
             $("#main_body").load("/html/pricing.php", function() {
                 $(".js_loading").hide();
             });
         })
         .on("click", "#nav_workcenter", function() {
+            clearIntervals();
+
             $(".js_loading").show();
             $("#main_body").load("/html/workcenter.php", function() {
                 $(".js_loading").hide();
             });
         })
         .on("click", "#nav_timecard", function() {
+            clearIntervals();
+
             $(".js_loading").show();
             $("#main_body").load("/html/timecard.php", function() {
                 $(".js_loading").hide();
             });
         })
         .on("click", "#nav_job-management", function() {
+            clearIntervals();
+
             $(".js_loading").show();
             $("#main_body").load("/html/job_management.php", function() {
                 $(".js_loading").hide();
             });
         })
         .on("click", "#nav_employees", function() {
+            clearIntervals();
+
             $(".js_loading").show();
             $("#main_body").load("/html/employees.php", function() {
+                $(".js_loading").hide();
+            });
+        })
+        .on("click", "#nav_tasks", function() {
+            clearIntervals();
+
+            $(".js_loading").show();
+            $("#main_body").load("/html/tasks.php", function() {
                 $(".js_loading").hide();
             });
         })

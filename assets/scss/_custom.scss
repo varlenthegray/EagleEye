@@ -365,3 +365,8 @@ table tbody td {
     top: 4px;
   }
 }
+
+// destroy the tiny MCE annoying domain settings popup because we cannot add sub-domain...
+#mceu_22 {
+  display: none;
+}

@@ -15,8 +15,14 @@ if($user_qry->num_rows > 0) {
         // Execute auto-logoff in the system for timecard specifically
         $timecards = $dbconn->query("SELECT * FROM timecards WHERE time_out IS NULL AND employee = '{$user['id']}'");
 
-        // create the time of 4:45PM, running as root so it needs to be based on UTC
-        $time_out = mktime(20, 45, 0);
+        if(date("D") !== 'Fri') {
+            // create the time of 4:45PM, running as root so it needs to be based on UTC
+            $time_out = mktime(20, 45, 0);
+        } else {
+            // create the time of 12:45PM, running as root so it needs to be based on UTC
+            $time_out = mktime(16, 45, 0);
+        }
+
 
         if($timecards->num_rows > 0) {
             while($card = $timecards->fetch_assoc()) {

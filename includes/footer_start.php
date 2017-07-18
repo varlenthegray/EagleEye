@@ -1,4 +1,27 @@
+<?php
+require_once ("header_start.php");
+?>
+
 <!--<script src="https://chatwee-api.com/v2/script/595faf5abd616ddd3a8b456f.js"></script>-->
+
+<div id="feedback-page" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="feedbackPageLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">Feedback</h4>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" id="feedback-text" style="width:100%;height:200px;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary waves-effect waves-light" id="feedback-submit">Submit</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 <!-- Footer -->
 <footer class="footer text-right">
@@ -9,8 +32,12 @@
             </div>
 
             <div class="col-xs-6 pull-right text-md-right">
-                <?php echo "RELEASE DATE " . RELEASE_DATE; ?>
             </div>
+            <button class="btn waves-effect waves-light btn-info pull-right" id="btn-feedback" data-toggle="modal" data-target="#feedback-page" style="margin:0 10px;"><i class="fa fa-lg fa-comment-o"></i></button> <span style="line-height:22px;"> <?php echo "RELEASE DATE " . RELEASE_DATE; ?></span>
+        </div>
+
+        <div class="global-feedback">
+
         </div>
     </div>
 </footer>
@@ -165,6 +192,25 @@
         // At last, if the user has denied notifications, and you
         // want to be respectful there is no need to bother them any more.
     }
+
+    $("body").on("click", "#feedback-submit", function() {
+        var description = tinyMCE.get('feedback-text').getContent();
+
+        $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: description}, function(data) {
+            $("body").append(data);
+            $("#feedback-page").modal('hide');
+        });
+    });
+
+    <?php
+        if(!empty($_SESSION['userInfo']['intro_code'])) {
+            echo "var intro = introJs();";
+            echo $_SESSION['userInfo']['intro_code'];
+            echo "intro.start();";
+
+            $dbconn->query("UPDATE user SET intro_code = NULL WHERE id = '{$_SESSION['userInfo']['id']}'");
+        }
+    ?>
 </script>
 
 <!-- jQuery  -->

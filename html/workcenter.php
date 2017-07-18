@@ -141,7 +141,7 @@ require '../includes/header_start.php';
         "order": [[3, "desc"]]
     });
 
-    setInterval(function() {
+    wc_auto_interval = setInterval(function() {
         jiq_table.ajax.reload(null,false);
         active_table.ajax.reload(null,false);
         completed_table.ajax.reload(null,false);

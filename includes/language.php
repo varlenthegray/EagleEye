@@ -3,8 +3,7 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define("RELEASE_DATE", "7/14/17");
-
+define("RELEASE_DATE", "7/18/17");
 
 // Global definitions
 define("LOGO_TEXT", "Stone Mountain Cabinetry"); // The logo text displayed
@@ -53,3 +52,4 @@ define("NAV_ADDUSER", "Add User"); // Control Panel -> Add User
 
 define("NAV_JOBMANAGEMENT", "Job Management"); // Job Management page
 define("NAV_EMPLOYEELOGIN", "Employees"); // List of employees and ability to impersonate
+define("NAV_TASKS", "Tasks"); // Task list
