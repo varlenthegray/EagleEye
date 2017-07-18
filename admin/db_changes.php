@@ -33,6 +33,8 @@ intro.setOptions({
 });
 HEREDOC;
 
+$intro_std = sanitizeInput($intro_std);
+$intro_shop = sanitizeInput($intro_shop);
 
 $admin_flag_qry = $dbconn->query("SELECT * FROM admin_flags WHERE flag = 'db_updated'");
 
@@ -40,9 +42,6 @@ if($admin_flag_qry->num_rows > 0) {
     $admin_flag = $admin_flag_qry->fetch_assoc();
 
     if(!(bool)$admin_flag['value']) {
-        echo ($dbconn->query("CREATE TABLE tasks (id INT PRIMARY KEY AUTO_INCREMENT,name VARCHAR(200),description TEXT,created INT(20),last_updated INT(20),priority VARCHAR(25) DEFAULT 'Low',assigned_to INT,due_date INT(20),submitted_by INT,resolved BOOLEAN,pct_completed DOUBLE DEFAULT 0.00,eta_hrs DOUBLE DEFAULT 1.0);")) ? "Successful with creating tasks table.<br />" : "<b>Error</b> with creating tasks table.<br />";
-        echo ($dbconn->query("CREATE TABLE log_tasks (id INT PRIMARY KEY AUTO_INCREMENT,task_id INT,notes TEXT,time_updated INT(20),new_eta DOUBLE,new_priority INT,new_pct_completed DOUBLE,new_due_date INT(20),new_asignee INT,now_resolved BOOLEAN);")) ? "Successful with creating tasks log.<br />" : "<b>Error</b> with creating tasks log.<br />";
-        echo ($dbconn->query("ALTER TABLE user ADD intro_code LONGTEXT NULL;")) ? "Successful with altering user adding intro_code.<br />" : "<b>Error</b> with altering user adding intro_code.<br />";
         echo ($dbconn->query("UPDATE user SET intro_code = '$intro_std' WHERE id <> 16;")) ? "Successful with updating intro_code for standard users.<br />" : "<b>Error</b> with updating intro_code for standard users.<br />";
         echo ($dbconn->query("UPDATE user SET intro_code = '$intro_shop' WHERE id = 16;")) ? "Successful with updating intro_code for shop user.<br />" : "<b>Error</b> with updating intro_code for shop user.<br />";
 
