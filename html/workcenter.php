@@ -126,7 +126,8 @@ require '../includes/header_start.php';
         "pageLength": 25,
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand wc-edit-queue");
-        }
+        },
+        "paging": false
     });
 
     var active_table = $("#active_jobs_global_table").DataTable({
