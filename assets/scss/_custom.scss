@@ -370,3 +370,9 @@ table tbody td {
 #mceu_22 {
   display: none;
 }
+
+// fix the "add so" in the top near the logo
+.nav-item > a {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: bold;
+}

@@ -57,12 +57,12 @@ require '../includes/header_start.php';
                         <table id="jiq_individual_table" class="table table-striped table-bordered">
                             <thead>
                             <tr>
-                                <th width="5%">SO#</th>
-                                <th width="20%">Department</th>
-                                <th width="31%">Operation</th>
-                                <th width="13%">Release Date</th>
-                                <th width="13%">Delivery Date</th>
-                                <th width="13%">Operation Time</th>
+                                <th width="50px">SO#</th>
+                                <th width="100px">Department</th>
+                                <th width="175px">Operation</th>
+                                <th width="63px">Release Date</th>
+                                <th width="63px">Delivery Date</th>
+                                <th width="63px">Operation Time</th>
                             </tr>
                             </thead>
                             <tbody id="job_queue_table">
@@ -105,14 +105,23 @@ require '../includes/header_start.php';
 
     var queue = $('#viewing_queue').val();
 
+    function updateActiveJobs() {
+        active_table.ajax.reload(null,false);
+    }
+
+    function updateQueuedJobs() {
+        queue = $('#viewing_queue').val();
+        jiq_table.ajax.url("/ondemand/shopfloor/job_actions.php?action=display_job_queue&queue=" + queue).load();
+    }
+
     $("#clock_out").on("click", function() {
         $.post("/ondemand/shopfloor/login_actions.php?action=clock_out", function(data) {
             if(data === 'success') {
                 displayToast("success", "Successfully clocked out.", "Clocked Out");
 
                 setTimeout(function() {
-                    window.location.href = "/shopfloor/login.php";
-                }, 500);
+                window.location.href = "/shopfloor/login.php";
+            }, 500);
             } else
                 $("body").append(data);
         });
@@ -315,8 +324,7 @@ require '../includes/header_start.php';
     // note: attempting to keep codebase available to standard "web" objects only, even if that means additional refreshes sent to the server/strain
     // yes, it's archaic, but it's totally viable and really not that bad, right? RIGHT?!
     indv_auto_interval = setInterval(function() {
-        active_table.ajax.reload(null,false);
-        queue = $('#viewing_queue').val();
-        jiq_table.ajax.url("/ondemand/shopfloor/job_actions.php?action=display_job_queue&queue=" + queue).load();
+        updateQueuedJobs();
+        updateActiveJobs();
     }, 5000);
 </script>

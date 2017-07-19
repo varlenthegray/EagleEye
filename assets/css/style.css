@@ -23314,6 +23314,10 @@ table tbody td {
 #mceu_22 {
   display: none; }
 
+.nav-item > a {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: bold; }
+
 .cust-table {
   display: table;
   width: 100%;

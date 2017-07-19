@@ -31,14 +31,12 @@ require_once ("header_start.php");
                 <?php echo date("Y"); ?> &copy; <?php echo FOOTER_TEXT; ?>
             </div>
 
-            <div class="col-xs-6 pull-right text-md-right">
-            </div>
-            <button class="btn waves-effect waves-light btn-info pull-right" id="btn-feedback" data-toggle="modal" data-target="#feedback-page" style="margin:0 10px;"><i class="fa fa-lg fa-comment-o"></i></button> <span style="line-height:22px;"> <?php echo "RELEASE DATE " . RELEASE_DATE; ?></span>
+            <div class="col-xs-6 pull-right text-md-right"></div>
+            <button class="btn waves-effect waves-light btn-info pull-right" id="btn-feedback" data-toggle="modal" data-target="#feedback-page" style="margin:0 10px;"><i class="fa fa-lg fa-comment-o"></i></button>
+            <span style="line-height:22px;" class="pull-right"> <?php echo "RELEASE DATE " . RELEASE_DATE; ?></span>
         </div>
 
-        <div class="global-feedback">
-
-        </div>
+        <div class="global-feedback"></div>
     </div>
 </footer>
 <!-- End Footer -->
@@ -203,12 +201,23 @@ require_once ("header_start.php");
     });
 
     <?php
-        if(!empty($_SESSION['userInfo']['intro_code'])) {
-            echo "var intro = introJs();";
-            echo $_SESSION['userInfo']['intro_code'];
-            echo "intro.start();";
+        if($_SESSION['userInfo']['id'] !== '16') {
+            $id = $_SESSION['userInfo']['id'];
+        } else {
+            $id = $_SESSION['shop_user']['id'];
+        }
 
-            $dbconn->query("UPDATE user SET intro_code = NULL WHERE id = '{$_SESSION['userInfo']['id']}'");
+        if(!empty($id)) {
+            $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$id'");
+            $usr = $usr_qry->fetch_assoc();
+
+            if(!empty($usr['intro_code'])) {
+                echo "var intro = introJs();";
+                echo $usr['intro_code'];
+                echo "intro.start();";
+
+                $dbconn->query("UPDATE user SET intro_code = NULL WHERE id = '$id'");
+            }
         }
     ?>
 </script>

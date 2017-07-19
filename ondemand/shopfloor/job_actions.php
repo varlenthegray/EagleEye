@@ -412,26 +412,6 @@ HEREDOC;
                     }
                 } else { // we were unable to find an operation in the queue that existed
                     dbLogSQLErr($dbconn); // gonna throw an error here...
-
-                    // i don't think this needs to be here, it shouldn't really ever fall into this catch here...
-                    /*$admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'"); // grab the op information
-
-                    if($admin_qry->num_rows > 0) { // if we were able to obtain the op itself
-                        $admin_results = $admin_qry->fetch_assoc();
-
-                        if((bool)$admin_results['always_visible']) { // if the op is set to always visible
-                            $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees')");
-
-                            $inserted_id = $dbconn->insert_id;
-
-                            $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees)];
-                            $final_changes = json_encode($changes);
-
-                            $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())");
-
-                            echo "success";
-                        }
-                    }*/
                 }
             }
 

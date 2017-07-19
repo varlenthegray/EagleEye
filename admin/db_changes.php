@@ -15,7 +15,9 @@ intro.setOptions({
             element: document.querySelector('#nav_tasks'),
             intro: "This navigation option allows you to see all open tasks that have been submitted."
         },
-        {intro: "Please click 'Done' and this will not display after you log out and log back in."}]
+		{intro: "Additionally, the following bugs have been resolved:<ul><li>Scrollbar for Job Queue, Active Jobs and Recently Completed jobs</li><li>Job Completion screen not disappearing for certain tasks</li></ul>},
+		{intro: "As a final note, please <strong>DO NOT</strong> insert a new 'SO' using the 'Add SO' button without refreshing the page first. This also goes with clocking in to a job under 'Individual'.<br><br>This bug will be fixed in the next few releases."},
+        {intro: "Please click 'Done' and this will not display again."}]
 });
 HEREDOC;
 
@@ -26,10 +28,10 @@ intro.setOptions({
         {intro: "From now on, all new features will be introduced to you through the use of this tutorial."},
         {
             element: document.querySelector('#btn-feedback'),
-            intro: "This button will allow you to send feedback directly to the development team for EagleEye.",
+            intro: "This button will allow you to send feedback directly to the development team for EagleEye. Please feel free to enter feedback into the system.",
             position: "left"
         },
-        {intro: "Please click 'Done' and this will not display after you log out and log back in."}]
+        {intro: "Please click 'Done' and this will not display again."}]
 });
 HEREDOC;
 

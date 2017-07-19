@@ -6,7 +6,7 @@ require '../includes/header_start.php';
 <link href="/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css"/>
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="card-box table-responsive">
             <div class="col-md-12 workcenter-table">
                 <h4>Jobs in Queue</h4>
@@ -27,7 +27,7 @@ require '../includes/header_start.php';
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="card-box table-responsive">
             <div class="col-md-12">
                 <h4>Active Jobs</h4>
@@ -49,7 +49,7 @@ require '../includes/header_start.php';
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-6">
         <div class="card-box table-responsive">
             <div class="col-md-12">
                 <h4>Recently Completed Jobs</h4>
@@ -127,18 +127,24 @@ require '../includes/header_start.php';
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand wc-edit-queue");
         },
-        "paging": false
+        "paging": false,
+        scrollY: '68vh',
+        scrollCollapse: true
     });
 
     var active_table = $("#active_jobs_global_table").DataTable({
         "ajax": "/ondemand/shopfloor/workcenter.php?action=display_active_jobs",
-        "pageLength": 25
+        "pageLength": 25,
+        scrollY: '25.65vh',
+        scrollCollapse: true
     });
 
     var completed_table = $("#recently_completed_jobs_global_table").DataTable({
         "ajax": "/ondemand/shopfloor/workcenter.php?action=display_recently_completed",
         "pageLength": 25,
-        "order": [[3, "desc"]]
+        "order": [[3, "desc"]],
+        scrollY: '25.65vh',
+        scrollCollapse: true
     });
 
     wc_auto_interval = setInterval(function() {

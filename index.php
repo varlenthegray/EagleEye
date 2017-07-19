@@ -48,9 +48,17 @@ require 'includes/header_end.php';
     </div>
 </div>
 
+<!-- Add Customer modal -->
+<div id="modalAddCustomer" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddCustomerLabel" aria-hidden="true">
+    <!-- Inserted via AJAX -->
+</div>
+<!-- /.modal -->
+
 <!-- Global Search loading, required for global search to work -->
 <script src="/ondemand/js/global_search.js"></script>
-<!-- End global Search loading, required for global search to work -->
+
+<!-- Adding SO to the system -->
+<script src="/ondemand/js/add_so.js"></script>
 
 <script>
     var indv_dt_interval;
@@ -63,6 +71,15 @@ require 'includes/header_end.php';
         clearInterval(wc_auto_interval);
     }
 
+    function backFromSearch() {
+        $("#search_display").fadeOut(200);
+        $("#global_search").val("");
+
+        setTimeout(function() {
+            $("#main_display").fadeIn(200);
+        }, 200);
+    }
+
     $("#main_body").load("/html/individual_op.php", function() {
         $(".js_loading").hide();
     });
@@ -73,6 +90,8 @@ require 'includes/header_end.php';
             $("#main_body").load("/html/individual_op.php", function() {
                 $(".js_loading").hide();
             });
+
+            backFromSearch();
         })
         .on("click", "#nav_pricing", function() {
             clearIntervals();
@@ -81,6 +100,8 @@ require 'includes/header_end.php';
             $("#main_body").load("/html/pricing.php", function() {
                 $(".js_loading").hide();
             });
+
+            backFromSearch();
         })
         .on("click", "#nav_workcenter", function() {
             clearIntervals();
@@ -89,6 +110,8 @@ require 'includes/header_end.php';
             $("#main_body").load("/html/workcenter.php", function() {
                 $(".js_loading").hide();
             });
+
+            backFromSearch();
         })
         .on("click", "#nav_timecard", function() {
             clearIntervals();
@@ -97,6 +120,8 @@ require 'includes/header_end.php';
             $("#main_body").load("/html/timecard.php", function() {
                 $(".js_loading").hide();
             });
+
+            backFromSearch();
         })
         .on("click", "#nav_job-management", function() {
             clearIntervals();
@@ -105,6 +130,8 @@ require 'includes/header_end.php';
             $("#main_body").load("/html/job_management.php", function() {
                 $(".js_loading").hide();
             });
+
+            backFromSearch();
         })
         .on("click", "#nav_employees", function() {
             clearIntervals();
@@ -113,6 +140,8 @@ require 'includes/header_end.php';
             $("#main_body").load("/html/employees.php", function() {
                 $(".js_loading").hide();
             });
+
+            backFromSearch();
         })
         .on("click", "#nav_tasks", function() {
             clearIntervals();
@@ -121,6 +150,8 @@ require 'includes/header_end.php';
             $("#main_body").load("/html/tasks.php", function() {
                 $(".js_loading").hide();
             });
+
+            backFromSearch();
         })
     ;
 </script>
