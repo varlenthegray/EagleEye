@@ -21,11 +21,17 @@ switch($_SERVER['SCRIPT_NAME']) {
                     <span><?php echo LOGO_TEXT . " - " . $title_name; ?></span>
                 </a>
 
-                <ul class="nav navbar-nav">
-                    <li class="nav-item notification-list">
-                        <a class="nav-link arrow-none waves-light waves-effect" id="btn_add_acct" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-account-add noti-icon"></i> Add SO</a>
-                    </li>
-                </ul>
+                <?php
+                if($_SESSION['userInfo']['account_type'] <= 4) {
+                    ?>
+                    <ul class="nav navbar-nav">
+                        <li class="nav-item notification-list">
+                            <a class="nav-link arrow-none waves-light waves-effect" id="btn_add_acct" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-account-add noti-icon"></i> Add SO</a>
+                        </li>
+                    </ul>
+                <?php
+                }
+                ?>
             </div>
             <!-- End Logo container-->
 
