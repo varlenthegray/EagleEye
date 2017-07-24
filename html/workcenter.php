@@ -81,10 +81,11 @@ require '../includes/header_start.php';
     <!-- /.modal -->
 </div>
 
-<!-- Date & Clock picker -->
-<script src="/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
-
 <script>
+    if(!workcenter_scripts) {
+        $.getScript('/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js');
+    }
+
     $("body")
         .on("click", ".wc-edit-queue", function() {
             var id = $(this).attr("id");

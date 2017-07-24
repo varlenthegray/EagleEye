@@ -2,16 +2,6 @@
 require '../includes/header_start.php';
 ?>
 
-<!-- tinysort -->
-<script type="text/javascript" src="/assets/plugins/tinysort/tinysort.min.js"></script>
-
-<!-- input masking -->
-<script type="text/javascript" src="/assets/plugins/jquery.mask.min.js"></script>
-
-<!-- date picker -->
-<link href="/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
-<script src="/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
-
 <!-- Search results box -->
 <div class="row">
     <div class="col-md-12">

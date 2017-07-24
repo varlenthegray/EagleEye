@@ -2,12 +2,6 @@
 require '../includes/header_start.php';
 ?>
 
-<!-- tablesaw -->
-<link href="/assets/plugins/tablesaw/dist/tablesaw.css" rel="stylesheet" type="text/css"/>
-
-<!-- daterange -->
-<link href="/assets/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
-
 <div class="row">
     <div class="col-md-12">
         <div class="card-box">
@@ -52,13 +46,7 @@ require '../includes/header_start.php';
     </div>
 </div>
 
-<!-- date range picker -->
-<script src="/assets/plugins/moment/moment.js"></script>
-<script src="/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
 
-<!--Tablesaw-->
-<script src="/assets/plugins/tablesaw/dist/tablesaw.js"></script>
-<script src="/assets/plugins/tablesaw/dist/tablesaw-init.js"></script>
 
 <script>
     $("#date_range").daterangepicker();

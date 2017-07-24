@@ -93,10 +93,6 @@ require '../includes/header_start.php';
     </div><!-- /.modal -->
 </div>
 
-<!--Tablesaw-->
-<script src="/assets/plugins/tablesaw/dist/tablesaw.js"></script>
-<script src="/assets/plugins/tablesaw/dist/tablesaw-init.js"></script>
-
 <script>
     var jobInterval;
     var activeJobID;

@@ -540,10 +540,10 @@ HEREDOC;
                 $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
                 $op_info_payload = json_encode($op_info);
 
-                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$op_queue['product_type']}'");
+                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$op_queue['product_type']}'");
                 $vin = $vin_qry->fetch_assoc();
 
-                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$vin['value']}{$op_queue['iteration']}";
+                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$vin['key']}{$op_queue['iteration']}";
                 $output['data'][$i][] = $department;
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = $release_date;

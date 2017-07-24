@@ -83,10 +83,10 @@ HEREDOC;
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
                 if(substr($op_queue['op_id'], -2) !== '98') {
-                    $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$op_queue['product_type']}'");
+                    $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `value` = '{$op_queue['product_type']}'");
                     $vin_schema = $vin_schema_qry->fetch_assoc();
 
-                    $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$vin_schema['value']}{$op_queue['iteration']}";
+                    $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$vin_schema['key']}{$op_queue['iteration']}";
                     $output['data'][$i][] = $op_queue['room_name'];
                     $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['bracket']} <span class='tooltiptext'>{$op_queue['responsible_dept']} Team</span></div>";
                     $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
@@ -116,10 +116,10 @@ HEREDOC;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$op_queue['product_type']}'");
+                $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `value` = '{$op_queue['product_type']}'");
                 $vin_schema = $vin_schema_qry->fetch_assoc();
 
-                $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$vin_schema['value']}{$op_queue['iteration']}";
+                $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$vin_schema['key']}{$op_queue['iteration']}";
                 $output['data'][$i][] = $op_queue['room_name'];
                 $output['data'][$i][] = $op_queue['bracket'];
                 $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
@@ -150,13 +150,13 @@ HEREDOC;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$op_queue['product_type']}'");
+                $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `value` = '{$op_queue['product_type']}'");
                 $vin_schema = $vin_schema_qry->fetch_assoc();
 
                 if((bool)$op_queue['otf_created']) {
                     $tag = 'OTF';
                 } else {
-                    $tag = "{$vin_schema['value']}{$op_queue['iteration']}";
+                    $tag = "{$vin_schema['key']}{$op_queue['iteration']}";
                 }
 
                 $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-$tag";

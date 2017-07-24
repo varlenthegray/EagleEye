@@ -251,3 +251,19 @@ require_once ("header_start.php");
 
 <!-- Calendar -->
 <script src="/assets/plugins/fullcalendar/dist/fullcalendar.min.js"></script>
+
+<!-- Tablesaw -->
+<script src="/assets/plugins/tablesaw/dist/tablesaw.js"></script>
+<script src="/assets/plugins/tablesaw/dist/tablesaw-init.js"></script>
+
+<!-- Tinysort -->
+<script type="text/javascript" src="/assets/plugins/tinysort/tinysort.min.js"></script>
+
+<!-- Input Masking -->
+<script type="text/javascript" src="/assets/plugins/jquery.mask.min.js"></script>
+
+<!-- Datepicker -->
+<script src="/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
+<!-- Date/Range Picker -->
+<script src="/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>

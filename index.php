@@ -65,6 +65,9 @@ require 'includes/header_end.php';
     var indv_auto_interval;
     var wc_auto_interval;
 
+    var individual_op_scripts = false;
+    var workcenter_scripts = false;
+
     function clearIntervals() {
         clearInterval(indv_dt_interval);
         clearInterval(indv_auto_interval);
@@ -148,6 +151,16 @@ require 'includes/header_end.php';
 
             $(".js_loading").show();
             $("#main_body").load("/html/tasks.php", function() {
+                $(".js_loading").hide();
+            });
+
+            backFromSearch();
+        })
+        .on("click", "#nav_vin", function() {
+            clearIntervals();
+
+            $(".js_loading").show();
+            $("#main_body").load("/html/build_a_vin.php", function() {
                 $(".js_loading").hide();
             });
 

@@ -149,10 +149,11 @@ switch($_SERVER['SCRIPT_NAME']) {
                     ?>
                     <li id="nav_dashboard"><a><i class="zmdi zmdi-view-dashboard m-r-5"></i><span><?php echo NAV_DASHBOARD; ?></span></a></li>
                     <li id="nav_workcenter"><a><i class="zmdi zmdi-assignment m-r-5"></i><span><?php echo NAV_WORKCENTER; ?></span></a></li>
-                    <li id="nav_job-management"><a><i class="zmdi zmdi-case-download m-r-5"></i><span><?php echo NAV_JOBMANAGEMENT; ?></span></a></li>
+                    <!--<li id="nav_job-management"><a><i class="zmdi zmdi-case-download m-r-5"></i><span><?php echo NAV_JOBMANAGEMENT; ?></span></a></li>-->
                     <li id="nav_employees"><a><i class="zmdi zmdi-account-circle m-r-5"></i><span><?php echo NAV_EMPLOYEELOGIN; ?></span></a></li>
                     <li id="nav_timecard"><a><i class="zmdi zmdi-time m-r-5"></i><span><?php echo NAV_ACCOUNTING_TIMECARDS; ?></span></a></li>
                     <li id="nav_tasks"><a><i class="zmdi zmdi-check-circle-u m-r-5"></i><span><?php echo NAV_TASKS; ?></span></a></li>
+                    <li id="nav_vin"><a><i class="fa fa-qrcode m-r-5"></i><span><?php echo NAV_VIN; ?></span></a></li>
                     <?php
                         if((int)$_SESSION['userInfo']['account_type'] <= 1) {
                     ?>

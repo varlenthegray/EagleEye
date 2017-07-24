@@ -71,6 +71,15 @@
     <script src="/assets/plugins/intro/intro.min.js"></script>
     <link href="/assets/plugins/intro/introjs.min.css" rel="stylesheet" type="text/css"/>
 
+    <!-- Tablesaw-->
+    <link href="/assets/plugins/tablesaw/dist/tablesaw.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Date Picker -->
+    <link href="/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
+
+    <!-- daterange -->
+    <link href="/assets/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
     <script>
         var userTZ = '<?php echo $_SESSION['userInfo']['timezone']; ?>';
 

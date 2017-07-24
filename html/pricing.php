@@ -2,8 +2,6 @@
 require '../includes/header_start.php';
 ?>
 
-<link href="/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
-
 <div class="row">
     <div class="col-md-8 col-md-offset-2">
         <div class="card-box">
@@ -274,8 +272,6 @@ require '../includes/header_start.php';
         </div>
     </div>
 </div>
-
-<script src="/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 
 <script>
     $("#datepicker").datepicker({

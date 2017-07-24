@@ -5,9 +5,6 @@ require("../assets/php/composer/vendor/autoload.php"); // require carbon for dat
 use Carbon\Carbon; // prep carbon
 ?>
 
-<!-- tablesaw-->
-<link href="/assets/plugins/tablesaw/dist/tablesaw.css" rel="stylesheet" type="text/css"/>
-
 <div class="row" id="default_login_form">
     <div class="col-md-6">
         <div class="card-box">
@@ -128,7 +125,3 @@ use Carbon\Carbon; // prep carbon
         });
     });
 </script>
-
-<!--Tablesaw-->
-<script src="/assets/plugins/tablesaw/dist/tablesaw.js"></script>
-<script src="/assets/plugins/tablesaw/dist/tablesaw-init.js"></script>
