@@ -30,43 +30,47 @@ require '../includes/header_start.php';
     <div class="col-md-6">
         <div class="card-box table-responsive">
             <div class="col-md-12">
-                <h4>Active Jobs</h4>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4>Active Jobs</h4>
 
-                <table id="active_jobs_global_table" class="table table-striped table-bordered" width="100%">
-                    <thead>
-                    <tr>
-                        <th>SO#</th>
-                        <th>Room Name</th>
-                        <th>Bracket</th>
-                        <th>Operation</th>
-                        <th>Individual</th>
-                        <th>Started/Resumed</th>
-                    </tr>
-                    </thead>
-                    <tbody id="active_jobs_table"></tbody>
-                </table>
+                        <table id="active_jobs_global_table" class="table table-striped table-bordered" width="100%">
+                            <thead>
+                            <tr>
+                                <th>SO#</th>
+                                <th>Room Name</th>
+                                <th>Bracket</th>
+                                <th>Operation</th>
+                                <th>Individual</th>
+                                <th>Started/Resumed</th>
+                            </tr>
+                            </thead>
+                            <tbody id="active_jobs_table"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4>Recently Completed Jobs</h4>
+
+                        <table id="recently_completed_jobs_global_table" class="table table-striped table-bordered" width="100%">
+                            <thead>
+                            <tr>
+                                <th>SO#</th>
+                                <th>Room Name</th>
+                                <th>Bracket</th>
+                                <th>Operation</th>
+                                <th>Completed</th>
+                            </tr>
+                            </thead>
+                            <tbody id="recently_completed_table"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <div class="col-md-6">
-        <div class="card-box table-responsive">
-            <div class="col-md-12">
-                <h4>Recently Completed Jobs</h4>
 
-                <table id="recently_completed_jobs_global_table" class="table table-striped table-bordered" width="100%">
-                    <thead>
-                    <tr>
-                        <th>SO#</th>
-                        <th>Room Name</th>
-                        <th>Bracket</th>
-                        <th>Operation</th>
-                        <th>Completed</th>
-                    </tr>
-                    </thead>
-                    <tbody id="recently_completed_table"></tbody>
-                </table>
-            </div>
         </div>
     </div>
 

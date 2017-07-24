@@ -15,7 +15,7 @@ intro.setOptions({
             element: document.querySelector('#nav_tasks'),
             intro: "This navigation option allows you to see all open tasks that have been submitted."
         },
-		{intro: "Additionally, the following bugs have been resolved:<ul><li>Scrollbar for Job Queue, Active Jobs and Recently Completed jobs</li><li>Job Completion screen not disappearing for certain tasks</li></ul>},
+		{intro: "Additionally, the following bugs have been resolved:<ul><li>Scrollbar for Job Queue, Active Jobs and Recently Completed jobs</li><li>Job Completion screen not disappearing for certain tasks</li></ul>"},
 		{intro: "As a final note, please <strong>DO NOT</strong> insert a new 'SO' using the 'Add SO' button without refreshing the page first. This also goes with clocking in to a job under 'Individual'.<br><br>This bug will be fixed in the next few releases."},
         {intro: "Please click 'Done' and this will not display again."}]
 });
@@ -46,6 +46,14 @@ if($admin_flag_qry->num_rows > 0) {
     if(!(bool)$admin_flag['value']) {
         echo ($dbconn->query("UPDATE user SET intro_code = '$intro_std' WHERE id <> 16;")) ? "Successful with updating intro_code for standard users.<br />" : "<b>Error</b> with updating intro_code for standard users.<br />";
         echo ($dbconn->query("UPDATE user SET intro_code = '$intro_shop' WHERE id = 16;")) ? "Successful with updating intro_code for shop user.<br />" : "<b>Error</b> with updating intro_code for shop user.<br />";
+        echo ($dbconn->query("CREATE TABLE job_material (id INT PRIMARY KEY AUTO_INCREMENT,material VARCHAR(150),description VARCHAR(255),total DOUBLE,total_unit VARCHAR(25));")) ? "Successful with creating job_material table.<br />" : "<b>Error</b> with creating job_material table.<br />";
+        echo ($dbconn->query("CREATE TABLE consumable (id INT PRIMARY KEY AUTO_INCREMENT,location VARCHAR(20),type VARCHAR(30),name VARCHAR(100),department VARCHAR(100));")) ? "Successful with creating consumable table.<br />" : "<b>Error</b> with creating consumable table.<br />";
+        echo ($dbconn->query("CREATE TABLE audit_consumable (id INT PRIMARY KEY AUTO_INCREMENT,timestamp INT(20),so_num INT(5),room CHAR,iteration DOUBLE DEFAULT 1.01,consumable_id INT,consumed DOUBLE,unit_om VARCHAR(20));")) ? "Successful with creating consumable audit table.<br />" : "<b>Error</b> with creating consumable audit table.<br />";
+
+        // VIN SCHEMA UPDATE INFORMATION
+        
+
+
 
         echo "<h1>Database prepared.</h1>";
 

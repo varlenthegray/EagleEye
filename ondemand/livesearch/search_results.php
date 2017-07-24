@@ -441,7 +441,6 @@ switch ($search) {
                                         <div class="row">
                                             <form id="room_edit_<?php echo $room['id']; ?>">
                                                 <div class="col-md-12">
-
                                                     <div class="col-md-3">
                                                         <form>
                                                             <table width="100%" class="table table-custom-nb">
@@ -1000,7 +999,7 @@ switch ($search) {
                                                                     <td><label for="iteration">Iteration</label></td>
                                                                     <td>
                                                                         <div class="input-group">
-                                                                            <input type="text" class="form-control" id="edit_iteration_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration'] + 1.01; ?>" readonly>
+                                                                            <input type="text" class="form-control" id="edit_iteration_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration'] + 0.01; ?>" readonly>
                                                                             <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
                                                                         </div>
                                                                     </td>
@@ -1362,6 +1361,27 @@ switch ($search) {
                 /** BEGIN EDIT SO DISPLAY */
                 echo "<tr id='tr_edit_so_{$result['so_num']}' style='display: none;'>";
                 echo "  <td colspan='9'><div id='div_edit_so_{$result['so_num']}' style='display: none;'>";
+
+                $so_info_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$result['contractor_dealer_code']}'");
+                $so_info = $so_info_qry->fetch_assoc();
+
+                switch($so_info['account_type']) {
+                    case 'R':
+                        $atype = "Retail";
+                        break;
+
+                    case 'W':
+                        $atype = "Wholesale";
+                        break;
+
+                    case "D":
+                        $atype = "Distribution";
+                        break;
+
+                    default:
+                        $atype = "Retail";
+                        break;
+                }
                 ?>
 
                 <div class="col-md-12">
@@ -1370,217 +1390,172 @@ switch ($search) {
                             <form id="form_so_<?php echo $result['so_num']; ?>">
                                 <table width="100%" class="table table-custom-nb">
                                     <tr>
-                                        <td width="8%"><label for="account_type">Account Type</label></td>
-                                        <td width="12%">
-                                            <select class="form-control" id="account_type" name="account_type">
-                                                <option value="Retail" <?php echo ($result['account_type'] === 'R')? 'selected' : NULL; ?>>Retail</option>
-                                                <option value="Distribution" <?php echo ($result['account_type'] === 'D')? 'selected' : NULL; ?>>Distribution</option>
-                                                <option value="Contract Cutting" <?php echo ($result['account_type'] === 'C')? 'selected' : NULL; ?>>Contract Cutting</option>
-                                            </select>
-                                        </td>
-                                        <td width="8%">&nbsp;</td>
-                                        <td width="12%">&nbsp;</td>
-                                        <td width="8%">&nbsp;</td>
-                                        <td width="12%">&nbsp;</td>
-                                        <td width="8%">&nbsp;</td>
-                                        <td width="12%">&nbsp;</td>
-                                        <td width="8%">&nbsp;</td>
-                                        <td width="12%">&nbsp;</td>
-                                    </tr>
-                                    <tr>
-                                        <td><label for="salesperson">Salesperson</label></td>
+                                        <td><label for="dealer_code">Dealer Code</label></td>
                                         <td>
-                                            <select class="form-control" id="salesperson" name="salesperson">
-                                                <option value="Robert" <?php echo ($result['salesperson'] === 'Robert')? 'selected' : NULL; ?>>Robert</option>
-                                                <option value="Brent" <?php echo ($result['salesperson'] === 'Brent')? 'selected' : NULL; ?>>Brent</option>
-                                                <option value="Cindy" <?php echo ($result['salesperson'] === 'Cindy')? 'selected' : NULL; ?>>Cindy</option>
-                                                <option value="Shane" <?php echo ($result['salesperson'] === 'Shane')? 'selected' : NULL; ?>>Shane</option>
+                                            <select name="dealer_code" id="dealer_code" class="form-control" value="<?php echo $result['dealer_code']; ?>">
+                                                <?php
+                                                $dealer_qry = $dbconn->query("SELECT * FROM dealers");
+
+                                                while($dealer = $dealer_qry->fetch_assoc()) {
+                                                    echo "<option value='{$dealer['dealer_id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
+                                                }
+                                                ?>
                                             </select>
                                         </td>
-                                        <td><label for="contractor">Contractor</label></td>
-                                        <td><input type="text" class="form-control" id="contractor" name="contractor" placeholder="Contractor" value="<?php echo $result['dealer_contractor']; ?>" /></td>
-                                        <td colspan="2">&nbsp;</td>
                                         <td><label for="project">Project</label></td>
                                         <td><input type="text" class="form-control" id="project" name="project" placeholder="Project" value="<?php echo $result['project']; ?>" /></td>
-                                        <td><label for="project_addr">Project Address</label></td>
-                                        <td><input type="text" name="project_addr" class="form-control" placeholder="Project Address" id="project_addr" value="<?php echo $result['addr_1']; ?>"></td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2">&nbsp;</td>
-                                        <td><label for="contractor_code">Contractor Code</label></td>
-                                        <td>
-                                            <select name="contractor_code" id="contractor_code" class="form-control" value="<?php echo $result['dealer_code']; ?>">
-                                                <?php
-                                                    $dealer_qry = $dbconn->query("SELECT * FROM dealers");
-
-                                                    while($dealer = $dealer_qry->fetch_assoc()) {
-                                                        echo "<option value='{$dealer['dealer_id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
-                                                    }
-                                                ?>
-                                            </select>
-                                        </td>
-                                        <td colspan="2">&nbsp;</td>
-                                        <td><label for="p_landline">Project Landline</label></td>
-                                        <td><input type="text" name="p_landline" class="form-control mask-phone" placeholder="Project Landline" id="p_landline" value="<?php echo $result['pri_phone']; ?>"></td>
-                                        <td colspan="6">
-                                            <table width="100%">
-                                                <tr>
-                                                    <td width="33.3%"><input type="text" name="p_city" class="form-control" placeholder="City" id="p_city" value="<?php echo $result['city']; ?>"></td>
-                                                    <td width="33.3%"><select class="form-control" id="p_state" name="p_state">
-                                                            <option value="AL" <?php echo ($result['state'] === 'AL') ? "selected" : null; ?>>Alabama</option>
-                                                            <option value="AK" <?php echo ($result['state'] === 'AK') ? "selected" : null; ?>>Alaska</option>
-                                                            <option value="AR" <?php echo ($result['state'] === 'AR') ? "selected" : null; ?>>Arkansas</option>
-                                                            <option value="CA" <?php echo ($result['state'] === 'CA') ? "selected" : null; ?>>California</option>
-                                                            <option value="CO" <?php echo ($result['state'] === 'CO') ? "selected" : null; ?>>Colorado</option>
-                                                            <option value="CT" <?php echo ($result['state'] === 'CT') ? "selected" : null; ?>>Connecticut</option>
-                                                            <option value="DE" <?php echo ($result['state'] === 'DE') ? "selected" : null; ?>>Delaware</option>
-                                                            <option value="FL" <?php echo ($result['state'] === 'FL') ? "selected" : null; ?>>Florida</option>
-                                                            <option value="GA" <?php echo ($result['state'] === 'GA') ? "selected" : null; ?>>Georgia</option>
-                                                            <option value="HI" <?php echo ($result['state'] === 'HI') ? "selected" : null; ?>>Hawaii</option>
-                                                            <option value="ID" <?php echo ($result['state'] === 'ID') ? "selected" : null; ?>>Idaho</option>
-                                                            <option value="IL" <?php echo ($result['state'] === 'IL') ? "selected" : null; ?>>Illinois</option>
-                                                            <option value="IN" <?php echo ($result['state'] === 'IN') ? "selected" : null; ?>>Indiana</option>
-                                                            <option value="IA" <?php echo ($result['state'] === 'IA') ? "selected" : null; ?>>Iowa</option>
-                                                            <option value="KS" <?php echo ($result['state'] === 'KS') ? "selected" : null; ?>>Kansas</option>
-                                                            <option value="KY" <?php echo ($result['state'] === 'KY') ? "selected" : null; ?>>Kentucky</option>
-                                                            <option value="LA" <?php echo ($result['state'] === 'LA') ? "selected" : null; ?>>Louisiana</option>
-                                                            <option value="ME" <?php echo ($result['state'] === 'ME') ? "selected" : null; ?>>Maine</option>
-                                                            <option value="MD" <?php echo ($result['state'] === 'MD') ? "selected" : null; ?>>Maryland</option>
-                                                            <option value="MA" <?php echo ($result['state'] === 'MA') ? "selected" : null; ?>>Massachusetts</option>
-                                                            <option value="MI" <?php echo ($result['state'] === 'MI') ? "selected" : null; ?>>Michigan</option>
-                                                            <option value="MN" <?php echo ($result['state'] === 'MN') ? "selected" : null; ?>>Minnesota</option>
-                                                            <option value="MS" <?php echo ($result['state'] === 'MS') ? "selected" : null; ?>>Mississippi</option>
-                                                            <option value="MO" <?php echo ($result['state'] === 'MO') ? "selected" : null; ?>>Missouri</option>
-                                                            <option value="MT" <?php echo ($result['state'] === 'MT') ? "selected" : null; ?>>Montana</option>
-                                                            <option value="NE" <?php echo ($result['state'] === 'NE') ? "selected" : null; ?>>Nebraska</option>
-                                                            <option value="NV" <?php echo ($result['state'] === 'NV') ? "selected" : null; ?>>Nevada</option>
-                                                            <option value="NH" <?php echo ($result['state'] === 'NH') ? "selected" : null; ?>>New Hampshire</option>
-                                                            <option value="NJ" <?php echo ($result['state'] === 'NJ') ? "selected" : null; ?>>New Jersey</option>
-                                                            <option value="NM" <?php echo ($result['state'] === 'NM') ? "selected" : null; ?>>New Mexico</option>
-                                                            <option value="NY" <?php echo ($result['state'] === 'NY') ? "selected" : null; ?>>New York</option>
-                                                            <option value="NC" <?php echo ($result['state'] === 'NC') ? "selected" : null; ?>>North Carolina</option>
-                                                            <option value="ND" <?php echo ($result['state'] === 'ND') ? "selected" : null; ?>>North Dakota</option>
-                                                            <option value="OH" <?php echo ($result['state'] === 'OH') ? "selected" : null; ?>>Ohio</option>
-                                                            <option value="OK" <?php echo ($result['state'] === 'OK') ? "selected" : null; ?>>Oklahoma</option>
-                                                            <option value="OR" <?php echo ($result['state'] === 'OR') ? "selected" : null; ?>>Oregon</option>
-                                                            <option value="PA" <?php echo ($result['state'] === 'PA') ? "selected" : null; ?>>Pennsylvania</option>
-                                                            <option value="RI" <?php echo ($result['state'] === 'RI') ? "selected" : null; ?>>Rhode Island</option>
-                                                            <option value="SC" <?php echo ($result['state'] === 'SC') ? "selected" : null; ?>>South Carolina</option>
-                                                            <option value="SD" <?php echo ($result['state'] === 'SD') ? "selected" : null; ?>>South Dakota</option>
-                                                            <option value="TN" <?php echo ($result['state'] === 'TN') ? "selected" : null; ?>>Tennessee</option>
-                                                            <option value="TX" <?php echo ($result['state'] === 'TX') ? "selected" : null; ?>>Texas</option>
-                                                            <option value="UT" <?php echo ($result['state'] === 'UT') ? "selected" : null; ?>>Utah</option>
-                                                            <option value="VT" <?php echo ($result['state'] === 'VT') ? "selected" : null; ?>>Vermont</option>
-                                                            <option value="VA" <?php echo ($result['state'] === 'VA') ? "selected" : null; ?>>Virginia</option>
-                                                            <option value="WA" <?php echo ($result['state'] === 'WA') ? "selected" : null; ?>>Washington</option>
-                                                            <option value="WV" <?php echo ($result['state'] === 'WV') ? "selected" : null; ?>>West Virginia</option>
-                                                            <option value="WI" <?php echo ($result['state'] === 'WI') ? "selected" : null; ?>>Wisconsin</option>
-                                                            <option value="WY" <?php echo ($result['state'] === 'WY') ? "selected" : null; ?>>Wyoming</option>
-                                                        </select></td>
-                                                    <td width="33.3%"><input type="text" name="p_zip" class="form-control mask-zip" placeholder="Zip" id="p_zip" value="<?php echo $result['zip']; ?>"></td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                    <tr style="height: 5px;">
-                                        <td colspan="11"></td>
-                                    </tr>
-                                    <tr>
                                         <td><label for="contact_1">Contact 1</label></td>
-                                        <td><input type="text" name="contact_1" class="form-control" placeholder="Contact 1" id="contact_1" value="<?php echo $result['contact_1']; ?>"></td>
-                                        <td><label for="cell_1">Cell Phone</label></td>
-                                        <td><input type="text" name="cell_1" class="form-control mask-phone" placeholder="Cell Phone" id="cell_1" value="<?php echo $result['contact_1_cell']; ?>"></td>
-                                        <td><label for="business_1">Business Phone</label></td>
-                                        <td><input type="text" name="business_1" class="form-control mask-phone" placeholder="Business Phone" id="business_1" value="<?php echo $result['contact_1_business_ph']; ?>"></td>
-                                        <td><label for="email_1">Email Address</label></td>
-                                        <td><input type="text" name="email_1" class="form-control" placeholder="Email Address" id="email_1" value="<?php echo $result['contact_1_email']; ?>"></td>
-                                    </tr>
-                                    <tr>
+                                        <td><input type="text" name="contact_1" class="form-control" placeholder="Contact 1" id="contact_1" value="<?php echo $result['contact1_name']; ?>"></td>
                                         <td><label for="contact_2">Contact 2</label></td>
-                                        <td><input type="text" name="contact_2" class="form-control" placeholder="Contact 2" id="contact_2" value="<?php echo $result['contact_2']; ?>"></td>
-                                        <td><label for="cell_2">Cell Phone</label></td>
-                                        <td><input type="text" name="cell_2" class="form-control mask-phone" placeholder="Cell Phone" id="cell_2" value="<?php echo $result['contact_2_cell']; ?>"></td>
-                                        <td><label for="business_2">Business Phone</label></td>
-                                        <td><input type="text" name="business_2" class="form-control mask-phone" placeholder="Business Phone" id="business_2" value="<?php echo $result['contact_2_business_ph']; ?>"></td>
-                                        <td><label for="email_2">Email Address</label></td>
-                                        <td><input type="text" name="email_2" class="form-control" placeholder="Email Address" id="email_2" value="<?php echo $result['contact_2_email']; ?>"></td>
-                                    </tr>
-                                    <tr style="height: 5px;">
-                                        <td colspan="11"></td>
-                                    </tr>
-                                    <tr>
+                                        <td><input type="text" name="contact_2" class="form-control" placeholder="Contact 2" id="contact_2" value="<?php echo $result['contact2_name']; ?>"></td>
                                         <td><label for="physical_addr">Physical Address</label></td>
-                                        <td><input type="text" name="physical_addr" class="form-control" placeholder="Physical Address" id="physical_addr" value="<?php echo $result['phys_addr']; ?>"></td>
-                                        <td><label for="ph_city">Physical City</label></td>
-                                        <td><input type="text" name="ph_city" class="form-control" placeholder="Physical City" id="ph_city" value="<?php echo $result['phys_city']; ?>"></td>
-                                        <td><label for="ph_state">Physical State</label></td>
-                                        <td><select class="form-control" id="ph_state" name="ph_state">
-                                                <?php
-                                                    if(empty($result['phys_state'])) {
-                                                        $nc_selected = " selected";
-                                                    }
-                                                ?>
-                                                <option value="AL" <?php echo ($result['phys_state'] === 'AL') ? "selected" : null; ?>>Alabama</option>
-                                                <option value="AK" <?php echo ($result['phys_state'] === 'AK') ? "selected" : null; ?>>Alaska</option>
-                                                <option value="AR" <?php echo ($result['phys_state'] === 'AR') ? "selected" : null; ?>>Arkansas</option>
-                                                <option value="CA" <?php echo ($result['phys_state'] === 'CA') ? "selected" : null; ?>>California</option>
-                                                <option value="CO" <?php echo ($result['phys_state'] === 'CO') ? "selected" : null; ?>>Colorado</option>
-                                                <option value="CT" <?php echo ($result['phys_state'] === 'CT') ? "selected" : null; ?>>Connecticut</option>
-                                                <option value="DE" <?php echo ($result['phys_state'] === 'DE') ? "selected" : null; ?>>Delaware</option>
-                                                <option value="FL" <?php echo ($result['phys_state'] === 'FL') ? "selected" : null; ?>>Florida</option>
-                                                <option value="GA" <?php echo ($result['phys_state'] === 'GA') ? "selected" : null; ?>>Georgia</option>
-                                                <option value="HI" <?php echo ($result['phys_state'] === 'HI') ? "selected" : null; ?>>Hawaii</option>
-                                                <option value="ID" <?php echo ($result['phys_state'] === 'ID') ? "selected" : null; ?>>Idaho</option>
-                                                <option value="IL" <?php echo ($result['phys_state'] === 'IL') ? "selected" : null; ?>>Illinois</option>
-                                                <option value="IN" <?php echo ($result['phys_state'] === 'IN') ? "selected" : null; ?>>Indiana</option>
-                                                <option value="IA" <?php echo ($result['phys_state'] === 'IA') ? "selected" : null; ?>>Iowa</option>
-                                                <option value="KS" <?php echo ($result['phys_state'] === 'KS') ? "selected" : null; ?>>Kansas</option>
-                                                <option value="KY" <?php echo ($result['phys_state'] === 'KY') ? "selected" : null; ?>>Kentucky</option>
-                                                <option value="LA" <?php echo ($result['phys_state'] === 'LA') ? "selected" : null; ?>>Louisiana</option>
-                                                <option value="ME" <?php echo ($result['phys_state'] === 'ME') ? "selected" : null; ?>>Maine</option>
-                                                <option value="MD" <?php echo ($result['phys_state'] === 'MD') ? "selected" : null; ?>>Maryland</option>
-                                                <option value="MA" <?php echo ($result['phys_state'] === 'MA') ? "selected" : null; ?>>Massachusetts</option>
-                                                <option value="MI" <?php echo ($result['phys_state'] === 'MI') ? "selected" : null; ?>>Michigan</option>
-                                                <option value="MN" <?php echo ($result['phys_state'] === 'MN') ? "selected" : null; ?>>Minnesota</option>
-                                                <option value="MS" <?php echo ($result['phys_state'] === 'MS') ? "selected" : null; ?>>Mississippi</option>
-                                                <option value="MO" <?php echo ($result['phys_state'] === 'MO') ? "selected" : null; ?>>Missouri</option>
-                                                <option value="MT" <?php echo ($result['phys_state'] === 'MT') ? "selected" : null; ?>>Montana</option>
-                                                <option value="NE" <?php echo ($result['phys_state'] === 'NE') ? "selected" : null; ?>>Nebraska</option>
-                                                <option value="NV" <?php echo ($result['phys_state'] === 'NV') ? "selected" : null; ?>>Nevada</option>
-                                                <option value="NH" <?php echo ($result['phys_state'] === 'NH') ? "selected" : null; ?>>New Hampshire</option>
-                                                <option value="NJ" <?php echo ($result['phys_state'] === 'NJ') ? "selected" : null; ?>>New Jersey</option>
-                                                <option value="NM" <?php echo ($result['phys_state'] === 'NM') ? "selected" : null; ?>>New Mexico</option>
-                                                <option value="NY" <?php echo ($result['phys_state'] === 'NY') ? "selected" : null; ?>>New York</option>
-                                                <option value="NC" <?php echo ($result['phys_state'] === 'NC') ? "selected" : null; echo $nc_selected; ?>>North Carolina</option>
-                                                <option value="ND" <?php echo ($result['phys_state'] === 'ND') ? "selected" : null; ?>>North Dakota</option>
-                                                <option value="OH" <?php echo ($result['phys_state'] === 'OH') ? "selected" : null; ?>>Ohio</option>
-                                                <option value="OK" <?php echo ($result['phys_state'] === 'OK') ? "selected" : null; ?>>Oklahoma</option>
-                                                <option value="OR" <?php echo ($result['phys_state'] === 'OR') ? "selected" : null; ?>>Oregon</option>
-                                                <option value="PA" <?php echo ($result['phys_state'] === 'PA') ? "selected" : null; ?>>Pennsylvania</option>
-                                                <option value="RI" <?php echo ($result['phys_state'] === 'RI') ? "selected" : null; ?>>Rhode Island</option>
-                                                <option value="SC" <?php echo ($result['phys_state'] === 'SC') ? "selected" : null; ?>>South Carolina</option>
-                                                <option value="SD" <?php echo ($result['phys_state'] === 'SD') ? "selected" : null; ?>>South Dakota</option>
-                                                <option value="TN" <?php echo ($result['phys_state'] === 'TN') ? "selected" : null; ?>>Tennessee</option>
-                                                <option value="TX" <?php echo ($result['phys_state'] === 'TX') ? "selected" : null; ?>>Texas</option>
-                                                <option value="UT" <?php echo ($result['phys_state'] === 'UT') ? "selected" : null; ?>>Utah</option>
-                                                <option value="VT" <?php echo ($result['phys_state'] === 'VT') ? "selected" : null; ?>>Vermont</option>
-                                                <option value="VA" <?php echo ($result['phys_state'] === 'VA') ? "selected" : null; ?>>Virginia</option>
-                                                <option value="WA" <?php echo ($result['phys_state'] === 'WA') ? "selected" : null; ?>>Washington</option>
-                                                <option value="WV" <?php echo ($result['phys_state'] === 'WV') ? "selected" : null; ?>>West Virginia</option>
-                                                <option value="WI" <?php echo ($result['phys_state'] === 'WI') ? "selected" : null; ?>>Wisconsin</option>
-                                                <option value="WY" <?php echo ($result['phys_state'] === 'WY') ? "selected" : null; ?>>Wyoming</option>
-                                                </select></td>
-                                        <td><label for="ph_zip">Physical Zip</label></td>
-                                        <td><input type="text" name="ph_zip" class="form-control mask-zip" placeholder="Physical Zip" id="ph_zip" value="<?php echo $result['phys_zip']; ?>"></td>
-                                    </tr>
-                                    <tr style="height: 5px;">
-                                        <td colspan="11"></td>
+                                        <td><input type="text" name="physical_addr" class="form-control" placeholder="Physical Address" id="physical_addr" value="<?php echo $result['physical_addr']; ?>"></td>
                                     </tr>
                                     <tr>
-                                        <td><label for="email_address">Email Address</label></td>
-                                        <td><input type="text" name="email_address" class="form-control pull-right" placeholder="Email Address" id="email_address" value="<?php echo $result['global_email']; ?>"></td>
-                                        <td><label for="cell_phone">Cell Phone</label></td>
-                                        <td><input type="text" name="cell_phone" class="form-control mask-phone" placeholder="Cell Phone" id="cell_phone" value="<?php echo $result['global_cell']; ?>"></td>
+                                        <td>Account Type:</td>
+                                        <td><?php echo $atype; ?></td>
+                                        <td><label for="project_addr">Project Address</label></td>
+                                        <td><input type="text" name="project_addr" class="form-control" placeholder="Project Address" id="project_addr" value="<?php echo $result['project_addr']; ?>"></td>
+                                        <td><label for="cell_1">Cell Phone</label></td>
+                                        <td><input type="text" name="cell_1" class="form-control mask-phone" placeholder="Cell Phone" id="cell_1" value="<?php echo $result['contact1_cell']; ?>"></td>
+                                        <td><label for="cell_2">Cell Phone</label></td>
+                                        <td><input type="text" name="cell_2" class="form-control mask-phone" placeholder="Cell Phone" id="cell_2" value="<?php echo $result['contact2_cell']; ?>"></td>
+                                        <td colspan="2" style="width: 260px;"><table width="100%">
+                                                <tr>
+                                                    <td width="33.3%"><input type="text" name="ph_city" class="form-control" placeholder="City" id="ph_city" value="<?php echo $result['physical_city']; ?>"></td>
+                                                    <td width="33.3%"><select class="form-control" id="ph_state" name="ph_state">
+                                                            <option value="AL" <?php echo ($result['physical_state'] === 'AL') ? "selected" : null; ?>>Alabama</option>
+                                                            <option value="AK" <?php echo ($result['physical_state'] === 'AK') ? "selected" : null; ?>>Alaska</option>
+                                                            <option value="AR" <?php echo ($result['physical_state'] === 'AR') ? "selected" : null; ?>>Arkansas</option>
+                                                            <option value="CA" <?php echo ($result['physical_state'] === 'CA') ? "selected" : null; ?>>California</option>
+                                                            <option value="CO" <?php echo ($result['physical_state'] === 'CO') ? "selected" : null; ?>>Colorado</option>
+                                                            <option value="CT" <?php echo ($result['physical_state'] === 'CT') ? "selected" : null; ?>>Connecticut</option>
+                                                            <option value="DE" <?php echo ($result['physical_state'] === 'DE') ? "selected" : null; ?>>Delaware</option>
+                                                            <option value="FL" <?php echo ($result['physical_state'] === 'FL') ? "selected" : null; ?>>Florida</option>
+                                                            <option value="GA" <?php echo ($result['physical_state'] === 'GA') ? "selected" : null; ?>>Georgia</option>
+                                                            <option value="HI" <?php echo ($result['physical_state'] === 'HI') ? "selected" : null; ?>>Hawaii</option>
+                                                            <option value="ID" <?php echo ($result['physical_state'] === 'ID') ? "selected" : null; ?>>Idaho</option>
+                                                            <option value="IL" <?php echo ($result['physical_state'] === 'IL') ? "selected" : null; ?>>Illinois</option>
+                                                            <option value="IN" <?php echo ($result['physical_state'] === 'IN') ? "selected" : null; ?>>Indiana</option>
+                                                            <option value="IA" <?php echo ($result['physical_state'] === 'IA') ? "selected" : null; ?>>Iowa</option>
+                                                            <option value="KS" <?php echo ($result['physical_state'] === 'KS') ? "selected" : null; ?>>Kansas</option>
+                                                            <option value="KY" <?php echo ($result['physical_state'] === 'KY') ? "selected" : null; ?>>Kentucky</option>
+                                                            <option value="LA" <?php echo ($result['physical_state'] === 'LA') ? "selected" : null; ?>>Louisiana</option>
+                                                            <option value="ME" <?php echo ($result['physical_state'] === 'ME') ? "selected" : null; ?>>Maine</option>
+                                                            <option value="MD" <?php echo ($result['physical_state'] === 'MD') ? "selected" : null; ?>>Maryland</option>
+                                                            <option value="MA" <?php echo ($result['physical_state'] === 'MA') ? "selected" : null; ?>>Massachusetts</option>
+                                                            <option value="MI" <?php echo ($result['physical_state'] === 'MI') ? "selected" : null; ?>>Michigan</option>
+                                                            <option value="MN" <?php echo ($result['physical_state'] === 'MN') ? "selected" : null; ?>>Minnesota</option>
+                                                            <option value="MS" <?php echo ($result['physical_state'] === 'MS') ? "selected" : null; ?>>Mississippi</option>
+                                                            <option value="MO" <?php echo ($result['physical_state'] === 'MO') ? "selected" : null; ?>>Missouri</option>
+                                                            <option value="MT" <?php echo ($result['physical_state'] === 'MT') ? "selected" : null; ?>>Montana</option>
+                                                            <option value="NE" <?php echo ($result['physical_state'] === 'NE') ? "selected" : null; ?>>Nebraska</option>
+                                                            <option value="NV" <?php echo ($result['physical_state'] === 'NV') ? "selected" : null; ?>>Nevada</option>
+                                                            <option value="NH" <?php echo ($result['physical_state'] === 'NH') ? "selected" : null; ?>>New Hampshire</option>
+                                                            <option value="NJ" <?php echo ($result['physical_state'] === 'NJ') ? "selected" : null; ?>>New Jersey</option>
+                                                            <option value="NM" <?php echo ($result['physical_state'] === 'NM') ? "selected" : null; ?>>New Mexico</option>
+                                                            <option value="NY" <?php echo ($result['physical_state'] === 'NY') ? "selected" : null; ?>>New York</option>
+                                                            <option value="NC" <?php echo ($result['physical_state'] === 'NC') ? "selected" : null; ?>>North Carolina</option>
+                                                            <option value="ND" <?php echo ($result['physical_state'] === 'ND') ? "selected" : null; ?>>North Dakota</option>
+                                                            <option value="OH" <?php echo ($result['physical_state'] === 'OH') ? "selected" : null; ?>>Ohio</option>
+                                                            <option value="OK" <?php echo ($result['physical_state'] === 'OK') ? "selected" : null; ?>>Oklahoma</option>
+                                                            <option value="OR" <?php echo ($result['physical_state'] === 'OR') ? "selected" : null; ?>>Oregon</option>
+                                                            <option value="PA" <?php echo ($result['physical_state'] === 'PA') ? "selected" : null; ?>>Pennsylvania</option>
+                                                            <option value="RI" <?php echo ($result['physical_state'] === 'RI') ? "selected" : null; ?>>Rhode Island</option>
+                                                            <option value="SC" <?php echo ($result['physical_state'] === 'SC') ? "selected" : null; ?>>South Carolina</option>
+                                                            <option value="SD" <?php echo ($result['physical_state'] === 'SD') ? "selected" : null; ?>>South Dakota</option>
+                                                            <option value="TN" <?php echo ($result['physical_state'] === 'TN') ? "selected" : null; ?>>Tennessee</option>
+                                                            <option value="TX" <?php echo ($result['physical_state'] === 'TX') ? "selected" : null; ?>>Texas</option>
+                                                            <option value="UT" <?php echo ($result['physical_state'] === 'UT') ? "selected" : null; ?>>Utah</option>
+                                                            <option value="VT" <?php echo ($result['physical_state'] === 'VT') ? "selected" : null; ?>>Vermont</option>
+                                                            <option value="VA" <?php echo ($result['physical_state'] === 'VA') ? "selected" : null; ?>>Virginia</option>
+                                                            <option value="WA" <?php echo ($result['physical_state'] === 'WA') ? "selected" : null; ?>>Washington</option>
+                                                            <option value="WV" <?php echo ($result['physical_state'] === 'WV') ? "selected" : null; ?>>West Virginia</option>
+                                                            <option value="WI" <?php echo ($result['physical_state'] === 'WI') ? "selected" : null; ?>>Wisconsin</option>
+                                                            <option value="WY" <?php echo ($result['physical_state'] === 'WY') ? "selected" : null; ?>>Wyoming</option>
+                                                        </select></td>
+                                                    <td width="33.3%"><input type="text" name="ph_zip" class="form-control mask-zip" placeholder="Zip" id="ph_zip" value="<?php echo $result['physical_zip']; ?>"></td>
+                                                </tr>
+                                            </table></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dealer Name:</td>
+                                        <td><?php echo $so_info['dealer_name']; ?></td>
+                                        <td colspan="2" style="width: 260px;"><table width="100%">
+                                                <tr>
+                                                    <td width="33.3%"><input type="text" name="p_city" class="form-control" placeholder="City" id="p_city" value="<?php echo $result['project_city']; ?>"></td>
+                                                    <td width="33.3%"><select class="form-control" id="p_state" name="p_state">
+                                                            <option value="AL" <?php echo ($result['project_state'] === 'AL') ? "selected" : null; ?>>Alabama</option>
+                                                            <option value="AK" <?php echo ($result['project_state'] === 'AK') ? "selected" : null; ?>>Alaska</option>
+                                                            <option value="AR" <?php echo ($result['project_state'] === 'AR') ? "selected" : null; ?>>Arkansas</option>
+                                                            <option value="CA" <?php echo ($result['project_state'] === 'CA') ? "selected" : null; ?>>California</option>
+                                                            <option value="CO" <?php echo ($result['project_state'] === 'CO') ? "selected" : null; ?>>Colorado</option>
+                                                            <option value="CT" <?php echo ($result['project_state'] === 'CT') ? "selected" : null; ?>>Connecticut</option>
+                                                            <option value="DE" <?php echo ($result['project_state'] === 'DE') ? "selected" : null; ?>>Delaware</option>
+                                                            <option value="FL" <?php echo ($result['project_state'] === 'FL') ? "selected" : null; ?>>Florida</option>
+                                                            <option value="GA" <?php echo ($result['project_state'] === 'GA') ? "selected" : null; ?>>Georgia</option>
+                                                            <option value="HI" <?php echo ($result['project_state'] === 'HI') ? "selected" : null; ?>>Hawaii</option>
+                                                            <option value="ID" <?php echo ($result['project_state'] === 'ID') ? "selected" : null; ?>>Idaho</option>
+                                                            <option value="IL" <?php echo ($result['project_state'] === 'IL') ? "selected" : null; ?>>Illinois</option>
+                                                            <option value="IN" <?php echo ($result['project_state'] === 'IN') ? "selected" : null; ?>>Indiana</option>
+                                                            <option value="IA" <?php echo ($result['project_state'] === 'IA') ? "selected" : null; ?>>Iowa</option>
+                                                            <option value="KS" <?php echo ($result['project_state'] === 'KS') ? "selected" : null; ?>>Kansas</option>
+                                                            <option value="KY" <?php echo ($result['project_state'] === 'KY') ? "selected" : null; ?>>Kentucky</option>
+                                                            <option value="LA" <?php echo ($result['project_state'] === 'LA') ? "selected" : null; ?>>Louisiana</option>
+                                                            <option value="ME" <?php echo ($result['project_state'] === 'ME') ? "selected" : null; ?>>Maine</option>
+                                                            <option value="MD" <?php echo ($result['project_state'] === 'MD') ? "selected" : null; ?>>Maryland</option>
+                                                            <option value="MA" <?php echo ($result['project_state'] === 'MA') ? "selected" : null; ?>>Massachusetts</option>
+                                                            <option value="MI" <?php echo ($result['project_state'] === 'MI') ? "selected" : null; ?>>Michigan</option>
+                                                            <option value="MN" <?php echo ($result['project_state'] === 'MN') ? "selected" : null; ?>>Minnesota</option>
+                                                            <option value="MS" <?php echo ($result['project_state'] === 'MS') ? "selected" : null; ?>>Mississippi</option>
+                                                            <option value="MO" <?php echo ($result['project_state'] === 'MO') ? "selected" : null; ?>>Missouri</option>
+                                                            <option value="MT" <?php echo ($result['project_state'] === 'MT') ? "selected" : null; ?>>Montana</option>
+                                                            <option value="NE" <?php echo ($result['project_state'] === 'NE') ? "selected" : null; ?>>Nebraska</option>
+                                                            <option value="NV" <?php echo ($result['project_state'] === 'NV') ? "selected" : null; ?>>Nevada</option>
+                                                            <option value="NH" <?php echo ($result['project_state'] === 'NH') ? "selected" : null; ?>>New Hampshire</option>
+                                                            <option value="NJ" <?php echo ($result['project_state'] === 'NJ') ? "selected" : null; ?>>New Jersey</option>
+                                                            <option value="NM" <?php echo ($result['project_state'] === 'NM') ? "selected" : null; ?>>New Mexico</option>
+                                                            <option value="NY" <?php echo ($result['project_state'] === 'NY') ? "selected" : null; ?>>New York</option>
+                                                            <option value="NC" <?php echo ($result['project_state'] === 'NC') ? "selected" : null; ?>>North Carolina</option>
+                                                            <option value="ND" <?php echo ($result['project_state'] === 'ND') ? "selected" : null; ?>>North Dakota</option>
+                                                            <option value="OH" <?php echo ($result['project_state'] === 'OH') ? "selected" : null; ?>>Ohio</option>
+                                                            <option value="OK" <?php echo ($result['project_state'] === 'OK') ? "selected" : null; ?>>Oklahoma</option>
+                                                            <option value="OR" <?php echo ($result['project_state'] === 'OR') ? "selected" : null; ?>>Oregon</option>
+                                                            <option value="PA" <?php echo ($result['project_state'] === 'PA') ? "selected" : null; ?>>Pennsylvania</option>
+                                                            <option value="RI" <?php echo ($result['project_state'] === 'RI') ? "selected" : null; ?>>Rhode Island</option>
+                                                            <option value="SC" <?php echo ($result['project_state'] === 'SC') ? "selected" : null; ?>>South Carolina</option>
+                                                            <option value="SD" <?php echo ($result['project_state'] === 'SD') ? "selected" : null; ?>>South Dakota</option>
+                                                            <option value="TN" <?php echo ($result['project_state'] === 'TN') ? "selected" : null; ?>>Tennessee</option>
+                                                            <option value="TX" <?php echo ($result['project_state'] === 'TX') ? "selected" : null; ?>>Texas</option>
+                                                            <option value="UT" <?php echo ($result['project_state'] === 'UT') ? "selected" : null; ?>>Utah</option>
+                                                            <option value="VT" <?php echo ($result['project_state'] === 'VT') ? "selected" : null; ?>>Vermont</option>
+                                                            <option value="VA" <?php echo ($result['project_state'] === 'VA') ? "selected" : null; ?>>Virginia</option>
+                                                            <option value="WA" <?php echo ($result['project_state'] === 'WA') ? "selected" : null; ?>>Washington</option>
+                                                            <option value="WV" <?php echo ($result['project_state'] === 'WV') ? "selected" : null; ?>>West Virginia</option>
+                                                            <option value="WI" <?php echo ($result['project_state'] === 'WI') ? "selected" : null; ?>>Wisconsin</option>
+                                                            <option value="WY" <?php echo ($result['project_state'] === 'WY') ? "selected" : null; ?>>Wyoming</option>
+                                                        </select></td>
+                                                    <td width="33.3%"><input type="text" name="p_zip" class="form-control mask-zip" placeholder="Zip" id="p_zip" value="<?php echo $result['project_zip']; ?>"></td>
+                                                </tr>
+                                            </table></td>
+                                        <td><label for="business_1">Business Phone</label></td>
+                                        <td><input type="text" name="business_1" class="form-control mask-phone" placeholder="Business Phone" id="business_1" value="<?php echo $result['contact1_business_ph']; ?>"></td>
+                                        <td><label for="business_2">Business Phone</label></td>
+                                        <td><input type="text" name="business_2" class="form-control mask-phone" placeholder="Business Phone" id="business_2" value="<?php echo $result['contact2_business_ph']; ?>"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dealer Phone:</td>
+                                        <td><?php echo $so_info['phone']; ?></td>
+                                        <td><label for="p_landline">Project Landline</label></td>
+                                        <td><input type="text" name="p_landline" class="form-control mask-phone" placeholder="Project Landline" id="p_landline" value="<?php echo $result['project_landline']; ?>"></td>
+                                        <td><label for="email_1">Email Address</label></td>
+                                        <td><input type="text" name="email_1" class="form-control" placeholder="Email Address" id="email_1" value="<?php echo $result['contact1_email']; ?>"></td>
+                                        <td><label for="email_2">Email Address</label></td>
+                                        <td><input type="text" name="email_2" class="form-control" placeholder="Email Address" id="email_2" value="<?php echo $result['contact2_email']; ?>"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dealer Email:</td>
+                                        <td><a href="mailto:<?php echo "{$so_info['email']}\">{$so_info['email']}"; ?></a></td>
                                     </tr>
                                 </table>
 

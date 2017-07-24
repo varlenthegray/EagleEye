@@ -229,6 +229,9 @@ require_once ("header_start.php");
 <script src="/assets/js/jquery.nicescroll.js"></script>
 <script src="/assets/plugins/switchery/switchery.min.js"></script>
 
+<!-- Mask -->
+<script src="/assets/plugins/jquery.mask.min.js"></script>
+
 <!-- Counter Up  -->
 <script src="/assets/plugins/waypoints/lib/jquery.waypoints.js"></script>
 <script src="/assets/plugins/counterup/jquery.counterup.min.js"></script>

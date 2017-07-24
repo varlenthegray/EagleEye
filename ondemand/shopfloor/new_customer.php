@@ -37,15 +37,6 @@ if($qry->num_rows > 0) {
                         <table style="width:100%;">
                             <tr>
                                 <td style="width: 33.3%;">
-                                    <select class="form-control" id="salesperson" name="salesperson">
-                                        <option value="Robert" selected disabled>Salesperson</option>
-                                        <option value="Robert">Robert</option>
-                                        <option value="Brent">Brent</option>
-                                        <option value="Cindy">Cindy</option>
-                                        <option value="Shane">Shane</option>
-                                    </select>
-                                </td>
-                                <td style="width: 33.3%;">
                                     <select class="form-control" id="contractor_dealer_code" name="contractor_dealer_code">
                                         <?php
                                         $dealer_qry = $dbconn->query("SELECT * FROM dealers");
