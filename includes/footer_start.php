@@ -265,5 +265,11 @@ require_once ("header_start.php");
 <!-- Datepicker -->
 <script src="/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
 
+<!-- Date/time picker -->
+<script src="/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+
 <!-- Date/Range Picker -->
 <script src="/assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
+
+<!-- Xeditable -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>

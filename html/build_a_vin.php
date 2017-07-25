@@ -413,3 +413,7 @@ require '../includes/header_start.php';
         </div>
     </div>
 </div>
+
+<script>
+    $("#room").editable();
+</script>
