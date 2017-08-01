@@ -140,7 +140,15 @@ require 'includes/header_end.php';
     $(".js_loading").show();
 
     $(function() {
-        loadPage(main_body);
+        <?php
+            if(!empty($_SESSION['shop_user'])) {
+                echo "loadPage('dashboard');";
+                echo "shop_logged_in = true;";
+            } else {
+                echo "loadPage('employees');";
+                echo "shop_logged_in = false;";
+            }
+        ?>
     });
 
     $("body")

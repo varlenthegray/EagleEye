@@ -167,6 +167,7 @@ require '../includes/header_start.php';
     <?php
     }
     ?>
+
     var active_table = $("#active_ops_global_table").DataTable({
         "ajax": "/ondemand/shopfloor/dashboard.php?action=display_active_jobs",
         "createdRow": function(row,data,dataIndex) {

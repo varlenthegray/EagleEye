@@ -24,7 +24,7 @@ switch($_SERVER['SCRIPT_NAME']) {
             <!-- End Logo container-->
 
             <div class="menu-extras">
-                <ul class="nav navbar-nav pull-right">
+                <ul class="nav navbar-nav pull-left">
                     <li class="nav-item">
                         <!-- Mobile menu toggle-->
                         <a class="navbar-toggle">
@@ -87,29 +87,6 @@ switch($_SERVER['SCRIPT_NAME']) {
                                 View All
                             </a>
 
-                        </div>
-                    </li>
-
-                    <li class="nav-item dropdown notification-list">
-                        <a class="nav-link dropdown-toggle arrow-none waves-effect waves-light nav-user" data-toggle="dropdown" href="#" role="button"
-                           aria-haspopup="false" aria-expanded="false">
-                            <img src="/assets/images/users/avatar-1.jpg" alt="user" class="img-circle">
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right dropdown-arrow profile-dropdown " aria-labelledby="Preview">
-                            <!-- item-->
-                            <div class="dropdown-item noti-title">
-                                <h5 class="text-overflow"><small>Welcome <?php echo ucwords($_SESSION['userInfo']['username']); ?>!</small> </h5>
-                            </div>
-
-                            <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                <i class="zmdi zmdi-account-circle"></i> <span>Profile</span>
-                            </a>
-
-                            <!-- item-->
-                            <a href="/login.php?logout=true" class="dropdown-item notify-item">
-                                <i class="zmdi zmdi-power"></i> <span>Logout</span>
-                            </a>
                         </div>
                     </li>
                 </ul>

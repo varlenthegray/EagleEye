@@ -2,7 +2,12 @@
 var timer;
 
 $("body")
-    .on("keyup", "#global_search", function() {
+    .on("keyup", "#global_search", function(e) {
+        if(e.keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+
         clearIntervals();
 
         var searchDisplay = $("#search_display");
@@ -46,7 +51,7 @@ $("body")
                     mainDisplay.show();
                     searchDisplay.hide();
                 }
-            }, 400);
+            }, 100);
         } else {
             mainDisplay.show();
             searchDisplay.hide();
@@ -130,9 +135,15 @@ $("body")
 
         $("#tr_single_room_" + active_room_id).show();
         $("#div_single_room_" + active_room_id).slideDown(250);
+
+        setTimeout(function() {
+            $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -125});
+        }, 300);
     })
     .on("click", "[id^=manage_bracket_]", function(e) {
         e.stopPropagation();
+
+        console.log("Managing the bracket");
 
         active_room_id = $(this).attr("id").replace('manage_bracket_', '');
 
@@ -150,6 +161,10 @@ $("body")
 
         $("#tr_room_bracket_" + active_room_id).show();
         $("#div_room_bracket_" + active_room_id).slideDown(250);
+
+        setTimeout(function() {
+            $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -100});
+        }, 300);
     })
     .on("click", ".activate_op", function() {
         var opid = $(this).data("opid");
@@ -307,12 +322,6 @@ $("body")
             $('body').append(data);
         });
     })
-    .on("keyup keypress", "#global_search", function(e) {
-        if(e.keyCode === 13) {
-            e.preventDefault();
-            return false;
-        }
-    })
     .on("click", "#global_search_button", function() {
-        $("#global_search").trigger();
+        $("#global_search").trigger("keyup");
     });

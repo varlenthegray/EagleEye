@@ -260,39 +260,38 @@ switch($_REQUEST['action']) {
 
         break;
     case 'save_so':
-        $account_type = sanitizeInput($_REQUEST['account_type']);
-        $salesperson = sanitizeInput($_REQUEST['salesperson']);
-        $contractor = sanitizeInput($_REQUEST['contractor']);
+        $dealer_code = sanitizeInput($_REQUEST['dealer_code']);
         $project = sanitizeInput($_REQUEST['project']);
-        $project_addr = sanitizeInput($_REQUEST['project_addr']);
-        $contractor_code = sanitizeInput($_REQUEST['contractor_code']);
-        $p_landline = sanitizeInput($_REQUEST['p_landline']);
-        $p_city = sanitizeInput($_REQUEST['p_city']);
-        $p_state = sanitizeInput($_REQUEST['p_state']);
-        $p_zip = sanitizeInput($_REQUEST['p_zip']);
         $contact_1 = sanitizeInput($_REQUEST['contact_1']);
-        $cell_1 = sanitizeInput($_REQUEST['cell_1']);
-        $business_1 = sanitizeInput($_REQUEST['business_1']);
-        $email_1 = sanitizeInput($_REQUEST['email_1']);
         $contact_2 = sanitizeInput($_REQUEST['contact_2']);
-        $cell_2 = sanitizeInput($_REQUEST['cell_2']);
-        $business_2 = sanitizeInput($_REQUEST['business_2']);
-        $email_2 = sanitizeInput($_REQUEST['email_2']);
         $physical_addr = sanitizeInput($_REQUEST['physical_addr']);
+        $project_addr = sanitizeInput($_REQUEST['project_addr']);
+        $cell_1 = sanitizeInput($_REQUEST['cell_1']);
+        $cell_2 = sanitizeInput($_REQUEST['cell_2']);
         $ph_city = sanitizeInput($_REQUEST['ph_city']);
         $ph_state = sanitizeInput($_REQUEST['ph_state']);
         $ph_zip = sanitizeInput($_REQUEST['ph_zip']);
-        $email_address = sanitizeInput($_REQUEST['email_address']);
-        $cell_phone = sanitizeInput($_REQUEST['cell_phone']);
+        $p_city = sanitizeInput($_REQUEST['p_city']);
+        $p_state = sanitizeInput($_REQUEST['p_state']);
+        $p_zip = sanitizeInput($_REQUEST['p_zip']);
+        $business_1 = sanitizeInput($_REQUEST['business_1']);
+        $business_2 = sanitizeInput($_REQUEST['business_2']);
+        $p_landline = sanitizeInput($_REQUEST['p_landline']);
+        $email_1 = sanitizeInput($_REQUEST['email_1']);
+        $email_2 = sanitizeInput($_REQUEST['email_2']);
+        $order_status = sanitizeInput($_REQUEST['order_status']);
         $so_num = sanitizeInput($_REQUEST['so_num']);
 
-        // TODO: FIX THIS! OUTDATED!
-        $dbconn->query("UPDATE customer SET account_type = '$account_type', salesperson = '$salesperson', dealer_contractor = '$contractor', project = '$project', addr_1 = '$project_addr',
-         dealer_code = '$contractor_code', pri_phone = '$p_landline', city = '$p_city', state = '$p_state', zip = '$p_zip', contact_1 = '$contact_1', contact_1_cell = '$cell_1', contact_1_business_ph = '$business_1',
-          contact_1_email = '$email_1', contact_2 = '$contact_2', contact_2_cell = '$cell_2', contact_2_business_ph = '$business_2', contact_2_email = '$email_2', phys_addr = '$physical_addr', phys_city = '$ph_city',
-           phys_state = '$ph_state', phys_zip = '$ph_zip', global_email = '$email_address', global_cell = '$cell_phone' WHERE sales_order_num = '$so_num'");
+        if($dbconn->query("UPDATE sales_order SET contractor_dealer_code = '$dealer_code', project = '$project', contact1_name = '$contact_1', contact2_name = '$contact_2', physical_addr = '$physical_addr',
+         project_addr = '$project_addr', contact1_cell = '$cell_1', contact2_cell = '$cell_2', physical_city = '$ph_city', physical_state = '$ph_state', physical_zip = '$ph_zip', project_city = '$p_city',
+          project_state = '$p_state', project_zip = '$p_zip', contact1_business_ph = '$business_1', contact2_business_ph = '$business_2', project_landline = '$p_landline', contact1_email = '$email_1', 
+           contact2_email = '$email_2', order_status = '$order_status' WHERE so_num = '$so_num'")) {
+            echo displayToast("success", "Successfully updated Sales Order information for $so_num.", "Updated Information");
+        } else {
+            dbLogSQLErr($dbconn);
+        }
 
-        echo displayToast("success", "Successfully updated Sales Order information.", "Updated Information");
+
 
         break;
     case 'add_iteration':

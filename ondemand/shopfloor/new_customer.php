@@ -42,7 +42,7 @@ if($qry->num_rows > 0) {
                                         $dealer_qry = $dbconn->query("SELECT * FROM dealers");
 
                                         while($dealer = $dealer_qry->fetch_assoc()) {
-                                            echo "<option value='{$dealer['id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
+                                            echo "<option value='{$dealer['dealer_id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
                                         }
                                         ?>
                                     </select>
@@ -323,7 +323,7 @@ if($qry->num_rows > 0) {
                                             $dealer_qry = $dbconn->query("SELECT * FROM dealers");
 
                                             while($dealer = $dealer_qry->fetch_assoc()) {
-                                                echo "<option value='{$dealer['id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
+                                                echo "<option value='{$dealer['dealer_id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
                                             }
                                         ?>
                                     </select>

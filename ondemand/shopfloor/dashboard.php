@@ -42,10 +42,12 @@ switch($_REQUEST['action']) {
         echo json_encode($output);
 
         break;
+
     case "quote_details":
         echo "Hello, my fair world.";
 
         break;
+
     case 'display_active_jobs':
         $output = array();
         $i = 0;

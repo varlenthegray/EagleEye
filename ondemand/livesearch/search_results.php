@@ -266,8 +266,8 @@ switch ($search) {
                 echo "  </tr>";
 
                 /** BEGIN ROOM INFORMATION */
-                echo "  <tr id='tr_room_{$result['so_num']}' style='display: none;'>";
-                echo "    <td colspan='8'><div id='div_room_{$result['so_num']}' style='display: none;'>";?>
+                echo "  <tr id='tr_room_{$result['so_num']}'>";
+                echo "    <td colspan='8'><div id='div_room_{$result['so_num']}'>";?>
 
                 <div class="col-md-12">
                     <div class="row">
@@ -1486,7 +1486,18 @@ switch ($search) {
                                     </tr>
                                     <tr>
                                         <td>Dealer Email:</td>
-                                        <td><a href="mailto:<?php echo "{$so_info['email']}\">{$so_info['email']}"; ?></a></td>
+                                        <td><?php echo "<a href='mailto:{$so_info['email']}'>{$so_info['email']}</a>"; ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td><label for="order_status">Order Status</label></td>
+                                        <td>
+                                            <select class="form-control" id="order_status" name="order_status">
+                                                <option <?php echo ($result['order_status'] === ')') ? "selected" : null; ?> value=")">Lost</option>
+                                                <option <?php echo ($result['order_status'] === '#') ? "selected" : null; ?> value="#">Quote</option>
+                                                <option <?php echo ($result['order_status'] === '$') ? "selected" : null; ?> value="$">Job</option>
+                                                <option <?php echo ($result['order_status'] === '(') ? "selected" : null; ?> value="(">Completed</option>
+                                            </select>
+                                        </td>
                                     </tr>
                                 </table>
 

@@ -15,9 +15,9 @@ use Carbon\Carbon; // prep carbon
                             <thead>
                             <tr>
                                 <th>Employee</th>
-                                <th>Logged In Time</th>
+                                <th>Clocked In Time</th>
                                 <th>Current Operations</th>
-                                <th>Time Logged In</th>
+                                <th>Time Clocked In</th>
                             </tr>
                             </thead>
                             <tbody id="room_search_table">
