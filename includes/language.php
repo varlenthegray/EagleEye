@@ -3,7 +3,7 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define("RELEASE_DATE", "7/19/17");
+define("RELEASE_DATE", "8/1/17");
 
 // Global definitions
 define("LOGO_TEXT", "Stone Mountain Cabinetry"); // The logo text displayed
@@ -54,3 +54,6 @@ define("NAV_JOBMANAGEMENT", "Job Management"); // Job Management page
 define("NAV_EMPLOYEELOGIN", "Employees"); // List of employees and ability to impersonate
 define("NAV_TASKS", "Tasks"); // Task list
 define("NAV_VIN", "VIN"); // VIN management page
+define("NAV_ADD_SO", "Add SO"); // Adding a SO
+define("NAV_FEEDBACK", "Feedback"); // Providing feedback
+define("NAV_LOGOUT", "Logout"); // Logging out completely

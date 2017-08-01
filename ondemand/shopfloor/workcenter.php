@@ -82,15 +82,33 @@ HEREDOC;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
+                if(!empty($op_queue['assigned_to'])) {
+                    $assigned_usrs = json_decode($op_queue['assigned_to']);
+
+                    $name = null;
+
+                    foreach($assigned_usrs as $usr) {
+                        $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$usr'");
+                        $usr = $usr_qry->fetch_assoc();
+
+                        $name .= $usr['name'] . ", ";
+                    }
+
+                    $assignee = substr($name, 0, -2);
+                } else {
+                    $assignee = "&nbsp;";
+                }
+
                 if(substr($op_queue['op_id'], -2) !== '98') {
                     $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `value` = '{$op_queue['product_type']}'");
                     $vin_schema = $vin_schema_qry->fetch_assoc();
 
                     $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$vin_schema['key']}{$op_queue['iteration']}";
                     $output['data'][$i][] = $op_queue['room_name'];
-                    $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['bracket']} <span class='tooltiptext'>{$op_queue['responsible_dept']} Team</span></div>";
+                    $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['responsible_dept']} <span class='tooltiptext'>{$op_queue['bracket']} Bracket</span></div>";
                     $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
                     $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['created']);
+                    $output['data'][$i][] = $assignee;
                     $output['data'][$i]['DT_RowId'] = $op_queue['so_parent'];
 
                     $i += 1;

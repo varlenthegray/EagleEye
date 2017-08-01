@@ -376,3 +376,31 @@ table tbody td {
   color: rgba(255, 255, 255, 0.8);
   font-weight: bold;
 }
+
+// adjust the search icon
+.app-search > a {
+  cursor: pointer;
+}
+
+.label-right {
+  label {
+    text-align: right;
+    width: 100%;
+  }
+}
+
+// adjusting the datatable search box
+.dt-search-l {
+  float: left;
+}
+
+// datatable header stuffs!
+.dt-custom-header {
+  float: left;
+  margin-top: 4px;
+}
+
+// adjustment for centering button
+.active-center-button {
+  margin-left: 12px;
+}

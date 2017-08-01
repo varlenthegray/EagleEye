@@ -3,6 +3,8 @@ var timer;
 
 $("body")
     .on("keyup", "#global_search", function() {
+        clearIntervals();
+
         var searchDisplay = $("#search_display");
         var mainDisplay = $("#main_display");
         var input = $("#global_search");
@@ -310,4 +312,7 @@ $("body")
             e.preventDefault();
             return false;
         }
+    })
+    .on("click", "#global_search_button", function() {
+        $("#global_search").trigger();
     });

@@ -9,14 +9,14 @@ require '../includes/header_start.php';
         <div class="card-box">
             <div class="col-md-12">
                 <form id="form_so_<?php echo $result['so_num']; ?>">
-                    <table width="100%" class="table table-custom-nb">
+                    <table width="100%" class="table table-custom-nb label-right">
                         <tr>
-                            <td>SO #</td>
+                            <td><label for="so_num">SO #</label></td>
                             <td><input type="text" class="form-control" id="so_num" name="so_num" placeholder="SO Number" /></td>
-                            <td>Room</td>
-                            <td><input type="text" class="form-control" id="room" name="room" placeholder="Room" /></td>
-                            <td>Iteration</td>
-                            <td><input type="text" class="form-control" id="iteration" name="iteration" placeholder="Iteration" /></td>
+                            <td><label for="room">Room</label></td>
+                            <td><select class="form-control" id="room"><option value="--" disabled selected>--</option></select></td>
+                            <td><label for="iteration">Iteration</label></td>
+                            <td><select class="form-control" id="iteration"><option value="--" disabled selected>--</option></select></td>
                         </tr>
                         <tr>
                             <td><label for="product_type">Product Type</label></td>
@@ -365,44 +365,6 @@ require '../includes/header_start.php';
                                     ?>
                                 </select>
                             </td>
-                            <td><label for="benjamin_moore_paints">Benjamin Moore Paints</label></td>
-                            <td>
-                                <select name="benjamin_moore_paints" id="benjamin_moore_paints" class="form-control">
-                                    <?php
-                                    $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'benjamin_moore_paints'");
-
-                                    while($segment = $segment_qry->fetch_assoc()) {
-                                        echo "<option value='{$segment['key']}'>{$segment['value']}</option>";
-                                    }
-                                    ?>
-                                </select>
-                            </td>
-                            <td><label for="benjamin_moore_stains">Benjamin Moore Stains</label></td>
-                            <td>
-                                <select name="benjamin_moore_stains" id="benjamin_moore_stains" class="form-control">
-                                    <?php
-                                    $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'benjamin_moore_stains'");
-
-                                    while($segment = $segment_qry->fetch_assoc()) {
-                                        echo "<option value='{$segment['key']}'>{$segment['value']}</option>";
-                                    }
-                                    ?>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label for="sherwin_williams_paints">Sherwin Williams Paints</label></td>
-                            <td>
-                                <select name="sherwin_williams_paints" id="sherwin_williams_paints" class="form-control">
-                                    <?php
-                                    $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sherwin_williams_paints'");
-
-                                    while($segment = $segment_qry->fetch_assoc()) {
-                                        echo "<option value='{$segment['key']}'>{$segment['value']}</option>";
-                                    }
-                                    ?>
-                                </select>
-                            </td>
                         </tr>
                         <tr>
                             <td colspan="10"><button type="button" class="pull-right btn btn-primary waves-effect waves-light w-sm">Update</button></td>
@@ -415,5 +377,34 @@ require '../includes/header_start.php';
 </div>
 
 <script>
-    $("#room").editable();
+    var sonum;
+
+    function update(sonum) {
+        $.post("/ondemand/livesearch/build_a_vin.php?search=room&so_num=" + sonum, function(data) {
+            $("#room").html(data);
+
+            $.post("/ondemand/livesearch/build_a_vin.php?search=iteration&so_num=" + sonum + "&room=" + $("#room option:selected").val(), function(data) {
+                $("#iteration").html(data);
+            });
+        });
+    }
+
+    $("#so_num").autocomplete({
+        source: '/ondemand/livesearch/build_a_vin.php?search=so_num',
+        minLength: 2,
+        select: function(e, ui) {
+            sonum = ui.item.value;
+            update(sonum);
+        }
+    });
+
+    $('body')
+        .on("change", "#room", function() {
+            $.post("/ondemand/livesearch/build_a_vin.php?search=iteration&so_num=" + sonum + "&room=" + $("#room option:selected").val(), function(data) {
+                $("#iteration").html(data);
+            })
+            .on("focus", "#room,#iteration", function() {
+
+            });
+    });
 </script>

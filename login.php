@@ -24,7 +24,7 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
 
                 echo "<script type='text/javascript'>window.location.replace('index.php');</script>";
             } else {
-                echo "<script type='text/javascript'>window.location.replace('shopfloor/login.php');</script>";
+                echo "<script type='text/javascript'>window.location.replace('index.php');</script>";
             }
 
             ?>

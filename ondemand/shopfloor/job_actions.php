@@ -490,13 +490,36 @@ HEREDOC;
 
         if($self_qry->num_rows > 0) {
             while($self = $self_qry->fetch_assoc()) {
-                $operation = $self['op_id'] . ": " . $self['job_title'];
+                if(!empty($self['subtask'])) {
+                    $subtask = " ({$self['subtask']})";
+                }
+
+                $operation = $self['op_id'] . ": " . $self['job_title'] . $subtask;
                 $start_time = ($self['resumed_time'] === null) ? date(TIME_ONLY, $self['start_time']) : date(TIME_ONLY, $self['resumed_time']);
+
+                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$self['product_type']}'");
+                $vin = $vin_qry->fetch_assoc();
+
+                $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$self['room_id']}'");
+                $room = $room_qry->fetch_assoc();
+
+                if(!empty($self['so_parent'])) {
+                    $so = "{$self['so_parent']}{$self['room']}-{$vin['key']}{$self['iteration']}";
+                } else {
+                    $so = "---------";
+                }
+
+                if(!empty($room['room_name'])) {
+                    $room = $room['room_name'];
+                } else {
+                    $room = "---------";
+                }
 
                 $time = Carbon::createFromTimestamp($self['start_time']); // grab the carbon timestamp
 
-                $output['data'][$i][] = $self['so_parent'];
-                $output['data'][$i][] = "{$self['room']}-{$self['iteration']}";
+                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left pause-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-pause'></i></button><button class='btn waves-effect btn-primary pull-left complete-operation' id='{$op_queue['queueID']}' style='margin-left:4px;'><i class='zmdi zmdi-stop'></i></button>";
+                $output['data'][$i][] = $so;
+                $output['data'][$i][] = $room;
                 $output['data'][$i][] = $self['responsible_dept'];
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = $start_time;
@@ -506,6 +529,7 @@ HEREDOC;
                 $i += 1;
             }
         } else {
+            $output['data'][$i][] = "&nbsp;";
             $output['data'][$i][] = "---------";
             $output['data'][$i][] = "---------";
             $output['data'][$i][] = "No current active operations";
@@ -529,27 +553,96 @@ HEREDOC;
         $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.*, rooms.* FROM op_queue
               JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id
                WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
-                AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) ORDER BY op_queue.so_parent, op_queue.room ASC;");
+                AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) 
+                 AND (assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR assigned_to IS NULL) ORDER BY op_queue.so_parent, op_queue.room ASC;");
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
                 $sonum = $op_queue['so_parent'] . "-" . $op_queue['room'];
-                $department = $op_queue['responsible_dept'];
                 $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
                 $release_date = date(DATE_DEFAULT, $op_queue['created']);
-                $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
-                $op_info_payload = json_encode($op_info);
 
                 $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$op_queue['product_type']}'");
                 $vin = $vin_qry->fetch_assoc();
 
+                $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$op_queue['room_id']}'");
+                $room = $room_qry->fetch_assoc();
+
+                if(!empty($op_queue['assigned_to'])) {
+                    $assigned_usrs = json_decode($op_queue['assigned_to']);
+
+                    $name = null;
+
+                    foreach($assigned_usrs as $usr) {
+                        $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$usr'");
+                        $usr = $usr_qry->fetch_assoc();
+
+                        $name .= $usr['name'] . ", ";
+                    }
+
+                    $assignee = substr($name, 0, -2);
+                } else {
+                    $assignee = "&nbsp;";
+                }
+
+                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-play'></i></button>";
                 $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$vin['key']}{$op_queue['iteration']}";
-                $output['data'][$i][] = $department;
+                $output['data'][$i][] = $room['room_name'];
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = $release_date;
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i][] = $assignee;
                 $output['data'][$i]['DT_RowId'] = $op_queue['queueID'];
+
+                $i += 1;
+            }
+        }
+
+//        $assigned_ops_qry = $dbconn->query("SELECT * FROM op_queue WHERE assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%'");
+
+        $assigned_ops_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.*, rooms.* FROM op_queue
+              JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id
+               WHERE completed = FALSE AND published = TRUE AND assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%' ORDER BY op_queue.so_parent, op_queue.room ASC;");
+
+        if($assigned_ops_qry->num_rows > 0) {
+            while($assigned_ops = $assigned_ops_qry->fetch_assoc()) {
+                $full_assigned_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.*, rooms.* FROM op_queue 
+                 JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE op_queue.id = '{$assigned_ops['queueID']}'");
+                $full_assigned_info = $full_assigned_qry->fetch_assoc();
+
+                $assigned_usrs = json_decode($full_assigned_info['assigned_to']);
+
+                $name = null;
+
+                foreach($assigned_usrs as $usr) {
+                    $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$usr'");
+                    $usr = $usr_qry->fetch_assoc();
+
+                    $name .= $usr['name'] . ", ";
+                }
+
+                $assignee = substr($name, 0, -2);
+
+                $sonum = $full_assigned_info['so_parent'] . "-" . $full_assigned_info['room'];
+                $operation = $full_assigned_info['op_id'] . ": " . $full_assigned_info['job_title'];
+                $release_date = date(DATE_DEFAULT, $full_assigned_info['created']);
+
+                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$full_assigned_info['product_type']}'");
+                $vin = $vin_qry->fetch_assoc();
+
+                $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$full_assigned_info['room_id']}'");
+                $room = $room_qry->fetch_assoc();
+
+                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-play'></i></button>";
+                $output['data'][$i][] = "{$full_assigned_info['so_parent']}{$full_assigned_info['room']}-{$vin['key']}{$full_assigned_info['iteration']}";
+                $output['data'][$i][] = $room['room_name'];
+                $output['data'][$i][] = $operation;
+                $output['data'][$i][] = $release_date;
+                $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i][] = $assignee;
+                $output['data'][$i]['DT_RowId'] = $full_assigned_info['queueID'];
 
                 $i += 1;
             }
@@ -560,16 +653,17 @@ HEREDOC;
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
                 $id = $op_queue['id'];
-                $department = $op_queue['responsible_dept'];
                 $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
                 $release_date = date(DATE_DEFAULT, $op_queue['created']);
                 $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
                 $op_info_payload = json_encode($op_info);
 
+                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-play'></i></button>";
                 $output['data'][$i][] = "---------";
-                $output['data'][$i][] = $department;
+                $output['data'][$i][] = "---------";
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = "Now";
+                $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i]['DT_RowId'] = $id;

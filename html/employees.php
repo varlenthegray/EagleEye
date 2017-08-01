@@ -93,7 +93,7 @@ use Carbon\Carbon; // prep carbon
 
                                     $final_ops = rtrim($final_ops, ", ");
 
-                                    echo "<tr class='cursor-hand login' data-login-id='{$result['id']}'>";
+                                    echo "<tr class='cursor-hand login' data-login-id='{$result['id']}' data-login-name='{$result['name']}'>";
                                     echo "<td>{$result['name']}</td>";
                                     echo "<td>$time</td>";
                                     echo "<td>$final_ops</td>";
@@ -112,16 +112,21 @@ use Carbon\Carbon; // prep carbon
 </div>
 
 <script>
-    $("body").on("click", ".login", function() {
-        userID = $(this).data("login-id");
+    $("#modalLogin").on("show.bs.modal", function(e) { // when we're triggering the show event
+        var userLine = $(e.relatedTarget); // grab the related line and information associated with it
+        var modal = $(this); // set the modal to this specific element
 
-        $.post("/ondemand/shopfloor/login_actions.php?action=login", {id: userID, pin: $("#loginPin").val()}, function(data) {
-            if (data === 'success') {
-                window.location.href = "/index.php";
-            } else {
-                displayToast("error", "Failed to log in, please try again.", "Login Failure");
-                $("#modalLogin").modal('hide');
-            }
-        });
+        modal.find('.modal-title').text('Hello ' + userLine.data("login-name")); // find and update the text to the login name from the data line
+
+        userID = userLine.data("login-id");
+
+        $("#loginPin").val(""); // clear out any previous entries/attempts
+    }).on("shown.bs.modal", function() { // once the modal form is completely shown
+        $("#loginPin").focus(); // set the focus (once the modal is fully painted on the canvas)
+    });
+
+    $("#loginPin").on("keypress", function(e) { // each time you press a key in the PIN field
+        if(e.keyCode === 13) // if hitting the enter key, do login
+            $("#clock_in").trigger("click"); // trigger the clockin button actions
     });
 </script>

@@ -23318,6 +23318,23 @@ table tbody td {
   color: rgba(255, 255, 255, 0.8);
   font-weight: bold; }
 
+.app-search > a {
+  cursor: pointer; }
+
+.label-right label {
+  text-align: right;
+  width: 100%; }
+
+.dt-search-l {
+  float: left; }
+
+.dt-custom-header {
+  float: left;
+  margin-top: 4px; }
+
+.active-center-button {
+  margin-left: 12px; }
+
 .cust-table {
   display: table;
   width: 100%;

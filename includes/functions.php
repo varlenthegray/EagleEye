@@ -16,8 +16,8 @@ HEREDOC;
 }
 
 // Log an SQL error
-function dbLogSQLErr($db, $toast = true) {
-    $sqlerror = $db->real_escape_string($db->error);
+function dbLogSQLErr($db, $toast = true, $err_override = null) {
+    $sqlerror = (!empty($err_override)) ? $sqlerror = $err_override : $sqlerror = sanitizeInput($db->error);
 
     if($qry = $db->query("INSERT INTO log_error (message, time, ref_page, type) VALUES ('$sqlerror', NOW(), '{$_SERVER['REQUEST_URI']}', 1)")) {
         $id = $db->insert_id;

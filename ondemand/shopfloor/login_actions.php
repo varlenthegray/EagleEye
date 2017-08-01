@@ -43,7 +43,7 @@ switch($_REQUEST['action']) {
         unset($_SESSION['shop_user']);
         unset($_SESSION['shop_active']);
 
-        header("Location: /shopfloor/login.php");
+        echo "success";
 
         break;
     case 'clock_out':

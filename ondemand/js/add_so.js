@@ -1,5 +1,5 @@
 $("body")
-    .on("click", "#btn_add_acct", function() {
+    .on("click", "#nav_add_so", function() {
         $.post('/ondemand/shopfloor/new_customer.php', function(data) {
             $("#modalAddCustomer").html(data).modal('show');
         });

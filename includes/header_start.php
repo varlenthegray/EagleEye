@@ -7,7 +7,7 @@ if(!$_SESSION['valid']){
 
 switch($_SESSION['userInfo']['account_type']) {
     case '6':
-        $whitelist = ["/shopfloor/login.php", "/shopfloor/index.php", "/ondemand/shopfloor/job_actions.php", "/ondemand/shopfloor/job_functions.php", "/ondemand/shopfloor/login_actions.php"];
+        $whitelist = ["/index.php", "/html/dashboard.php", "/html/employees.php", "/ondemand/shopfloor/dashboard.php", "/ondemand/shopfloor/login_actions.php", "/shopfloor/login.php"];
 
         if(!in_array($_SERVER['SCRIPT_NAME'], $whitelist)) {
             header("Location: /shopfloor/index.php");

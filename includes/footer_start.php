@@ -31,9 +31,7 @@ require_once ("header_start.php");
                 <?php echo date("Y"); ?> &copy; <?php echo FOOTER_TEXT; ?>
             </div>
 
-            <div class="col-xs-6 pull-right text-md-right"></div>
-            <button class="btn waves-effect waves-light btn-info pull-right" id="btn-feedback" data-toggle="modal" data-target="#feedback-page" style="margin:0 10px;"><i class="fa fa-lg fa-comment-o"></i></button>
-            <span style="line-height:22px;" class="pull-right"> <?php echo "RELEASE DATE " . RELEASE_DATE; ?></span>
+            <div class="col-xs-6 pull-right text-md-right"><?php echo "RELEASE DATE " . RELEASE_DATE; ?></div>
         </div>
 
         <div class="global-feedback"></div>

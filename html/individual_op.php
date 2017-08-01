@@ -3,24 +3,23 @@ require '../includes/header_start.php';
 ?>
 
 <div class="row" id="next_section">
-    <div class="col-md-12" id="main_window">
-        <div class="card-box" style="min-height: 511px;">
+    <div class="col-md-6" id="main_window">
+        <div class="card-box">
             <div class="col-md-12">
                 <div class="row">
                     <div class="col-md-12">
                         <h4 class="pull-left">Active Operations for <?php echo $_SESSION['shop_user']['name']; ?></h4>
 
-                        <h4 id="date-time" class="pull-right"></h4>
-
                         <table id="active_jobs_individual_table" class="table table-striped table-bordered">
                             <thead>
                             <tr>
-                                <th width="5%">SO#</th>
-                                <th width="5%">Room</th>
-                                <th width="20%">Department</th>
-                                <th width="37%">Operation</th>
-                                <th width="18%">Start/Resumed Time</th>
-                                <th width="15%">Active Time</th>
+                                <th width="43px">&nbsp;</th>
+                                <th width="50px">SO#</th>
+                                <th width="100px">Room</th>
+                                <th width="125px">Department</th>
+                                <th width="225px">Operation</th>
+                                <th width="90px">Activated Time</th>
+                                <th width="50px">Time In</th>
                             </tr>
                             </thead>
                             <tbody id="active_jobs_table">
@@ -34,6 +33,8 @@ require '../includes/header_start.php';
                         <h4><label for="viewing_queue">Queue for</label>
                             <select name="viewing_queue" id="viewing_queue">
                                 <?php
+                                echo "<option value='self'>{$_SESSION['shop_user']['name']}</option>";
+
                                 $deptartments = json_decode($_SESSION['shop_user']['department']);
                                 $default = $_SESSION['shop_user']['default_queue'];
 
@@ -57,12 +58,14 @@ require '../includes/header_start.php';
                         <table id="jiq_individual_table" class="table table-striped table-bordered">
                             <thead>
                             <tr>
+                                <th width="23px">&nbsp;</th>
                                 <th width="50px">SO#</th>
-                                <th width="100px">Department</th>
-                                <th width="175px">Operation</th>
-                                <th width="63px">Release Date</th>
-                                <th width="63px">Delivery Date</th>
-                                <th width="63px">Operation Time</th>
+                                <th width="100px">Room</th>
+                                <th width="225px">Operation</th>
+                                <th width="85px">Release Date</th>
+                                <th width="85px">Delivery Date</th>
+                                <th width="85px">Op Time</th>
+                                <th width="85px">Assignee</th>
                             </tr>
                             </thead>
                             <tbody id="job_queue_table">
@@ -128,9 +131,13 @@ require '../includes/header_start.php';
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand display-queued-job-info");
         },
-        "order": [[0,"desc"]],
+        "order": [[1,"desc"]],
         "dom": 'rti',
-        "pageLength": 25
+        "pageLength": 25,
+        "columnDefs": [{
+            "targets": [0],
+            "orderable": false
+        }]
     });
 
     var active_table = $("#active_jobs_individual_table").DataTable({
@@ -138,12 +145,16 @@ require '../includes/header_start.php';
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand display-active-job-info");
         },
-        "order": [[0,"desc"]],
+        "order": [[1,"desc"]],
         "dom": 'rti',
-        "pageLength": 25
+        "pageLength": 25,
+        "columnDefs": [{
+            "targets": [0],
+            "orderable": false
+        }]
     });
 
-    $("body")
+    /*$("body")
         .on("click", ".display-queued-job-info", function() {
             queueID = $(this).attr("id");
             operation = $(this).find('td:nth-child(3)').text();
@@ -298,7 +309,7 @@ require '../includes/header_start.php';
         .on("click", ".completion_code3", function() {
             $(".rework_reason_group").show();
             $("#rework_reason").focus();
-        });
+        });*/
 
     // just the modal timer, we're recording this upon execution of job so this is for "show" only
     $("#modalStartJob").on("show.bs.modal", function() {
@@ -308,13 +319,6 @@ require '../includes/header_start.php';
     }).on("hidden.bs.modal", function() {
         clearInterval(jobInterval);
     });
-
-    $("#date-time").html(moment().format("LLLL"));
-
-    // global time, it's a clock... what do you expect it to do?
-    indv_dt_interval = setInterval(function() {
-        $("#date-time").html(moment().format("LLLL"));
-    }, 1000);
 
     // real-time updating of the jobs and active queue, node.js feels like overkill right now but could be migrated to that at some point
     // note: attempting to keep codebase available to standard "web" objects only, even if that means additional refreshes sent to the server/strain

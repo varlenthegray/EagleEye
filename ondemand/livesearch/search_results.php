@@ -4,63 +4,6 @@ require_once ("../../includes/header_start.php");
 $find = sanitizeInput($_REQUEST['find']);
 $search = sanitizeInput($_REQUEST['search'], $dbconn);
 
-function searchIt($table, $column, $value) {
-    global $dbconn;
-    if($column === 'project') {
-        $addon_query = " OR dealer_code LIKE '%$value%' OR account_type LIKE '%$value%'";
-    }
-
-    $qry = $dbconn->query("SELECT * FROM $table WHERE $column LIKE '%$value%' $addon_query ORDER BY so_num DESC LIMIT 0,25");
-
-    if($qry->num_rows > 0) {
-        while($result = $qry->fetch_assoc()) {
-            $qry2 = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '{$result['so_num']}'");
-
-            $soColor = "job-color-green";
-
-            if($qry2->num_rows > 0) {
-                $bracketPri['sample'] = 4;
-                $bracketPri['main'] = 4;
-                $bracketPri['door'] = 4;
-                $bracketPri['customs'] = 4;
-
-                while($result2 = $qry2->fetch_assoc()) {
-                    $bracketPri['sample'] = ($result2['sample_bracket_priority'] < $bracketPri['sample']) ? $result2['sample_bracket_priority'] : $bracketPri['sample'];
-                    $bracketPri['main'] = ($result2['main_bracket_priority'] < $bracketPri['main']) ? $result2['main_bracket_priority'] : $bracketPri['main'];
-                    $bracketPri['door'] = ($result2['doordrawer_bracket_priority'] < $bracketPri['door']) ? $result2['doordrawer_bracket_priority'] : $bracketPri['door'];
-                    $bracketPri['customs'] = ($result2['customs_bracket_priority'] < $bracketPri['customs']) ? $result2['customs_bracket_priority'] : $bracketPri['customs'];
-                }
-
-                if(in_array("1", $bracketPri, true)) {
-                    $soColor = "job-color-red";
-                } elseif(in_array("2", $bracketPri, true)) {
-                    $soColor = "job-color-orange";
-                } elseif(in_array("3", $bracketPri, true)) {
-                    $soColor = "job-color-yellow";
-                }
-            }
-
-            $dealer_prefix = substr($result['dealer_code'], 0,3);
-
-            $dealer_qry = $dbconn->query("SELECT dealer_name FROM dealers WHERE dealer_id LIKE '%$dealer_prefix%'");
-            $dealer = $dealer_qry->fetch_assoc();
-
-            $account_type = ($result['account_type'] === 'R') ? "Retail" : "Wholesale";
-
-            echo "<tr class='cursor-hand $soColor' id='display_{$result['so_num']}'>";
-            echo "    <td>{$result['so_num']}</td>";
-            echo "    <td>{$result['job_type']}</td>";
-            echo "    <td>{$result['project']}</td>";
-            echo "    <td>{$result['salesperson']}</td>";
-            echo "    <td>{$result['dealer_code']}: {$dealer['dealer_name']}</td>";
-            echo "    <td>$account_type</td>";
-            echo "    <td>{$result['project_manager']}</td>";
-            echo "    <td width='26px'><button class='btn waves-effect btn-primary pull-right' id='edit_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button></td>";
-            echo "</tr>";
-        }
-    }
-}
-
 function determinePriority($priority) {
     switch($priority) {
         case 1:
@@ -197,18 +140,6 @@ HEREDOC;
 }
 
 switch ($search) {
-    case "sonum":
-        searchIt("sales_order", "so_num", $find);
-        break;
-    case "project":
-        searchIt("sales_order", "project", $find);
-        break;
-    case "contractor":
-        searchIt("sales_order", "contractor_dealer_code", $find);
-        break;
-    case "project_manager":
-        searchIt("sales_order", "project_manager", $find);
-        break;
     case "room":
         $qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$find'");
 
@@ -340,7 +271,7 @@ switch ($search) {
 
                 <div class="col-md-12">
                     <div class="row">
-                        <table width="100%" class="table">
+                        <table class="table pull-right" style="width:99%">
                             <thead>
                             <tr>
                                 <th colspan="2">ROOM</th>

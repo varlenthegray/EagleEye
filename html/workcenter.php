@@ -16,9 +16,10 @@ require '../includes/header_start.php';
                     <tr>
                         <th>SO#</th>
                         <th>Room Name</th>
-                        <th>Bracket</th>
+                        <th>Department</th>
                         <th>Operation</th>
                         <th>Release Date</th>
+                        <th>Assignee</th>
                     </tr>
                     </thead>
                     <tbody id="jiq_table"></tbody>
@@ -28,10 +29,10 @@ require '../includes/header_start.php';
     </div>
 
     <div class="col-md-6">
-        <div class="card-box table-responsive">
-            <div class="col-md-12">
-                <div class="row">
-                    <div class="col-md-12">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box table-responsive">
                         <h4>Active Jobs</h4>
 
                         <table id="active_jobs_global_table" class="table table-striped table-bordered" width="100%">
@@ -49,9 +50,11 @@ require '../includes/header_start.php';
                         </table>
                     </div>
                 </div>
+            </div>
 
-                <div class="row">
-                    <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card-box table-responsive">
                         <h4>Recently Completed Jobs</h4>
 
                         <table id="recently_completed_jobs_global_table" class="table table-striped table-bordered" width="100%">
@@ -69,8 +72,6 @@ require '../includes/header_start.php';
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
 
@@ -82,32 +83,6 @@ require '../includes/header_start.php';
 </div>
 
 <script>
-    if(!workcenter_scripts) {
-        $.getScript('/assets/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js');
-    }
-
-    $("body")
-        .on("click", ".wc-edit-queue", function() {
-            var id = $(this).attr("id");
-
-            window.location.replace("/shopfloor/job_management.php?lookup=" + id);
-        })
-        .on("click", "#wc-jiq-update", function() {
-            if(!$("#published").is(":checked")) {
-                var id = $(this).data("id");
-
-                $.post("/ondemand/shopfloor/workcenter.php?action=update_queued_job", {id: id}, function(data) {
-                    $('body').append(data);
-                });
-            } else {
-                displayToast("info", "Nothing to change.", "No changes");
-            }
-
-            $("#viewJobInfo").modal('hide');
-
-            jiq_table.ajax.reload(null,false);
-        });
-
     $("#job_started").datetimepicker({
         icons: {
             time: "fa fa-clock-o",
@@ -134,7 +109,8 @@ require '../includes/header_start.php';
         },
         "paging": false,
         scrollY: '68vh',
-        scrollCollapse: true
+        scrollCollapse: true,
+        "order": [[4, "asc"]]
     });
 
     var active_table = $("#active_jobs_global_table").DataTable({
