@@ -47,8 +47,8 @@ if($admin_flag_qry->num_rows > 0) {
     if(!(bool)$admin_flag['value']) {
         //echo ($dbconn->query("UPDATE user SET intro_code = '$intro_std' WHERE id <> 16;")) ? "Successful with updating intro_code for standard users.<br />" : "<b>Error</b> with updating intro_code for standard users.<br />";
         //echo ($dbconn->query("UPDATE user SET intro_code = '$intro_shop' WHERE id = 16;")) ? "Successful with updating intro_code for shop user.<br />" : "<b>Error</b> with updating intro_code for shop user.<br />";
-        echo ($dbconn->query("CREATE TABLE user_preferences (id INT PRIMARY KEY AUTO_INCREMENT,filters_enabled BOOLEAN DEFAULT FALSE);")) ? "Successful with creating user_preferences.<br />" : "<b>Error</b> with creating user_preferences.<br />";
-
+        echo ($dbconn->query("CREATE TABLE op_inprogress (id INT PRIMARY KEY AUTO_INCREMENT,room_id INT,operation_id INT,active BOOLEAN,rework_num INT,partially_completed BOOLEAN,created INT(20),active_employees VARCHAR(100),subtask VARCHAR(50),otf BOOLEAN,assigned_to INT);")) ? "Successful with creating ops in progress.<br />" : "<b>Error</b> with creating ops in progress.<br />";
+        echo ($dbconn->query("CREATE TABLE op_audittrail (id INT PRIMARY KEY AUTO_INCREMENT,room_id INT,operation_id INT,start_time INT(20),end_time INT(20),active BOOLEAN,completed BOOLEAN,rework BOOLEAN,notes TEXT,resumed BOOLEAN,partially_completed BOOLEAN,timestamp INT(20),active_employees VARCHAR(100),subtask VARCHAR(50),otf BOOLEAN,assigned_to INT);")) ? "Successful with creating new op audit trail.<br />" : "<b>Error</b> with creating new op audit trail.<br />";
 
         echo "<h1>Database prepared.</h1>";
 

@@ -283,7 +283,7 @@ switch ($search) {
                                     $ship_days_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'days_to_ship' AND `value` = '{$room['days_to_ship']}'");
                                     $ship_days = $ship_days_qry->fetch_assoc();
 
-                                    $room_name = "{$room['room']}-{$vin_result['key']}{$room['iteration']}-{$room['order_status']}{$ship_days['key']}: {$room['room_name']}";
+                                    $room_name = "{$room['room']}{$room['iteration']}-{$vin_result['key']}{$room['order_status']}{$ship_days['key']}: {$room['room_name']}";
 
                                     $salesPriority = determinePriority($room['sales_bracket_priority']);
                                     $preprodPriority = determinePriority($room['preproduction_bracket_priority']);

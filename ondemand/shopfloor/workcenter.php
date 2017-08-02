@@ -98,10 +98,7 @@ HEREDOC;
                 }
 
                 if(substr($op_queue['op_id'], -2) !== '98') {
-                    $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `value` = '{$op_queue['product_type']}'");
-                    $vin_schema = $vin_schema_qry->fetch_assoc();
-
-                    $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$vin_schema['key']}{$op_queue['iteration']}";
+                    $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$op_queue['iteration']}";
                     $output['data'][$i][] = $op_queue['room_name'];
                     $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['responsible_dept']} <span class='tooltiptext'>{$op_queue['bracket']} Bracket</span></div>";
                     $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
@@ -132,10 +129,7 @@ HEREDOC;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `value` = '{$op_queue['product_type']}'");
-                $vin_schema = $vin_schema_qry->fetch_assoc();
-
-                $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$vin_schema['key']}{$op_queue['iteration']}";
+                $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$op_queue['iteration']}";
                 $output['data'][$i][] = $op_queue['room_name'];
                 $output['data'][$i][] = $op_queue['bracket'];
                 $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
@@ -166,26 +160,17 @@ HEREDOC;
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $vin_schema_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `value` = '{$op_queue['product_type']}'");
-                $vin_schema = $vin_schema_qry->fetch_assoc();
-
                 if((bool)$op_queue['otf_created']) {
                     $tag = 'OTF';
                 } else {
-                    $tag = "{$vin_schema['key']}{$op_queue['iteration']}";
+                    $tag = "{$op_queue['iteration']}";
                 }
-
-                $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-$tag";
-                $output['data'][$i][] = $op_queue['room_name'];
-                $output['data'][$i][] = $op_queue['bracket'];
 
                 if(!empty($op_queue['subtask'])) {
                     $subtask = " ({$op_queue['subtask']})";
                 } else {
                     $subtask = NULL;
                 }
-
-                $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'] . $subtask;
 
                 $employees = json_decode($op_queue['active_employees']);
                 $active_emp = null;
@@ -199,13 +184,17 @@ HEREDOC;
 
                 $active_emp = rtrim($active_emp, ", ");
 
-                $output['data'][$i][] = $active_emp;
-
                 if($op_queue['resumed_time'] !== null) {
                     $start_resume_time = date(TIME_ONLY, $op_queue['resumed_time']);
                 } else {
                     $start_resume_time = date(TIME_ONLY, $op_queue['start_time']);
                 }
+
+                $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-$tag";
+                $output['data'][$i][] = $op_queue['room_name'];
+                $output['data'][$i][] = $op_queue['bracket'];
+                $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'] . $subtask;
+                $output['data'][$i][] = $active_emp;
 
                 $output['data'][$i][] = $start_resume_time;
 
