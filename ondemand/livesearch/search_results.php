@@ -35,7 +35,7 @@ function checkPublished($bracket) {
     $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$roomid'");
     $room = $room_qry->fetch_assoc();
 
-    return ((bool)$room[$bracket . "_published"]) ? '<strong style="font-size: 1.1em;"><i class="zmdi zmdi-assignment-check"></i></strong>' : NULL;
+    return ((bool)$room[$bracket . "_published"]) ? TRUE : FALSE;
 }
 
 function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
@@ -336,25 +336,16 @@ switch ($search) {
 
                                     $roomid = $room['id'];
 
-                                    $sales_published = checkPublished('sales');
-                                    $preprod_published = checkPublished('preproduction');
-                                    $sample_published = checkPublished('sample');
-                                    $door_published = checkPublished('doordrawer');
-                                    $customs_published = checkPublished('custom');
-                                    $main_published = checkPublished('main');
-                                    $shipping_published = checkPublished('shipping');
-                                    $install_published = checkPublished('install_bracket');
-
                                     $tab = ($room['iteration'] > 1.01) ? "<div class='pull-left' style='width:15px;'>&nbsp</div>" : null;
 
-                                    $sales_published_display = (!empty($sales_published)) ? "<td class='$salesPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $salesBracketName $sales_published</td>" : "<td>---</td>";
-                                    $preprod_published_display = (!empty($preprod_published)) ? "<td class='$samplePriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $sampleBracketName $sample_published</td>" : "<td>---</td>";
-                                    $sample_published_display = (!empty($sample_published)) ? "<td class='$preprodPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $preprodBracketName $preprod_published</td>" : "<td>---</td>";
-                                    $door_published_display = (!empty($door_published)) ? "<td class='$doorPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $doorBrackettName $door_published</td>" : "<td>---</td>";
-                                    $customs_published_display = (!empty($customs_published)) ? "<td class='$mainPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $mainBracketName $main_published</td>" : "<td>---</td>";
-                                    $main_published_display = (!empty($main_published)) ? "<td class='$customsPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $customsBracketName $customs_published</td>" : "<td>---</td>";
-                                    $shipping_published_display = (!empty($shipping_published)) ? "<td class='$shippingPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $shippingBracketName $shipping_published</td>" : "<td>---</td>";
-                                    $install_published_display = (!empty($install_published)) ? "<td class='$installPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $installBracketName $install_published</td>" : "<td>---</td>";
+                                    $sales_published_display = (checkPublished('sales')) ? "<td class='$salesPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $salesBracketName</td>" : "<td>---</td>";
+                                    $preprod_published_display = (checkPublished('preproduction')) ? "<td class='$samplePriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $sampleBracketName</td>" : "<td>---</td>";
+                                    $sample_published_display = (checkPublished('sample')) ? "<td class='$preprodPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $preprodBracketName</td>" : "<td>---</td>";
+                                    $door_published_display = (checkPublished('doordrawer')) ? "<td class='$doorPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $doorBrackettName</td>" : "<td>---</td>";
+                                    $customs_published_display = (checkPublished('custom')) ? "<td class='$mainPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $mainBracketName</td>" : "<td>---</td>";
+                                    $main_published_display = (checkPublished('main')) ? "<td class='$customsPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $customsBracketName</td>" : "<td>---</td>";
+                                    $shipping_published_display = (checkPublished('shipping')) ? "<td class='$shippingPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $shippingBracketName</td>" : "<td>---</td>";
+                                    $install_published_display = (checkPublished('install_bracket')) ? "<td class='$installPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $installBracketName</td>" : "<td>---</td>";
 
                                     echo "<tr class='cursor-hand' id='manage_bracket_{$room['id']}'>";
                                     echo "  <td style='width: 26px;'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button></td>";
