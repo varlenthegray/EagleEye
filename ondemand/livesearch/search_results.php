@@ -255,7 +255,7 @@ switch ($search) {
                 }
 
                 /** BEGIN LISTING OF SO'S */
-                echo "  <tr class='cursor-hand $soColor' id='show_room_{$result['so_num']}'>";
+                echo "  <tr class='cursor-hand' id='show_room_{$result['so_num']}'>";
                 echo "    <td width='26px'><button class='btn waves-effect btn-primary pull-right' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button></td>";
                 echo "    <td>{$result['so_num']}</td>";
                 echo "    <td>{$result['project']}</td>";
@@ -347,17 +347,26 @@ switch ($search) {
 
                                     $tab = ($room['iteration'] > 1.01) ? "<div class='pull-left' style='width:15px;'>&nbsp</div>" : null;
 
+                                    $sales_published_display = (!empty($sales_published)) ? "<td class='$salesPriority'>$salesBracketName $sales_published</td>" : "<td>---</td>";
+                                    $preprod_published_display = (!empty($preprod_published)) ? "<td class='$samplePriority'>$sampleBracketName $sample_published</td>" : "<td>---</td>";
+                                    $sample_published_display = (!empty($sample_published)) ? "<td class='$preprodPriority'>$preprodBracketName $preprod_published</td>" : "<td>---</td>";
+                                    $door_published_display = (!empty($door_published)) ? "<td class='$doorPriority'>$doorBrackettName $door_published</td>" : "<td>---</td>";
+                                    $customs_published_display = (!empty($customs_published)) ? "<td class='$mainPriority'>$mainBracketName $main_published</td>" : "<td>---</td>";
+                                    $main_published_display = (!empty($main_published)) ? "<td class='$customsPriority'>$customsBracketName $customs_published</td>" : "<td>---</td>";
+                                    $shipping_published_display = (!empty($shipping_published)) ? "<td class='$shippingPriority'>$shippingBracketName $shipping_published</td>" : "<td>---</td>";
+                                    $install_published_display = (!empty($install_published)) ? "<td class='$installPriority'>$installBracketName $install_published</td>" : "<td>---</td>";
+
                                     echo "<tr class='cursor-hand' id='show_single_room_{$room['id']}'>";
                                     echo "  <td style='width: 26px;'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td>";
                                     echo "  <td>{$tab}{$room_name}</td>";
-                                    echo "  <td class='$salesPriority'>$salesBracketName $sales_published</td>";
-                                    echo "  <td class='$samplePriority'>$sampleBracketName $sample_published</td>";
-                                    echo "  <td class='$preprodPriority'>$preprodBracketName $preprod_published</td>";
-                                    echo "  <td class='$doorPriority'>$doorBrackettName $door_published</td>";
-                                    echo "  <td class='$mainPriority'>$mainBracketName $main_published</td>";
-                                    echo "  <td class='$customsPriority'>$customsBracketName $customs_published</td>";
-                                    echo "  <td class='$shippingPriority'>$shippingBracketName $shipping_published</td>";
-                                    echo "  <td class='$installPriority'>$installBracketName $install_published</td>";
+                                    echo "  $sales_published_display";
+                                    echo "  $preprod_published_display";
+                                    echo "  $sample_published_display";
+                                    echo "  $door_published_display";
+                                    echo "  $customs_published_display";
+                                    echo "  $main_published_display";
+                                    echo "  $shipping_published_display";
+                                    echo "  $install_published_display";
                                     echo "</tr>";
 
                                     /** BEGIN SINGLE ROOM DISPLAY */
