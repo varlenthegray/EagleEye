@@ -27,9 +27,8 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
                 echo "<script type='text/javascript'>window.location.replace('index.php');</script>";
             }
 
-            ?>
-
-            <?php
+            $user_prefs_qry = $dbconn->query("SELECT * FROM user_preferences WHERE id = '{$result['id']}'");
+            $_SESSION['user_prefs'] = ($user_prefs_qry->num_rows > 0) ? $user_prefs_qry->fetch_assoc() : $user_prefs = null;
         } else {
             ?>
             <script type="text/javascript">

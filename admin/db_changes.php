@@ -45,9 +45,9 @@ if($admin_flag_qry->num_rows > 0) {
     $admin_flag = $admin_flag_qry->fetch_assoc();
 
     if(!(bool)$admin_flag['value']) {
-        echo ($dbconn->query("UPDATE user SET intro_code = '$intro_std' WHERE id <> 16;")) ? "Successful with updating intro_code for standard users.<br />" : "<b>Error</b> with updating intro_code for standard users.<br />";
-        echo ($dbconn->query("UPDATE user SET intro_code = '$intro_shop' WHERE id = 16;")) ? "Successful with updating intro_code for shop user.<br />" : "<b>Error</b> with updating intro_code for shop user.<br />";
-        echo ($dbconn->query("ALTER TABLE sales_order ADD order_status CHAR NULL;")) ? "Successful with adding order status to sales order.<br />" : "<b>Error</b> with adding order status to sales order.<br />";
+        //echo ($dbconn->query("UPDATE user SET intro_code = '$intro_std' WHERE id <> 16;")) ? "Successful with updating intro_code for standard users.<br />" : "<b>Error</b> with updating intro_code for standard users.<br />";
+        //echo ($dbconn->query("UPDATE user SET intro_code = '$intro_shop' WHERE id = 16;")) ? "Successful with updating intro_code for shop user.<br />" : "<b>Error</b> with updating intro_code for shop user.<br />";
+        echo ($dbconn->query("CREATE TABLE user_preferences (id INT PRIMARY KEY AUTO_INCREMENT,filters_enabled BOOLEAN DEFAULT FALSE);")) ? "Successful with creating user_preferences.<br />" : "<b>Error</b> with creating user_preferences.<br />";
 
 
         echo "<h1>Database prepared.</h1>";

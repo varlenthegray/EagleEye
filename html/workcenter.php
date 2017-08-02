@@ -9,8 +9,6 @@ require '../includes/header_start.php';
     <div class="col-md-6">
         <div class="card-box table-responsive">
             <div class="col-md-12 workcenter-table">
-                <h4>Jobs in Queue</h4>
-
                 <table id="jobs_in_queue_global_table" class="table table-striped table-bordered" width="100%">
                     <thead>
                     <tr>
@@ -33,8 +31,6 @@ require '../includes/header_start.php';
             <div class="row">
                 <div class="col-md-12">
                     <div class="card-box table-responsive">
-                        <h4>Active Jobs</h4>
-
                         <table id="active_jobs_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
@@ -55,8 +51,6 @@ require '../includes/header_start.php';
             <div class="row">
                 <div class="col-md-12">
                     <div class="card-box table-responsive">
-                        <h4>Recently Completed Jobs</h4>
-
                         <table id="recently_completed_jobs_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
@@ -111,7 +105,10 @@ require '../includes/header_start.php';
         scrollY: '68vh',
         scrollCollapse: true,
         "order": [[4, "asc"]],
-        "dom": "tipr"
+        "dom": '<"#jiq_header.dt-custom-header"><?php echo ((bool)$_SESSION['user_prefs']['filters_enabled']) ? "ftipr" : "tipr"; ?>',
+        "oLanguage": {
+            "sSearch": "Filter: "
+        }
     });
 
     var active_table = $("#active_jobs_global_table").DataTable({
@@ -119,7 +116,10 @@ require '../includes/header_start.php';
         "pageLength": 25,
         scrollY: '25.65vh',
         scrollCollapse: true,
-        "dom": "tipr"
+        "dom": '<"#active_header.dt-custom-header"><?php echo ((bool)$_SESSION['user_prefs']['filters_enabled']) ? "ftipr" : "tipr"; ?>',
+        "oLanguage": {
+            "sSearch": "Filter: "
+        }
     });
 
     var completed_table = $("#recently_completed_jobs_global_table").DataTable({
@@ -128,8 +128,15 @@ require '../includes/header_start.php';
         "order": [[3, "desc"]],
         scrollY: '25.65vh',
         scrollCollapse: true,
-        "dom": "tipr"
+        "dom": '<"#completed_header.dt-custom-header"><?php echo ((bool)$_SESSION['user_prefs']['filters_enabled']) ? "ftipr" : "tipr"; ?>',
+        "oLanguage": {
+            "sSearch": "Filter: "
+        }
     });
+
+    $("#jiq_header").html("<h4>Jobs in Queue</h4>");
+    $("#active_header").html("<h4>Active Jobs</h4>");
+    $("#completed_header").html("<h4>Completed Jobs</h4>");
 
     wc_auto_interval = setInterval(function() {
         jiq_table.ajax.reload(null,false);
