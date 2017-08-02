@@ -168,7 +168,7 @@ switch($_REQUEST['action']) {
                 }
 
                 $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-play'></i></button>";
-                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$vin['key']}{$op_queue['iteration']}";
+                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
                 $output['data'][$i][] = $room['room_name'];
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = $release_date;
