@@ -80,7 +80,7 @@ require 'includes/header_end.php';
 </div><!-- /.modal -->
 
 <!-- Global Search loading, required for global search to work -->
-<script src="/ondemand/js/global_search.js"></script>
+<script src="/ondemand/js/global_search.js?random=<?php echo rand(0,1500); ?>"></script>
 
 <!-- Adding SO to the system -->
 <script src="/ondemand/js/add_so.js"></script>
