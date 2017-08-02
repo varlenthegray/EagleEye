@@ -107,7 +107,7 @@ require '../includes/header_start.php';
 <script>
     function updateQueuedJobs() {
         queue = $('#viewing_queue').val();
-        queue_table.ajax.url("/ondemand/shopfloor/dashboard.php?action=display_job_queue&queue=" + queue).load();
+        queue_table.ajax.url("/ondemand/shopfloor/dashboard.php?action=display_job_queue&queue=" + queue).load(null,false);
     }
 
     var op_queue_list = "<?php
