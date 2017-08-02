@@ -118,7 +118,9 @@ $("body")
         $("#tr_room_" + active_so_num).show();
         $("#div_room_" + active_so_num).slideDown(250);
     })
-    .on("click", "[id^=show_single_room_]", function() {
+    .on("click", "[id^=show_single_room_]", function(e) {
+        e.stopPropagation();
+
         $("[id^=show_single_room_]").removeClass("active_room_line");
         $(".add_room_trigger").removeClass("active_room_line");
 
