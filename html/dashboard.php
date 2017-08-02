@@ -14,7 +14,6 @@ require '../includes/header_start.php';
                         <table id="quote_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
-                                <th width="26px">&nbsp;</th>
                                 <th>Quote</th>
                             </tr>
                             </thead>
@@ -145,7 +144,7 @@ require '../includes/header_start.php';
             "targets": [0],
             "orderable": false
         }],
-        "order": [[1, "desc"]]
+        "order": [[0, "asc"]]
     });
 
     var order_table = $("#orders_global_table").DataTable({
@@ -156,7 +155,8 @@ require '../includes/header_start.php';
         "paging": false,
         scrollY: '25.65vh',
         scrollCollapse: true,
-        "dom": '<"#order_header.dt-custom-header">tipr'
+        "dom": '<"#order_header.dt-custom-header">tipr',
+        "order": [[0, "asc"]]
     });
     <?php
     }

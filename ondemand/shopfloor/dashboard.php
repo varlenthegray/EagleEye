@@ -13,7 +13,6 @@ switch($_REQUEST['action']) {
 
         if($quote_qry->num_rows > 0) {
             while($quote = $quote_qry->fetch_assoc()) {
-                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-right view_quote_info' id='quote_{$quote['so_num']}'> <i class='zmdi zmdi-collection-text'></i> </button>";
                 $output['data'][$i][] = "{$quote['so_num']}_{$quote['contractor_dealer_code']}_{$quote['project']}";
                 $output['data'][$i]['DT_RowId'] = $quote['so_num'];
 
