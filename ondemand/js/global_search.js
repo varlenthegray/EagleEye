@@ -2,12 +2,7 @@
 var timer;
 
 $("body")
-    .on("keyup", "#global_search", function(e) {
-        if(e.keyCode === 13) {
-            e.preventDefault();
-            return false;
-        }
-
+    .on("keyup", "#global_search", function() {
         clearIntervals();
 
         var searchDisplay = $("#search_display");
@@ -326,4 +321,14 @@ $("body")
     })
     .on("click", "#global_search_button", function() {
         $("#global_search").trigger("keyup");
+    })
+    .on("keyup keypress", "#global_search", function(e) {
+        if(e.keyCode === 13) {
+            e.preventDefault();
+
+            $("#global_search").trigger("keyup");
+
+
+            return false;
+        }
     });
