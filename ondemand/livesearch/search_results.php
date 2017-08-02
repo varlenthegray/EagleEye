@@ -339,8 +339,8 @@ switch ($search) {
                                     $tab = ($room['iteration'] > 1.01) ? "<div class='pull-left' style='width:15px;'>&nbsp</div>" : null;
 
                                     $sales_published_display = (checkPublished('sales')) ? "<td class='$salesPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $salesBracketName</td>" : "<td>---</td>";
-                                    $preprod_published_display = (checkPublished('preproduction')) ? "<td class='$samplePriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $sampleBracketName</td>" : "<td>---</td>";
-                                    $sample_published_display = (checkPublished('sample')) ? "<td class='$preprodPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $preprodBracketName</td>" : "<td>---</td>";
+                                    $preprod_published_display = (checkPublished('sample')) ? "<td class='$samplePriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $sampleBracketName</td>" : "<td>---</td>";
+                                    $sample_published_display = (checkPublished('preproduction')) ? "<td class='$preprodPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $preprodBracketName</td>" : "<td>---</td>";
                                     $door_published_display = (checkPublished('doordrawer')) ? "<td class='$doorPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $doorBrackettName</td>" : "<td>---</td>";
                                     $customs_published_display = (checkPublished('custom')) ? "<td class='$mainPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $mainBracketName</td>" : "<td>---</td>";
                                     $main_published_display = (checkPublished('main')) ? "<td class='$customsPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $customsBracketName</td>" : "<td>---</td>";
@@ -734,13 +734,11 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                         </table>
-
-                                                        <div class="col-md-12 text-md-right" style="margin: 10px 0;">
-                                                            <button type="button" class="btn btn-primary waves-effect waves-light w-xs save_bracket" data-roomid="<?php echo $room['id']; ?>">Save</button>
-                                                        </div>
                                                     </form>
                                                 </div>
                                             </div>
+
+                                            <button type="button" class="btn btn-primary waves-effect waves-light w-xs save_bracket floating-button-left" data-roomid="<?php echo $room['id']; ?>">Save</button>
                                         </div>
 
                                         <?php echo "</div></td>";
