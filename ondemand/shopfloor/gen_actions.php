@@ -214,9 +214,9 @@ switch($_REQUEST['action']) {
         $ops = $_REQUEST['active_ops'];
         $roomid = sanitizeInput($_REQUEST['roomid']);
 
-        $active_qry = $dbconn->query("SELECT * FROM op_queue WHERE room_id = '$roomid' AND active = TRUE;");
+        //$active_qry = $dbconn->query("SELECT * FROM op_queue WHERE room_id = '$roomid' AND active = TRUE;");
 
-        if($active_qry->num_rows === 0) {
+        //if($active_qry->num_rows === 0) {
             $sales_op = sanitizeInput($_REQUEST['sales_bracket']);
             $sample_op = sanitizeInput($_REQUEST['sample_bracket']);
             $preprod_op = sanitizeInput($_REQUEST['preproduction_bracket']);
@@ -254,9 +254,9 @@ switch($_REQUEST['action']) {
             } else {
                 dbLogSQLErr($dbconn);
             }
-        } else {
-            echo displayToast("error", "Unable to update brackets, there is an active operation for this room.", "Active Operation");
-        }
+//        } else {
+//            echo displayToast("error", "Unable to update brackets, there is an active operation for this room.", "Active Operation");
+//        }
 
         break;
     case 'save_so':
