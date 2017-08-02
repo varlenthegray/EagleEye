@@ -3,21 +3,16 @@ require ("../includes/header_start.php");
 
 outputPHPErrs();
 
-$self_qry = $dbconn->query("SELECT * FROM user WHERE id = '2'");
-$self = $self_qry->fetch_assoc();
+$rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE individual_bracket_buildout LIKE '%86,87,88,19%'");
 
-if(!empty($self['multi_department'])) {
-    $queue_qry_part = "(";
+if($rooms_qry->num_rows > 0) {
+    while($rooms = $rooms_qry->fetch_assoc()) {
+        $first_slice = explode("86,87,88,19", $rooms['individual_bracket_buildout']);
 
-    $departments = json_decode($self['multi_department']);
+        $middle_slice = "110,111,112,113,114,115,19";
 
-    foreach($departments as $department) {
-        $queue_qry_part .= "operations.responsible_dept = '$department' OR ";
+        $final_slice = $first_slice[0] . $middle_slice . $first_slice[1];
+
+        $dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$final_slice' WHERE id = '{$rooms['id']}'");
     }
-
-    $queue_qry_part = substr($queue_qry_part, 0, -4);
-
-    $queue_qry_part .= ")";
 }
-
-echo $queue_qry_part;

@@ -239,21 +239,6 @@ switch ($search) {
                 $dealer_qry = $dbconn->query("SELECT dealer_name FROM dealers WHERE dealer_id LIKE '%$dealer_prefix%'");
                 $dealer = $dealer_qry->fetch_assoc();
 
-                switch($result['account_type']) {
-                    case 'R':
-                        $account_type = "Retail";
-                        break;
-                    case 'W':
-                        $account_type = "Wholesale";
-                        break;
-                    case 'D':
-                        $account_type = "Distribution";
-                        break;
-                    default:
-                        $account_type = "<i>Unknown</i>";
-                        break;
-                }
-
                 /** BEGIN LISTING OF SO'S */
                 echo "  <tr class='cursor-hand' id='show_room_{$result['so_num']}'>";
                 echo "    <td width='26px'><button class='btn waves-effect btn-primary pull-right' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button></td>";
@@ -261,7 +246,6 @@ switch ($search) {
                 echo "    <td>{$result['project']}</td>";
                 echo "    <td>{$result['salesperson']}</td>";
                 echo "    <td>{$result['contractor_dealer_code']}: {$dealer['dealer_name']}</td>";
-                echo "    <td>$account_type</td>";
                 echo "    <td>{$result['project_mgr']}</td>";
                 echo "  </tr>";
 

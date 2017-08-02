@@ -112,9 +112,9 @@ switch($_SERVER['SCRIPT_NAME']) {
                     <?php
                         } else {
                     ?>
-                    <form role="search" class="navbar-left app-search pull-left hidden-xs" _lpchecked="1">
+                    <div role="search" class="navbar-left app-search pull-left hidden-xs" _lpchecked="1">
                         <input type="text" placeholder="Search..." class="form-control" id="global_search" name="global_search"><a id="global_search_button"><i class="fa fa-search"></i></a>
-                    </form>
+                    </div>
                     <li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>
                     <li id="nav_dashboard"><a><i class="zmdi zmdi-view-dashboard m-r-5"></i><span><?php echo NAV_DASHBOARD; ?></span></a></li>
                     <li id="nav_workcenter"><a><i class="zmdi zmdi-receipt m-r-5"></i><span><?php echo NAV_WORKCENTER; ?></span></a></li>

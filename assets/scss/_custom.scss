@@ -340,7 +340,7 @@ table tbody td {
   padding-left: 10px;
 }
 
-#topnav .navigation-menu a:hover {
+#topnav .navigation-menu li a:hover {
   cursor: pointer;
 
   &:hover {
@@ -403,4 +403,12 @@ table tbody td {
 // adjustment for centering button
 .active-center-button {
   margin-left: 12px;
+}
+
+// floating left button!
+.floating-button-left {
+  position: fixed;
+  z-index: 1000;
+  top: 270px;
+  left: 40px;
 }

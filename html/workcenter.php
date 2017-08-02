@@ -110,14 +110,16 @@ require '../includes/header_start.php';
         "paging": false,
         scrollY: '68vh',
         scrollCollapse: true,
-        "order": [[4, "asc"]]
+        "order": [[4, "asc"]],
+        "dom": "tipr"
     });
 
     var active_table = $("#active_jobs_global_table").DataTable({
         "ajax": "/ondemand/shopfloor/workcenter.php?action=display_active_jobs",
         "pageLength": 25,
         scrollY: '25.65vh',
-        scrollCollapse: true
+        scrollCollapse: true,
+        "dom": "tipr"
     });
 
     var completed_table = $("#recently_completed_jobs_global_table").DataTable({
@@ -125,7 +127,8 @@ require '../includes/header_start.php';
         "pageLength": 25,
         "order": [[3, "desc"]],
         scrollY: '25.65vh',
-        scrollCollapse: true
+        scrollCollapse: true,
+        "dom": "tipr"
     });
 
     wc_auto_interval = setInterval(function() {

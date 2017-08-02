@@ -33,7 +33,6 @@ require 'includes/header_end.php';
                         <th>PROJECT/CUSTOMER PO</th>
                         <th>SALESPERSON</th>
                         <th>DEALER/CONTRACTOR</th>
-                        <th>ACCOUNT TYPE</th>
                         <th>PROJECT MANAGER/CONTACT</th>
                     </tr>
                     </thead>

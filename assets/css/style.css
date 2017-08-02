@@ -23296,9 +23296,9 @@ table tbody td {
 #topnav .navigation-menu > li > a {
   padding-left: 10px; }
 
-#topnav .navigation-menu a:hover {
+#topnav .navigation-menu li a:hover {
   cursor: pointer; }
-  #topnav .navigation-menu a:hover:hover {
+  #topnav .navigation-menu li a:hover:hover {
     background-color: rgba(0, 0, 0, 0.2); }
 
 .app-search .form-control {
@@ -23334,6 +23334,12 @@ table tbody td {
 
 .active-center-button {
   margin-left: 12px; }
+
+.floating-button-left {
+  position: fixed;
+  z-index: 1000;
+  top: 270px;
+  left: 40px; }
 
 .cust-table {
   display: table;

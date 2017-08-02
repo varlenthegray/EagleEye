@@ -127,7 +127,7 @@ HEREDOC;
 
         break;
     case 'display_recently_completed':
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.so_parent AS op_queueSOParent, op_queue.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active = FALSE AND completed = TRUE ORDER BY op_queue.end_time,  op_queue.so_parent DESC, operations.op_id DESC;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.so_parent AS op_queueSOParent, op_queue.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active = FALSE AND completed = TRUE ORDER BY op_queue.end_time,  op_queue.so_parent DESC, operations.op_id DESC LIMIT 0,250;");
 
         $output = array();
         $i = 0;

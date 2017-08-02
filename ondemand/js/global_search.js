@@ -52,9 +52,24 @@ $("body")
             searchDisplay.hide();
         }
     })
+    .on("keyup keypress", "#global_search", function(e) {
+        if(e.keyCode === 13) {
+            e.preventDefault();
+
+            $("#global_search").trigger("keyup");
+
+
+            return false;
+        }
+    })
+    .on("click", "#global_search_button", function() {
+        $("#global_search").trigger("keyup");
+    })
+
     .on("click", "#btn_search_to_main", function() {
         backFromSearch();
     })
+
     .on("click", ".wc-edit-queue", function() {
         $("#global_search").val($(this).attr("id")).trigger("keyup");
     })
@@ -73,6 +88,7 @@ $("body")
 
         jiq_table.ajax.reload(null,false);
     })
+
     .on("click", "[id^=edit_so_]", function(e) {
         e.stopPropagation();
 
@@ -137,6 +153,7 @@ $("body")
             $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -125});
         }, 300);
     })
+
     .on("click", "[id^=manage_bracket_]", function(e) {
         e.stopPropagation();
 
@@ -205,6 +222,7 @@ $("body")
 
         $(this).parent().remove();
     })
+
     .on("click", ".add_room_trigger", function() {
         $("[id^=show_single_room_]").removeClass("active_room_line");
         $(".add_room_trigger").removeClass("active_room_line");
@@ -291,6 +309,7 @@ $("body")
         $("#tr_iteration_" + active_room_id).show();
         $("#div_iteration_" + active_room_id).slideDown(250);
     })
+
     .on("click", ".save_bracket", function() {
         var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
         var selected_ops = $("#form_bracket_" + active_room_id).serialize();
@@ -303,6 +322,7 @@ $("body")
             $('body').append(data);
         });
     })
+
     .on("click", ".save_so", function() {
         var so_info = $("#form_so_" + active_so_num).serialize();
 
@@ -310,6 +330,7 @@ $("body")
             $("body").append(data);
         });
     })
+
     .on("click", ".iteration_save", function(e) {
         e.stopPropagation();
 
@@ -318,17 +339,4 @@ $("body")
         $.post("/ondemand/shopfloor/gen_actions.php?action=add_iteration&" + iteration_info, function(data) {
             $('body').append(data);
         });
-    })
-    .on("click", "#global_search_button", function() {
-        $("#global_search").trigger("keyup");
-    })
-    .on("keyup keypress", "#global_search", function(e) {
-        if(e.keyCode === 13) {
-            e.preventDefault();
-
-            $("#global_search").trigger("keyup");
-
-
-            return false;
-        }
     });

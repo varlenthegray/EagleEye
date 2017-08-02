@@ -140,10 +140,7 @@ require '../includes/header_start.php';
         "paging": false,
         scrollY: '25.65vh',
         scrollCollapse: true,
-        "dom": '<"#quote_header.dt-custom-header">ftipr',
-        "oLanguage": {
-            "sSearch": "Filter:"
-        },
+        "dom": '<"#quote_header.dt-custom-header">tipr',
         "columnDefs": [{
             "targets": [0],
             "orderable": false
@@ -159,10 +156,7 @@ require '../includes/header_start.php';
         "paging": false,
         scrollY: '25.65vh',
         scrollCollapse: true,
-        "dom": '<"#order_header.dt-custom-header">ftipr',
-        "oLanguage": {
-            "sSearch": "Filter:"
-        }
+        "dom": '<"#order_header.dt-custom-header">tipr'
     });
     <?php
     }
@@ -176,10 +170,7 @@ require '../includes/header_start.php';
         "paging": false,
         scrollY: '25.65vh',
         scrollCollapse: true,
-        "dom": '<"#active_header.dt-custom-header">ftipr',
-        "oLanguage": {
-            "sSearch": "Filter:"
-        },
+        "dom": '<"#active_header.dt-custom-header">tipr',
         "columnDefs": [{
             "targets": [0],
             "orderable": false
@@ -195,10 +186,7 @@ require '../includes/header_start.php';
         "paging": false,
         scrollY: '25.65vh',
         scrollCollapse: true,
-        "dom": '<"#queue_header.dt-custom-header">ftipr',
-        "oLanguage": {
-            "sSearch": "Filter:"
-        },
+        "dom": '<"#queue_header.dt-custom-header">tipr',
         "columnDefs": [{
             "targets": [0],
             "orderable": false
