@@ -2,8 +2,6 @@
 require ("../../includes/header_start.php");
 require("../../assets/php/composer/vendor/autoload.php"); // require carbon for date formatting, http://carbon.nesbot.com/
 
-outputPHPErrs();
-
 use Carbon\Carbon; // prep carbon
 
 $action = $_REQUEST['action'];
