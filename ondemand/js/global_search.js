@@ -19,7 +19,7 @@ $("body")
 
         searchTable.html(loadingResults);
 
-        if(input.val().length > 0) {
+        if(input.val().length >= 3) {
             mainDisplay.hide();
             searchDisplay.show();
 
