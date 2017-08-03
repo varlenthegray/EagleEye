@@ -262,6 +262,10 @@ require 'includes/header_end.php';
 
                     updateQueuedJobs();
                     active_table.ajax.reload(null,false);
+
+                    $.post("/ondemand/shopfloor/view_notes.php", {queueID: op_id}, function(data) {
+                        $("#modalViewNotes").html(data).modal("show");
+                    });
                 });
             }
         })

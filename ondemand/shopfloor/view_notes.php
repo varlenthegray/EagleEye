@@ -26,7 +26,7 @@ $notes = $notes_qry->fetch_assoc();
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-danger waves-effect" data-dismiss="modal">Read & Confirmed</button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->
