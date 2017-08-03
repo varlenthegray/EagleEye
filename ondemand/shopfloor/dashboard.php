@@ -63,8 +63,10 @@ switch($_REQUEST['action']) {
                     $pause_btn = null;
                     $margin = '12px';
                     $zeroed = true;
+                    $notes_btn = null;
                 } else {
                     $pause_btn = "<button class='btn waves-effect btn-primary pull-left pause-operation' id='{$self['opID']}'><i class='zmdi zmdi-pause'></i></button>";
+                    $notes_btn = "<button class='btn waves-effect btn-primary pull-left op-notes' style='margin-left:4px;' id='{$self['opID']}'><i class='fa fa-sticky-note-o'></i></button>";
                     $margin = '4px';
                     $zeroed = false;
                 }
@@ -92,7 +94,7 @@ switch($_REQUEST['action']) {
 
                 $time = Carbon::createFromTimestamp($self['start_time']); // grab the carbon timestamp
 
-                $output['data'][$i][] = "$pause_btn <button class='btn waves-effect btn-primary pull-left complete-operation' id='{$self['opID']}' style='margin-left:$margin;'><i class='zmdi zmdi-stop'></i></button>";
+                $output['data'][$i][] = "$pause_btn <button class='btn waves-effect btn-primary pull-left complete-operation' id='{$self['opID']}' style='margin-left:$margin;'><i class='zmdi zmdi-stop'></i></button> $notes_btn";
                 $output['data'][$i][] = $so;
                 $output['data'][$i][] = $room;
                 $output['data'][$i][] = $self['responsible_dept'];

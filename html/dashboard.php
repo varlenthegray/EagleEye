@@ -51,9 +51,9 @@ require '../includes/header_start.php';
                         <table id="active_ops_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
-                                <th width="46px">&nbsp;</th>
-                                <th width="50px">SO#</th>
-                                <th width="100px">Room</th>
+                                <th width="75px">&nbsp;</th>
+                                <th width="35px">SO#</th>
+                                <th width="125px">Room</th>
                                 <th width="125px">Department</th>
                                 <th width="225px">Operation</th>
                                 <th width="90px">Activated Time</th>

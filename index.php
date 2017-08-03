@@ -78,6 +78,12 @@ require 'includes/header_end.php';
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<!-- Add Customer modal -->
+<div id="modalViewNotes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalViewNotesLabel" aria-hidden="true">
+    <!-- Inserted via AJAX -->
+</div>
+<!-- /.modal -->
+
 <!-- Global Search loading, required for global search to work -->
 <script src="/ondemand/js/global_search.js?random=<?php echo rand(0,1500); ?>"></script>
 
@@ -353,6 +359,14 @@ require 'includes/header_end.php';
 
                 updateQueuedJobs();
                 active_table.ajax.reload(null,false);
+            });
+        })
+
+        .on("click", ".op-notes", function(e) {
+            e.stopPropagation();
+
+            $.post("/ondemand/shopfloor/view_notes.php", {queueID: $(this).attr("id")}, function(data) {
+                $("#modalViewNotes").html(data).modal("show");
             });
         })
         // -- End Dashboard --

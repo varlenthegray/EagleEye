@@ -3,7 +3,7 @@ require ("../includes/header_start.php");
 
 outputPHPErrs();
 
-$excluded_ops = '118,';
+$excluded_ops = '89,';
 
 $rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE individual_bracket_buildout LIKE '%$excluded_ops%'");
 
