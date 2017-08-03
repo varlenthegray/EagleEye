@@ -51,7 +51,7 @@ require '../includes/header_start.php';
                         <table id="active_ops_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
-                                <th width="75px">&nbsp;</th>
+                                <th width="80px">&nbsp;</th>
                                 <th width="35px">SO#</th>
                                 <th width="125px">Room</th>
                                 <th width="125px">Department</th>
