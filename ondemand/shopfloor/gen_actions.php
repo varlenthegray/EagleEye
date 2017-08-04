@@ -355,41 +355,41 @@ switch($_REQUEST['action']) {
 
         break;
     case 'update_VIN':
-        $so_num = sanitizeInput($_REQUEST['vin_so_num']);
-        $room = sanitizeInput($_REQUEST['vin_room']);
-        $iteration = sanitizeInput($_REQUEST['vin_iteration']);
-
         $room_id = sanitizeInput($_REQUEST['room_id']);
 
-        $species_grade = sanitizeInput($_REQUEST['species_grade']);
-        $construction_method = sanitizeInput($_REQUEST['construction_method']);
-        $door_design = sanitizeInput($_REQUEST['door_design']);
-        $panel_raise_door = sanitizeInput($_REQUEST['panel_raise_door']);
-        $panel_raise_sd = sanitizeInput($_REQUEST['panel_raise_sd']);
-        $panel_raise_td = sanitizeInput($_REQUEST['panel_raise_td']);
-        $edge_profile = sanitizeInput($_REQUEST['edge_profile']);
-        $framing_bead = sanitizeInput($_REQUEST['framing_bead']);
-        $framing_options = sanitizeInput($_REQUEST['framing_options']);
-        $style_rail_width = sanitizeInput($_REQUEST['style_rail_width']);
-        $finish_type = sanitizeInput($_REQUEST['finish_type']);
-        $finish_code = sanitizeInput($_REQUEST['finish_code']);
-        $sheen = sanitizeInput($_REQUEST['sheen']);
-        $glaze = sanitizeInput($_REQUEST['glaze']);
-        $glaze_technique = sanitizeInput($_REQUEST['glaze_technique']);
-        $antiquing = sanitizeInput($_REQUEST['antiquing']);
-        $worn_edges = sanitizeInput($_REQUEST['worn_edges']);
-        $distress_level = sanitizeInput($_REQUEST['distress_level']);
-        $carcass_exterior_species = sanitizeInput($_REQUEST['carcass_exterior_species']);
-        $carcass_exterior_finish_type = sanitizeInput($_REQUEST['carcass_exterior_finish_type']);
-        $carcass_exterior_finish_code = sanitizeInput($_REQUEST['carcass_exterior_finish_code']);
-        $carcass_exterior_glaze_color = sanitizeInput($_REQUEST['carcass_exterior_glaze_color']);
-        $carcass_exterior_glaze_technique = sanitizeInput($_REQUEST['carcass_exterior_glaze_technique']);
-        $carcass_interior_species = sanitizeInput($_REQUEST['carcass_interior_species']);
-        $carcass_interior_finish_type = sanitizeInput($_REQUEST['carcass_interior_finish_type']);
-        $carcass_interior_finish_code = sanitizeInput($_REQUEST['carcass_interior_finish_code']);
-        $carcass_interior_glaze_color = sanitizeInput($_REQUEST['carcass_interior_glaze_color']);
-        $carcass_interior_glaze_technique = sanitizeInput($_REQUEST['carcass_interior_glaze_technique']);
-        $drawer_boxes = sanitizeInput($_REQUEST['drawer_boxes']);
+        $so_num = sanitizeInput($_REQUEST['vin_so_num_' . $room_id]);
+        $room = sanitizeInput($_REQUEST['vin_room_' . $room_id]);
+        $iteration = sanitizeInput($_REQUEST['vin_iteration_' . $room_id]);
+
+        $species_grade = sanitizeInput($_REQUEST['species_grade_' . $room_id]);
+        $construction_method = sanitizeInput($_REQUEST['construction_method_' . $room_id]);
+        $door_design = sanitizeInput($_REQUEST['door_design_' . $room_id]);
+        $panel_raise_door = sanitizeInput($_REQUEST['panel_raise_door_' . $room_id]);
+        $panel_raise_sd = sanitizeInput($_REQUEST['panel_raise_sd_' . $room_id]);
+        $panel_raise_td = sanitizeInput($_REQUEST['panel_raise_td_' . $room_id]);
+        $edge_profile = sanitizeInput($_REQUEST['edge_profile_' . $room_id]);
+        $framing_bead = sanitizeInput($_REQUEST['framing_bead_' . $room_id]);
+        $framing_options = sanitizeInput($_REQUEST['framing_options_' . $room_id]);
+        $style_rail_width = sanitizeInput($_REQUEST['style_rail_width_' . $room_id]);
+        $finish_type = sanitizeInput($_REQUEST['finish_type_' . $room_id]);
+        $finish_code = sanitizeInput($_REQUEST['finish_code_' . $room_id]);
+        $sheen = sanitizeInput($_REQUEST['sheen_' . $room_id]);
+        $glaze = sanitizeInput($_REQUEST['glaze_' . $room_id]);
+        $glaze_technique = sanitizeInput($_REQUEST['glaze_technique_' . $room_id]);
+        $antiquing = sanitizeInput($_REQUEST['antiquing_' . $room_id]);
+        $worn_edges = sanitizeInput($_REQUEST['worn_edges_' . $room_id]);
+        $distress_level = sanitizeInput($_REQUEST['distress_level_' . $room_id]);
+        $carcass_exterior_species = sanitizeInput($_REQUEST['carcass_exterior_species_' . $room_id]);
+        $carcass_exterior_finish_type = sanitizeInput($_REQUEST['carcass_exterior_finish_type_' . $room_id]);
+        $carcass_exterior_finish_code = sanitizeInput($_REQUEST['carcass_exterior_finish_code_' . $room_id]);
+        $carcass_exterior_glaze_color = sanitizeInput($_REQUEST['carcass_exterior_glaze_color_' . $room_id]);
+        $carcass_exterior_glaze_technique = sanitizeInput($_REQUEST['carcass_exterior_glaze_technique_' . $room_id]);
+        $carcass_interior_species = sanitizeInput($_REQUEST['carcass_interior_species_' . $room_id]);
+        $carcass_interior_finish_type = sanitizeInput($_REQUEST['carcass_interior_finish_type_' . $room_id]);
+        $carcass_interior_finish_code = sanitizeInput($_REQUEST['carcass_interior_finish_code_' . $room_id]);
+        $carcass_interior_glaze_color = sanitizeInput($_REQUEST['carcass_interior_glaze_color_' . $room_id]);
+        $carcass_interior_glaze_technique = sanitizeInput($_REQUEST['carcass_interior_glaze_technique_' . $room_id]);
+        $drawer_boxes = sanitizeInput($_REQUEST['drawer_boxes_' . $room_id]);
 
         if($dbconn->query("UPDATE rooms SET species_grade = '$species_grade', construction_method = '$construction_method', door_design = '$door_design', 
          panel_raise_door = '$panel_raise_door', panel_raise_sd = '$panel_raise_sd', panel_raise_td = '$panel_raise_td', edge_profile = '$edge_profile', 

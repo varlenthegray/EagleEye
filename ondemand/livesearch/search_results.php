@@ -332,7 +332,7 @@ switch ($search) {
                                     $install_published_display = (checkPublished('install_bracket')) ? "<td class='$installPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $installBracketName</td>" : "<td>---</td>";
 
                                     echo "<tr class='cursor-hand' id='manage_bracket_{$room['id']}'>";
-                                    echo "  <td style='width:55px;'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect btn-primary' id='show_vin_room_{$room['id']}' onclick='calcVin()'><i class='zmdi zmdi-developer-board'></i></button></td>";
+                                    echo "  <td style='width:55px;'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect btn-primary' id='show_vin_room_{$room['id']}' onclick='calcVin({$room['id']})'><i class='zmdi zmdi-developer-board'></i></button></td>";
                                     echo "  <td>{$tab}{$room_name}</td>";
                                     echo "  $sales_published_display";
                                     echo "  $preprod_published_display";
@@ -466,19 +466,19 @@ switch ($search) {
                                                                     <?php
                                                                         if(!empty($room['delivery_date'])) {
                                                                             switch ($room['days_to_ship']) {
-                                                                                case 'Green':
+                                                                                case 'G':
                                                                                     $status_color = "job-color-green";
 
                                                                                     break;
-                                                                                case 'Yellow':
+                                                                                case 'Y':
                                                                                     $status_color = "job-color-yellow";
 
                                                                                     break;
-                                                                                case 'Orange':
+                                                                                case 'N':
                                                                                     $status_color = "job-color-orange";
 
                                                                                     break;
-                                                                                case 'Red':
+                                                                                case 'R':
                                                                                     $status_color = "job-color-red";
 
                                                                                     break;
@@ -513,12 +513,12 @@ switch ($search) {
                                                                 <td><label for="product_type">Product Type</label></td>
                                                                 <td>
                                                                     <select class="form-control" id="edit_product_type_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="product_type" value="<?php echo $room['product_type']; ?>">
-                                                                        <option value="Cabinet">Cabinet</option>
-                                                                        <option value="Closet">Closet</option>
-                                                                        <option value="Sample">Sample</option>
-                                                                        <option value="Display">Display</option>
-                                                                        <option value="Add-on">Add-on</option>
-                                                                        <option value="Warranty">Warranty</option>
+                                                                        <option value="C" <?php echo ($room['product_type'] === 'C') ? "selected" : null; ?>>Cabinet</option>
+                                                                        <option value="L" <?php echo ($room['product_type'] === 'L') ? "selected" : null; ?>>Closet</option>
+                                                                        <option value="S" <?php echo ($room['product_type'] === 'S') ? "selected" : null; ?>>Sample</option>
+                                                                        <option value="D" <?php echo ($room['product_type'] === 'D') ? "selected" : null; ?>>Display</option>
+                                                                        <option value="A" <?php echo ($room['product_type'] === 'A') ? "selected" : null; ?>>Add-on</option>
+                                                                        <option value="W" <?php echo ($room['product_type'] === 'W') ? "selected" : null; ?>>Warranty</option>
                                                                     </select>
                                                                 </td>
                                                             </tr>
@@ -544,10 +544,10 @@ switch ($search) {
                                                                 <td><label for="days_to_ship">Days to Ship</label></td>
                                                                 <td>
                                                                     <select class="form-control days-to-ship" id="edit_days_to_ship_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="days_to_ship" data-type="edit" data-room="<?php echo $room['room']; ?>">
-                                                                        <option value="Green" <?php echo ($room['days_to_ship'] === 'Green') ? "selected" : null; ?>>Green (34)</option>
-                                                                        <option value="Yellow" <?php echo ($room['days_to_ship'] === 'Yellow') ? "selected" : null; ?>>Yellow (14)</option>
-                                                                        <option value="Orange" <?php echo ($room['days_to_ship'] === 'Orange') ? "selected" : null; ?>>Orange (10)</option>
-                                                                        <option value="Red" <?php echo ($room['days_to_ship'] === 'Red') ? "selected" : null; ?>>Red (5)</option>
+                                                                        <option value="G" <?php echo ($room['days_to_ship'] === 'G') ? "selected" : null; ?>>Green (34)</option>
+                                                                        <option value="Y" <?php echo ($room['days_to_ship'] === 'Y') ? "selected" : null; ?>>Yellow (14)</option>
+                                                                        <option value="N" <?php echo ($room['days_to_ship'] === 'N') ? "selected" : null; ?>>Orange (10)</option>
+                                                                        <option value="R" <?php echo ($room['days_to_ship'] === 'R') ? "selected" : null; ?>>Red (5)</option>
                                                                     </select>
                                                                 </td>
                                                             </tr>
@@ -1004,13 +1004,13 @@ switch ($search) {
                                             <form id="vin_contents_<?php echo $room['id']; ?>">
                                                 <div class="row">
                                                     <div class="col-md-8">
-                                                        <input type="hidden" name="vin_so_num" value="<?php echo $room['so_parent']; ?>" id="vin_so_num" />
-                                                        <input type="hidden" name="vin_room" value="<?php echo $room['room']; ?>" id="vin_room" />
-                                                        <input type="hidden" name="vin_iteration" value="<?php echo $room['iteration']; ?>" id="vin_iteration" />
-                                                        <input type="hidden" name="vin_product_type" value="<?php echo $room['product_type']; ?>" id="vin_product_type" />
-                                                        <input type="hidden" name="vin_order_status" value="<?php echo $room['order_status']; ?>" id="vin_order_status" />
-                                                        <input type="hidden" name="vin_days_to_ship" value="<?php echo $room['days_to_ship']; ?>" id="vin_days_to_ship" />
-                                                        <input type="hidden" name="vin_dealer_code" value="<?php echo $result['contractor_dealer_code']; ?>" id="vin_dealer_code" />
+                                                        <input type="hidden" name="vin_so_num_<?php echo $room['id']; ?>" value="<?php echo $room['so_parent']; ?>" id="vin_so_num_<?php echo $room['id']; ?>" />
+                                                        <input type="hidden" name="vin_room_<?php echo $room['id']; ?>" value="<?php echo $room['room']; ?>" id="vin_room_<?php echo $room['id']; ?>" />
+                                                        <input type="hidden" name="vin_iteration_<?php echo $room['id']; ?>" value="<?php echo $room['iteration']; ?>" id="vin_iteration_<?php echo $room['id']; ?>" />
+                                                        <input type="hidden" name="vin_product_type_<?php echo $room['id']; ?>" value="<?php echo $room['product_type']; ?>" id="vin_product_type_<?php echo $room['id']; ?>" />
+                                                        <input type="hidden" name="vin_order_status_<?php echo $room['id']; ?>" value="<?php echo $room['order_status']; ?>" id="vin_order_status_<?php echo $room['id']; ?>" />
+                                                        <input type="hidden" name="vin_days_to_ship_<?php echo $room['id']; ?>" value="<?php echo $room['days_to_ship']; ?>" id="vin_days_to_ship_<?php echo $room['id']; ?>" />
+                                                        <input type="hidden" name="vin_dealer_code_<?php echo $room['id']; ?>" value="<?php echo $result['contractor_dealer_code']; ?>" id="vin_dealer_code_<?php echo $room['id']; ?>" />
 
                                                         <table width="100%" class="table table-custom-nb label-right">
                                                             <tr>
@@ -1026,9 +1026,9 @@ switch ($search) {
                                                         <table width="100%" class="table table-custom-nb label-right">
                                                             <tr><td colspan="2" class="text-md-center"><h5>Door, Drawer & Hardwood</h5></td></tr>
                                                             <tr>
-                                                                <td><label for="species_grade">Species Grade</label></td>
+                                                                <td><label for="species_grade_<?php echo $room['id']; ?>">Species Grade</label></td>
                                                                 <td>
-                                                                    <select name="species_grade" id="species_grade" class="form-control" onchange="calcVin()">
+                                                                    <select name="species_grade_<?php echo $room['id']; ?>" id="species_grade_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'species_grade'");
 
@@ -1046,9 +1046,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="construction_method">Construction Method</label></td>
+                                                                <td><label for="construction_method_<?php echo $room['id']; ?>">Construction Method</label></td>
                                                                 <td>
-                                                                    <select name="construction_method" id="construction_method" class="form-control" onchange="calcVin()">
+                                                                    <select name="construction_method_<?php echo $room['id']; ?>" id="construction_method_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'construction_method'");
 
@@ -1066,9 +1066,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="door_design">Door Design</label></td>
+                                                                <td><label for="door_design_<?php echo $room['id']; ?>">Door Design</label></td>
                                                                 <td>
-                                                                    <select name="door_design" id="door_design" class="form-control" onchange="calcVin()">
+                                                                    <select name="door_design_<?php echo $room['id']; ?>" id="door_design_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'door_design'");
 
@@ -1090,9 +1090,9 @@ switch ($search) {
                                                         <table width="100%" class="table table-custom-nb label-right" style="width:100%;">
                                                             <tr><td colspan="2" class="text-md-center"><h5>Panel Raise</h5></td></tr>
                                                             <tr>
-                                                                <td style="width:120px;"><label for="panel_raise_door">Door</label></td>
+                                                                <td style="width:120px;"><label for="panel_raise_door_<?php echo $room['id']; ?>">Door</label></td>
                                                                 <td>
-                                                                    <select name="panel_raise_door" id="panel_raise_door" class="form-control" onchange="calcVin()">
+                                                                    <select name="panel_raise_door_<?php echo $room['id']; ?>" id="panel_raise_door_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise'");
 
@@ -1110,9 +1110,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="panel_raise_sd">Short Drawer</label></td>
+                                                                <td><label for="panel_raise_sd_<?php echo $room['id']; ?>">Short Drawer</label></td>
                                                                 <td>
-                                                                    <select name="panel_raise_sd" id="panel_raise_sd" class="form-control" onchange="calcVin()">
+                                                                    <select name="panel_raise_sd_<?php echo $room['id']; ?>" id="panel_raise_sd_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise'");
 
@@ -1130,9 +1130,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="panel_raise_td">Tall Drawer</label></td>
+                                                                <td><label for="panel_raise_td_<?php echo $room['id']; ?>">Tall Drawer</label></td>
                                                                 <td>
-                                                                    <select name="panel_raise_td" id="panel_raise_td" class="form-control" onchange="calcVin()">
+                                                                    <select name="panel_raise_td_<?php echo $room['id']; ?>" id="panel_raise_td_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise'");
 
@@ -1150,9 +1150,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="edge_profile">Edge Profile</label></td>
+                                                                <td><label for="edge_profile_<?php echo $room['id']; ?>">Edge Profile</label></td>
                                                                 <td>
-                                                                    <select name="edge_profile" id="edge_profile" class="form-control" onchange="calcVin()">
+                                                                    <select name="edge_profile_<?php echo $room['id']; ?>" id="edge_profile_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'edge_profile'");
 
@@ -1170,9 +1170,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="framing_bead">Framing Bead</label></td>
+                                                                <td><label for="framing_bead_<?php echo $room['id']; ?>">Framing Bead</label></td>
                                                                 <td>
-                                                                    <select name="framing_bead" id="framing_bead" class="form-control" onchange="calcVin()">
+                                                                    <select name="framing_bead_<?php echo $room['id']; ?>" id="framing_bead_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_bead'");
 
@@ -1190,9 +1190,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="framing_options">Framing Options</label></td>
+                                                                <td><label for="framing_options_<?php echo $room['id']; ?>">Framing Options</label></td>
                                                                 <td>
-                                                                    <select name="framing_options" id="framing_options" class="form-control" onchange="calcVin()">
+                                                                    <select name="framing_options_<?php echo $room['id']; ?>" id="framing_options_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_options'");
 
@@ -1210,9 +1210,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="style_rail_width">Style/Rail Width</label></td>
+                                                                <td><label for="style_rail_width_<?php echo $room['id']; ?>">Style/Rail Width</label></td>
                                                                 <td>
-                                                                    <select name="style_rail_width" id="style_rail_width" class="form-control" onchange="calcVin()">
+                                                                    <select name="style_rail_width_<?php echo $room['id']; ?>" id="style_rail_width_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'style_rail_width'");
 
@@ -1235,9 +1235,9 @@ switch ($search) {
                                                         <table width="100%" class="table table-custom-nb label-right" style="width:100%;">
                                                             <tr><td colspan="2" class="text-md-center"><h5>Finish</h5></td></tr>
                                                             <tr>
-                                                                <td><label for="finish_type">Type</label></td>
+                                                                <td><label for="finish_type_<?php echo $room['id']; ?>">Type</label></td>
                                                                 <td>
-                                                                    <select name="finish_type" id="finish_type" class="form-control" onchange="calcVin()">
+                                                                    <select name="finish_type_<?php echo $room['id']; ?>" id="finish_type_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_type'");
 
@@ -1255,13 +1255,13 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="finish_code">Code</label></td>
-                                                                <td><input type="text" class="form-control" onchange="calcVin()" name="finish_code" id="finish_code" placeholder="XXXX" value="S001" maxlength="4" ></td>
+                                                                <td><label for="finish_code_<?php echo $room['id']; ?>">Code</label></td>
+                                                                <td><input type="text" class="form-control" onchange="calcVin()" name="finish_code_<?php echo $room['id']; ?>" id="finish_code_<?php echo $room['id']; ?>" placeholder="XXXX" value="S001" maxlength="4" ></td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="sheen">Sheen</label></td>
+                                                                <td><label for="sheen_<?php echo $room['id']; ?>">Sheen</label></td>
                                                                 <td>
-                                                                    <select name="sheen" id="sheen" class="form-control" onchange="calcVin()">
+                                                                    <select name="sheen_<?php echo $room['id']; ?>" id="sheen_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen'");
 
@@ -1279,9 +1279,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="glaze">Glaze Color</label></td>
+                                                                <td><label for="glaze_<?php echo $room['id']; ?>">Glaze Color</label></td>
                                                                 <td>
-                                                                    <select name="glaze" id="glaze" class="form-control" onchange="calcVin()">
+                                                                    <select name="glaze_<?php echo $room['id']; ?>" id="glaze_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze'");
 
@@ -1299,9 +1299,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="glaze_technique">Glaze Technique</label></td>
+                                                                <td><label for="glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
                                                                 <td>
-                                                                    <select name="glaze_technique" id="glaze_technique" class="form-control" onchange="calcVin()">
+                                                                    <select name="glaze_technique_<?php echo $room['id']; ?>" id="glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique'");
 
@@ -1319,9 +1319,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="antiquing">Antiquing</label></td>
+                                                                <td><label for="antiquing_<?php echo $room['id']; ?>">Antiquing</label></td>
                                                                 <td>
-                                                                    <select name="antiquing" id="antiquing" class="form-control" onchange="calcVin()">
+                                                                    <select name="antiquing_<?php echo $room['id']; ?>" id="antiquing_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'antiquing'");
 
@@ -1339,9 +1339,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="worn_edges">Worn Edges</label></td>
+                                                                <td><label for="worn_edges_<?php echo $room['id']; ?>">Worn Edges</label></td>
                                                                 <td>
-                                                                    <select name="worn_edges" id="worn_edges" class="form-control" onchange="calcVin()">
+                                                                    <select name="worn_edges_<?php echo $room['id']; ?>" id="worn_edges_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'worn_edges'");
 
@@ -1359,9 +1359,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="distress_level">Distress Level</label></td>
+                                                                <td><label for="distress_level_<?php echo $room['id']; ?>">Distress Level</label></td>
                                                                 <td>
-                                                                    <select name="distress_level" id="distress_level" class="form-control" onchange="calcVin()">
+                                                                    <select name="distress_level_<?php echo $room['id']; ?>" id="distress_level_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'distress_level'");
 
@@ -1384,9 +1384,9 @@ switch ($search) {
                                                         <table width="100%" class="table table-custom-nb label-right">
                                                             <tr><td colspan="2" class="text-md-center"><h5>Carcass Exterior</h5></td></tr>
                                                             <tr>
-                                                                <td><label for="carcass_exterior_species">Species</label></td>
+                                                                <td><label for="carcass_exterior_species_<?php echo $room['id']; ?>">Species</label></td>
                                                                 <td>
-                                                                    <select name="carcass_exterior_species" id="carcass_exterior_species" class="form-control" onchange="calcVin()">
+                                                                    <select name="carcass_exterior_species_<?php echo $room['id']; ?>" id="carcass_exterior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_species'");
 
@@ -1404,9 +1404,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="carcass_exterior_finish_type">Finish Type</label></td>
+                                                                <td><label for="carcass_exterior_finish_type_<?php echo $room['id']; ?>">Finish Type</label></td>
                                                                 <td>
-                                                                    <select name="carcass_exterior_finish_type" id="carcass_exterior_finish_type" class="form-control" onchange="calcVin()">
+                                                                    <select name="carcass_exterior_finish_type_<?php echo $room['id']; ?>" id="carcass_exterior_finish_type_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_finish_type'");
 
@@ -1424,13 +1424,13 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="carcass_exterior_finish_code">Finish Code</label></td>
-                                                                <td><input type="text" class="form-control" onchange="calcVin()" name="carcass_exterior_finish_code" id="carcass_exterior_finish_code" placeholder="XXXX" value="S001" maxlength="4" ></td>
+                                                                <td><label for="carcass_exterior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
+                                                                <td><input type="text" class="form-control" onchange="calcVin()" name="carcass_exterior_finish_code_<?php echo $room['id']; ?>" id="carcass_exterior_finish_code_<?php echo $room['id']; ?>" placeholder="XXXX" value="S001" maxlength="4" ></td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="carcass_exterior_glaze_color">Glaze Color</label></td>
+                                                                <td><label for="carcass_exterior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
                                                                 <td>
-                                                                    <select name="carcass_exterior_glaze_color" id="carcass_exterior_glaze_color" class="form-control" onchange="calcVin()">
+                                                                    <select name="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_glaze_color'");
 
@@ -1448,9 +1448,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="carcass_exterior_glaze_technique">Glaze Technique</label></td>
+                                                                <td><label for="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
                                                                 <td>
-                                                                    <select name="carcass_exterior_glaze_technique" id="carcass_exterior_glaze_technique" class="form-control" onchange="calcVin()">
+                                                                    <select name="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_glaze_technique'");
 
@@ -1473,9 +1473,9 @@ switch ($search) {
                                                         <table width="100%" class="table table-custom-nb label-right">
                                                             <tr><td colspan="2" class="text-md-center"><h5>Carcass Interior</h5></td></tr>
                                                             <tr>
-                                                                <td><label for="carcass_interior_species">Species</label></td>
+                                                                <td><label for="carcass_interior_species_<?php echo $room['id']; ?>">Species</label></td>
                                                                 <td>
-                                                                    <select name="carcass_interior_species" id="carcass_interior_species" class="form-control" onchange="calcVin()">
+                                                                    <select name="carcass_interior_species_<?php echo $room['id']; ?>" id="carcass_interior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_species'");
 
@@ -1493,9 +1493,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="carcass_interior_finish_type">Finish Type</label></td>
+                                                                <td><label for="carcass_interior_finish_type_<?php echo $room['id']; ?>">Finish Type</label></td>
                                                                 <td>
-                                                                    <select name="carcass_interior_finish_type" id="carcass_interior_finish_type" class="form-control" onchange="calcVin()">
+                                                                    <select name="carcass_interior_finish_type_<?php echo $room['id']; ?>" id="carcass_interior_finish_type_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_finish_type'");
 
@@ -1513,13 +1513,13 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="carcass_interior_finish_code">Finish Code</label></td>
-                                                                <td><input type="text" class="form-control" onchange="calcVin()" name="carcass_interior_finish_code" id="carcass_interior_finish_code" placeholder="XXXX" value="S001" ></td>
+                                                                <td><label for="carcass_interior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
+                                                                <td><input type="text" class="form-control" onchange="calcVin()" name="carcass_interior_finish_code_<?php echo $room['id']; ?>" id="carcass_interior_finish_code_<?php echo $room['id']; ?>" placeholder="XXXX" value="S001" ></td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="carcass_interior_glaze_color">Glaze Color</label></td>
+                                                                <td><label for="carcass_interior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
                                                                 <td>
-                                                                    <select name="carcass_interior_glaze_color" id="carcass_interior_glaze_color" class="form-control" onchange="calcVin()">
+                                                                    <select name="carcass_interior_glaze_color_<?php echo $room['id']; ?>" id="carcass_interior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_glaze_color'");
 
@@ -1537,9 +1537,9 @@ switch ($search) {
                                                                 </td>
                                                             </tr>
                                                             <tr>
-                                                                <td><label for="carcass_interior_glaze_technique">Glaze Technique</label></td>
+                                                                <td><label for="carcass_interior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
                                                                 <td>
-                                                                    <select name="carcass_interior_glaze_technique" id="carcass_interior_glaze_technique" class="form-control" onchange="calcVin()">
+                                                                    <select name="carcass_interior_glaze_technique_<?php echo $room['id']; ?>" id="carcass_interior_glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_glaze_technique'");
 
@@ -1562,9 +1562,9 @@ switch ($search) {
                                                         <table width="100%" class="table table-custom-nb label-right">
                                                             <tr><td colspan="2" class="text-md-center"><h5>Drawer Boxes</h5></td></tr>
                                                             <tr>
-                                                                <td><label for="drawer_boxes">Drawer Boxes</label></td>
+                                                                <td><label for="drawer_boxes_<?php echo $room['id']; ?>">Drawer Boxes</label></td>
                                                                 <td>
-                                                                    <select name="drawer_boxes" id="drawer_boxes" class="form-control" onchange="calcVin()">
+                                                                    <select name="drawer_boxes_<?php echo $room['id']; ?>" id="drawer_boxes_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin()">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'drawer_boxes'");
 
@@ -1586,7 +1586,7 @@ switch ($search) {
                                                 </div>
 
                                                 <div class="row">
-                                                    <div class="col-md-6 col-md-offset-3"><input type="text" class="form-control" name="vin_code" id="vin_code" placeholder="VIN Code" /> </div>
+                                                    <div class="col-md-6 col-md-offset-3"><input type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" /> </div>
                                                 </div>
 
                                                 <div class="row">
