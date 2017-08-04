@@ -1,5 +1,7 @@
 // Goal: to ensure the loading of Global Search input field
 var timer;
+var active_so_num;
+var active_room_id;
 
 $("body")
     .on("keyup", "#global_search", function() {
@@ -123,6 +125,8 @@ $("body")
         $("[id^=div_edit_so_]").finish().hide(100);
         $("[id^=tr_add_single_room_info_]").finish().hide(250);
         $("[id^=div_add_single_room_info_]").finish().hide(100);
+        $("[id^=tr_vin_]").finish().hide(250);
+        $("[id^=div_vin_]").finish().hide(100);
         $("[id^=tr_room_]").not(this).finish().hide(100);
         $("[id^=div_room_]").finish().hide(250);
 
@@ -143,6 +147,8 @@ $("body")
 
         $("[id^=tr_room_bracket_]").hide(250);
         $("[id^=div_room_bracket_]").hide(100);
+        $("[id^=tr_vin_]").finish().hide(250);
+        $("[id^=div_vin_]").finish().hide(100);
         $("[id^=tr_add_single_room_info_]").hide(250);
         $("[id^=div_add_single_room_info_]").hide(100);
 
@@ -157,8 +163,6 @@ $("body")
     .on("click", "[id^=manage_bracket_]", function(e) {
         e.stopPropagation();
 
-        console.log("Managing the bracket");
-
         active_room_id = $(this).attr("id").replace('manage_bracket_', '');
 
         $("[id^=show_single_room_]").removeClass("active_room_line");
@@ -169,6 +173,8 @@ $("body")
         $("[id^=div_single_room_]").hide(100);
         $("[id^=tr_add_single_room_info_]").hide(250);
         $("[id^=div_add_single_room_info_]").hide(100);
+        $("[id^=tr_vin_]").finish().hide(250);
+        $("[id^=div_vin_]").finish().hide(100);
 
         $("[id^=tr_room_bracket_]").not(this).hide(250);
         $("[id^=div_room_bracket_]").not(this).hide(100);
@@ -339,4 +345,24 @@ $("body")
         $.post("/ondemand/shopfloor/gen_actions.php?action=add_iteration&" + iteration_info, function(data) {
             $('body').append(data);
         });
+    })
+
+    .on("click", "[id^=show_vin_]", function(e) {
+        e.stopPropagation();
+
+        active_so_num = $(this).attr("id").replace('show_vin_room_', '');
+
+        $("[id^=tr_single_room_]").finish().hide(250);
+        $("[id^=div_single_room_]").finish().hide(100);
+        $("[id^=tr_edit_so_]").finish().hide(250);
+        $("[id^=div_edit_so_]").finish().hide(100);
+        $("[id^=tr_add_single_room_info_]").finish().hide(250);
+        $("[id^=div_add_single_room_info_]").finish().hide(100);
+        $("[id^=tr_room_bracket_]").finish().hide(250);
+        $("[id^=div_room_bracket_info_]").finish().hide(100);
+        $("[id^=tr_vin_]").not(this).finish().hide(100);
+        $("[id^=div_vin_]").finish().hide(250);
+
+        $("#tr_vin_" + active_so_num).show();
+        $("#div_vin_" + active_so_num).slideDown(250);
     });

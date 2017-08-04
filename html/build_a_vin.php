@@ -8,17 +8,17 @@ require '../includes/header_start.php';
     <div class="col-md-12">
         <div class="card-box">
             <div class="col-md-12">
-                <form id="form_so_<?php echo $result['so_num']; ?>">
+                <form id="vin_contents">
                     <div class="row">
                         <div class="col-md-8">
                             <table width="100%" class="table table-custom-nb label-right">
                                 <tr>
                                     <td><label for="so_num">SO #</label></td>
-                                    <td><input type="text" class="form-control" id="so_num" name="so_num" placeholder="SO Number" style="width:90px;" /></td>
+                                    <td><input type="text" class="form-control" id="so_num" name="so_num" placeholder="SO Number" style="width:90px;" maxlength="4" /></td>
                                     <td><label for="room">Room</label></td>
-                                    <td><select class="form-control" id="room"><option value="--" disabled selected>--</option></select></td>
+                                    <td><select class="form-control" id="room" name="room"><option value="--" disabled selected>--</option></select></td>
                                     <td><label for="iteration">Iteration</label></td>
-                                    <td><select class="form-control" id="iteration"><option value="--" disabled selected>--</option></select></td>
+                                    <td><select class="form-control" id="iteration" name="iteration"><option value="--" disabled selected>--</option></select></td>
                                     <td><label for="product_type">Product Type</label></td>
                                     <td>
                                         <select name="product_type" id="product_type" class="form-control">
@@ -51,12 +51,12 @@ require '../includes/header_start.php';
                                         </select>
                                     </td>
                                     <td><label for="dealer_code">Dealer</label></td>
-                                    <td><input type="text" class="form-control" id="dealer_code" name="dealer_code" placeholder="Dealer Code" /></td>
+                                    <td><input type="text" class="form-control" id="dealer_code" name="dealer_code" placeholder="Dealer Code" maxlength="4" /></td>
                                 </tr>
                                 <tr>
                                     <td><label for="notes">Notes</label></td>
                                     <td colspan="13">
-                                        <input type="text" name="notes" id="notes" placeholder="Notes..." class="form-control">
+                                        <input type="text" name="notes" id="notes" placeholder="Notes..." class="form-control" maxlength="300">
                                     </td>
                                 </tr>
                             </table>
@@ -232,7 +232,7 @@ require '../includes/header_start.php';
                                 </tr>
                                 <tr>
                                     <td><label for="finish_code">Code</label></td>
-                                    <td><input type="text" class="form-control" name="finish_code" id="finish_code" placeholder="XXXX" value="S001" ></td>
+                                    <td><input type="text" class="form-control" name="finish_code" id="finish_code" placeholder="XXXX" value="S001" maxlength="4" ></td>
                                 </tr>
                                 <tr>
                                     <td><label for="sheen">Sheen</label></td>
@@ -353,7 +353,7 @@ require '../includes/header_start.php';
                                 </tr>
                                 <tr>
                                     <td><label for="carcass_exterior_finish_code">Finish Code</label></td>
-                                    <td><input type="text" class="form-control" name="carcass_exterior_finish_code" id="carcass_exterior_finish_code" placeholder="XXXX" value="S001" ></td>
+                                    <td><input type="text" class="form-control" name="carcass_exterior_finish_code" id="carcass_exterior_finish_code" placeholder="XXXX" value="S001" maxlength="4" ></td>
                                 </tr>
                                 <tr>
                                     <td><label for="carcass_exterior_glaze_color">Glaze Color</label></td>
@@ -475,8 +475,8 @@ require '../includes/header_start.php';
                         <div class="col-md-6 col-md-offset-3"><input type="text" class="form-control" name="vin_code" id="vin_code" placeholder="VIN Code" /> </div>
                     </div>
 
-                    <div class="row" style="margin-top:12px;">
-                        <div class="col-md-12 text-md-center"><button type="button" class="btn btn-primary waves-effect waves-light w-sm" id="create-vin">Create</button></div>
+                    <div class="row">
+                        <div class="col-md-12 text-md-center" style="margin:12px;"><button type="button" class="btn btn-primary waves-effect waves-light w-sm hidden-print" id="create-vin">Create</button></div>
                     </div>
                 </form>
             </div>

@@ -146,6 +146,49 @@ require 'includes/header_end.php';
         backFromSearch();
     }
 
+    function calcVin() {
+        var so_num = $("#vin_so_num").val();
+        var room = $("#vin_room").val();
+        var iteration = $("#vin_iteration").val();
+        var product_type = $("#vin_product_type").val();
+        var order_status = $("#vin_order_status").val();
+        var days_to_ship = $("#vin_days_to_ship").val();
+        var dealer_code = $("#vin_dealer_code").val();
+        var species_grade = $("#species_grade").find(":selected").val();
+        var construction_method = $("#construction_method").find(":selected").val();
+        var door_design = $("#door_design").find(":selected").val();
+        var panel_raise_door = $("#panel_raise_door").find(":selected").val();
+        var panel_raise_sd = $("#panel_raise_sd").find(":selected").val();
+        var panel_raise_td = $("#panel_raise_td").find(":selected").val();
+        var edge_profile = $("#edge_profile").find(":selected").val();
+        var framing_bead = $("#framing_bead").find(":selected").val();
+        var framing_options = $("#framing_options").find(":selected").val();
+        var style_rail_width = $("#style_rail_width").find(":selected").val();
+        var finish_type = $("#finish_type").find(":selected").val();
+        var finish_code = $("#finish_code").val();
+        var sheen = $("#sheen").find(":selected").val();
+        var glaze = $("#glaze").find(":selected").val();
+        var glaze_technique = $("#glaze_technique").find(":selected").val();
+        var antiquing = $("#antiquing").find(":selected").val();
+        var worn_edges = $("#worn_edges").find(":selected").val();
+        var distress_level = $("#distress_level").find(":selected").val();
+        var carcass_exterior_species = $("#carcass_exterior_species").find(":selected").val();
+        var carcass_exterior_finish_type = $("#carcass_exterior_finish_type").find(":selected").val();
+        var carcass_exterior_finish_code = $("#carcass_exterior_finish_code").val();
+        var carcass_exterior_glaze_color = $("#carcass_exterior_glaze_color").find(":selected").val();
+        var carcass_exterior_glaze_technique = $("#carcass_exterior_glaze_technique").find(":selected").val();
+        var carcass_interior_species = $("#carcass_interior_species").find(":selected").val();
+        var carcass_interior_finish_type = $("#carcass_interior_finish_type").find(":selected").val();
+        var carcass_interior_finish_code = $("#carcass_interior_finish_code").val();
+        var carcass_interior_glaze_color = $("#carcass_interior_glaze_color").find(":selected").val();
+        var carcass_interior_glaze_technique = $("#carcass_interior_glaze_technique").find(":selected").val();
+        var drawer_boxes = $("#drawer_boxes").find(":selected").val();
+
+        $("#vin_code").val(so_num + room + "-" + iteration + "-" + product_type + order_status + days_to_ship + "_" + dealer_code + "_" + species_grade + construction_method + door_design + "-" + panel_raise_door + panel_raise_sd + panel_raise_td + "-" + edge_profile +
+            framing_bead + framing_options + style_rail_width + "_" + finish_type + finish_code + sheen + "-" + glaze + glaze_technique + antiquing + worn_edges + distress_level + "_" + carcass_exterior_species + carcass_exterior_finish_type + carcass_exterior_finish_code +
+            carcass_exterior_glaze_color + carcass_exterior_glaze_technique + "-" + carcass_interior_species + carcass_interior_finish_type + carcass_interior_finish_code + carcass_interior_glaze_color + carcass_interior_glaze_technique + "_" + drawer_boxes);
+    }
+
     $(".js_loading").show();
 
     $(function() {
@@ -460,55 +503,21 @@ require 'includes/header_end.php';
                 $("#room").html(data);
             });
         })
-        .on("click", "#room", function() {
+        .on("click blur", "#room", function() {
             $.post("/ondemand/livesearch/build_a_vin.php?search=iteration&so_num=" + vin_sonum + "&room=" + $("#room option:selected").val(), function (data) {
                 $("#iteration").html(data);
             });
         })
-        .on("focus", "#room,#iteration", function() {
+        .on("click", ".create-vin", function() {
+            var room_id = $(this).attr("id");
 
-        })
-        .on("click", "#create-vin", function() {
-            var so_num = $("#so_num").val();
-            var room = $("#room").val();
-            var iteration = $("#iteration").val();
-            var product_type = $("#product_type").find(":selected").val();
-            var order_status = $("#order_status").find(":selected").val();
-            var days_to_ship = $("#days_to_ship").find(":selected").val();
-            var dealer_code = $("#dealer_code").val();
-            var species_grade = $("#species_grade").find(":selected").val();
-            var construction_method = $("#construction_method").find(":selected").val();
-            var door_design = $("#door_design").find(":selected").val();
-            var panel_raise_door = $("#panel_raise_door").find(":selected").val();
-            var panel_raise_sd = $("#panel_raise_sd").find(":selected").val();
-            var panel_raise_td = $("#panel_raise_td").find(":selected").val();
-            var edge_profile = $("#edge_profile").find(":selected").val();
-            var framing_bead = $("#framing_bead").find(":selected").val();
-            var framing_options = $("#framing_options").find(":selected").val();
-            var style_rail_width = $("#style_rail_width").find(":selected").val();
-            var finish_type = $("#finish_type").find(":selected").val();
-            var finish_code = $("#finish_code").val();
-            var sheen = $("#sheen").find(":selected").val();
-            var glaze = $("#glaze").find(":selected").val();
-            var glaze_technique = $("#glaze_technique").find(":selected").val();
-            var antiquing = $("#antiquing").find(":selected").val();
-            var worn_edges = $("#worn_edges").find(":selected").val();
-            var distress_level = $("#distress_level").find(":selected").val();
-            var carcass_exterior_species = $("#carcass_exterior_species").find(":selected").val();
-            var carcass_exterior_finish_type = $("#carcass_exterior_finish_type").find(":selected").val();
-            var carcass_exterior_finish_code = $("#carcass_exterior_finish_code").val();
-            var carcass_exterior_glaze_color = $("#carcass_exterior_glaze_color").find(":selected").val();
-            var carcass_exterior_glaze_technique = $("#carcass_exterior_glaze_technique").find(":selected").val();
-            var carcass_interior_species = $("#carcass_interior_species").find(":selected").val();
-            var carcass_interior_finish_type = $("#carcass_interior_finish_type").find(":selected").val();
-            var carcass_interior_finish_code = $("#carcass_interior_finish_code").val();
-            var carcass_interior_glaze_color = $("#carcass_interior_glaze_color").find(":selected").val();
-            var carcass_interior_glaze_technique = $("#carcass_interior_glaze_technique").find(":selected").val();
-            var drawer_boxes = $("#drawer_boxes").find(":selected").val();
+            calcVin();
 
-            $("#vin_code").val(so_num + room + "-" + iteration + "-" + product_type + order_status + days_to_ship + "_" + dealer_code + "_" + species_grade + construction_method + door_design + "-" + panel_raise_door + panel_raise_sd + panel_raise_td + "-" + edge_profile +
-                framing_bead + framing_options + style_rail_width + "_" + finish_type + finish_code + sheen + "-" + glaze + glaze_technique + antiquing + worn_edges + distress_level + "_" + carcass_exterior_species + carcass_exterior_finish_type + carcass_exterior_finish_code +
-                carcass_exterior_glaze_color + carcass_exterior_glaze_technique + "-" + carcass_interior_species + carcass_interior_finish_type + carcass_interior_finish_code + carcass_interior_glaze_color + carcass_interior_glaze_technique + "_" + drawer_boxes);
+            var formInfo = $("#vin_contents_" + room_id).serialize();
+
+            $.post("/ondemand/shopfloor/gen_actions.php?action=update_VIN&" + formInfo + "&room_id=" + room_id, function(data) {
+                $('body').append(data);
+            });
         })
         // -- End VIN Page --
     ;

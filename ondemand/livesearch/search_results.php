@@ -332,7 +332,7 @@ switch ($search) {
                                     $install_published_display = (checkPublished('install_bracket')) ? "<td class='$installPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $installBracketName</td>" : "<td>---</td>";
 
                                     echo "<tr class='cursor-hand' id='manage_bracket_{$room['id']}'>";
-                                    echo "  <td style='width: 26px;'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button></td>";
+                                    echo "  <td style='width:55px;'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect btn-primary' id='show_vin_room_{$room['id']}' onclick='calcVin()'><i class='zmdi zmdi-developer-board'></i></button></td>";
                                     echo "  <td>{$tab}{$room_name}</td>";
                                     echo "  $sales_published_display";
                                     echo "  $preprod_published_display";
@@ -733,7 +733,7 @@ switch ($search) {
                                         echo "<tr id='tr_iteration_{$room['id']}' style='display: none;'>";
                                         echo "  <td colspan='10'><div id='div_iteration_{$room['id']}' style='display: none;'>";
 
-                                        $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%' ORDER BY dealer_id ASC");
+                                        $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['contractor_dealer_code']}%' ORDER BY dealer_id ASC");
                                         $dealer = $dealer_qry->fetch_assoc();
                                         ?>
 
@@ -994,6 +994,610 @@ switch ($search) {
                                         <?php echo "</div></td>";
                                         echo "</tr>";
                                         /** END DISPLAY OF ADD ITERATION */
+
+                                        /** BEGIN DISPLAY OF VIN MANAGEMENT */
+                                        echo "<tr id='tr_vin_{$room['id']}' style='display: none;'>";
+                                        echo "  <td colspan='10'><div id='div_vin_{$room['id']}' style='display: none;'>";
+                                        ?>
+
+                                        <div class="col-md-12">
+                                            <form id="vin_contents_<?php echo $room['id']; ?>">
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <input type="hidden" name="vin_so_num" value="<?php echo $room['so_parent']; ?>" id="vin_so_num" />
+                                                        <input type="hidden" name="vin_room" value="<?php echo $room['room']; ?>" id="vin_room" />
+                                                        <input type="hidden" name="vin_iteration" value="<?php echo $room['iteration']; ?>" id="vin_iteration" />
+                                                        <input type="hidden" name="vin_product_type" value="<?php echo $room['product_type']; ?>" id="vin_product_type" />
+                                                        <input type="hidden" name="vin_order_status" value="<?php echo $room['order_status']; ?>" id="vin_order_status" />
+                                                        <input type="hidden" name="vin_days_to_ship" value="<?php echo $room['days_to_ship']; ?>" id="vin_days_to_ship" />
+                                                        <input type="hidden" name="vin_dealer_code" value="<?php echo $result['contractor_dealer_code']; ?>" id="vin_dealer_code" />
+
+                                                        <table width="100%" class="table table-custom-nb label-right">
+                                                            <tr>
+                                                                <td style="width:30px;"><label for="notes">Notes</label></td>
+                                                                <td><input type="text" name="notes" id="notes" placeholder="Notes..." class="form-control" maxlength="300"></td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-2">
+                                                        <table width="100%" class="table table-custom-nb label-right">
+                                                            <tr><td colspan="2" class="text-md-center"><h5>Door, Drawer & Hardwood</h5></td></tr>
+                                                            <tr>
+                                                                <td><label for="species_grade">Species Grade</label></td>
+                                                                <td>
+                                                                    <select name="species_grade" id="species_grade" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'species_grade'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['species_grade']) {
+                                                                                $species_grade_selected = "selected";
+                                                                            } else {
+                                                                                $species_grade_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $species_grade_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="construction_method">Construction Method</label></td>
+                                                                <td>
+                                                                    <select name="construction_method" id="construction_method" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'construction_method'");
+
+                                                                        if($segment['key'] === $room['construction_method']) {
+                                                                            $construction_method_selected = "selected";
+                                                                        } else {
+                                                                            $construction_method_selected = null;
+                                                                        }
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            echo "<option value='{$segment['key']}' $construction_method_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="door_design">Door Design</label></td>
+                                                                <td>
+                                                                    <select name="door_design" id="door_design" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'door_design'");
+
+                                                                        if($segment['key'] === $room['construction_method']) {
+                                                                            $door_design_selected = "selected";
+                                                                        } else {
+                                                                            $door_design_selected = null;
+                                                                        }
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            echo "<option value='{$segment['key']}' $door_design_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+                                                        <table width="100%" class="table table-custom-nb label-right" style="width:100%;">
+                                                            <tr><td colspan="2" class="text-md-center"><h5>Panel Raise</h5></td></tr>
+                                                            <tr>
+                                                                <td style="width:120px;"><label for="panel_raise_door">Door</label></td>
+                                                                <td>
+                                                                    <select name="panel_raise_door" id="panel_raise_door" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['panel_raise_door']) {
+                                                                                $panel_raise_door_selected = "selected";
+                                                                            } else {
+                                                                                $panel_raise_door_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $panel_raise_door_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="panel_raise_sd">Short Drawer</label></td>
+                                                                <td>
+                                                                    <select name="panel_raise_sd" id="panel_raise_sd" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['panel_raise_door']) {
+                                                                                $panel_raise_sd_selected = "selected";
+                                                                            } else {
+                                                                                $panel_raise_sd_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $panel_raise_sd_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="panel_raise_td">Tall Drawer</label></td>
+                                                                <td>
+                                                                    <select name="panel_raise_td" id="panel_raise_td" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['panel_raise_td']) {
+                                                                                $panel_raise_td_selected = "selected";
+                                                                            } else {
+                                                                                $panel_raise_td_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $panel_raise_td_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="edge_profile">Edge Profile</label></td>
+                                                                <td>
+                                                                    <select name="edge_profile" id="edge_profile" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'edge_profile'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['panel_raise_td']) {
+                                                                                $edge_profile_selected = "selected";
+                                                                            } else {
+                                                                                $edge_profile_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $edge_profile_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="framing_bead">Framing Bead</label></td>
+                                                                <td>
+                                                                    <select name="framing_bead" id="framing_bead" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_bead'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['framing_bead']) {
+                                                                                $framing_bead_selected = "selected";
+                                                                            } else {
+                                                                                $framing_bead_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $framing_bead_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="framing_options">Framing Options</label></td>
+                                                                <td>
+                                                                    <select name="framing_options" id="framing_options" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_options'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['framing_options']) {
+                                                                                $framing_options_selected = "selected";
+                                                                            } else {
+                                                                                $framing_options_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $framing_options_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="style_rail_width">Style/Rail Width</label></td>
+                                                                <td>
+                                                                    <select name="style_rail_width" id="style_rail_width" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'style_rail_width'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['style_rail_width']) {
+                                                                                $style_rail_width_selected = "selected";
+                                                                            } else {
+                                                                                $style_rail_width_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $style_rail_width_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <table width="100%" class="table table-custom-nb label-right" style="width:100%;">
+                                                            <tr><td colspan="2" class="text-md-center"><h5>Finish</h5></td></tr>
+                                                            <tr>
+                                                                <td><label for="finish_type">Type</label></td>
+                                                                <td>
+                                                                    <select name="finish_type" id="finish_type" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_type'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['framing_options']) {
+                                                                                $finish_type_selected = "selected";
+                                                                            } else {
+                                                                                $finish_type_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $finish_type_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="finish_code">Code</label></td>
+                                                                <td><input type="text" class="form-control" onchange="calcVin()" name="finish_code" id="finish_code" placeholder="XXXX" value="S001" maxlength="4" ></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="sheen">Sheen</label></td>
+                                                                <td>
+                                                                    <select name="sheen" id="sheen" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['sheen']) {
+                                                                                $sheen_selected = "selected";
+                                                                            } else {
+                                                                                $sheen_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $sheen_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="glaze">Glaze Color</label></td>
+                                                                <td>
+                                                                    <select name="glaze" id="glaze" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['glaze']) {
+                                                                                $glaze_selected = "selected";
+                                                                            } else {
+                                                                                $glaze_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $glaze_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="glaze_technique">Glaze Technique</label></td>
+                                                                <td>
+                                                                    <select name="glaze_technique" id="glaze_technique" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['glaze_technique']) {
+                                                                                $glaze_technique_selected = "selected";
+                                                                            } else {
+                                                                                $glaze_technique_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $glaze_technique_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="antiquing">Antiquing</label></td>
+                                                                <td>
+                                                                    <select name="antiquing" id="antiquing" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'antiquing'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['antiquing']) {
+                                                                                $antiquing_selected = "selected";
+                                                                            } else {
+                                                                                $antiquing_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $antiquing_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="worn_edges">Worn Edges</label></td>
+                                                                <td>
+                                                                    <select name="worn_edges" id="worn_edges" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'worn_edges'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['worn_edges']) {
+                                                                                $worn_edges_selected = "selected";
+                                                                            } else {
+                                                                                $worn_edges_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $worn_edges_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="distress_level">Distress Level</label></td>
+                                                                <td>
+                                                                    <select name="distress_level" id="distress_level" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'distress_level'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['distress_level']) {
+                                                                                $distress_level_selected = "selected";
+                                                                            } else {
+                                                                                $distress_level_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $distress_level_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <table width="100%" class="table table-custom-nb label-right">
+                                                            <tr><td colspan="2" class="text-md-center"><h5>Carcass Exterior</h5></td></tr>
+                                                            <tr>
+                                                                <td><label for="carcass_exterior_species">Species</label></td>
+                                                                <td>
+                                                                    <select name="carcass_exterior_species" id="carcass_exterior_species" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_species'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['carcass_exterior_species']) {
+                                                                                $carcass_exterior_species_selected = "selected";
+                                                                            } else {
+                                                                                $carcass_exterior_species_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $carcass_exterior_species_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="carcass_exterior_finish_type">Finish Type</label></td>
+                                                                <td>
+                                                                    <select name="carcass_exterior_finish_type" id="carcass_exterior_finish_type" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_finish_type'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['carcass_exterior_finish_type']) {
+                                                                                $carcass_exterior_finish_type_selected = "selected";
+                                                                            } else {
+                                                                                $carcass_exterior_finish_type_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $carcass_exterior_finish_type_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="carcass_exterior_finish_code">Finish Code</label></td>
+                                                                <td><input type="text" class="form-control" onchange="calcVin()" name="carcass_exterior_finish_code" id="carcass_exterior_finish_code" placeholder="XXXX" value="S001" maxlength="4" ></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="carcass_exterior_glaze_color">Glaze Color</label></td>
+                                                                <td>
+                                                                    <select name="carcass_exterior_glaze_color" id="carcass_exterior_glaze_color" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_glaze_color'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['carcass_exterior_glaze_color']) {
+                                                                                $carcass_exterior_glaze_color_selected = "selected";
+                                                                            } else {
+                                                                                $carcass_exterior_glaze_color_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $carcass_exterior_glaze_color_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="carcass_exterior_glaze_technique">Glaze Technique</label></td>
+                                                                <td>
+                                                                    <select name="carcass_exterior_glaze_technique" id="carcass_exterior_glaze_technique" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_glaze_technique'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['carcass_exterior_glaze_technique']) {
+                                                                                $carcass_exterior_glaze_technique_selected = "selected";
+                                                                            } else {
+                                                                                $carcass_exterior_glaze_technique_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $carcass_exterior_glaze_technique_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <table width="100%" class="table table-custom-nb label-right">
+                                                            <tr><td colspan="2" class="text-md-center"><h5>Carcass Interior</h5></td></tr>
+                                                            <tr>
+                                                                <td><label for="carcass_interior_species">Species</label></td>
+                                                                <td>
+                                                                    <select name="carcass_interior_species" id="carcass_interior_species" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_species'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['carcass_interior_species']) {
+                                                                                $carcass_interior_species_selected = "selected";
+                                                                            } else {
+                                                                                $carcass_interior_species_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $carcass_interior_species_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="carcass_interior_finish_type">Finish Type</label></td>
+                                                                <td>
+                                                                    <select name="carcass_interior_finish_type" id="carcass_interior_finish_type" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_finish_type'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['carcass_interior_finish_type']) {
+                                                                                $carcass_interior_finish_type_selected = "selected";
+                                                                            } else {
+                                                                                $carcass_interior_finish_type_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $carcass_interior_finish_type_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="carcass_interior_finish_code">Finish Code</label></td>
+                                                                <td><input type="text" class="form-control" onchange="calcVin()" name="carcass_interior_finish_code" id="carcass_interior_finish_code" placeholder="XXXX" value="S001" ></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="carcass_interior_glaze_color">Glaze Color</label></td>
+                                                                <td>
+                                                                    <select name="carcass_interior_glaze_color" id="carcass_interior_glaze_color" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_glaze_color'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['carcass_interior_glaze_color']) {
+                                                                                $carcass_interior_glaze_color_selected = "selected";
+                                                                            } else {
+                                                                                $carcass_interior_glaze_color_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $carcass_interior_glaze_color_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><label for="carcass_interior_glaze_technique">Glaze Technique</label></td>
+                                                                <td>
+                                                                    <select name="carcass_interior_glaze_technique" id="carcass_interior_glaze_technique" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_glaze_technique'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['carcass_interior_glaze_technique']) {
+                                                                                $carcass_interior_glaze_technique_selected = "selected";
+                                                                            } else {
+                                                                                $carcass_interior_glaze_technique_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $carcass_interior_glaze_technique_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <table width="100%" class="table table-custom-nb label-right">
+                                                            <tr><td colspan="2" class="text-md-center"><h5>Drawer Boxes</h5></td></tr>
+                                                            <tr>
+                                                                <td><label for="drawer_boxes">Drawer Boxes</label></td>
+                                                                <td>
+                                                                    <select name="drawer_boxes" id="drawer_boxes" class="form-control" onchange="calcVin()">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'drawer_boxes'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['drawer_boxes']) {
+                                                                                $drawer_boxes_selected = "selected";
+                                                                            } else {
+                                                                                $drawer_boxes_selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $drawer_boxes_selected>{$segment['value']}</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6 col-md-offset-3"><input type="text" class="form-control" name="vin_code" id="vin_code" placeholder="VIN Code" /> </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-12" style="margin:12px;"><button type="button" class="btn btn-primary waves-effect waves-light w-sm hidden-print create-vin" id="<?php echo $room['id']; ?>">Update</button></div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <?php echo "</div></td>";
+                                        echo "</tr>";
+                                        /** END DISPLAY OF VIN MANAGEMENT */
                                     /** END SINGLE ROOM DISPLAY */
                                 }
                             }
