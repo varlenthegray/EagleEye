@@ -4,6 +4,36 @@ require_once ("../../includes/header_start.php");
 function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
     global $dbconn;
 
+    // if the bracket is published
+    if((bool)$bracket_pub) {
+        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = '$operation' AND room_id = '$roomid' AND published = TRUE");
+
+        if($op_queue_qry->num_rows > 0) {
+            while($op_queue = $op_queue_qry->fetch_assoc()) {
+                if((bool)$op_queue['active']) {
+                    // the exact operation is currently active and we cannot take any further action
+                    echo displayToast("error", "Operation is active presently inside of $bracket.", "Active Operation");
+                    return;
+                } else {
+                    // deactivate all operations
+                    $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['id']}'");
+                }
+            }
+        }
+
+        // grab the entire room's information
+        $dbinfo_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$roomid'");
+        $dbinfo = $dbinfo_qry->fetch_assoc();
+
+        // now that we've cleaned up the operations; it's time to get that operation flowing
+        $dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, start_time, end_priority, end_time, active, 
+         completed, rework, notes, qty_requested, qty_completed, qty_rework, resumed_time, resumed_priority, partially_completed, created) VALUES ('$roomid', 
+          '{$dbinfo['so_parent']}', '{$dbinfo['room']}', '$operation', NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, NULL, 1, NULL, NULL, NULL, 
+           NULL, NULL, UNIX_TIMESTAMP())");
+    }
+
+
+    /*
     // now we need to create the ops and/or activate the appropriate ops based on what's selected (and deactivate any old ones) if bracket is published
     if((bool)$bracket_pub) {
         $ops = array();
@@ -92,7 +122,7 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
                 }
             }
         }
-    }
+    }*/
 }
 
 switch($_REQUEST['action']) {
@@ -250,7 +280,7 @@ switch($_REQUEST['action']) {
                 createOpQueue($shipping_pub, 'Shipping', $shipping_op, $roomid);
                 createOpQueue($install_pub, 'Installation', $install_op, $roomid);
 
-                echo displayToast("success", "Successfully updated the bracket.", "Bracket Updated");
+                echo displayToast("success", "All operations have been refreshed and the bracket has been updated.", "Updated & Refreshed");
             } else {
                 dbLogSQLErr($dbconn);
             }

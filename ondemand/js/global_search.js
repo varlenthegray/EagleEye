@@ -320,9 +320,9 @@ $("body")
         var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
         var selected_ops = $("#form_bracket_" + active_room_id).serialize();
 
-        active_ops = JSON.stringify(active_ops);
-
         console.log(selected_ops);
+
+        active_ops = JSON.stringify(active_ops);
 
         $.post("/ondemand/shopfloor/gen_actions.php?action=save_active_ops&" + selected_ops, {active_ops: active_ops, roomid: active_room_id}, function(data) {
             $('body').append(data);
