@@ -331,7 +331,7 @@ switch($_REQUEST['action']) {
                 dbLogSQLErr($dbconn); // gonna throw an error here...
             }
         } else { // this is a triple-zero op
-            if($otf === 'yes') { // this is an on-the-fly operation
+            if($otf) { // this is an on-the-fly operation
                 // first check to see if anything exists in the op queue with this operation id, room, so# and iteration
                 $exists_qry = $dbconn->query("SELECT * FROM op_queue WHERE so_parent = '$otf_so' AND room = '$otf_room' AND operation_id = '$otf_op' AND iteration = '$otf_iteration' AND published = TRUE AND completed = FALSE");
 
