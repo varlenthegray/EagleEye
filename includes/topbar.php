@@ -96,6 +96,10 @@ switch($_SERVER['SCRIPT_NAME']) {
                 </ul>
             </div> <!-- end menu-extras -->
 
+            <div class="pull-right">
+                <img src="../assets/images/logo.png" height="60px" />
+            </div>
+
             <div class="clearfix"></div>
 
         </div> <!-- end container -->
