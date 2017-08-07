@@ -12,6 +12,10 @@ switch($_SERVER['SCRIPT_NAME']) {
 
 <!-- Navigation Bar-->
 <header id="topnav">
+    <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
+    <input type="text" name="ausernameidontcareabout" style="display:none;">
+    <input type="password" name="apasswordidontcareabout" style="display:none;">
+
     <div class="topbar-main hidden-print">
         <div class="container">
             <!-- LOGO -->
