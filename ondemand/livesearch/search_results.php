@@ -722,7 +722,7 @@ switch ($search) {
                                                 </div>
                                             </div>
 
-                                            <button type="button" class="btn btn-primary waves-effect waves-light w-xs save_bracket floating-button-left" data-roomid="<?php echo $room['id']; ?>">Save</button>
+                                            <?php if($_SESSION['userInfo']['account_type'] <= 4) { ?><button type="button" class="btn btn-primary waves-effect waves-light w-xs save_bracket floating-button-left" data-roomid="<?php echo $room['id']; ?>">Save</button><?php } ?>
                                         </div>
 
                                         <?php echo "</div></td>";
