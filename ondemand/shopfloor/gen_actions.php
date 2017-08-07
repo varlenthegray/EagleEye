@@ -390,6 +390,8 @@ switch($_REQUEST['action']) {
         $carcass_interior_glaze_color = sanitizeInput($_REQUEST['carcass_interior_glaze_color_' . $room_id]);
         $carcass_interior_glaze_technique = sanitizeInput($_REQUEST['carcass_interior_glaze_technique_' . $room_id]);
         $drawer_boxes = sanitizeInput($_REQUEST['drawer_boxes_' . $room_id]);
+        $notes = sanitizeInput($_REQUEST['notes_' . $room_id]);
+        $vin_final = sanitizeInput($_REQUEST['vin_code_' . $room_id]);
 
         if($dbconn->query("UPDATE rooms SET species_grade = '$species_grade', construction_method = '$construction_method', door_design = '$door_design', 
          panel_raise_door = '$panel_raise_door', panel_raise_sd = '$panel_raise_sd', panel_raise_td = '$panel_raise_td', edge_profile = '$edge_profile', 
@@ -400,8 +402,8 @@ switch($_REQUEST['action']) {
               carcass_exterior_glaze_color = '$carcass_exterior_glaze_color', carcass_exterior_glaze_technique = '$carcass_exterior_glaze_technique', 
                carcass_interior_species = '$carcass_interior_species', carcass_interior_finish_type = '$carcass_interior_finish_type', 
                 carcass_interior_finish_code = '$carcass_interior_finish_code', carcass_interior_glaze_color = '$carcass_interior_glaze_color', 
-                 carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes' 
-                  WHERE id = '$room_id'")) {
+                 carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', vin_notes = '$notes',
+                  vin_code = '$vin_final' WHERE id = '$room_id'")) {
             echo displayToast("success", "VIN has been updated for SO $so_num room $room iteration $iteration.", "VIN Updated");
         } else {
             dbLogSQLErr($dbconn);

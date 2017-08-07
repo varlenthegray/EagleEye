@@ -332,7 +332,7 @@ switch ($search) {
                                     $install_published_display = (checkPublished('install_bracket')) ? "<td class='$installPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $installBracketName</td>" : "<td>---</td>";
 
                                     echo "<tr class='cursor-hand' id='manage_bracket_{$room['id']}'>";
-                                    echo "  <td style='width:55px;'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect btn-primary' id='show_vin_room_{$room['id']}' onclick='calcVin({$room['id']})'><i class='zmdi zmdi-developer-board'></i></button></td>";
+                                    echo "  <td style='width:55px;'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect btn-primary' id='show_vin_room_{$room['id']}'><i class='zmdi zmdi-developer-board'></i></button></td>";
                                     echo "  <td>{$tab}{$room_name}</td>";
                                     echo "  $sales_published_display";
                                     echo "  $preprod_published_display";
@@ -1015,7 +1015,7 @@ switch ($search) {
                                                         <table width="100%" class="table table-custom-nb label-right">
                                                             <tr>
                                                                 <td style="width:30px;"><label for="notes">Notes</label></td>
-                                                                <td><input type="text" name="notes" id="notes" placeholder="Notes..." class="form-control" maxlength="300"></td>
+                                                                <td><input type="text" name="notes_<?php echo $room['id']; ?>" id="notes_<?php echo $room['id']; ?>" placeholder="Notes..." class="form-control" maxlength="300"value="<?php echo $room['vin_notes']; ?>"></td>
                                                             </tr>
                                                         </table>
                                                     </div>
@@ -1586,7 +1586,7 @@ switch ($search) {
                                                 </div>
 
                                                 <div class="row">
-                                                    <div class="col-md-6 col-md-offset-3"><input type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" /> </div>
+                                                    <div class="col-md-6 col-md-offset-3"><input type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" value="<?php echo $room['vin_code']; ?>" /> </div>
                                                 </div>
 
                                                 <div class="row">
