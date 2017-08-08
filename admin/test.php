@@ -2,7 +2,7 @@
 require ("../includes/header_start.php");
 
 outputPHPErrs();
-
+/*
 $excluded_ops = '89,';
 
 $rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE individual_bracket_buildout LIKE '%$excluded_ops%'");
@@ -21,4 +21,4 @@ if($rooms_qry->num_rows > 0) {
     }
 }
 
-echo "<h4>Update completed.</h4>";
+echo "<h4>Update completed.</h4>";*/

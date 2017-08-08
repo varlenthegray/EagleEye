@@ -23073,7 +23073,7 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
   padding: 5px;
   overflow: auto; }
   .card-box:hover {
-    background-color: #ede1c4; }
+    background-color: #F2F2F2; }
 
 .bg-lightgray {
   background-color: rgba(228, 228, 228, 0.8); }
@@ -23364,6 +23364,61 @@ table tbody td {
 
 body {
   height: 100vh; }
+
+.vin-codes select {
+  width: 221px; }
+.vin-codes .force-width {
+  width: 221px; }
+
+.custom-border-1px-top {
+  border: #000 solid !important;
+  border-width: 1px 0 0 0 !important; }
+
+.custom-border-1px-tlr {
+  border: #000 solid !important;
+  border-width: 1px 1px 0 1px !important; }
+
+.custom-border-1px-tl {
+  border: #000 solid !important;
+  border-width: 1px 0 0 1px !important; }
+
+.custom-border-1px-tr {
+  border: #000 solid !important;
+  border-width: 1px 1px 0 0 !important; }
+
+.custom-border-1px-mid {
+  border: #000 solid !important;
+  border-width: 0 1px !important; }
+
+.custom-border-1px-left {
+  border: #000 solid !important;
+  border-width: 0 0 0 1px !important; }
+
+.custom-border-1px-right {
+  border: #000 solid !important;
+  border-width: 0 1px 0 0 !important; }
+
+.custom-border-1px-lr {
+  border: #000 solid !important;
+  border-width: 0 1px !important; }
+
+.custom-border-1px-bottom {
+  border: #000 solid !important;
+  border-width: 0 0 1px 0 !important; }
+
+.custom-border-1px-lb {
+  border: #000 solid !important;
+  border-width: 0 0 1px 1px !important; }
+
+.custom-border-1px-rb {
+  border: #000 solid !important;
+  border-width: 0 1px 1px 0 !important; }
+
+.custom-border-none {
+  border: none !important; }
+
+.custom-table {
+  border: none; }
 
 .cust-table {
   display: table;

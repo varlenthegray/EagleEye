@@ -20,7 +20,7 @@
   overflow: auto;
 
   &:hover {
-    background-color: $gold;
+    background-color: #F2F2F2;
   }
 }
 
@@ -446,4 +446,79 @@ table tbody td {
 // because wtf?
 body {
   height: 100vh;
+}
+
+// VIN input adjustment
+.vin-codes {
+  select {
+    width: 221px;
+  }
+
+  .force-width {
+    width: 221px;
+  }
+}
+
+// custom bordering
+.custom-border-1px-top {
+  border: #000 solid !important;
+  border-width: 1px 0 0 0 !important;
+}
+
+.custom-border-1px-tlr {
+  border: #000 solid !important;
+  border-width: 1px 1px 0 1px !important;
+}
+
+.custom-border-1px-tl {
+  border: #000 solid !important;
+  border-width: 1px 0 0 1px !important;
+}
+
+.custom-border-1px-tr {
+  border: #000 solid !important;
+  border-width: 1px 1px 0 0 !important;
+}
+
+.custom-border-1px-mid {
+  border: #000 solid !important;
+  border-width: 0 1px !important;
+}
+
+.custom-border-1px-left {
+  border: #000 solid !important;
+  border-width: 0 0 0 1px !important;
+}
+
+.custom-border-1px-right {
+  border: #000 solid !important;
+  border-width: 0 1px 0 0 !important;
+}
+
+.custom-border-1px-lr {
+  border: #000 solid !important;
+  border-width: 0 1px !important;
+}
+
+.custom-border-1px-bottom {
+  border: #000 solid !important;
+  border-width: 0 0 1px 0 !important;
+}
+
+.custom-border-1px-lb {
+  border: #000 solid !important;
+  border-width: 0 0 1px 1px !important;
+}
+
+.custom-border-1px-rb {
+  border: #000 solid !important;
+  border-width: 0 1px 1px 0 !important;
+}
+
+.custom-border-none {
+  border: none !important;
+}
+
+.custom-table {
+  border: none;
 }
