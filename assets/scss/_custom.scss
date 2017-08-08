@@ -412,3 +412,11 @@ table tbody td {
   top: 270px;
   left: 40px;
 }
+
+// custom logo icon thingy!
+.custom-logo {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  z-index: 1000;
+}

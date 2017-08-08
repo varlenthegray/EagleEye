@@ -23341,6 +23341,12 @@ table tbody td {
   top: 270px;
   left: 40px; }
 
+.custom-logo {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  z-index: 1000; }
+
 .cust-table {
   display: table;
   width: 100%;

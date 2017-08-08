@@ -12,6 +12,10 @@ switch($_SERVER['SCRIPT_NAME']) {
 
 <!-- Navigation Bar-->
 <header id="topnav">
+    <div class="custom-logo">
+        <img src="../assets/images/logo.png" height="100px" />
+    </div>
+
     <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
     <input type="text" name="ausernameidontcareabout" style="display:none;">
     <input type="password" name="apasswordidontcareabout" style="display:none;">
@@ -96,9 +100,7 @@ switch($_SERVER['SCRIPT_NAME']) {
                 </ul>
             </div> <!-- end menu-extras -->
 
-            <div class="pull-right">
-                <img src="../assets/images/logo.png" height="60px" />
-            </div>
+
 
             <div class="clearfix"></div>
 
