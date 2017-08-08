@@ -125,7 +125,7 @@ require '../includes/header_start.php';
     var completed_table = $("#recently_completed_jobs_global_table").DataTable({
         "ajax": "/ondemand/shopfloor/workcenter.php?action=display_recently_completed",
         "pageLength": 25,
-        "order": [[3, "desc"]],
+        "order": [[4, "desc"]],
         scrollY: '25.65vh',
         scrollCollapse: true,
         "dom": '<"#completed_header.dt-custom-header"><?php echo ((bool)$_SESSION['user_prefs']['filters_enabled']) ? "ftipr" : "tipr"; ?>',
