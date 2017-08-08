@@ -10,7 +10,7 @@ require '../includes/header_start.php';
         <div class="col-md-12">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card-box table-responsive" style="min-height:38.6vh;">
+                    <div class="card-box table-responsive" style="min-height:42vh;">
                         <table id="quote_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
@@ -25,7 +25,7 @@ require '../includes/header_start.php';
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card-box table-responsive" style="min-height:38.6vh;">
+                    <div class="card-box table-responsive" style="min-height:42vh;">
                         <table id="orders_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
@@ -47,7 +47,7 @@ require '../includes/header_start.php';
         <div class="col-md-12">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card-box table-responsive" style="min-height:38.6vh;">
+                    <div class="card-box table-responsive" style="min-height:42vh;">
                         <table id="active_ops_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
@@ -68,7 +68,7 @@ require '../includes/header_start.php';
 
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card-box table-responsive" style="min-height:38.6vh;">
+                    <div class="card-box table-responsive" style="min-height:42vh;">
                         <table id="queue_ops_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
@@ -137,7 +137,7 @@ require '../includes/header_start.php';
             $(row).addClass("cursor-hand view_so_info");
         },
         "paging": false,
-        scrollY: '25.65vh',
+        scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#quote_header.dt-custom-header">tipr',
         "columnDefs": [{
@@ -153,7 +153,7 @@ require '../includes/header_start.php';
             $(row).addClass("cursor-hand view_so_info");
         },
         "paging": false,
-        scrollY: '25.65vh',
+        scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#order_header.dt-custom-header">tipr',
         "order": [[0, "asc"]]
@@ -168,7 +168,7 @@ require '../includes/header_start.php';
             $(row).addClass("cursor-hand view_so_info");
         },
         "paging": false,
-        scrollY: '25.65vh',
+        scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#active_header.dt-custom-header">tipr',
         "columnDefs": [{
@@ -184,7 +184,7 @@ require '../includes/header_start.php';
             $(row).addClass("cursor-hand view_so_info");
         },
         "paging": false,
-        scrollY: '25.65vh',
+        scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#queue_header.dt-custom-header">tipr',
         "columnDefs": [{

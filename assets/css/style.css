@@ -23347,7 +23347,7 @@ table tbody td {
   right: 4px;
   z-index: 1000; }
 
-.container {
+.topbar-main .container {
   height: 42px; }
 
 .logo {
@@ -23355,6 +23355,15 @@ table tbody td {
 
 #topnav .topbar-main .navbar-nav .nav-link {
   line-height: 42px; }
+
+.wrapper {
+  padding-top: 91px; }
+
+.footer {
+  padding: 0 0 10px 0; }
+
+body {
+  height: 100vh; }
 
 .cust-table {
   display: table;

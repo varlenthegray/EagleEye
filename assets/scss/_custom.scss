@@ -422,7 +422,7 @@ table tbody td {
 }
 
 // adjusting the header...
-.container {
+.topbar-main .container {
   height: 42px;
 }
 
@@ -432,4 +432,18 @@ table tbody td {
 
 #topnav .topbar-main .navbar-nav .nav-link {
   line-height: 42px;
+}
+
+.wrapper {
+  padding-top: 91px;
+}
+
+// and now the footer...
+.footer {
+  padding: 0 0 10px 0;
+}
+
+// because wtf?
+body {
+  height: 100vh;
 }
