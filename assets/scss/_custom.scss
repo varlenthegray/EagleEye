@@ -420,3 +420,16 @@ table tbody td {
   right: 4px;
   z-index: 1000;
 }
+
+// adjusting the header...
+.container {
+  height: 42px;
+}
+
+.logo {
+  line-height: 42px;
+}
+
+#topnav .topbar-main .navbar-nav .nav-link {
+  line-height: 42px;
+}

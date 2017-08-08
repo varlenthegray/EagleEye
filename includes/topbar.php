@@ -13,7 +13,7 @@ switch($_SERVER['SCRIPT_NAME']) {
 <!-- Navigation Bar-->
 <header id="topnav">
     <div class="custom-logo">
-        <img src="../assets/images/logo.png" height="100px" />
+        <img src="../assets/images/logo.png" height="80px" />
     </div>
 
     <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
