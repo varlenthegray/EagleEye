@@ -1409,6 +1409,21 @@ switch ($search) {
                                                                         ?>
                                                                     </select>
                                                                 </td>
+                                                                <td class="custom-border-none" colspan="3">&nbsp;</td>
+                                                                <td class="custom-border-none form-inline" rowspan="5">
+                                                                    <div class="form-group">
+                                                                        <label for="sample_block_<?php echo $room['id']; ?>">Sample Block</label>
+                                                                        <input type="text" class="form-control" id="sample_block_<?php echo $room['id']; ?>" placeholder="X">
+                                                                    </div>
+                                                                    <select name="request_sample_<?php echo $room['id']; ?>" id="request_sample_<?php echo $room['id']; ?>" class="form-control">
+                                                                        <option value="Sample Block">Sample Block</option>
+                                                                        <option value="Door Only">Door Only</option>
+                                                                        <option value="Door & Drawer">Door & Drawer</option>
+                                                                        <option value="Inset Square">Inset Square</option>
+                                                                        <option value="Inset Beaded">Inset Beaded</option>
+                                                                    </select>
+                                                                    <button type="button" class="btn btn-primary waves-effect waves-light w-sm hidden-print request-sample" id="<?php echo $room['id']; ?>" disabled>Request Sample</button>
+                                                                </td>
                                                             </tr>
                                                             <tr>
                                                                 <td class="custom-border-1px-left"><label for="panel_raise_td_<?php echo $room['id']; ?>">Tall Drawer</label></td>
@@ -1527,14 +1542,7 @@ switch ($search) {
                                                                 </td>
                                                                 <td colspan="7" class="custom-border-none"><input type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" value="<?php echo $room['vin_code']; ?>" style="width:50%;margin-left:25%;" /></td>
                                                                 <td class="custom-border-none form-inline">
-                                                                    <select name="request_sample_<?php echo $room['id']; ?>" id="request_sample_<?php echo $room['id']; ?>" class="form-control">
-                                                                        <option value="Sample Block">Sample Block</option>
-                                                                        <option value="Door Only">Door Only</option>
-                                                                        <option value="Door & Drawer">Door & Drawer</option>
-                                                                        <option value="Inset Square">Inset Square</option>
-                                                                        <option value="Inset Beaded">Inset Beaded</option>
-                                                                    </select>
-                                                                    <button type="button" class="btn btn-primary waves-effect waves-light w-sm hidden-print request-sample" id="<?php echo $room['id']; ?>" disabled>Request Sample</button>
+
                                                                 </td>
                                                             </tr>
                                                         </table>

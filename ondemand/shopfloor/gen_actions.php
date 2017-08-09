@@ -4,19 +4,19 @@ require_once ("../../includes/header_start.php");
 function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
     global $dbconn;
 
+    $op_queue_qry = $dbconn->query("SELECT op_queue.id AS QID, op_queue.*, operations.* FROM op_queue LEFT JOIN operations ON op_queue.operation_id = operations.id WHERE room_id = '$roomid' AND published = TRUE AND bracket = '$bracket'");
+
     // if the bracket is published
     if((bool)$bracket_pub) {
-        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = '$operation' AND room_id = '$roomid' AND published = TRUE");
-
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
-                if((bool)$op_queue['active']) {
+                if($op_queue['operation_id'] === $operation && (bool)$op_queue['active']) {
                     // the exact operation is currently active and we cannot take any further action
                     echo displayToast("error", "Operation is active presently inside of $bracket.", "Active Operation");
                     return;
                 } else {
-                    // deactivate all operations
-                    $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['id']}'");
+                    // deactivate operations
+                    $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
                 }
             }
         }
@@ -30,6 +30,10 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
          completed, rework, notes, qty_requested, qty_completed, qty_rework, resumed_time, resumed_priority, partially_completed, created) VALUES ('$roomid', 
           '{$dbinfo['so_parent']}', '{$dbinfo['room']}', '$operation', NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, NULL, 1, NULL, NULL, NULL, 
            NULL, NULL, UNIX_TIMESTAMP())");
+    } else {
+        while($op_queue = $op_queue_qry->fetch_assoc()) {
+            $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
+        }
     }
 
 
