@@ -519,6 +519,19 @@ require 'includes/header_end.php';
                 $('body').append(data);
             });
         })
+        .on("click", ".print-sample", function() {
+            var room_id = $(this).attr("id");
+
+            calcVin(room_id);
+
+            var formInfo = $("#vin_contents_" + room_id).serialize();
+
+            $.post("/ondemand/shopfloor/gen_actions.php?action=update_VIN&" + formInfo + "&room_id=" + room_id, function(data) {
+                $('body').append(data);
+            });
+
+            window.open("/print/sample.php?room_id=" + room_id);
+        })
         // -- End VIN Page --
     ;
 </script>

@@ -12,7 +12,7 @@ switch($_SERVER['SCRIPT_NAME']) {
 
 <!-- Navigation Bar-->
 <header id="topnav">
-    <div class="custom-logo">
+    <div class="custom-logo hidden-print">
         <img src="../assets/images/logo.png" height="80px" />
     </div>
 

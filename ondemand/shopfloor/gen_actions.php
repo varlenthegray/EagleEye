@@ -424,8 +424,23 @@ switch($_REQUEST['action']) {
         $carcass_interior_glaze_color = sanitizeInput($_REQUEST['carcass_interior_glaze_color_' . $room_id]);
         $carcass_interior_glaze_technique = sanitizeInput($_REQUEST['carcass_interior_glaze_technique_' . $room_id]);
         $drawer_boxes = sanitizeInput($_REQUEST['drawer_boxes_' . $room_id]);
+
         $notes = sanitizeInput($_REQUEST['notes_' . $room_id]);
         $vin_final = sanitizeInput($_REQUEST['vin_code_' . $room_id]);
+
+        $sample_block_ordered = sanitizeInput($_REQUEST['sample_block_' . $room_id]);
+        $door_only_ordered = sanitizeInput($_REQUEST['door_only_' . $room_id]);
+        $door_drawer_ordered = sanitizeInput($_REQUEST['door_drawer_' . $room_id]);
+        $inset_square_ordered = sanitizeInput($_REQUEST['inset_square_' . $room_id]);
+        $inset_beaded_ordered = sanitizeInput($_REQUEST['inset_beaded_' . $room_id]);
+
+        if(!empty($sample_block_ordered) || !empty($door_only_ordered) || !empty($door_drawer_ordered) || !empty($inset_square_ordered) || !empty($inset_beaded_ordered)) {
+            $now = time();
+
+            $sample_ordered_date = ", sample_ordered_date = '$now'";
+        } else {
+            $sample_ordered_date = null;
+        }
 
         if($dbconn->query("UPDATE rooms SET species_grade = '$species_grade', construction_method = '$construction_method', door_design = '$door_design', 
          panel_raise_door = '$panel_raise_door', panel_raise_sd = '$panel_raise_sd', panel_raise_td = '$panel_raise_td', edge_profile = '$edge_profile', 
@@ -437,7 +452,8 @@ switch($_REQUEST['action']) {
                carcass_interior_species = '$carcass_interior_species', carcass_interior_finish_type = '$carcass_interior_finish_type', 
                 carcass_interior_finish_code = '$carcass_interior_finish_code', carcass_interior_glaze_color = '$carcass_interior_glaze_color', 
                  carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', vin_notes = '$notes',
-                  vin_code = '$vin_final' WHERE id = '$room_id'")) {
+                  vin_code = '$vin_final', sample_block_ordered = '$sample_block_ordered', door_only_ordered = '$door_only_ordered', door_drawer_ordered = '$door_drawer_ordered',
+                   inset_square_ordered = '$inset_square_ordered', inset_beaded_ordered = '$inset_beaded_ordered' $sample_ordered_date WHERE id = '$room_id'")) {
             echo displayToast("success", "VIN has been updated for SO $so_num room $room iteration $iteration.", "VIN Updated");
         } else {
             dbLogSQLErr($dbconn);
