@@ -80,6 +80,10 @@
     <!-- daterange -->
     <link href="/assets/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
 
+    <!-- Alert Windows -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
     <script>
         var userTZ = '<?php echo $_SESSION['userInfo']['timezone']; ?>';
 
@@ -89,6 +93,21 @@
             plugins: ['advlist autolink lists charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime table contextmenu paste code'],
             toolbar: 'undo redo | insert | styleselect | bold italic | bullist numlist outdent indent'
         });
+
+        setInterval(function() {
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "/ondemand/session_continue.php"
+            })
+        }, 600000);
+
+        jconfirm.defaults = {
+            title: "Leaving without saving!",
+            content: "You have unsaved changes, do you wish to proceed?",
+            type: 'orange',
+            typeAnimated: true
+        }
     </script>
 
     <?php

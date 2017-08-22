@@ -274,3 +274,6 @@ require_once ("header_start.php");
 
 <!-- JScroll -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.0/jquery.scrollTo.min.js"></script>
+
+<!-- Unsaved Changes -->
+<script src="/assets/js/unsaved_alert.js"></script>

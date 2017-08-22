@@ -207,22 +207,22 @@ require 'includes/header_end.php';
         // -- Navigation --
         .on("click", "#nav_dashboard", function() {
             if(shop_logged_in) {
-                loadPage('dashboard');
+                unloadPage('dashboard');
             } else {
                 loadPage('employees');
             }
         })
         .on("click", "#nav_pricing", function() {
-            loadPage('pricing');
+            unloadPage('pricing');
         })
         .on("click", "#nav_workcenter", function() {
-            loadPage('workcenter');
+            unloadPage('workcenter');
         })
         .on("click", "#nav_timecard", function() {
-            loadPage('timecard');
+            unloadPage('timecard');
         })
         .on("click", "#nav_job-management", function() {
-            loadPage('job_management');
+            unloadPage('job_management');
         })
         .on("click", "#nav_employees", function() {
             <?php
@@ -242,13 +242,13 @@ require 'includes/header_end.php';
             }
             ?>
 
-            loadPage('employees');
+            unloadPage('employees');
         })
         .on("click", "#nav_tasks", function() {
-            loadPage('tasks');
+            unloadPage('tasks');
         })
         .on("click", "#nav_vin", function() {
-            loadPage('build_a_vin');
+            unloadPage('build_a_vin');
         })
         // -- End Navigation --
 
