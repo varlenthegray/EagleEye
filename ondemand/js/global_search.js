@@ -336,8 +336,10 @@ $("body")
 
             if($(thisClick).data('addto') === 'sequence') {
                 iteration = iteration + 1;
+                iteration.toFixed(2);
             } else {
                 iteration = iteration + 0.01;
+                iteration.toFixed(2);
             }
 
             $("[id^=show_single_room_]").removeClass("active_room_line");
