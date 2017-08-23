@@ -315,6 +315,8 @@ require 'includes/header_end.php';
                     });
                 });
             }
+
+            unsaved = false;
         })
         .on("click", "#start_job", function() {
             var other_notes_field = $("#other_notes_field").val(); // non-billable "other" section
@@ -351,6 +353,8 @@ require 'includes/header_end.php';
                     $("#modalStartJob").modal('hide');
                 });
             }
+
+            unsaved = false;
         })
         .on("change", "input[name='nonBillableTask']", function() {
             if($(this).prop("id") === 'other_subtask') {
@@ -388,6 +392,8 @@ require 'includes/header_end.php';
             $.post("/ondemand/shopfloor/dashboard.php?action=get_stop_info", {opID: op_id}, function(data) {
                 $("#modalUpdateJob").html(data).modal();
             });
+
+            unsaved = false;
         })
         .on("change", "#rework_reqd", function() {
             if($(this).is(":checked")) {
@@ -411,6 +417,8 @@ require 'includes/header_end.php';
                 updateQueuedJobs();
                 active_table.ajax.reload(null,false);
             });
+
+            unsaved = false;
         })
 
         .on("click", ".op-notes", function(e) {
