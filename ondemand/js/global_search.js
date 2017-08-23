@@ -357,7 +357,7 @@ $("body")
             $("#tr_iteration_" + active_room_id).show();
             $("#div_iteration_" + active_room_id).slideDown(250);
 
-            $("#next_iteration_" + active_room_id).val(iteration);
+            $("#next_iteration_" + active_room_id).val(iteration.toFixed(2));
         });
     })
 
