@@ -526,8 +526,9 @@ switch ($search) {
                                                                 <td><label for="iteration">Iteration</label></td>
                                                                 <td>
                                                                     <div class="input-group">
-                                                                        <input type="text" class="form-control" id="edit_iteration_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly>
-                                                                        <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['id']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
+                                                                        <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['id']; ?>" data-addto="sequence" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional sequence"> <span class="zmdi zmdi-plus-1"></span> </span>
+                                                                        <input type="text" class="form-control" id="edit_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly>
+                                                                        <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['id']; ?>" data-addto="iteration" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -560,36 +561,7 @@ switch ($search) {
                                                     <div class="col-md-3">
                                                         <fieldset class="form-group">
                                                             <label for="room_notes">Room Notes</label>
-                                                            <textarea class="form-control"  id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3" data-toggle="popover" data-placement="top" data-trigger="focus" title="" data-html="true" data-content="<table style='font-size: 9px;'>
-                        <tr>
-                            <td>CON = Conestoga</td>
-                            <td class='text-md-right'>RW = Rework</td>
-                        </tr>
-                        <tr>
-                            <td>DEL = Delivery</td>
-                            <td class='text-md-right'>S/B = Scheduled Back</td>
-                        </tr>
-                        <tr>
-                            <td>DPL = Diminishing Punch List</td>
-                            <td class='text-md-right'>SEL = Selections</td>
-                        </tr>
-                        <tr>
-                            <td>EM = Email</td>
-                            <td class='text-md-right'>T/W = This Week</td>
-                        </tr>
-                        <tr>
-                            <td>ETA = Estimated Time of Arrival</td>
-                            <td class='text-md-right'>W/A = Will Advise</td>
-                        </tr>
-                        <tr>
-                            <td>FU = Follow Up</td>
-                            <td class='text-md-right'>W/C = Will Contact</td>
-                        </tr>
-                        <tr>
-                            <td>N/A = Not Available</td>
-                            <td class='text-md-right'>WO = Work Order</td>
-                        </tr>
-                    </table>" data-original-title="Abbreviations"></textarea>
+                                                            <textarea class="form-control"  id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3"></textarea>
                                                         </fieldset>
                                                     </div>
 
@@ -912,8 +884,9 @@ switch ($search) {
                                                                     <td><label for="iteration">Iteration</label></td>
                                                                     <td>
                                                                         <div class="input-group">
-                                                                            <input type="text" class="form-control" id="edit_iteration_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration'] + 0.01; ?>" readonly>
-                                                                            <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
+                                                                            <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-addto="sequence" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional sequence"> <span class="zmdi zmdi-plus-1"></span> </span>
+                                                                            <input type="text" class="form-control" id="next_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly>
+                                                                            <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-addto="iteration" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
                                                                         </div>
                                                                     </td>
                                                                 </tr>
@@ -946,36 +919,7 @@ switch ($search) {
                                                         <div class="col-md-3">
                                                             <fieldset class="form-group">
                                                                 <label for="room_notes">Room Notes</label>
-                                                                <textarea class="form-control"  id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3" data-toggle="popover" data-placement="top" data-trigger="focus" title="" data-html="true" data-content="<table style='font-size: 9px;'>
-                            <tr>
-                                <td>CON = Conestoga</td>
-                                <td class='text-md-right'>RW = Rework</td>
-                            </tr>
-                            <tr>
-                                <td>DEL = Delivery</td>
-                                <td class='text-md-right'>S/B = Scheduled Back</td>
-                            </tr>
-                            <tr>
-                                <td>DPL = Diminishing Punch List</td>
-                                <td class='text-md-right'>SEL = Selections</td>
-                            </tr>
-                            <tr>
-                                <td>EM = Email</td>
-                                <td class='text-md-right'>T/W = This Week</td>
-                            </tr>
-                            <tr>
-                                <td>ETA = Estimated Time of Arrival</td>
-                                <td class='text-md-right'>W/A = Will Advise</td>
-                            </tr>
-                            <tr>
-                                <td>FU = Follow Up</td>
-                                <td class='text-md-right'>W/C = Will Contact</td>
-                            </tr>
-                            <tr>
-                                <td>N/A = Not Available</td>
-                                <td class='text-md-right'>WO = Work Order</td>
-                            </tr>
-                        </table>" data-original-title="Abbreviations"></textarea>
+                                                                <textarea class="form-control"  id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3"></textarea>
                                                             </fieldset>
                                                         </div>
 

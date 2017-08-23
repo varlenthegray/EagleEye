@@ -278,6 +278,8 @@ $("body")
         $.post("/ondemand/shopfloor/gen_actions.php?action=insert_new_room&" + save_info, function(data) {
             $("body").append(data);
         });
+
+        unsaved = false;
     })
     .on("change click", ".days-to-ship", function() {
         var dts = $(this).val();
@@ -320,6 +322,8 @@ $("body")
         $.post("/ondemand/shopfloor/gen_actions.php?action=update_room&" + edit_info, function(data) {
             $('body').append(data);
         });
+
+        unsaved = false;
     })
     .on("click", ".add_iteration", function(e) {
         thisClick = this;
@@ -328,6 +332,13 @@ $("body")
 
         checkTransition(function() {
             active_room_id = $(thisClick).data('roomid');
+            var iteration = $(thisClick).data("iteration");
+
+            if($(thisClick).data('addto') === 'sequence') {
+                iteration = iteration + 1;
+            } else {
+                iteration = iteration + 0.01;
+            }
 
             $("[id^=show_single_room_]").removeClass("active_room_line");
             $(".add_room_trigger").removeClass("active_room_line");
@@ -343,6 +354,8 @@ $("body")
 
             $("#tr_iteration_" + active_room_id).show();
             $("#div_iteration_" + active_room_id).slideDown(250);
+
+            $("#next_iteration_" + active_room_id).val(iteration);
         });
     })
 
@@ -357,6 +370,8 @@ $("body")
         $.post("/ondemand/shopfloor/gen_actions.php?action=save_active_ops&" + selected_ops, {active_ops: active_ops, roomid: active_room_id}, function(data) {
             $('body').append(data);
         });
+
+        unsaved = false;
     })
 
     .on("click", ".save_so", function() {
@@ -365,6 +380,8 @@ $("body")
         $.post('/ondemand/shopfloor/gen_actions.php?action=save_so&' + so_info, function(data) {
             $("body").append(data);
         });
+
+        unsaved = false;
     })
 
     .on("click", ".iteration_save", function(e) {
@@ -375,6 +392,8 @@ $("body")
         $.post("/ondemand/shopfloor/gen_actions.php?action=add_iteration&" + iteration_info, function(data) {
             $('body').append(data);
         });
+
+        unsaved = false;
     })
 
     .on("click", "[id^=show_vin_]", function(e) {
