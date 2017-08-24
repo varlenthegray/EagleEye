@@ -1,13 +1,13 @@
 var unsaved = false;
 
 $(":input").change(function(){ //triggers change in all input fields including text type
-    if($(this).attr("id") !== "global_search") {
+    if($(this).attr("id") !== "global_search" && $(this).attr("id") !== "viewing_queue") {
         unsaved = true;
     }
 });
 
 $(document).on('change', ':input', function(){ //triggers change in all input fields including text type
-    if($(this).attr("id") !== "global_search") {
+    if($(this).attr("id") !== "global_search" && $(this).attr("id") !== "viewing_queue") {
         unsaved = true;
     }
 });
@@ -16,11 +16,11 @@ function unloadPage(new_location){
     if(unsaved){
         $.confirm({
            buttons: {
-                confirm: function() {
+                yes: function() {
                     loadPage(new_location);
                     unsaved = false;
                 },
-                cancel: function() {}
+                no: function() {}
             }
         });
     } else {
@@ -32,11 +32,11 @@ function checkTransition(funct) {
     if(unsaved){
         $.confirm({
             buttons: {
-                confirm: function() {
+                yes: function() {
                     funct();
                     unsaved = false;
                 },
-                cancel: function() {}
+                no: function() {}
             }
         });
     } else {
