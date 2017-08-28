@@ -1,6 +1,8 @@
 <?php
 require_once ("../../includes/header_start.php");
 
+//outputPHPErrs();
+
 $action = sanitizeInput($_REQUEST['action']);
 
 switch($action) {
@@ -9,12 +11,37 @@ switch($action) {
 
         if($_SESSION['userInfo']['id'] === 16) {
             $submitted_by = $_SESSION['shop_user']['id'];
+            $submitted_name = $_SESSION['shop_user']['name'];
         } else {
             $submitted_by = $_SESSION['userInfo']['id'];
+            $submitted_name = $_SESSION['userInfo']['name'];
         }
 
         if($dbconn->query("INSERT INTO tasks (name, description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved) 
          VALUES ('', '$task_desc', UNIX_TIMESTAMP(), null, 'Low', 1, null, $submitted_by, FALSE);")) {
+            $mail_to = "ben@smcm.us";
+            $mail_subject = "New Feedback Submitted";
+            $mail_message = <<<HEREDOC
+<p>A new task has been created in EagleEye by . Here is the contents of the feedback:</p>
+
+<p>$task_desc</p>
+
+<p>Thanks,<br/>
+<br/>
+Your Automated Task List</p>
+HEREDOC;
+
+            // To send HTML mail, the Content-type header must be set
+            $mail_headers[] = 'MIME-Version: 1.0';
+            $mail_headers[] = 'Content-type: text/html; charset=iso-8859-1';
+
+            // Additional headers
+            $mail_headers[] = 'To: Ben <ben@smcm.us>';
+            $mail_headers[] = 'Reply-To: Ben <ben@smcm.us>';
+            $mail_headers[] = 'X-Mailer: PHP/' . phpversion();;
+
+            $result = mail($mail_to, $mail_subject, $mail_message, implode("\r\n", $mail_headers));
+
             echo displayToast("success", "Successfully logged feedback.", "Feedback Logged");
         } else {
             dbLogSQLErr($dbconn);
@@ -23,6 +50,8 @@ switch($action) {
         break;
     case 'get_task_list':
         $i = 0;
+
+        $output = array();
 
         $tasks_qry = $dbconn->query("SELECT tasks.id AS taskID, tasks.name AS taskName, user.name AS userName, tasks.*, user.* FROM tasks LEFT JOIN user ON tasks.assigned_to = user.id WHERE resolved = FALSE ORDER BY created DESC;");
 
@@ -63,6 +92,16 @@ switch($action) {
 
                 $i += 1;
             }
+        } else {
+            $output['data'][0][] = "&nbsp;";
+            $output['data'][0][] = "&nbsp;";
+            $output['data'][0][] = "&nbsp;";
+            $output['data'][0][] = "None Available";
+            $output['data'][0][] = "&nbsp;";
+            $output['data'][0][] = "&nbsp;";
+            $output['data'][0][] = "&nbsp;";
+            $output['data'][0][] = "&nbsp;";
+            $output['data'][0][] = "&nbsp;";
         }
 
         echo json_encode($output);
