@@ -24,7 +24,7 @@ switch($action) {
     case 'get_task_list':
         $i = 0;
 
-        $tasks_qry = $dbconn->query("SELECT tasks.id AS taskID, tasks.name AS taskName, user.name AS userName, tasks.*, user.* FROM tasks LEFT JOIN user ON tasks.assigned_to = user.id ORDER BY created DESC;");
+        $tasks_qry = $dbconn->query("SELECT tasks.id AS taskID, tasks.name AS taskName, user.name AS userName, tasks.*, user.* FROM tasks LEFT JOIN user ON tasks.assigned_to = user.id WHERE resolved = FALSE ORDER BY created DESC;");
 
         if($tasks_qry->num_rows > 0) {
             while($task = $tasks_qry->fetch_assoc()) {
