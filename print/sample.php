@@ -40,10 +40,8 @@ function displayOrder($ordered_var, $human_name) {
 
 <html>
 <head>
-    <link href="/assets/css/print.css" type="text/css" rel="stylesheet">
+    <link href="css/sample.css" type="text/css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-
-
 </head>
 
 <body onload="printMe()">

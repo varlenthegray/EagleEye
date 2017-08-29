@@ -15,6 +15,8 @@ require '../includes/header_start.php';
                             <thead>
                             <tr>
                                 <th>Quote</th>
+                                <th>Sales</th>
+                                <th>Sample</th>
                             </tr>
                             </thead>
                             <tbody id="quote_table"></tbody>
@@ -30,6 +32,8 @@ require '../includes/header_start.php';
                             <thead>
                             <tr>
                                 <th>Order</th>
+                                <th>Pre-Production</th>
+                                <th>Main</th>
                             </tr>
                             </thead>
                             <tbody id="orders_table"></tbody>

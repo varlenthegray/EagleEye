@@ -526,6 +526,8 @@ require 'includes/header_end.php';
             $.post("/ondemand/shopfloor/gen_actions.php?action=update_VIN&" + formInfo + "&room_id=" + room_id, function(data) {
                 $('body').append(data);
             });
+
+            unsaved = false;
         })
         .on("click", ".print-sample", function() {
             var room_id = $(this).attr("id");
@@ -539,6 +541,8 @@ require 'includes/header_end.php';
             });
 
             window.open("/print/sample.php?room_id=" + room_id);
+
+            unsaved = false;
         })
         // -- End VIN Page --
     ;

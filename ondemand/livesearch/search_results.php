@@ -1353,8 +1353,8 @@ switch ($search) {
                                                                         ?>
                                                                     </select>
                                                                 </td>
-                                                                <td class="custom-border-none" colspan="2">&nbsp;</td>
-                                                                <td class="custom-border-none"><label for="sample_block_<?php echo $room['id']; ?>">Sample Block</label></td>
+                                                                <td class="custom-border-none">&nbsp;</td>
+                                                                <td class="custom-border-none" colspan="2"><label for="sample_block_<?php echo $room['id']; ?>" class="text-md-right">Sample Block (5 1/4" x 6 1/8")</label></td>
                                                                 <td class="custom-border-none"><input tabindex="30" type="text" class="form-control text-md-center" name="sample_block_<?php echo $room['id']; ?>" id="sample_block_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['sample_block_ordered']; ?>"></td>
                                                             </tr>
                                                             <tr>
@@ -1394,8 +1394,8 @@ switch ($search) {
                                                                         ?>
                                                                     </select>
                                                                 </td>
-                                                                <td class="custom-border-none" colspan="4">&nbsp;</td>
-                                                                <td class="custom-border-none"><label for="door_only_<?php echo $room['id']; ?>">Door Only</label></td>
+                                                                <td class="custom-border-none" colspan="3">&nbsp;</td>
+                                                                <td class="custom-border-none" colspan="2"><label for="door_only_<?php echo $room['id']; ?>" class="text-md-right">Door Only (12" x 15")</label></td>
                                                                 <td class="custom-border-none"><input tabindex="31" type="text" class="form-control text-md-center" name="door_only_<?php echo $room['id']; ?>" id="door_only_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['door_only_ordered']; ?>"></td>
                                                             </tr>
                                                             <tr>
@@ -1435,8 +1435,8 @@ switch ($search) {
                                                                         ?>
                                                                     </select>
                                                                 </td>
-                                                                <td class="custom-border-none" colspan="4">&nbsp;</td>
-                                                                <td class="custom-border-none"><label for="door_only_<?php echo $room['id']; ?>">Door & Drawer</label></td>
+                                                                <td class="custom-border-none" colspan="3">&nbsp;</td>
+                                                                <td class="custom-border-none" colspan="2"><label for="door_only_<?php echo $room['id']; ?>" class="text-md-right">Door & Drawer (15 1/2" x 23 1/2")</label></td>
                                                                 <td class="custom-border-none"><input tabindex="32" type="text" class="form-control text-md-center" name="door_drawer_<?php echo $room['id']; ?>" id="door_drawer_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['door_drawer_ordered']; ?>"></td>
                                                             </tr>
                                                             <tr>
@@ -1459,8 +1459,8 @@ switch ($search) {
                                                                     </select>
                                                                 </td>
                                                                 <td class="custom-border-none" colspan="2">&nbsp;</td>
-                                                                <td class="custom-border-none" colspan="4">&nbsp;</td>
-                                                                <td class="custom-border-none"><label for="inset_square_<?php echo $room['id']; ?>">Inset Square</label></td>
+                                                                <td class="custom-border-none" colspan="3">&nbsp;</td>
+                                                                <td class="custom-border-none" colspan="2"><label for="inset_square_<?php echo $room['id']; ?>" class="text-md-right">Inset Square (15 1/2" x 23 1/2")</label></td>
                                                                 <td class="custom-border-none"><input tabindex="33" type="text" class="form-control text-md-center" name="inset_square_<?php echo $room['id']; ?>" id="inset_square_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['inset_square_ordered']; ?>"></td>
                                                             </tr>
                                                             <tr>
@@ -1482,8 +1482,8 @@ switch ($search) {
                                                                         ?>
                                                                     </select>
                                                                 </td>
-                                                                <td colspan="6" class="custom-border-none"><input tabindex="37" type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" value="<?php echo $room['vin_code']; ?>" style="width:50%;margin-left:25%;" /></td>
-                                                                <td class="custom-border-none"><label for="inset_beaded_<?php echo $room['id']; ?>">Inset Beaded</label></td>
+                                                                <td colspan="5" class="custom-border-none"><input tabindex="37" type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" value="<?php echo $room['vin_code']; ?>" style="width:50%;margin-left:25%;" /></td>
+                                                                <td colspan="2" class="custom-border-none"><label for="inset_beaded_<?php echo $room['id']; ?>" class="text-md-right">Inset Beaded (16 1/2" x 23 1/2")</label></td>
                                                                 <td class="custom-border-none"><input tabindex="34" type="text" class="form-control text-md-center" name="inset_beaded_<?php echo $room['id']; ?>" id="inset_beaded_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['inset_beaded_ordered']; ?>"></td>
                                                             </tr>
                                                         </table>
@@ -1496,7 +1496,7 @@ switch ($search) {
 
                                                 <div class="row">
                                                     <div class="col-md-12" style="margin:12px;">
-                                                        <button tabindex="35" type="button" class="btn btn-primary waves-effect waves-light w-sm hidden-print create-vin" id="<?php echo $room['id']; ?>">Update</button>
+                                                        <button tabindex="35" type="button" class="btn btn-primary waves-effect waves-light w-sm hidden-print create-vin" id="<?php echo $room['id']; ?>">Save</button>
                                                         <button tabindex="36" type="button" class="btn btn-primary waves-effect waves-light w-sm hidden-print print-sample" id="<?php echo $room['id']; ?>">Print Sample Request</button>
                                                     </div>
                                                 </div>
