@@ -335,11 +335,11 @@ switch ($search) {
                                     echo "  <td style='width:55px;'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect btn-primary' id='show_vin_room_{$room['id']}'><i class='zmdi zmdi-developer-board'></i></button></td>";
                                     echo "  <td>{$tab}{$room_name}</td>";
                                     echo "  $sales_published_display";
-                                    echo "  $preprod_published_display";
                                     echo "  $sample_published_display";
+                                    echo "  $preprod_published_display";
                                     echo "  $door_published_display";
-                                    echo "  $customs_published_display";
                                     echo "  $main_published_display";
+                                    echo "  $customs_published_display";
                                     echo "  $shipping_published_display";
                                     echo "  $install_published_display";
                                     echo "</tr>";
