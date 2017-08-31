@@ -179,7 +179,7 @@ switch($_REQUEST['action']) {
               JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id
                WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
                 AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) 
-                 AND (assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR assigned_to IS NULL) ORDER BY op_queue.so_parent, op_queue.room ASC;");
+                 AND (assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR assigned_to IS NULL) ORDER BY op_queue.priority, op_queue.so_parent, op_queue.room ASC;");
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
@@ -216,15 +216,31 @@ switch($_REQUEST['action']) {
                     $assignee = "&nbsp;";
                 }
 
+                if(empty($op_queue['priority'])) {
+                    $pt_weight_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'product_type' AND `column` = '{$room['product_type']}'");
+                    $pt_weight = $pt_weight_qry->fetch_assoc();
+
+                    $dts_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'days_to_ship' AND `column` = '{$room['days_to_ship']}'");
+                    $dts = $dts_qry->fetch_assoc();
+
+                    $age = (((time() - $op_queue['created']) / 60) / 60) / 24;
+
+                    $priority = ($pt_weight['weight'] * $dts['weight']) * $age;
+                } else {
+                    $priority = $op_queue['priority'];
+                }
+
                 $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-play'></i></button>";
+                $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
                 $output['data'][$i][] = $room['room_name'];
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = $release_date;
                 $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = $assignee;
+                $output['data'][$i][] = $priority;
                 $output['data'][$i]['DT_RowId'] = $op_queue['so_parent'];
+                $output['data'][$i]['weight'] = $priority;
 
                 $i += 1;
             }
@@ -266,6 +282,7 @@ switch($_REQUEST['action']) {
                 $room = $room_qry->fetch_assoc();
 
                 $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-play'></i></button>";
+                $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "{$full_assigned_info['so_parent']}{$full_assigned_info['room']}-{$vin['key']}{$full_assigned_info['iteration']}";
                 $output['data'][$i][] = $room['room_name'];
                 $output['data'][$i][] = $operation;
@@ -290,6 +307,7 @@ switch($_REQUEST['action']) {
                 $op_info_payload = json_encode($op_info);
 
                 $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='$id'><i class='zmdi zmdi-play'></i></button>";
+                $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "---------";
                 $output['data'][$i][] = "---------";
                 $output['data'][$i][] = $operation;

@@ -53,6 +53,7 @@
     <script src="/assets/plugins/datatables/buttons.html5.min.js"></script>
     <script src="/assets/plugins/datatables/buttons.print.min.js"></script>
     <script src="/assets/plugins/datatables/buttons.colVis.min.js"></script>
+    <script src="https://cdn.datatables.net/rowreorder/1.2.0/js/dataTables.rowReorder.min.js"></script>
 
     <!-- Responsive examples -->
     <script src="/assets/plugins/datatables/dataTables.responsive.min.js"></script>
@@ -60,6 +61,7 @@
 
     <!-- DataTables -->
     <link href="/assets/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.0/css/rowReorder.dataTables.min.css"/>
 
     <!-- Moment.js for Timekeeping -->
     <script src="/assets/plugins/moment/moment.js"></script>
@@ -124,6 +126,10 @@
                         }
                         
                         #topnav .topbar-main {
+                            background-color: #750909 !important;
+                        }
+                        
+                        .footer {
                             background-color: #750909 !important;
                         }
                     </style>";

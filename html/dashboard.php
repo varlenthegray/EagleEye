@@ -14,7 +14,7 @@ require '../includes/header_start.php';
                         <table id="quote_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
-                                <th>Quote</th>
+                                <th width="40%">Quote</th>
                                 <th>Sales</th>
                                 <th>Sample</th>
                             </tr>
@@ -31,7 +31,7 @@ require '../includes/header_start.php';
                         <table id="orders_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
-                                <th>Order</th>
+                                <th width="40%">Order</th>
                                 <th>Pre-Production</th>
                                 <th>Main</th>
                             </tr>
@@ -77,13 +77,13 @@ require '../includes/header_start.php';
                             <thead>
                             <tr>
                                 <th width="23px">&nbsp;</th>
+                                <th width="8px">#</th>
                                 <th width="50px">SO#</th>
-                                <th width="100px">Room</th>
-                                <th width="225px">Operation</th>
-                                <th width="85px">Release Date</th>
-                                <th width="85px">Delivery Date</th>
-                                <th width="90px">Operation Time</th>
-                                <th width="85px">Assignee</th>
+                                <th width="140px">Room</th>
+                                <th width="215px">Operation</th>
+                                <th width="80px">Release Date</th>
+                                <th width="100px">Operation Time</th>
+                                <th width="80px">Assignee</th>
                             </tr>
                             </thead>
                             <tbody id="queue_ops_table"></tbody>
@@ -186,16 +186,22 @@ require '../includes/header_start.php';
         "ajax": "/ondemand/shopfloor/dashboard.php?action=display_job_queue&queue=" + queue,
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand view_so_info");
+            $(row).attr('data-weight', data.weight);
         },
         "paging": false,
         scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#queue_header.dt-custom-header">tipr',
-        "columnDefs": [{
-            "targets": [0],
-            "orderable": false
-        }],
-        "order": [[1, "desc"]]
+        "columnDefs": [
+            {"targets": [0], "orderable": false},
+            {"targets": [8], "visible": false, "searchable": false, "type": "num-html"}
+        ],
+        "order": [[8, "desc"]],
+        "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            var index = iDisplayIndexFull + 1;
+            $('td:eq(1)', nRow).html(index);
+            return nRow;
+        }
     });
 
     $("#queue_header").html("<h4>Operations for " + op_queue_list + "</h4>");
