@@ -277,13 +277,7 @@ switch ($search) {
                                 while($room = $room_qry->fetch_assoc()) {
                                     $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
-                                    $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `value` = '{$room['product_type']}'");
-                                    $vin_result = $vin_qry->fetch_assoc();
-
-                                    $ship_days_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'days_to_ship' AND `value` = '{$room['days_to_ship']}'");
-                                    $ship_days = $ship_days_qry->fetch_assoc();
-
-                                    $room_name = "{$room['room']}{$room['iteration']}-{$vin_result['key']}{$room['order_status']}{$ship_days['key']}: {$room['room_name']}";
+                                    $room_name = "{$room['room']}{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}: {$room['room_name']}";
 
                                     $salesPriority = determinePriority($room['sales_bracket_priority']);
                                     $preprodPriority = determinePriority($room['preproduction_bracket_priority']);
@@ -871,12 +865,12 @@ switch ($search) {
                                                                     <td><label for="product_type">Product Type</label></td>
                                                                     <td>
                                                                         <select class="form-control" id="edit_product_type_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="product_type" value="<?php echo $room['product_type']; ?>">
-                                                                            <option value="Cabinet">Cabinet</option>
-                                                                            <option value="Closet">Closet</option>
-                                                                            <option value="Sample">Sample</option>
-                                                                            <option value="Display">Display</option>
-                                                                            <option value="Add-on">Add-on</option>
-                                                                            <option value="Warranty">Warranty</option>
+                                                                            <option value="C">Cabinet</option>
+                                                                            <option value="L">Closet</option>
+                                                                            <option value="S">Sample</option>
+                                                                            <option value="D">Display</option>
+                                                                            <option value="A">Add-on</option>
+                                                                            <option value="W">Warranty</option>
                                                                         </select>
                                                                     </td>
                                                                 </tr>
@@ -903,10 +897,10 @@ switch ($search) {
                                                                     <td><label for="days_to_ship">Days to Ship</label></td>
                                                                     <td>
                                                                         <select class="form-control days-to-ship" id="edit_days_to_ship_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="days_to_ship" data-type="iteration" data-room="<?php echo $room['room']; ?>">
-                                                                            <option value="Green" <?php echo ($room['days_to_ship'] === 'Green') ? "selected" : null; ?>>Green (34)</option>
-                                                                            <option value="Yellow" <?php echo ($room['days_to_ship'] === 'Yellow') ? "selected" : null; ?>>Yellow (14)</option>
-                                                                            <option value="Orange" <?php echo ($room['days_to_ship'] === 'Orange') ? "selected" : null; ?>>Orange (10)</option>
-                                                                            <option value="Red" <?php echo ($room['days_to_ship'] === 'Red') ? "selected" : null; ?>>Red (5)</option>
+                                                                            <option value="G" <?php echo ($room['days_to_ship'] === 'Green') ? "selected" : null; ?>>Green (34)</option>
+                                                                            <option value="Y" <?php echo ($room['days_to_ship'] === 'Yellow') ? "selected" : null; ?>>Yellow (14)</option>
+                                                                            <option value="N" <?php echo ($room['days_to_ship'] === 'Orange') ? "selected" : null; ?>>Orange (10)</option>
+                                                                            <option value="R" <?php echo ($room['days_to_ship'] === 'Red') ? "selected" : null; ?>>Red (5)</option>
                                                                         </select>
                                                                     </td>
                                                                 </tr>
