@@ -980,7 +980,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['species_grade']) {
                                                                                 $species_grade_selected = "selected";
                                                                             } else {
-                                                                                $species_grade_selected = null;
+                                                                                $species_grade_selected = ($segment['key'] === '00' && empty($room['species_grade'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $species_grade_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -998,7 +998,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['finish_type']) {
                                                                                 $finish_type_selected = "selected";
                                                                             } else {
-                                                                                $finish_type_selected = null;
+                                                                                $finish_type_selected = ($segment['key'] === '0' && empty($room['finish_type'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $finish_type_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1016,7 +1016,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['construction_method']) {
                                                                                 $construction_method_selected = "selected";
                                                                             } else {
-                                                                                $construction_method_selected = null;
+                                                                                $construction_method_selected = ($segment['key'] === '0' && empty($room['construction_method'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $construction_method_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1034,7 +1034,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['carcass_interior_species']) {
                                                                                 $carcass_interior_species_selected = "selected";
                                                                             } else {
-                                                                                $carcass_interior_species_selected = null;
+                                                                                $carcass_interior_species_selected = ($segment['key'] === '0' && empty($room['carcass_interior_species'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $carcass_interior_species_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1052,7 +1052,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['drawer_boxes']) {
                                                                                 $drawer_boxes_selected = "selected";
                                                                             } else {
-                                                                                $drawer_boxes_selected = null;
+                                                                                $drawer_boxes_selected = ($segment['key'] === "0" && empty($room['drawer_boxes'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $drawer_boxes_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1068,20 +1068,36 @@ switch ($search) {
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'door_design'");
 
-                                                                        if($segment['key'] === $room['construction_method']) {
-                                                                            $door_design_selected = "selected";
-                                                                        } else {
-                                                                            $door_design_selected = null;
-                                                                        }
-
                                                                         while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['door_design']) {
+                                                                                $door_design_selected = "selected";
+                                                                            } else {
+                                                                                $door_design_selected = ($segment['key'] === "00" && empty($room['door_design'])) ?"selected" : null;
+                                                                            }
+
                                                                             echo "<option value='{$segment['key']}' $door_design_selected>{$segment['value']} ({$segment['key']})</option>";
                                                                         }
                                                                         ?>
                                                                     </select>
                                                                 </td>
                                                                 <td class="custom-border-none"><label for="finish_code_<?php echo $room['id']; ?>">Code</label></td>
-                                                                <td class="custom-border-1px-right"><input tabindex="11" type="text" class="form-control force-width" onchange="calcVin(<?php echo $room['id']; ?>)" name="finish_code_<?php echo $room['id']; ?>" id="finish_code_<?php echo $room['id']; ?>" placeholder="XXXX" value="S001" maxlength="4" ></td>
+                                                                <td class="custom-border-1px-right">
+                                                                    <select tabindex="11" name="finish_code_<?php echo $room['id']; ?>" id="finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' OR segment = 'benjamin_moore_paints' OR segment = 'sherwin_williams_paints'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['finish_code']) {
+                                                                                $finish_code_selected = "selected";
+                                                                            } else {
+                                                                                $finish_code_selected = ($segment['key'] === "0" && empty($room['finish_code'])) ?"selected" : null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $finish_code_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
                                                                 <td class="custom-border-none"><label for="carcass_exterior_species_<?php echo $room['id']; ?>">Species</label></td>
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="19" name="carcass_exterior_species_<?php echo $room['id']; ?>" id="carcass_exterior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
@@ -1092,7 +1108,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['carcass_exterior_species']) {
                                                                                 $carcass_exterior_species_selected = "selected";
                                                                             } else {
-                                                                                $carcass_exterior_species_selected = null;
+                                                                                $carcass_exterior_species_selected = ($segment['key'] === "0" && empty($room['carcass_exterior_species'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $carcass_exterior_species_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1110,7 +1126,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['carcass_interior_finish_type']) {
                                                                                 $carcass_interior_finish_type_selected = "selected";
                                                                             } else {
-                                                                                $carcass_interior_finish_type_selected = null;
+                                                                                $carcass_interior_finish_type_selected = ($segment['key'] === "0" && empty($room['carcass_interior_finish_type'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $carcass_interior_finish_type_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1130,7 +1146,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['style_rail_width']) {
                                                                                 $style_rail_width_selected = "selected";
                                                                             } else {
-                                                                                $style_rail_width_selected = null;
+                                                                                $style_rail_width_selected = ($segment['key'] === "0" && empty($room['style_rail_width'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $style_rail_width_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1148,7 +1164,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['sheen']) {
                                                                                 $sheen_selected = "selected";
                                                                             } else {
-                                                                                $sheen_selected = null;
+                                                                                $sheen_selected = ($segment['key'] === "c" && empty($room['sheen'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $sheen_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1158,7 +1174,7 @@ switch ($search) {
                                                                 </td>
                                                                 <td class="custom-border-none"><label for="carcass_exterior_finish_type_<?php echo $room['id']; ?>">Finish Type</label></td>
                                                                 <td class="custom-border-none">
-                                                                    <select tabindex="20" name="carcass_exterior_finish_type_<?php echo $room['id']; ?>" id="carcass_exterior_finish_type_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                    <select tabindex="21" name="carcass_exterior_finish_type_<?php echo $room['id']; ?>" id="carcass_exterior_finish_type_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
                                                                         $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_finish_type'");
 
@@ -1166,7 +1182,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['carcass_exterior_finish_type']) {
                                                                                 $carcass_exterior_finish_type_selected = "selected";
                                                                             } else {
-                                                                                $carcass_exterior_finish_type_selected = null;
+                                                                                $carcass_exterior_finish_type_selected = ($segment['key'] === "0" && empty($room['carcass_exterior_finish_type'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $carcass_exterior_finish_type_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1175,7 +1191,23 @@ switch ($search) {
                                                                     </select>
                                                                 </td>
                                                                 <td class="custom-border-none"><label for="carcass_interior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                                                                <td class="custom-border-none"><input tabindex="26" type="text" class="form-control force-width" onchange="calcVin(<?php echo $room['id']; ?>)" name="carcass_interior_finish_code_<?php echo $room['id']; ?>" id="carcass_interior_finish_code_<?php echo $room['id']; ?>" placeholder="XXXX" value="S001" ></td>
+                                                                <td class="custom-border-none">
+                                                                    <select tabindex="26" name="carcass_interior_finish_code_<?php echo $room['id']; ?>" id="carcass_interior_finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' OR segment = 'benjamin_moore_paints' OR segment = 'sherwin_williams_paints'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['carcass_interior_finish_code']) {
+                                                                                $carcass_interior_finish_code_selected = "selected";
+                                                                            } else {
+                                                                                $carcass_interior_finish_code_selected = ($segment['key'] === "0000" && empty($room['carcass_interior_finish_code'])) ?"selected" : null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $carcass_interior_finish_code_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
                                                             </tr>
                                                             <tr>
                                                                 <td colspan="2" class="text-md-center custom-border-1px-tlr"><h5>Panel Raise</h5></td>
@@ -1189,7 +1221,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['glaze']) {
                                                                                 $glaze_selected = "selected";
                                                                             } else {
-                                                                                $glaze_selected = null;
+                                                                                $glaze_selected = ($segment['key'] === "0" && empty($room['glaze'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $glaze_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1198,21 +1230,37 @@ switch ($search) {
                                                                     </select>
                                                                 </td>
                                                                 <td class="custom-border-none"><label for="carcass_exterior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                                                                <td class="custom-border-none"><input tabindex="21" type="text" class="form-control force-width" onchange="calcVin(<?php echo $room['id']; ?>)" name="carcass_exterior_finish_code_<?php echo $room['id']; ?>" id="carcass_exterior_finish_code_<?php echo $room['id']; ?>" placeholder="XXXX" value="S001" maxlength="4" ></td>
+                                                                <td class="custom-border-none">
+                                                                    <select tabindex="21" name="carcass_exterior_finish_code_<?php echo $room['id']; ?>" id="carcass_exterior_finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                        <?php
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' OR segment = 'benjamin_moore_paints' OR segment = 'sherwin_williams_paints'");
+
+                                                                        while($segment = $segment_qry->fetch_assoc()) {
+                                                                            if($segment['key'] === $room['carcass_exterior_finish_code']) {
+                                                                                $carcass_exterior_finish_code_selected = "selected";
+                                                                            } else {
+                                                                                $carcass_exterior_finish_code_selected = ($segment['key'] === "0000" && empty($room['carcass_exterior_finish_code'])) ?"selected" : null;
+                                                                            }
+
+                                                                            echo "<option value='{$segment['key']}' $carcass_exterior_finish_code_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                        }
+                                                                        ?>
+                                                                    </select>
+                                                                </td>
                                                                 <td class="custom-border-none"><label for="carcass_interior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="27" name="carcass_interior_glaze_color_<?php echo $room['id']; ?>" id="carcass_interior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_glaze_color'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze'");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_interior_glaze_color']) {
-                                                                                $carcass_interior_glaze_color_selected = "selected";
+                                                                                $glaze_selected = "selected";
                                                                             } else {
-                                                                                $carcass_interior_glaze_color_selected = null;
+                                                                                $glaze_selected = ($segment['key'] === "0" && empty($room['carcass_interior_glaze_color'])) ?"selected" : null;
                                                                             }
 
-                                                                            echo "<option value='{$segment['key']}' $carcass_interior_glaze_color_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                            echo "<option value='{$segment['key']}' $glaze_selected>{$segment['value']} ({$segment['key']})</option>";
                                                                         }
                                                                         ?>
                                                                     </select>
@@ -1229,7 +1277,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['panel_raise_door']) {
                                                                                 $panel_raise_door_selected = "selected";
                                                                             } else {
-                                                                                $panel_raise_door_selected = null;
+                                                                                $panel_raise_door_selected = ($segment['key'] === "0" && empty($room['panel_raise_door'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $panel_raise_door_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1247,7 +1295,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['glaze_technique']) {
                                                                                 $glaze_technique_selected = "selected";
                                                                             } else {
-                                                                                $glaze_technique_selected = null;
+                                                                                $glaze_technique_selected = ($segment['key'] === "0" && empty($room['glaze_technique'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $glaze_technique_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1265,7 +1313,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['carcass_exterior_glaze_color']) {
                                                                                 $carcass_exterior_glaze_color_selected = "selected";
                                                                             } else {
-                                                                                $carcass_exterior_glaze_color_selected = null;
+                                                                                $carcass_exterior_glaze_color_selected = ($segment['key'] === "0" && empty($room['carcass_exterior_glaze_color'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $carcass_exterior_glaze_color_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1283,7 +1331,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['carcass_interior_glaze_technique']) {
                                                                                 $carcass_interior_glaze_technique_selected = "selected";
                                                                             } else {
-                                                                                $carcass_interior_glaze_technique_selected = null;
+                                                                                $carcass_interior_glaze_technique_selected = ($segment['key'] === "0" && empty($room['carcass_interior_glaze_technique'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $carcass_interior_glaze_technique_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1303,7 +1351,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['panel_raise_sd']) {
                                                                                 $panel_raise_sd_selected = "selected";
                                                                             } else {
-                                                                                $panel_raise_sd_selected = null;
+                                                                                $panel_raise_sd_selected = ($segment['key'] === "0" && empty($room['panel_raise_sd'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $panel_raise_sd_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1321,7 +1369,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['antiquing']) {
                                                                                 $antiquing_selected = "selected";
                                                                             } else {
-                                                                                $antiquing_selected = null;
+                                                                                $antiquing_selected = ($segment['key'] === "0" && empty($room['antiquing'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $antiquing_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1339,7 +1387,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['carcass_exterior_glaze_technique']) {
                                                                                 $carcass_exterior_glaze_technique_selected = "selected";
                                                                             } else {
-                                                                                $carcass_exterior_glaze_technique_selected = null;
+                                                                                $carcass_exterior_glaze_technique_selected = ($segment['key'] === "0" && empty($room['carcass_exterior_glaze_technique'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $carcass_exterior_glaze_technique_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1349,7 +1397,9 @@ switch ($search) {
                                                                 </td>
                                                                 <td class="custom-border-none">&nbsp;</td>
                                                                 <td class="custom-border-none" colspan="2"><label for="sample_block_<?php echo $room['id']; ?>" class="text-md-right">Sample Block (5 1/4" x 6 1/8")</label></td>
-                                                                <td class="custom-border-none"><input tabindex="30" type="text" class="form-control text-md-center" name="sample_block_<?php echo $room['id']; ?>" id="sample_block_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['sample_block_ordered']; ?>"></td>
+                                                                <td class="custom-border-none">
+                                                                    <input tabindex="30" type="text" class="form-control text-md-center" name="sample_block_<?php echo $room['id']; ?>" id="sample_block_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="0">
+                                                                </td>
                                                             </tr>
                                                             <tr>
                                                                 <td class="custom-border-1px-left"><label for="panel_raise_td_<?php echo $room['id']; ?>">Tall Drawer</label></td>
@@ -1362,7 +1412,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['panel_raise_td']) {
                                                                                 $panel_raise_td_selected = "selected";
                                                                             } else {
-                                                                                $panel_raise_td_selected = null;
+                                                                                $panel_raise_td_selected = ($segment['key'] === "0" && empty($room['panel_raise_td'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $panel_raise_td_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1380,7 +1430,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['worn_edges']) {
                                                                                 $worn_edges_selected = "selected";
                                                                             } else {
-                                                                                $worn_edges_selected = null;
+                                                                                $worn_edges_selected = ($segment['key'] === "0" && empty($room['worn_edges'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $worn_edges_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1403,7 +1453,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['edge_profile']) {
                                                                                 $edge_profile_selected = "selected";
                                                                             } else {
-                                                                                $edge_profile_selected = null;
+                                                                                $edge_profile_selected = ($segment['key'] === "0" && empty($room['edge_profile'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $edge_profile_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1421,7 +1471,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['distress_level']) {
                                                                                 $distress_level_selected = "selected";
                                                                             } else {
-                                                                                $distress_level_selected = null;
+                                                                                $distress_level_selected = ($segment['key'] === "0" && empty($room['distress_level'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $distress_level_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1444,7 +1494,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['framing_bead']) {
                                                                                 $framing_bead_selected = "selected";
                                                                             } else {
-                                                                                $framing_bead_selected = null;
+                                                                                $framing_bead_selected = ($segment['key'] === "0" && empty($room['framing_bead'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $framing_bead_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1468,7 +1518,7 @@ switch ($search) {
                                                                             if($segment['key'] === $room['framing_options']) {
                                                                                 $framing_options_selected = "selected";
                                                                             } else {
-                                                                                $framing_options_selected = null;
+                                                                                $framing_options_selected = ($segment['key'] === "0" && empty($room['framing_options'])) ?"selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $framing_options_selected>{$segment['value']} ({$segment['key']})</option>";

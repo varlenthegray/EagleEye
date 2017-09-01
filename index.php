@@ -165,7 +165,7 @@ require 'includes/header_end.php';
         var framing_options = $("#framing_options_" + room_id).find(":selected").val();
         var style_rail_width = $("#style_rail_width_" + room_id).find(":selected").val();
         var finish_type = $("#finish_type_" + room_id).find(":selected").val();
-        var finish_code = $("#finish_code_" + room_id).val();
+        var finish_code = $("#finish_code_" + room_id).find(":selected").val();
         var sheen = $("#sheen_" + room_id).find(":selected").val();
         var glaze = $("#glaze_" + room_id).find(":selected").val();
         var glaze_technique = $("#glaze_technique_" + room_id).find(":selected").val();
@@ -174,12 +174,12 @@ require 'includes/header_end.php';
         var distress_level = $("#distress_level_" + room_id).find(":selected").val();
         var carcass_exterior_species = $("#carcass_exterior_species_" + room_id).find(":selected").val();
         var carcass_exterior_finish_type = $("#carcass_exterior_finish_type_" + room_id).find(":selected").val();
-        var carcass_exterior_finish_code = $("#carcass_exterior_finish_code_" + room_id).val();
+        var carcass_exterior_finish_code = $("#carcass_exterior_finish_code_" + room_id).find(":selected").val();
         var carcass_exterior_glaze_color = $("#carcass_exterior_glaze_color_" + room_id).find(":selected").val();
         var carcass_exterior_glaze_technique = $("#carcass_exterior_glaze_technique_" + room_id).find(":selected").val();
         var carcass_interior_species = $("#carcass_interior_species_" + room_id).find(":selected").val();
         var carcass_interior_finish_type = $("#carcass_interior_finish_type_" + room_id).find(":selected").val();
-        var carcass_interior_finish_code = $("#carcass_interior_finish_code_" + room_id).val();
+        var carcass_interior_finish_code = $("#carcass_interior_finish_code_" + room_id).find(":selected").val();
         var carcass_interior_glaze_color = $("#carcass_interior_glaze_color_" + room_id).find(":selected").val();
         var carcass_interior_glaze_technique = $("#carcass_interior_glaze_technique_" + room_id).find(":selected").val();
         var drawer_boxes = $("#drawer_boxes_" + room_id).find(":selected").val();
@@ -538,9 +538,11 @@ require 'includes/header_end.php';
 
             $.post("/ondemand/shopfloor/gen_actions.php?action=update_VIN&" + formInfo + "&room_id=" + room_id, function(data) {
                 $('body').append(data);
+            }).done(function() {
+                setTimeout(function() {
+                    window.open("/print/sample.php?room_id=" + room_id);
+                }, 500);
             });
-
-            window.open("/print/sample.php?room_id=" + room_id);
 
             unsaved = false;
         })
