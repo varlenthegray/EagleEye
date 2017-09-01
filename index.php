@@ -291,7 +291,7 @@ require 'includes/header_end.php';
         .on("click", ".start-operation", function(e) {
             e.stopPropagation();
 
-            var opFull = $(this).closest('tr').find('td').eq(3).html();
+            var opFull = $(this).closest('tr').find('td').eq(4).html();
             op_num = opFull.substr(0,3);
             op_id = $(this).attr("id");
 
