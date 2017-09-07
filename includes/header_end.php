@@ -82,6 +82,10 @@
     <!-- daterange -->
     <link href="/assets/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
 
+    <!-- Jquery filer css -->
+    <link href="/assets/plugins/jquery.filer/css/jquery.filer.css" rel="stylesheet" />
+    <link href="/assets/plugins/jquery.filer/css/themes/jquery.filer-dragdropbox-theme.css" rel="stylesheet" />
+
     <!-- Alert Windows -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
@@ -135,6 +139,10 @@
                     </style>";
         } else {
             echo "<script>$.fn.dataTable.ext.errMode = 'throw';</script>";
+        }
+
+        if(!empty($error_display)) {
+            echo $error_display;
         }
     ?>
 </head>
