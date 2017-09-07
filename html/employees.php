@@ -22,7 +22,7 @@ use Carbon\Carbon; // prep carbon
                             </thead>
                             <tbody id="room_search_table">
                             <?php
-                            if((int)$_SESSION['userInfo']['id'] === 1 || (int)$_SESSION['userInfo']['id'] === 7 || (int)$_SESSION['userInfo']['id'] === 8) {
+                            if((int)$_SESSION['userInfo']['id'] === 1 || (int)$_SESSION['userInfo']['id'] === 7 || (int)$_SESSION['userInfo']['id'] === 8 || (int)$_SESSION['userInfo']['id'] === 9) {
                                 $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE;");
                             } else {
                                 $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE AND id != 7 AND id != 8 AND id != 1;");
