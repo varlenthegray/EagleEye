@@ -1,16 +1,19 @@
 <?php
 session_start();
 
+$error_display = null;
+
 if(!$_SESSION['valid']){
     header("Location: /login.php?pli=true");
 }
 
 switch($_SESSION['userInfo']['account_type']) {
     case '6':
-        $whitelist = ["/index.php", "/html/dashboard.php", "/html/employees.php", "/ondemand/shopfloor/dashboard.php", "/ondemand/shopfloor/login_actions.php", "/shopfloor/login.php", "/ondemand/shopfloor/view_notes.php"];
+        $whitelist = ["/index.php", "/html/dashboard.php", "/html/employees.php", "/ondemand/shopfloor/dashboard.php", "/ondemand/shopfloor/login_actions.php", "/shopfloor/login.php", "/ondemand/shopfloor/view_notes.php", "/ondemand/admin/tasks.php"];
 
         if(!in_array($_SERVER['SCRIPT_NAME'], $whitelist)) {
-            header("Location: /shopfloor/index.php");
+            header("Location: /index.php");
+            $error_display = displayToast("error", "Unable to access page.", "Access Denied");
         }
 
         break;
