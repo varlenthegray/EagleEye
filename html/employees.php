@@ -22,7 +22,11 @@ use Carbon\Carbon; // prep carbon
                             </thead>
                             <tbody id="room_search_table">
                             <?php
-                            $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE;");
+                            if((int)$_SESSION['userInfo']['id'] === 1 || (int)$_SESSION['userInfo']['id'] === 7 || (int)$_SESSION['userInfo']['id'] === 8) {
+                                $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE;");
+                            } else {
+                                $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE AND id != 7 AND id != 8 AND id != 1;");
+                            }
 
                             while($result = $qry->fetch_assoc()) {
                                 if($result['id'] !== '16') {
@@ -32,17 +36,9 @@ use Carbon\Carbon; // prep carbon
                                         $last_login = $last_login_qry->fetch_assoc();
 
                                         if($last_login['time_in'] > strtotime("today")) {
-                                            if($result['id'] === '7' || $result['id'] === '8') {
-                                                $time_in_display = "";
-                                            } else {
-                                                $time = date(TIME_ONLY, $last_login['time_in']);
-                                            }
+                                            $time = date(TIME_ONLY, $last_login['time_in']);
                                         } else {
-                                            if($result['id'] === '7' || $result['id'] === '8') {
-                                                $time = '';
-                                            } else {
-                                                $time = date(DATE_DEFAULT, $last_login['time_in']);
-                                            }
+                                            $time = date(DATE_DEFAULT, $last_login['time_in']);
                                         }
 
                                         $time_unix = $last_login['time_in'];
@@ -55,18 +51,10 @@ use Carbon\Carbon; // prep carbon
                                         $today = mktime(0,0);
 
                                         if($time_unix >= $today) {
-                                            if($result['id'] === '7' || $result['id'] === '8') {
-                                                $time_in_display = "";
-                                            } else {
-                                                $carbon_time = Carbon::createFromTimestamp($time_unix);
-                                                $time_in_display = $carbon_time->diffForHumans(null, true);
-                                            }
+                                            $carbon_time = Carbon::createFromTimestamp($time_unix);
+                                            $time_in_display = $carbon_time->diffForHumans(null, true);
                                         } else {
-                                            if($result['id'] === '7' || $result['id'] === '8') {
-                                                $time_in_display = "";
-                                            } else {
-                                                $time_in_display = "Hasn't logged in today";
-                                            }
+                                            $time_in_display = "Hasn't logged in today";
                                         }
                                     } else {
                                         $time_in_display = "Never logged in";
