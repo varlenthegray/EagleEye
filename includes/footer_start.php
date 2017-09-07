@@ -195,6 +195,8 @@ require_once ("header_start.php");
         $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: description}, function(data) {
             $("body").append(data);
             $("#feedback-page").modal('hide');
+
+            tinyMCE.get('feedback-text').setContent("");
         });
     });
 
@@ -277,3 +279,6 @@ require_once ("header_start.php");
 
 <!-- Unsaved Changes -->
 <script src="/assets/js/unsaved_alert.js"></script>
+
+<!-- Jquery filer js -->
+<script src="/assets/plugins/jquery.filer/js/jquery.filer.min.js"></script>
