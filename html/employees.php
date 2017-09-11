@@ -23,9 +23,9 @@ use Carbon\Carbon; // prep carbon
                             <tbody id="room_search_table">
                             <?php
                             if((int)$_SESSION['userInfo']['id'] === 1 || (int)$_SESSION['userInfo']['id'] === 7 || (int)$_SESSION['userInfo']['id'] === 8 || (int)$_SESSION['userInfo']['id'] === 9) {
-                                $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE;");
+                                $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
                             } else {
-                                $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE AND id != 7 AND id != 8 AND id != 1;");
+                                $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE AND id != 7 AND id != 8 AND id != 1 ORDER BY name ASC;");
                             }
 
                             while($result = $qry->fetch_assoc()) {
