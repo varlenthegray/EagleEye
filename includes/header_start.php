@@ -23,6 +23,8 @@ require("functions.php"); // require functions first
 require("language.php"); // require the language file once
 require("config.php"); // require the config file once
 
+define('SITE_ROOT', '/home/trustedprogrammer/domains/dev-smc.trustedprogrammer.com/public_html');
+
 // set the timezone for all PHP information
 date_default_timezone_set($_SESSION['userInfo']['timezone']);
 

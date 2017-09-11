@@ -853,11 +853,20 @@ HEREDOC;
                                 $rework_codes
                             </div>
                             
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <fieldset class="form-group">
+                                        <label for="notes">Notes</label>
+                                        <textarea class="form-control" id="notes" name="notes" style="height: 107px" placeholder="Notes and information related to operation."></textarea>
+                                    </fieldset>
+                                </div>
+                            </div>
                         
-                            <fieldset class="form-group">
-                                <label for="notes">Notes</label>
-                                <textarea class="form-control" id="notes" name="notes" style="height: 107px" placeholder="Notes and information related to operation."></textarea>
-                            </fieldset>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <input type="file" name="op_file_attachment" accept="application/pdf">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -950,6 +959,31 @@ HEREDOC;
         $cur_op_info_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$op_queue['operation_id']}'");
         $cur_op_info = $cur_op_info_qry->fetch_assoc();
 
+        $target_dir = SITE_ROOT . "/attachments/";
+        $target_ext = end(explode(".", $_FILES['attachment']['name']));
+
+        if(!file_exists("{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}")) {
+            mkdir("{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}", 0777, true);
+        }
+
+        $job_title_fn = str_replace(" ", "_", strtolower($cur_op_info['job_title']));
+
+        $target_file = "{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}/{$cur_op_info['op_id']}-$job_title_fn.{$target_ext}";
+
+        $uploadOK = true;
+        $upload_err = '';
+        $fileType = pathinfo($_FILES['attachment']['name'], PATHINFO_EXTENSION);
+
+        if($fileType !== 'pdf') {
+            $uploadOK = false;
+            $upload_err .= "Incorrect Filetype. PDF only. Received $fileType.";
+        }
+
+        if(file_exists($target_file)) {
+            $uploadOK = false;
+            $upload_err .= "File already exists on the server.";
+        }
+
         if(empty($op_queue['notes'])) { // if no notes exist
             $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />"; // the notes equals the name and the time
         } else { // otherwise notes exist
@@ -1016,6 +1050,12 @@ HEREDOC;
             if($dbconn->query("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = FALSE, notes = '$finalnotes', qty_completed = '$qty', completed = TRUE, partially_completed = FALSE, rework = FALSE, active_employees = '[]' WHERE id = $id")) {
                 $changed = ["End time"=>time(), "Active"=>false, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Completed"=>true, "Active Employees"=>'[]']; // set what has changed for audit trail
                 $changed = json_encode($changed); // encode the audit trail for retrieval later
+
+                if(move_uploaded_file($_FILES['attachment']['tmp_name'], $target_file)) {
+                    echo displayToast("success", "Uploaded file successfully.", "File Uploaded");
+                } else {
+                    echo displayToast("error", "Unable to upload file. $upload_err", "File Error");
+                }
 
                 // if we're able to insert into the audit trail successfully
                 if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP())")) {

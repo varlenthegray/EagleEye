@@ -18,11 +18,16 @@ use Carbon\Carbon; // prep carbon
                                 <th>Clocked In Time</th>
                                 <th>Current Operations</th>
                                 <th>Time Clocked In</th>
+                                <?php
+                                    if($_SESSION['userInfo']['account_type'] <= 4) {
+                                        echo "<th width='70px'>Clock Out</th>";
+                                    }
+                                ?>
                             </tr>
                             </thead>
                             <tbody id="room_search_table">
                             <?php
-                            if((int)$_SESSION['userInfo']['id'] === 1 || (int)$_SESSION['userInfo']['id'] === 7 || (int)$_SESSION['userInfo']['id'] === 8 || (int)$_SESSION['userInfo']['id'] === 9) {
+                            if($_SESSION['userInfo']['account_type'] <= 4) {
                                 $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
                             } else {
                                 $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE AND id != 7 AND id != 8 AND id != 1 ORDER BY name ASC;");
@@ -81,11 +86,18 @@ use Carbon\Carbon; // prep carbon
 
                                     $final_ops = rtrim($final_ops, ", ");
 
+                                    $clock_out_btn = null;
+
                                     echo "<tr class='cursor-hand login' data-login-id='{$result['id']}' data-login-name='{$result['name']}'>";
                                     echo "<td>{$result['name']}</td>";
                                     echo "<td>$time</td>";
                                     echo "<td>$final_ops</td>";
                                     echo "<td>$time_in_display</td>";
+
+                                    if($_SESSION['userInfo']['account_type'] <= 4) {
+                                        echo "<td><button class='btn btn-primary waves-effect waves-light btn-sm clock_out' data-id='{$result['id']}'>Clock Out</button></td>";
+                                    }
+
                                     echo "</tr>";
                                 }
                             }

@@ -55,7 +55,7 @@ require '../includes/header_start.php';
                         <table id="active_ops_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
-                                <th width="80px">&nbsp;</th>
+                                <th style="min-width:75px;">&nbsp;</th>
                                 <th width="35px">SO#</th>
                                 <th width="125px">Room</th>
                                 <th width="125px">Department</th>
@@ -76,7 +76,7 @@ require '../includes/header_start.php';
                         <table id="queue_ops_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
-                                <th width="23px">&nbsp;</th>
+                                <th width="23px" class="nowrap">&nbsp;</th>
                                 <th width="8px">#</th>
                                 <th width="50px">SO#</th>
                                 <th width="140px">Room</th>
@@ -94,6 +94,8 @@ require '../includes/header_start.php';
         </div>
     </div>
 </div>
+
+
 
 <!-- modal -->
 <div id="modalStartJob" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalStartJobLabel" aria-hidden="true">
@@ -175,10 +177,9 @@ require '../includes/header_start.php';
         scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#active_header.dt-custom-header">tipr',
-        "columnDefs": [{
-            "targets": [0],
-            "orderable": false
-        }],
+        "columnDefs": [
+            {"targets": [0], "orderable": false, className: "nowrap"}
+        ],
         "order": [[1, "desc"]]
     });
 
@@ -198,13 +199,19 @@ require '../includes/header_start.php';
         ],
         "order": [[8, "desc"]],
         "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+            // this displays the numbering of priorities, we already sort based on weight which is an arbitrary number
             var index = iDisplayIndexFull + 1;
             $('td:eq(1)', nRow).html(index);
             return nRow;
         }
+//        ,rowReorder: {
+//            enable: false,
+//            selector: "tr",
+//            dataSrc: 8
+//        }
     });
 
-    $("#queue_header").html("<h4>Operations for " + op_queue_list + "</h4>");
+    $("#queue_header").html("<h4 class='pull-left'>Operations for " + op_queue_list + "</h4><!--<span class='pull-right'><button class='btn btn-dark waves-effect waves-light' id='#edit_priorities'> <i class='fa fa-pencil-square m-r-5'></i> <span>Edit Priorities</span> </button></span>-->");
     $("#quote_header").html("<h4>Quotes</h4>");
     $("#order_header").html("<h4>Orders</h4>");
     $("#active_header").html("<h4>Operations (Active) for <?php echo $_SESSION['shop_user']['name']; ?></h4>");
@@ -213,12 +220,7 @@ require '../includes/header_start.php';
         <?php
         if($_SESSION['userInfo']['account_type'] <= 4) {
         ?>
-        quote_table.ajax.reload(function () {
-            /*if(tr.hasClass('shown')) {
-                row.child(shownData).show();
-                tr.addClass('shown');
-            }*/
-        }, false);
+        quote_table.ajax.reload(null, false);
         order_table.ajax.reload(null, false);
         <?php
         }

@@ -236,7 +236,7 @@ switch ($search) {
 
                 $dealer_prefix = substr($result['dealer_code'], 0,3);
 
-                $dealer_qry = $dbconn->query("SELECT dealer_name FROM dealers WHERE dealer_id LIKE '%$dealer_prefix%'");
+                $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%$dealer_prefix%'");
                 $dealer = $dealer_qry->fetch_assoc();
 
                 /** BEGIN LISTING OF SO'S */
@@ -244,9 +244,8 @@ switch ($search) {
                 echo "    <td width='26px'><button class='btn waves-effect btn-primary pull-right' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button></td>";
                 echo "    <td>{$result['so_num']}</td>";
                 echo "    <td>{$result['project']}</td>";
-                echo "    <td>{$result['salesperson']}</td>";
+                echo "    <td>{$dealer['contact']}</td>";
                 echo "    <td>{$result['contractor_dealer_code']}: {$dealer['dealer_name']}</td>";
-                echo "    <td>{$result['project_mgr']}</td>";
                 echo "  </tr>";
 
                 /** BEGIN ROOM INFORMATION */
@@ -325,8 +324,18 @@ switch ($search) {
                                     $shipping_published_display = (checkPublished('shipping')) ? "<td class='$shippingPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $shippingBracketName</td>" : "<td>---</td>";
                                     $install_published_display = (checkPublished('install_bracket')) ? "<td class='$installPriority'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $installBracketName</td>" : "<td>---</td>";
 
+                                    $target_dir = SITE_ROOT . "/attachments/";
+                                    $attachment_dir = "{$target_dir}{$room['so_parent']}/{$room['room']}/{$room['iteration']}";
+                                    $http_base = "/attachments/{$room['so_parent']}/{$room['room']}/{$room['iteration']}/";
+
+                                    if(file_exists($attachment_dir)) {
+                                        $attachment_code = "btn-primary";
+                                    } else {
+                                        $attachment_code = "btn_secondary disabled";
+                                    }
+
                                     echo "<tr class='cursor-hand' id='manage_bracket_{$room['id']}'>";
-                                    echo "  <td style='width:55px;'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect btn-primary' id='show_vin_room_{$room['id']}'><i class='zmdi zmdi-developer-board'></i></button></td>";
+                                    echo "  <td class='nowrap'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect btn-primary' id='show_vin_room_{$room['id']}'><i class='zmdi zmdi-developer-board'></i></button> <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button> <button class='btn waves-effect btn-primary' id='print_{$room['id']}'><i class='fa fa-print'></i></button></td>";
                                     echo "  <td>{$tab}{$room_name}</td>";
                                     echo "  $sales_published_display";
                                     echo "  $sample_published_display";
@@ -573,7 +582,6 @@ switch ($search) {
 
                                     <?php echo "</div></td>";
                                     echo "</tr>";
-
                                         /** BEGIN DISPLAY OF MANAGE BRACKET */
                                         echo "<tr id='tr_room_bracket_{$room['id']}' style='display: none;'>";
                                         echo "  <td colspan='12'><div id='div_room_bracket_{$room['id']}' style='display: none;'>";
@@ -1550,6 +1558,40 @@ switch ($search) {
                                         <?php echo "</div></td>";
                                         echo "</tr>";
                                         /** END DISPLAY OF VIN MANAGEMENT */
+
+                                        /** BEGIN DISPLAY OF PRINT */
+                                        echo "<tr id='tr_print_{$room['id']}' style='display: none;'>";
+                                        echo "  <td colspan='10'><div id='div_print_{$room['id']}' style='display: none;'>";
+                                        ?>
+
+                                        <div class="col-md-12">
+                                            <?php
+                                                echo "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank'>Print Engineering Coversheet</a><br />";
+                                                echo "<a href='/print/sample.php?room_id={$room['id']}' target='_blank'>Print Sample Request</a><br />";
+                                            ?>
+                                        </div>
+
+                                        <?php echo "</div></td>";
+                                        echo "</tr>";
+                                        /** END DISPLAY OF PRINT */
+                                    /** BEGIN DISPLAY OF ATTACHMENTS */
+                                    echo "<tr id='tr_attachments_{$room['id']}' style='display: none;'>";
+                                    echo "  <td colspan='10'><div id='div_attachments_{$room['id']}' style='display: none;'>";
+                                    ?>
+
+                                    <div class="col-md-12">
+                                        <?php
+                                        $scanned_directory = array_diff(scandir($attachment_dir), array('..', '.'));
+
+                                        foreach($scanned_directory as $file) {
+                                            echo "<a href='{$http_base}$file' target='_blank'>$file</a><br />";
+                                        }
+                                        ?>
+                                    </div>
+
+                                    <?php echo "</div></td>";
+                                    echo "</tr>";
+                                    /** END DISPLAY OF ATTACHMENTS */
                                     /** END SINGLE ROOM DISPLAY */
                                 }
                             }

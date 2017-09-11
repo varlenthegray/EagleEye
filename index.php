@@ -31,9 +31,8 @@ require 'includes/header_end.php';
                     <tr>
                         <th colspan="2">SO#</th>
                         <th>PROJECT/CUSTOMER PO</th>
-                        <th>SALESPERSON</th>
+                        <th>PROJECT MANAGER</th>
                         <th>DEALER/CONTRACTOR</th>
-                        <th>PROJECT MANAGER/CONTACT</th>
                     </tr>
                     </thead>
                     <tbody id="search_results_table">
@@ -410,13 +409,39 @@ require 'includes/header_end.php';
             var rework = $("#rework_reqd").is(":checked");
             var rw_reason = $("#rework_reason :selected").val();
 
-            $.post("/ondemand/shopfloor/dashboard.php?action=complete_operation", {opID: op_id, opnum: op_num, notes: notes, qty: qty_compl, rework_reqd: rework, rework_reason: rw_reason}, function(data) {
-                $('body').append(data);
-                $("#modalUpdateJob").modal('hide');
+            // formdata required because now we're attaching files
+            var formData = new FormData();
+            formData.append('opID', op_id);
+            formData.append('opnum', op_num);
+            formData.append('notes', notes);
+            formData.append('qty', qty_compl);
+            formData.append('rework_reqd', rework);
+            formData.append('rework_reason', rw_reason);
+            formData.append('attachment', $("input[type='file']")[0].files[0]);
 
-                updateQueuedJobs();
-                active_table.ajax.reload(null,false);
+            $.ajax({
+                url: "/ondemand/shopfloor/dashboard.php?action=complete_operation",
+                //url: "/admin/test.php",
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    $('body').append(data);
+                    $("#modalUpdateJob").modal('hide');
+
+                    updateQueuedJobs();
+                    active_table.ajax.reload(null,false);
+                }
             });
+
+//            $.post("/ondemand/shopfloor/dashboard.php?action=complete_operation", {opID: op_id, opnum: op_num, notes: notes, qty: qty_compl, rework_reqd: rework, rework_reason: rw_reason}, function(data) {
+//                $('body').append(data);
+//                $("#modalUpdateJob").modal('hide');
+//
+//                updateQueuedJobs();
+//                active_table.ajax.reload(null,false);
+//            });
 
             unsaved = false;
         })
@@ -499,6 +524,15 @@ require 'includes/header_end.php';
                     $("#modalLogin").modal('hide');
                     shop_logged_in = false;
                 }
+            });
+        })
+        .on("click", ".clock_out", function(e) {
+            var id = $(this).data("id");
+
+            e.stopPropagation();
+
+            $.post("/ondemand/shopfloor/login_actions.php?action=clock_out", {user_id: id}, function(data) {
+                $("body").append(data);
             });
         })
         // -- End Employees --

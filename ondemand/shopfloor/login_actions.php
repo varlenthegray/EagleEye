@@ -47,22 +47,27 @@ switch($_REQUEST['action']) {
 
         break;
     case 'clock_out':
-        $qry = $dbconn->query("SELECT * FROM user WHERE id = {$_SESSION['shop_user']['id']}");
+        $id = sanitizeInput($_REQUEST['user_id']);
+
+        $qry = $dbconn->query("SELECT * FROM user WHERE id = $id");
 
         if($qry-> num_rows === 1) {
-            $timecard_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = '{$_SESSION['shop_user']['id']}' AND time_out IS NULL");
+            $user = $qry->fetch_assoc();
+            $timecard_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = '$id' AND time_out IS NULL");
 
             if($timecard_qry->num_rows === 1) {
                 $timecard = $timecard_qry->fetch_assoc();
 
                 if($dbconn->query("UPDATE timecards SET time_out = UNIX_TIMESTAMP() WHERE id = {$timecard['id']}")) {
-                    echo "success";
+                    echo displayToast("success", "Successfully clocked out {$user['name']}.", "Clocked Out");
+
+                    echo '<script>setTimeout(function() {window.location.replace("/index.php");}, 500)</script>';
                 } else {
                     dbLogSQLErr($dbconn);
                     die();
                 }
             } else {
-                dbLogSQLErr($dbconn);
+                echo displayToast("warning", "User {$user['name']} is not clocked in.", "Not Clocked In");
                 die();
             }
         }

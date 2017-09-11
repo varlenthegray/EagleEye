@@ -6,6 +6,28 @@ var active_so_num;
 var active_room_id;
 var thisClick;
 
+function toggleDisplay() {
+    $("[id^=manage_bracket_]").removeClass("active_room_line");
+    $("#manage_bracket_" + active_room_id).addClass("active_room_line");
+
+    $("[id^=tr_room_bracket_]").hide(250);
+    $("[id^=div_room_bracket_]").hide(100);
+    $("[id^=tr_iteration_]").hide(250);
+    $("[id^=div_iteration_]").hide(100);
+    $("[id^=tr_single_room_]").hide(250);
+    $("[id^=div_single_room_]").hide(100);
+    $("[id^=tr_add_single_room_info_]").hide(250);
+    $("[id^=div_add_single_room_info_]").hide(100);
+    $("[id^=tr_vin_]").finish().hide(250);
+    $("[id^=div_vin_]").finish().hide(100);
+    $("[id^=tr_attachments_]").finish().hide(250);
+    $("[id^=div_attachments_]").finish().hide(100);
+    $("[id^=tr_edit_so_]").finish().hide(250);
+    $("[id^=div_edit_so_]").finish().hide(100);
+    $("[id^=tr_print_]").finish().hide(250);
+    $("[id^=div_print_]").finish().hide(100);
+}
+
 $("body")
     .on("keyup", "#global_search", function() {
         checkTransition(function() {
@@ -106,16 +128,7 @@ $("body")
         checkTransition(function() {
             active_so_num = $(thisClick).attr("id").replace('edit_so_', '');
 
-            $("[id^=tr_single_room_]").hide(100);
-            $("[id^=tr_room_]").hide(100);
-
-            $("[id^=tr_edit_so_]").not(thisClick).hide(100);
-            $("[id^=div_edit_so_]").not(thisClick).hide();
-
-            $("[id^=show_room_]").not(thisClick).removeClass("active_room_line");
-            $("[id^=show_single_room_]").removeClass("active_room_line");
-
-            $("#show_room_" + active_so_num).addClass("active_room_line");
+            toggleDisplay();
 
             $("#tr_edit_so_" + active_so_num).show();
             $("#div_edit_so_" + active_so_num).slideDown(250);
@@ -125,24 +138,9 @@ $("body")
         thisClick = this;
 
         checkTransition(function() {
-            $("[id^=show_room_]").removeClass("active_room_line");
-            $("[id^=show_single_room_]").removeClass("active_room_line");
-            $(".add_room_trigger").removeClass("active_room_line");
-
-            $(thisClick).addClass("active_room_line");
-
             active_so_num = $(thisClick).attr("id").replace('show_room_', '');
 
-            $("[id^=tr_single_room_]").finish().hide(250);
-            $("[id^=div_single_room_]").finish().hide(100);
-            $("[id^=tr_edit_so_]").finish().hide(250);
-            $("[id^=div_edit_so_]").finish().hide(100);
-            $("[id^=tr_add_single_room_info_]").finish().hide(250);
-            $("[id^=div_add_single_room_info_]").finish().hide(100);
-            $("[id^=tr_vin_]").finish().hide(250);
-            $("[id^=div_vin_]").finish().hide(100);
-            $("[id^=tr_room_]").not(thisClick).finish().hide(100);
-            $("[id^=div_room_]").finish().hide(250);
+            toggleDisplay();
 
             $("#tr_room_" + active_so_num).show();
             $("#div_room_" + active_so_num).slideDown(250);
@@ -154,21 +152,9 @@ $("body")
         e.stopPropagation();
 
         checkTransition(function() {
-            $("[id^=show_single_room_]").removeClass("active_room_line");
-            $(".add_room_trigger").removeClass("active_room_line");
-
-            $(thisClick).addClass("active_room_line");
-
             active_room_id = $(thisClick).attr("id").replace('show_single_room_', '');
 
-            $("[id^=tr_single_room_]").not(thisClick).hide(100);
-
-            $("[id^=tr_room_bracket_]").hide(250);
-            $("[id^=div_room_bracket_]").hide(100);
-            $("[id^=tr_vin_]").finish().hide(250);
-            $("[id^=div_vin_]").finish().hide(100);
-            $("[id^=tr_add_single_room_info_]").hide(250);
-            $("[id^=div_add_single_room_info_]").hide(100);
+            toggleDisplay();
 
             $("#tr_single_room_" + active_room_id).show();
             $("#div_single_room_" + active_room_id).slideDown(250);
@@ -187,19 +173,7 @@ $("body")
         checkTransition(function() {
             active_room_id = $(thisClick).attr("id").replace('manage_bracket_', '');
 
-            $("[id^=show_single_room_]").removeClass("active_room_line");
-            $(".add_room_trigger").removeClass("active_room_line");
-            $("#show_single_room_" + active_room_id).addClass("active_room_line");
-
-            $("[id^=tr_single_room_]").hide(250);
-            $("[id^=div_single_room_]").hide(100);
-            $("[id^=tr_add_single_room_info_]").hide(250);
-            $("[id^=div_add_single_room_info_]").hide(100);
-            $("[id^=tr_vin_]").finish().hide(250);
-            $("[id^=div_vin_]").finish().hide(100);
-
-            $("[id^=tr_room_bracket_]").not(thisClick).hide(250);
-            $("[id^=div_room_bracket_]").not(thisClick).hide(100);
+            toggleDisplay();
 
             $("#tr_room_bracket_" + active_room_id).show();
             $("#div_room_bracket_" + active_room_id).slideDown(250);
@@ -256,17 +230,9 @@ $("body")
         thisClick = this;
 
         checkTransition(function() {
-            $("[id^=show_single_room_]").removeClass("active_room_line");
-            $(".add_room_trigger").removeClass("active_room_line");
-
-            $(thisClick).addClass("active_room_line");
-
             active_so_num = $(thisClick).data('sonum');
 
-            $("[id^=tr_room_bracket_]").hide(100);
-            $("[id^=tr_single_room_]").hide(100);
-            $("[id^=tr_add_single_room_info_]").hide(250);
-            $("[id^=div_add_single_room_info_]").hide(100);
+            toggleDisplay();
 
             $("#tr_add_single_room_info_" + active_so_num).show();
             $("#div_add_single_room_info_" + active_so_num).slideDown(250);
@@ -342,17 +308,7 @@ $("body")
                 iteration.toFixed(2);
             }
 
-            $("[id^=show_single_room_]").removeClass("active_room_line");
-            $(".add_room_trigger").removeClass("active_room_line");
-            $("#show_single_room_" + active_room_id).addClass("active_room_line");
-
-            $("[id^=tr_single_room_]").hide(250);
-            $("[id^=div_single_room_]").hide(100);
-            $("[id^=tr_add_single_room_info_]").hide(250);
-            $("[id^=div_add_single_room_info_]").hide(100);
-
-            $("[id^=tr_iteration_]").not(thisClick).hide(250);
-            $("[id^=div_iteration_]").not(thisClick).hide(100);
+            toggleDisplay();
 
             $("#tr_iteration_" + active_room_id).show();
             $("#div_iteration_" + active_room_id).slideDown(250);
@@ -406,18 +362,47 @@ $("body")
         checkTransition(function() {
             active_so_num = $(thisClick).attr("id").replace('show_vin_room_', '');
 
-            $("[id^=tr_single_room_]").finish().hide(250);
-            $("[id^=div_single_room_]").finish().hide(100);
-            $("[id^=tr_edit_so_]").finish().hide(250);
-            $("[id^=div_edit_so_]").finish().hide(100);
-            $("[id^=tr_add_single_room_info_]").finish().hide(250);
-            $("[id^=div_add_single_room_info_]").finish().hide(100);
-            $("[id^=tr_room_bracket_]").finish().hide(250);
-            $("[id^=div_room_bracket_info_]").finish().hide(100);
-            $("[id^=tr_vin_]").not(thisClick).finish().hide(100);
-            $("[id^=div_vin_]").finish().hide(250);
+            toggleDisplay();
 
             $("#tr_vin_" + active_so_num).show();
             $("#div_vin_" + active_so_num).slideDown(250);
         });
-    });
+    })
+    .on("click", "[id^=show_attachments_room_]", function(e) {
+        thisClick = this;
+
+        e.stopPropagation();
+
+        checkTransition(function() {
+            active_room_id = $(thisClick).attr("id").replace('show_attachments_room_', '');
+
+            toggleDisplay();
+
+            $("#tr_attachments_" + active_room_id).show();
+            $("#div_attachments_" + active_room_id).slideDown(250);
+
+            setTimeout(function() {
+                $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -100});
+            }, 300);
+        });
+    })
+
+    .on("click", "[id^=print_]", function(e) {
+        thisClick = this;
+
+        e.stopPropagation();
+
+        checkTransition(function() {
+            active_room_id = $(thisClick).attr("id").replace('print_', '');
+
+            toggleDisplay();
+
+            $("#tr_print_" + active_room_id).show();
+            $("#div_print_" + active_room_id).slideDown(250);
+
+            setTimeout(function() {
+                $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -100});
+            }, 300);
+        });
+    })
+;

@@ -45,6 +45,7 @@ function displayOrder($ordered_var, $human_name) {
 </head>
 
 <body onload="printMe()">
+<!--<body>-->
 
 <div id="wrapper">
     <div id="header">
@@ -74,7 +75,7 @@ function displayOrder($ordered_var, $human_name) {
             orders@smcm.us
         </div>
 
-        <div class="so-num"><?php echo "{$info['so_parent']}{$info['room']}"; ?></div>
+        <div class="so-num"></div>
 
         <div class="date">
             <strong>Date Ordered: </strong><?php echo (trim($info['sample_ordered_date']) === '') ? "<span class='highlight'>___________</span>" : date('n/j/Y', $info['sample_ordered_date']); ?><br />
@@ -84,7 +85,7 @@ function displayOrder($ordered_var, $human_name) {
         <div class="global-subset">
             <table>
                 <tr>
-                    <td><strong>VIN:</strong></td>
+                    <td width="80px"><strong>VIN:</strong></td>
                     <td><?php echo $info['vin_code']; ?></td>
                 </tr>
                 <tr>
@@ -95,7 +96,7 @@ function displayOrder($ordered_var, $human_name) {
                                 <td><?php echo $info['so_parent']; ?></td>
                                 <td style="padding-left:8px;"><strong>Room/Area:</strong></td>
                                 <td><?php echo $info['room']; ?></td>
-                                <td style="padding-left:8px;"><strong>Series:</strong></td>
+                                <td style="padding-left:8px;"><strong>Sequence:</strong></td>
                                 <td><?php $series = explode('.', $info['iteration']); echo $series[0]; ?></td>
                                 <td style="padding-left:8px;"><strong>Iteration:</strong></td>
                                 <td><?php $series = explode('.', $info['iteration']); echo $series[1]; ?></td>
@@ -105,25 +106,18 @@ function displayOrder($ordered_var, $human_name) {
                 </tr>
                 <tr>
                     <td><strong>Order Type:</strong></td>
-                    <td><?php echo ($info['orderStatus'] === '$') ? "Job" : "Quote"; ?></td>
+                    <td>Job</td>
                 </tr>
                 <tr>
                     <td><strong>Product Type:</strong></td>
-                    <td>
-                        <?php
-                            $ptype_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$info['product_type']}'");
-                            $ptype = $ptype_qry->fetch_assoc();
-
-                            echo $ptype['value'];
-                        ?>
-                    </td>
+                    <td>Sample</td>
                 </tr>
                 <tr>
                     <td><strong>Lead Time:</strong></td>
                     <td>
                         <?php
                             $ltime_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'days_to_ship' AND `key` = '{$info['days_to_ship']}'");
-                            $ltime = $ptype_qry->fetch_assoc();
+                            $ltime = $ltime_qry->fetch_assoc();
 
                             echo (trim($ltime['value']) === '') ? "<span class='highlight'>________________</span><br />" : "{$ltime['value']}<br />";
                         ?>
@@ -159,7 +153,7 @@ function displayOrder($ordered_var, $human_name) {
             <table>
                 <tr>
                     <td><strong>Notes:</strong></td>
-                    <td><?php echo (trim($info['vin_notes']) === '') ? "_______________________________________________________________________________________________<br />" : "{$info['vin_notes']}"; ?></td>
+                    <td><?php echo (trim($info['vin_notes']) === '') ? "_________________________________________________________________________________________________________________________________________<br />" : "{$info['vin_notes']}"; ?></td>
                 </tr>
             </table>
         </div>
@@ -174,17 +168,17 @@ function displayOrder($ordered_var, $human_name) {
             </tr>
             <tr>
                 <td width="140px">Species:</td>
-                <td width="50px"><?php echo (trim($info['species_grade']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['species_grade']}<br />"; ?></td>
+                <td width="50px"><?php echo (trim($info['species_grade']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['species_grade']}<br />"; ?></td>
                 <td><?php echo translateVIN('species_grade', $info['species_grade']); ?></td>
             </tr>
             <tr>
                 <td>Door Design:</td>
-                <td><?php echo (trim($info['door_design']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['door_design']}<br />"; ?></td>
+                <td><?php echo (trim($info['door_design']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['door_design']}<br />"; ?></td>
                 <td><?php echo translateVIN('door_design', $info['door_design']); ?></td>
             </tr>
             <tr>
                 <td>Styles/Rails:</td>
-                <td><?php echo (trim($info['style_rail_width']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['style_rail_width']}<br />"; ?></td>
+                <td><?php echo (trim($info['style_rail_width']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['style_rail_width']}<br />"; ?></td>
                 <td><?php echo translateVIN('style_rail_width', $info['style_rail_width']); ?></td>
             </tr>
             <tr>
@@ -192,32 +186,32 @@ function displayOrder($ordered_var, $human_name) {
             </tr>
             <tr>
                 <td class="sub-item">Door Panel Raise:</td>
-                <td><?php echo (trim($info['panel_raise_door']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['panel_raise_door']}<br />"; ?></td>
+                <td><?php echo (trim($info['panel_raise_door']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['panel_raise_door']}<br />"; ?></td>
                 <td><?php echo translateVIN('panel_raise', $info['panel_raise_door']); ?></td>
             </tr>
             <tr>
                 <td class="sub-item">Short Drawer Raise:</td>
-                <td><?php echo (trim($info['panel_raise_sd']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['panel_raise_sd']}<br />"; ?></td>
+                <td><?php echo (trim($info['panel_raise_sd']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['panel_raise_sd']}<br />"; ?></td>
                 <td><?php echo translateVIN('panel_raise', $info['panel_raise_sd']); ?></td>
             </tr>
             <tr>
                 <td class="sub-item">Tall Drawer Raise:</td>
-                <td><?php echo (trim($info['panel_raise_td']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['panel_raise_td']}<br />"; ?></td>
+                <td><?php echo (trim($info['panel_raise_td']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['panel_raise_td']}<br />"; ?></td>
                 <td><?php echo translateVIN('panel_raise', $info['panel_raise_td']); ?></td>
             </tr>
             <tr>
                 <td>Edge Profile:</td>
-                <td><?php echo (trim($info['edge_profile']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['edge_profile']}<br />"; ?></td>
+                <td><?php echo (trim($info['edge_profile']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['edge_profile']}<br />"; ?></td>
                 <td><?php echo translateVIN('edge_profile', $info['edge_profile']); ?></td>
             </tr>
             <tr>
                 <td>Framing Bead:</td>
-                <td><?php echo (trim($info['framing_bead']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['framing_bead']}<br />"; ?></td>
+                <td><?php echo (trim($info['framing_bead']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['framing_bead']}<br />"; ?></td>
                 <td><?php echo translateVIN('framing_bead', $info['framing_bead']); ?></td>
             </tr>
             <tr>
                 <td>Framing Option:</td>
-                <td><?php echo (trim($info['framing_options']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['framing_options']}<br />"; ?></td>
+                <td><?php echo (trim($info['framing_options']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['framing_options']}<br />"; ?></td>
                 <td><?php echo translateVIN('framing_options', $info['framing_options']); ?></td>
             </tr>
             <tr>
@@ -228,42 +222,42 @@ function displayOrder($ordered_var, $human_name) {
             </tr>
             <tr>
                 <td>Finish Type:</td>
-                <td><?php echo (trim($info['finish_type']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['finish_type']}<br />"; ?></td>
+                <td><?php echo (trim($info['finish_type']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['finish_type']}<br />"; ?></td>
                 <td><?php echo translateVIN('finish_type', $info['finish_type']); ?></td>
             </tr>
             <tr>
                 <td>Finish Code:</td>
-                <td><?php echo (trim($info['finish_code']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['finish_code']}<br />"; ?></td>
+                <td><?php echo (trim($info['finish_code']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['finish_code']}<br />"; ?></td>
                 <td><?php echo translateVIN('standard_wiping_stains', $info['finish_code']); ?></td>
             </tr>
             <tr>
                 <td>Glaze</td>
-                <td><?php echo (trim($info['glaze']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['glaze']}<br />"; ?></td>
+                <td><?php echo (trim($info['glaze']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['glaze']}<br />"; ?></td>
                 <td><?php echo translateVIN('glaze', $info['glaze']); ?></td>
             </tr>
             <tr>
                 <td>Glaze Technique:</td>
-                <td><?php echo (trim($info['glaze_technique']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['glaze_technique']}<br />"; ?></td>
+                <td><?php echo (trim($info['glaze_technique']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['glaze_technique']}<br />"; ?></td>
                 <td><?php echo translateVIN('glaze_technique', $info['glaze_technique']); ?></td>
             </tr>
             <tr>
                 <td>Sheen:</td>
-                <td><?php echo (trim($info['sheen']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['sheen']}<br />"; ?></td>
+                <td><?php echo (trim($info['sheen']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['sheen']}<br />"; ?></td>
                 <td><?php echo translateVIN('sheen', $info['sheen']); ?></td>
             </tr>
             <tr>
                 <td>Antiquing:</td>
-                <td><?php echo (trim($info['antiquing']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['antiquing']}<br />"; ?></td>
+                <td><?php echo (trim($info['antiquing']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['antiquing']}<br />"; ?></td>
                 <td><?php echo translateVIN('antiquing', $info['antiquing']); ?></td>
             </tr>
             <tr>
                 <td>Distress Level:</td>
-                <td><?php echo (trim($info['distress_level']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['distress_level']}<br />"; ?></td>
+                <td><?php echo (trim($info['distress_level']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['distress_level']}<br />"; ?></td>
                 <td><?php echo translateVIN('distress_level', $info['distress_level']); ?></td>
             </tr>
             <tr>
                 <td>Worn Edges:</td>
-                <td><?php echo (trim($info['worn_edges']) === '') ? "<span class='highlight'>___</span><br />" : "{$info['worn_edges']}<br />"; ?></td>
+                <td><?php echo (trim($info['worn_edges']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['worn_edges']}<br />"; ?></td>
                 <td><?php echo translateVIN('worn_edges', $info['worn_edges']); ?></td>
             </tr>
         </table>
