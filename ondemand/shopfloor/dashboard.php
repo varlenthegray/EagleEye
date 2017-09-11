@@ -1051,10 +1051,12 @@ HEREDOC;
                 $changed = ["End time"=>time(), "Active"=>false, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Completed"=>true, "Active Employees"=>'[]']; // set what has changed for audit trail
                 $changed = json_encode($changed); // encode the audit trail for retrieval later
 
-                if(move_uploaded_file($_FILES['attachment']['tmp_name'], $target_file)) {
-                    echo displayToast("success", "Uploaded file successfully.", "File Uploaded");
-                } else {
-                    echo displayToast("error", "Unable to upload file. $upload_err", "File Error");
+                if(!empty($_FILES['uploadedfile'])) {
+                    if(move_uploaded_file($_FILES['attachment']['tmp_name'], $target_file)) {
+                        echo displayToast("success", "Uploaded file successfully.", "File Uploaded");
+                    } else {
+                        echo displayToast("error", "Unable to upload file. $upload_err", "File Error");
+                    }
                 }
 
                 // if we're able to insert into the audit trail successfully
