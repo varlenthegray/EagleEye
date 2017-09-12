@@ -959,35 +959,37 @@ HEREDOC;
         $cur_op_info_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$op_queue['operation_id']}'");
         $cur_op_info = $cur_op_info_qry->fetch_assoc();
 
-        $target_dir = SITE_ROOT . "/attachments/";
-        $target_ext = end(explode(".", $_FILES['attachment']['name']));
+        if(!empty($_FILES['uploadedfile'])) {
+            $target_dir = SITE_ROOT . "/attachments/";
+            $target_ext = end(explode(".", $_FILES['attachment']['name']));
 
-        if(!file_exists("{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}")) {
-            mkdir("{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}", 0777, true);
-        }
+            if(!file_exists("{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}")) {
+                mkdir("{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}", 0777, true);
+            }
 
-        $job_title_fn = str_replace(" ", "_", strtolower($cur_op_info['job_title']));
+            $job_title_fn = str_replace(" ", "_", strtolower($cur_op_info['job_title']));
 
-        $target_file = "{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}/{$cur_op_info['op_id']}-$job_title_fn.{$target_ext}";
+            $target_file = "{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}/{$cur_op_info['op_id']}-$job_title_fn.{$target_ext}";
 
-        $uploadOK = true;
-        $upload_err = '';
-        $fileType = pathinfo($_FILES['attachment']['name'], PATHINFO_EXTENSION);
+            $uploadOK = true;
+            $upload_err = '';
+            $fileType = pathinfo($_FILES['attachment']['name'], PATHINFO_EXTENSION);
 
-        if($fileType !== 'pdf') {
-            $uploadOK = false;
-            $upload_err .= "Incorrect Filetype. PDF only. Received $fileType.";
-        }
+            if($fileType !== 'pdf') {
+                $uploadOK = false;
+                $upload_err .= "Incorrect Filetype. PDF only. Received $fileType.";
+            }
 
-        if(file_exists($target_file)) {
-            $uploadOK = false;
-            $upload_err .= "File already exists on the server.";
-        }
+            if(file_exists($target_file)) {
+                $uploadOK = false;
+                $upload_err .= "File already exists on the server.";
+            }
 
-        if(empty($op_queue['notes'])) { // if no notes exist
-            $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />"; // the notes equals the name and the time
-        } else { // otherwise notes exist
-            $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />" . $op_queue['notes']; // concatenate the notes
+            if(empty($op_queue['notes'])) { // if no notes exist
+                $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />"; // the notes equals the name and the time
+            } else { // otherwise notes exist
+                $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />" . $op_queue['notes']; // concatenate the notes
+            }
         }
 
         if($rw_reqd === 'true') { // rework is required
