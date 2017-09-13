@@ -4,7 +4,7 @@ session_start();
 require 'includes/header_account.php'; // initial header for the page
 
 if($_REQUEST['action'] === 'login') { // if we're trying to log in
-    $username = $dbconn->real_escape_string($_REQUEST['username']); // get username
+    $username = trim($dbconn->real_escape_string($_REQUEST['username'])); // get username
 
     $user = $dbconn->query("SELECT * FROM user WHERE username = '$username' AND account_status = TRUE"); // fetch the username from the database
 
@@ -14,6 +14,12 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
         if(password_verify($_REQUEST['password'],$result['password'])) { // seems the password is valid too
             $_SESSION['valid'] = true; // set the session as valid
             $_SESSION['userInfo'] = $result;
+
+            $timecard_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = {$result['id']} AND time_out IS NULL");
+
+            if($timecard_qry->num_rows === 0) { // if there is no timecard, we have to create one
+                $dbconn->query("INSERT INTO timecards (employee, time_in) VALUES ('{$result['id']}', UNIX_TIMESTAMP())");
+            }
 
             if($result['id'] !== '16') {
                 $_SESSION['shop_user'] = $result;

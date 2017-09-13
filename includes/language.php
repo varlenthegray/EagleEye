@@ -3,7 +3,7 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define("RELEASE_DATE", "9/11/17");
+define("RELEASE_DATE", "9/13/17");
 
 // Global definitions
 define("LOGO_TEXT", "Stone Mountain Cabinetry"); // The logo text displayed
@@ -57,3 +57,4 @@ define("NAV_VIN", "VIN"); // VIN management page
 define("NAV_ADD_SO", "Add SO"); // Adding a SO
 define("NAV_FEEDBACK", "Feedback"); // Providing feedback
 define("NAV_LOGOUT", "Logout"); // Logging out completely
+define("NAV_CLOCKOUT", "Clock Out"); // Clocking out early

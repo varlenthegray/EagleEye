@@ -529,6 +529,8 @@ require 'includes/header_end.php';
         .on("click", ".clock_out", function(e) {
             var id = $(this).data("id");
 
+            console.log("Clicked to clock out!");
+
             e.stopPropagation();
 
             $.post("/ondemand/shopfloor/login_actions.php?action=clock_out", {user_id: id}, function(data) {
@@ -586,8 +588,6 @@ require 'includes/header_end.php';
     var clockInterval = setInterval(function() {
         var time = new Date();
         time = time.toLocaleTimeString();
-
-        console.log(time);
 
         $("#clock").html(time);
     }, 1000);

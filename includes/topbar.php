@@ -159,6 +159,7 @@ switch($_SERVER['SCRIPT_NAME']) {
                     <li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>
                     <li id="nav_feedback"><a data-toggle="modal" data-target="#feedback-page"><i class="fa fa-comment-o m-r-5"></i><span><?php echo NAV_FEEDBACK; ?></span></a></li>
                     <li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>
+                    <li id="nav_logout"><a class="clock_out" data-id="<?php echo $_SESSION['shop_user']['id']; ?>"><i class="zmdi zmdi-time-countdown m-r-5"></i><span><?php echo NAV_CLOCKOUT; ?></span></a></li>
                     <li id="nav_logout"><a href="/login.php?logout=true"><i class="fa fa-sign-out m-r-5"></i><span><?php echo NAV_LOGOUT; ?></span></a></li>
                 </ul>
                 <!-- End navigation menu  -->
