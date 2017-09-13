@@ -111,7 +111,7 @@ require 'includes/header_end.php';
     var row;
     var shownData;
     var op_id;
-    var op_num;
+    var opFull;
     // -- EO Dashboard --
 
     // -- Build a VIN --
@@ -290,12 +290,11 @@ require 'includes/header_end.php';
         .on("click", ".start-operation", function(e) {
             e.stopPropagation();
 
-            var opFull = $(this).closest('tr').find('td').eq(4).html();
-            op_num = opFull.substr(0,3);
+            opFull = $(this).closest('tr').find('td').eq(4).html();
             op_id = $(this).attr("id");
 
-            if(op_num === '000') {
-                $.post("/ondemand/shopfloor/dashboard.php?action=get_start_info", {opID: op_id, op: op_num}, function(data) {
+            if(opFull.substring(0,3) === '000') {
+                $.post("/ondemand/shopfloor/dashboard.php?action=get_start_info", {opID: op_id, op: opFull}, function(data) {
                     $("#modalStartJob").html(data);
                 }).done(function() {
                     $("#modalStartJob").modal();
@@ -303,7 +302,7 @@ require 'includes/header_end.php';
                     $("body").append(data); // echo an error and log it
                 });
             } else {
-                $.post("/ondemand/shopfloor/dashboard.php?action=start_operation", {operation: op_num, id: op_id}, function(data) {
+                $.post("/ondemand/shopfloor/dashboard.php?action=start_operation", {operation: opFull, id: op_id}, function(data) {
                     $('body').append(data);
 
                     updateQueuedJobs();
@@ -323,7 +322,7 @@ require 'includes/header_end.php';
 
             if($("#other_subtask").is(":checked")) { // if this is a subtask "other" section then we have to verify the notes
                 if (other_notes_field.length >= 3) { // and the length of notes is greater than 3
-                    $.post("/ondemand/shopfloor/dashboard.php?action=start_operation", {id: op_id, operation: op_num, subtask: "Other", notes: other_notes_field}, function (data) {
+                    $.post("/ondemand/shopfloor/dashboard.php?action=start_operation", {id: op_id, operation: opFull, subtask: "Other", notes: other_notes_field}, function (data) {
                         $("body").append(data);
 
                         active_table.ajax.reload(null,false);
@@ -342,7 +341,7 @@ require 'includes/header_end.php';
                 var otf_notes = $("#otf_notes").val();
                 var otf_iteration = $("#otf_iteration").val();
 
-                $.post("/ondemand/shopfloor/dashboard.php?action=start_operation", {id: op_id, operation: op_num, subtask: subtask,
+                $.post("/ondemand/shopfloor/dashboard.php?action=start_operation", {id: op_id, operation: opFull, subtask: subtask,
                     notes: notes_field, otf_so_num: otf_so_num, otf_room: otf_room, otf_op: otf_op, otf_notes: otf_notes, otf_iteration: otf_iteration}, function(data) {
                     active_table.ajax.reload(null,false);
                     updateQueuedJobs();
@@ -387,6 +386,7 @@ require 'includes/header_end.php';
             e.stopPropagation();
 
             op_id = $(this).attr("id");
+            opFull = $(this).closest('tr').find('td').eq(4).html();
 
             $.post("/ondemand/shopfloor/dashboard.php?action=get_stop_info", {opID: op_id}, function(data) {
                 $("#modalUpdateJob").html(data).modal();
@@ -412,7 +412,7 @@ require 'includes/header_end.php';
             // formdata required because now we're attaching files
             var formData = new FormData();
             formData.append('opID', op_id);
-            formData.append('opnum', op_num);
+            formData.append('opnum', opFull);
             formData.append('notes', notes);
             formData.append('qty', qty_compl);
             formData.append('rework_reqd', rework);
@@ -582,6 +582,15 @@ require 'includes/header_end.php';
         })
         // -- End VIN Page --
     ;
+
+    var clockInterval = setInterval(function() {
+        var time = new Date();
+        time = time.toLocaleTimeString();
+
+        console.log(time);
+
+        $("#clock").html(time);
+    }, 1000);
 </script>
 
 <?php

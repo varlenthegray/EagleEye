@@ -99,7 +99,7 @@ switch($_REQUEST['action']) {
         $output = array();
         $i = 0;
 
-        $self_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE");
+        $self_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.*, rooms.iteration AS rIteration FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE");
 
         if($self_qry->num_rows > 0) {
             while($self = $self_qry->fetch_assoc()) {
@@ -129,7 +129,7 @@ switch($_REQUEST['action']) {
                 $room = $room_qry->fetch_assoc();
 
                 if(!empty($self['so_parent'])) {
-                    $so = "{$self['so_parent']}{$self['room']}-{$vin['key']}{$self['iteration']}";
+                    $so = "{$self['so_parent']}{$self['room']}-{$vin['key']}{$self['rIteration']}";
                 } else {
                     $so = "---------";
                 }
@@ -354,7 +354,7 @@ switch($_REQUEST['action']) {
             $notes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />";
         }
 
-        if($operation !== '000') { // if this is not a triple-zero operation
+        if(substr($operation, 0, 3) !== '000') { // if this is not a triple-zero operation
             $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the existing op queue id
 
             if($qry->num_rows > 0) {  // if we were able to find the operation inside of the queue
@@ -467,7 +467,9 @@ switch($_REQUEST['action']) {
         $id = sanitizeInput($_REQUEST['opID']);
         $op = sanitizeInput($_REQUEST['op']);
 
-        if(!$op === '000') { // if not an op in the 000's (always visible op)
+        echo "<script>console.log('\"$op\"')</script>";
+
+        if(substr($op, 0, 3) !== '000') { // if not an op in the 000's (always visible op)
             $op_query = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE op_queue.id = '$id';");
 
             if($op_query->num_rows === 1) {
@@ -524,7 +526,7 @@ HEREDOC;
             if($op_query->num_rows === 1) {
                 $op_info = $op_query->fetch_assoc();
 
-                if($id !== '106') { // if it's not "on the fly"
+                if($op !== '000: On The Fly') { // if it's not "on the fly"
                     if(!empty($op_info['sub_tasks'])) {
                         $sub_tasks = json_decode($op_info['sub_tasks']);
 
@@ -643,7 +645,7 @@ HEREDOC;
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="otf_iteration">Iteration</label>
-                                                <input type="text" class="form-control" id="otf_iteration" name="otf_iteration" placeholder="Iteration" maxlength="4" value="0.01">
+                                                <input type="text" class="form-control" id="otf_iteration" name="otf_iteration" placeholder="Iteration" maxlength="4" value="1.01">
                                             </div>
                                         </div>
                                     </div>

@@ -28,3 +28,6 @@ define('SITE_ROOT', '/home/trustedprogrammer/domains/dev-smc.trustedprogrammer.c
 // set the timezone for all PHP information
 date_default_timezone_set($_SESSION['userInfo']['timezone']);
 
+spl_autoload_register(function ($class) {
+    include SITE_ROOT . '/includes/classes/' . $class . '.php';
+});

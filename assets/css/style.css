@@ -23431,6 +23431,15 @@ body {
 .nowrap {
   white-space: nowrap; }
 
+#clock {
+  float: right;
+  margin-right: 125px;
+  text-align: right;
+  font-size: 20px;
+  font-weight: bold;
+  color: #FFFFFF;
+  line-height: 42px; }
+
 .cust-table {
   display: table;
   width: 100%;

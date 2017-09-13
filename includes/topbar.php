@@ -16,7 +16,7 @@ switch($_SERVER['SCRIPT_NAME']) {
         <img src="../assets/images/logo.png" height="80px" />
     </div>
 
-    <!-- fake fields are a workaround for chrome autofill getting the wrong fields -->
+    <!-- fake fields are a workaround for chrome autofill getting the wrong fields (such as search) -->
     <input type="text" name="ausernameidontcareabout" style="display:none;">
     <input type="password" name="apasswordidontcareabout" style="display:none;">
 
@@ -100,10 +100,9 @@ switch($_SERVER['SCRIPT_NAME']) {
                 </ul>
             </div> <!-- end menu-extras -->
 
-
+            <div id="clock"></div>
 
             <div class="clearfix"></div>
-
         </div> <!-- end container -->
     </div>
     <!-- end topbar-main -->
