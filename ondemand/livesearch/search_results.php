@@ -1315,7 +1315,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="22" name="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_glaze_color'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze'");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_exterior_glaze_color']) {
