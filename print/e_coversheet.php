@@ -365,7 +365,7 @@ function translateVIN($segment, $key) {
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td class="border_thin_bottom">Exterior Glaze Color:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('carcass_exterior_glaze_color', $info['carcass_exterior_glaze_color']); ?></td>
+                <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['carcass_exterior_glaze_color']); ?></td>
                 <td class="border_thin_bottom gray_bg">&nbsp;</td>
                 <td class="border_thin_bottom gray_bg">&nbsp;</td>
                 <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_glaze_color_pct" value="0.00" maxlength="4">%</td>
@@ -415,7 +415,7 @@ function translateVIN($segment, $key) {
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td class="border_thin_bottom">Interior Glaze Color:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('carcass_interior_glaze_color', $info['carcass_interior_glaze_color']); ?></td>
+                <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['carcass_interior_glaze_color']); ?></td>
                 <td class="border_thin_bottom gray_bg">&nbsp;</td>
                 <td class="border_thin_bottom gray_bg">&nbsp;</td>
                 <td class="text-md-center border_thin_bottom"><input type="text" name="interior_glaze_color_pct" value="0.00" maxlength="4">%</td>
@@ -934,6 +934,7 @@ function translateVIN($segment, $key) {
             <?php
                 switch($info['days_to_ship']) {
                     case 'Y':
+                        /** @var double Shipping multiplier $sm */
                         $sm = ($info['product_type'] === 'C') ? "var shipping_multiplier = 0.25;" : "var shipping_multiplier = 0;";
                         break;
 
