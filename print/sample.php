@@ -44,108 +44,112 @@ function displayOrder($ordered_var, $human_name) {
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
 
-<body onload="printMe()">
-<!--<body>-->
+<!--<body onload="printMe()">-->
+<body>
 
 <div id="wrapper">
     <div id="header">
-        <div id="logo"><img src="/assets/images/smc_logo.png" width="170px" /></div>
-
-        <div class="header-mid">
-            <div class="title">Sample Request</div>
-
-            <div class="project-info">
-                <?php
-                    echo "{$info['contractor_dealer_code']} {$info['project']}<br />";
-                    echo "{$info['contact1_name']}<br />";
-                    echo "{$info['contact1_cell']}<br />";
-                    echo "{$info['contact1_email']}";
-                ?>
+        <div id="header-left">
+            <div id="page_type">
+                <table>
+                    <tr>
+                        <td colspan="2" id="page_type_header">Sample Request</td>
+                    </tr>
+                    <tr>
+                        <td class="definition">Dealer PO#:</td>
+                        <td class="value"><?php echo $info['so_parent']; ?></td>
+                    </tr>
+                    <tr>
+                        <td class="definition">Room/Area:</td>
+                        <td class="value"><?php echo $info['room']; ?></td>
+                    </tr>
+                    <tr>
+                        <td class="definition">Sequence:</td>
+                        <td class="value"><?php echo substr($info['iteration'], 0, 1); ?></td>
+                    </tr>
+                    <tr>
+                        <td class="definition">Iteration:</td>
+                        <td class="value"><?php echo substr($info['iteration'], -3, 3); ?></td>
+                    </tr>
+                </table>
             </div>
         </div>
+
+        <div id="logo_container">
+            <div id="logo"><img src="/assets/images/smc_logo.png" width="170px" /></div>
+
+            <div id="company_info">
+                Stone Mountain Cabinetry, Inc.<br />
+                206 Vista Blvd<br/>
+                Arden, NC 28704<br />
+                828.966.9000<br/>
+                orders@smcm.us
+            </div>
+        </div>
+
+        <div id="header-right">
+            <div id="page_info">
+                <table>
+                    <tr>
+                        <td># of Pages:</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Date:</td>
+                        <td class="b"><?php echo date('n/j/Y'); ?></td>
+                    </tr>
+                    <tr>
+                        <td>Product Type:</td>
+                        <td class="b">Sample</td>
+                    </tr>
+                    <tr>
+                        <td>Lead Time:</td>
+                        <td class="b">
+                            <?php
+                            $ltime_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'days_to_ship' AND `key` = '{$info['days_to_ship']}'");
+                            $ltime = $ltime_qry->fetch_assoc();
+
+                            echo (trim($ltime['value']) === '') ? "<span class='highlight'>________________</span><br />" : "{$ltime['value']}<br />";
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ship VIA:</strong></td>
+                        <td><?php echo (trim($info['vin_ship_via']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['vin_ship_via']}<br />"; ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ship To:</strong></td>
+                        <td>
+                            <?php
+                            echo (trim($info['ship_site']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['ship_site']}<br />";
+                            echo "<br />";
+                            echo (trim($info['contact1_name']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['contact1_name']}<br />";
+                            echo (trim($info['mailing_addr']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['mailing_addr']}<br />";
+                            echo (trim($info['mailing_city']) === '') ? "<span class='highlight'>___________ , ___ , _______</span><br />" : "{$info['mailing_city']}, {$info['mailing_state']} {$info['mailing_zip']}<br />";
+                            echo (trim($info['contact1_email']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['contact1_email']}<br />";
+                            echo (trim($info['contact1_cell']) === '') ? "<span class='highlight'>________________________</span>" : "{$info['contact1_cell']}<br />";
+                            ?>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="vin">VIN: <span><?php echo $info['vin_code']; ?></span></div>
 
         <div class="clearfix"></div>
     </div>
 
     <div id="globals">
-        <div class="company-addr">
-            309 S. Country Club Road<br/>
-            Brevard, NC 28712<br/>
-            (828) 966-9000<br />
-            orders@smcm.us
-        </div>
-
-        <div class="so-num"></div>
-
-        <div class="date">
-            <strong>Date Ordered: </strong><?php echo (trim($info['sample_ordered_date']) === '') ? "<span class='highlight'>___________</span>" : date('n/j/Y', $info['sample_ordered_date']); ?><br />
-            <strong>Date Printed: </strong> <?php echo date('n/j/Y'); ?>
-        </div>
-
         <div class="global-subset">
             <table>
-                <tr>
-                    <td width="80px"><strong>VIN:</strong></td>
-                    <td><?php echo $info['vin_code']; ?></td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <table>
-                            <tr>
-                                <td><strong>Dealer PO#:</strong></td>
-                                <td><?php echo $info['so_parent']; ?></td>
-                                <td style="padding-left:8px;"><strong>Room/Area:</strong></td>
-                                <td><?php echo $info['room']; ?></td>
-                                <td style="padding-left:8px;"><strong>Sequence:</strong></td>
-                                <td><?php $series = explode('.', $info['iteration']); echo $series[0]; ?></td>
-                                <td style="padding-left:8px;"><strong>Iteration:</strong></td>
-                                <td><?php $series = explode('.', $info['iteration']); echo $series[1]; ?></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
-                    <td><strong>Order Type:</strong></td>
-                    <td>Job</td>
-                </tr>
-                <tr>
-                    <td><strong>Product Type:</strong></td>
-                    <td>Sample</td>
-                </tr>
-                <tr>
-                    <td><strong>Lead Time:</strong></td>
-                    <td>
-                        <?php
-                            $ltime_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'days_to_ship' AND `key` = '{$info['days_to_ship']}'");
-                            $ltime = $ltime_qry->fetch_assoc();
 
-                            echo (trim($ltime['value']) === '') ? "<span class='highlight'>________________</span><br />" : "{$ltime['value']}<br />";
-                        ?>
-                    </td>
-                </tr>
             </table>
         </div>
 
         <div class="shipping-information">
             <table>
-                <tr>
-                    <td><strong>Ship VIA:</strong></td>
-                    <td><?php echo (trim($info['vin_ship_via']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['vin_ship_via']}<br />"; ?></td>
-                </tr>
-                <tr>
-                    <td><strong>Ship To:</strong></td>
-                    <td>
-                        <?php
-                        echo (trim($info['ship_site']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['ship_site']}<br />";
-                        echo "<br />";
-                        echo (trim($info['contact1_name']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['contact1_name']}<br />";
-                        echo (trim($info['mailing_addr']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['mailing_addr']}<br />";
-                        echo (trim($info['mailing_city']) === '') ? "<span class='highlight'>___________ , ___ , _______</span><br />" : "{$info['mailing_city']}, {$info['mailing_state']} {$info['mailing_zip']}<br />";
-                        echo (trim($info['contact1_email']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['contact1_email']}<br />";
-                        echo (trim($info['contact1_cell']) === '') ? "<span class='highlight'>________________________</span>" : "{$info['contact1_cell']}<br />";
-                        ?>
-                    </td>
-                </tr>
+
             </table>
         </div>
 

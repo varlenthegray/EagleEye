@@ -1,5 +1,5 @@
 @page {
-    margin: 5mm 5mm 5mm 5mm;
+    margin: 5mm 8mm 5mm 8mm;
 }
 
 body {
@@ -20,9 +20,17 @@ table {
     border-collapse: collapse;
 }
 
+td {
+    vertical-align: top;
+}
+
 #wrapper {
     width: 99vw;
     height: 99vh;
+}
+
+#header_container {
+
 }
 
 #header_left {
@@ -31,23 +39,66 @@ table {
     float: left;
 }
 
-#header_left #logo {
-    margin: 10px auto;
+#logo_container {
+    top: 10px;
+    left: calc(50% - 85px);
+    position: absolute;
 }
 
-#header_left #company_info {
-
+#logo_container #company_info {
+    text-align: center;
 }
 
 #header_right {
     float: right;
-    width: calc(50% - 20px);
-    padding-left: 20px;
+    width: 50%;
     padding-top: 10px;
 }
 
+#page_type {
+    float: left;
+    padding-top: 70px;
+}
+
+#page_type_header {
+    text-align: center;
+    font-size: 22pt;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
+#page_type .definition {
+    font-size: 8pt;
+    line-height: 19px;
+}
+
+#page_type .value {
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+#page_info {
+    float: right;
+    padding-top: 70px;
+}
+
+#vin {
+    width: 100%;
+    text-align: center;
+    clear: both;
+}
+
+#vin span {
+    font-weight: bold;
+    font-size: 8pt;
+    margin-left: 8px;
+    line-height: normal;
+}
+
 #main_section {
-    padding-top: 20px;
+    padding-top: 4px;
     clear: both;
 }
 
@@ -119,26 +170,28 @@ input[type=checkbox] {
 #signature {
     clear: both;
     text-align: center;
-    padding-top: 20px;
+    padding-top: 15px;
 }
 
 #closing_statement {
     font-weight: bold;
     text-align: center;
-    padding-top: 10px;
+    padding-top: 5px;
 }
 
 .gray_bg {
     background-color: #CCCCCC;
 }
 
-input[type=text] {
+input[type=text], textarea {
     border: none;
     padding: 0;
     margin: 0;
     font-size: 7pt;
     width: 18px;
     text-align: right;
+    font-family: 'Roboto', sans-serif;
+    resize: none;
 }
 
 @media print {

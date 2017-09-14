@@ -1,11 +1,16 @@
+@page {
+    margin: 5mm 5mm 5mm 5mm;
+}
+
 body {
     padding: 0;
     margin: 0;
+    -webkit-print-color-adjust: exact;
 }
 
 html {
     font-family: 'Roboto', sans-serif;
-    font-size: .8em;
+    font-size: 7pt;
 }
 
 #wrapper {
@@ -16,54 +21,90 @@ html {
 #header {
     border-bottom: 1px solid #000;
     width: 100%;
-    padding-bottom: 15px;
+    padding-bottom: 5px;
 }
 
 .clearfix {
     clear: both;
 }
 
-#logo {
-    float: left;
-    padding-top: 5px;
-}
-
-.header-mid {
+#logo_container {
+    top: 10px;
+    left: calc(50% - 85px);
     position: absolute;
-    top: 0;
-    left: 40%;
 }
 
-.header-mid .title {
-    font-size: 1.8em;
+#logo_container #company_info {
+    text-align: center;
+}
+
+#header-left {
+    width: 50%;
+    float: left;
+}
+
+#header-left .title {
+    text-align: center;
+    font-size: 22pt;
     font-weight: bold;
     letter-spacing: 1px;
-    font-variant: small-caps;
+    text-transform: uppercase;
+    text-decoration: underline;
 }
 
-.project-info {
-    padding-left: 20px;
+#page_type {
+    float: left;
+    padding-top: 70px;
+}
+
+#page_type_header {
+    text-align: center;
+    font-size: 22pt;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: underline;
+}
+
+#page_type .definition {
+    font-size: 8pt;
+    line-height: 19px;
+}
+
+#page_type .value {
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+#header-right {
+    float: right;
+    width: 50%;
+    text-align: right;
+}
+
+#page_info {
+    float: right;
+    padding-top: 70px;
+}
+
+#vin {
+    clear: both;
+    width: 100%;
+    text-align: center;
+    padding-top: 50px;
+}
+
+#vin span {
+    font-weight: bold;
+    font-size: 8pt;
+    margin-left: 8px;
+    line-height: normal;
 }
 
 #globals {
     border-bottom: 1px solid #000;
     margin-top: 2px;
     padding-bottom: 8px;
-}
-
-#globals .company-addr {
-    float: left;
-}
-
-#globals .so-num {
-    position: absolute;
-    left: 40%;
-}
-
-#globals .date {
-    position: absolute;
-    right: 5px;
-    text-align: right;
 }
 
 #globals .global-subset {
@@ -73,7 +114,7 @@ html {
 }
 
 table {
-    font-size: .9em;
+    font-size: 7pt;
     padding: 0;
     margin: 0;
     border-collapse: collapse;
@@ -103,6 +144,10 @@ table {
 
 .ul {
     text-decoration: underline;
+}
+
+.b {
+    font-weight: bold;
 }
 
 #order-information {

@@ -88,7 +88,7 @@ HEREDOC;
                 $output['data'][$i][] = $task['eta_hrs'] . " $humanized_eta";
                 $output['data'][$i][] = $last_updated;
                 $output['data'][$i][] = $task['pct_completed'] * 100 . "%";
-                $output['data'][$i]['DT_RowId'] = $task['id'];
+                $output['data'][$i]['DT_RowId'] = $task['taskID'];
 
                 $i += 1;
             }
@@ -105,6 +105,126 @@ HEREDOC;
         }
 
         echo json_encode($output);
+
+        break;
+    case 'get_task_info':
+        $task_id = sanitizeInput($_REQUEST['task_id']);
+        $user_opts = null;
+        $created_by = null;
+
+        $task_qry = $dbconn->query("SELECT * FROM tasks WHERE id = '$task_id'");
+
+        if($task_qry->num_rows === 1) {
+            $task = $task_qry->fetch_assoc();
+
+            $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE");
+
+            while($user = $user_qry->fetch_assoc()) {
+                $selected = ($user['id'] === $task['assigned_to']) ? "selected" : null;
+
+                $user_opts .= "<option value='{$user['id']}' $selected>{$user['name']}</option>";
+
+                if($user['id'] === $task['submitted_by']) $created_by = $user['name'];
+            }
+
+            $pct_complete = $task['pct_completed'] * 100;
+
+            switch($task['priority']) {
+                case 'Low':
+                    $sel_low = "selected";
+                    break;
+
+                case 'Moderate':
+                    $sel_mod = "selected";
+                    break;
+
+                case 'High':
+                    $sel_high = "selected";
+                    break;
+
+                case 'Immediate':
+                    $sel_imm = "selected";
+                    break;
+
+                default:
+                    $sel_low = "selected";
+                    break;
+            }
+
+            echo <<<HEREDOC
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <form name="task_details" id="task_details">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h4 class="modal-title" id="modalTaskTitle"><input type="text" value="{$task['name']}" placeholder="Task Title" maxlength="200" name="task_title" id="task_title" class="form-control" style="width:97%;" /></h4>
+                            </div>
+                            <div class="modal-body">
+                                <table>
+                                    <tr>
+                                        <td>Assigned To:</td>
+                                        <td>
+                                            <select name="assigned_to" id="assigned_to" class="form-control">
+                                                $user_opts                                        
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Priority:</td>
+                                        <td>
+                                            <select name="priority" id="priority" class="form-control">
+                                                <option value="Low" $sel_low>Low</option>
+                                                <option value="Moderate" $sel_mod>Moderate</option>
+                                                <option value="High" $sel_high>High</option>
+                                                <option value="Immediate" $sel_imm>Immediate</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>ETA</td>
+                                        <td><input type="text" value="{$task['eta_hrs']}" placeholder="Hours" name="eta" id="eta" class="form-control" style="width:85%;float:left;" maxlength="2" /><span style="float:right;line-height:30px;">&nbsp;HRS</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>% Complete:</td>
+                                        <td><input type="text" value="$pct_complete" placeholder="Percent" name="pct_completed" id="pct_completed" class="form-control" style="width:90%;float:left;" maxlength="3"><span style="float:right;line-height:30px;">&nbsp;%</span> </td>
+                                    </tr>
+                                </table>
+    
+                                <div id="task_description">{$task['description']}</div>
+                                
+                                <div id="task_created_by">-- $created_by</div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary waves-effect waves-light" id="update_task_btn" data-taskid="{$task['id']}">Update Task</button>
+                            </div>
+                        </form>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+HEREDOC;
+        } else {
+            echo displayToast("error", "Invalid task ID.", "Invalid Task");
+            http_response_code(400);
+        }
+
+        break;
+    case 'update_task':
+        $task_id = sanitizeInput($_REQUEST['task_id']);
+        $task_title = sanitizeInput($_REQUEST['task_title']);
+        $assigned_to = sanitizeInput($_REQUEST['assigned_to']);
+        $priority = sanitizeInput($_REQUEST['priority']);
+        $eta = sanitizeInput($_REQUEST['eta']);
+        $pct_completed = sanitizeInput($_REQUEST['pct_completed']) / 100;
+
+        $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
+
+        if($dbconn->query("UPDATE tasks SET name = '$task_title', last_updated = NOW(), priority = '$priority', 
+          assigned_to = '$assigned_to', resolved = $resolved, pct_completed = '$pct_completed', eta_hrs = '$eta' WHERE id = '$task_id'")) {
+            echo displayToast("success", "Updated task successfully.", "Task Updated");
+            echo "<script>task_table.ajax.reload(null,false);</script>";
+        } else {
+            dbLogSQLErr($dbconn);
+        }
 
         break;
     default:

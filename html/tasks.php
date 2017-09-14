@@ -31,11 +31,17 @@ require '../includes/header_start.php';
     </div>
 </div>
 
+<!-- Task modal -->
+<div id="modalTaskInfo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalTaskInfoLabel" aria-hidden="true">
+    <!-- Inserted via AJAX -->
+</div>
+<!-- /.modal -->
+
 <script>
     var task_table = $("#tasks_global_table").DataTable({
         "ajax": "/ondemand/admin/tasks.php?action=get_task_list",
         "createdRow": function(row,data,dataIndex) {
-            $(row).addClass("cursor-hand display-queued-job-info");
+            $(row).addClass("cursor-hand display-task-info");
         },
         "order": [[0,"desc"]],
         "dom": 'rti',

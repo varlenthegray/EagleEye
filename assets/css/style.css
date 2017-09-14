@@ -23311,7 +23311,7 @@ table tbody td {
   color: rgba(19, 40, 130, 0.5);
   top: 4px; }
 
-#mceu_22 {
+.mce-notification-warning {
   display: none; }
 
 .nav-item > a {
@@ -23439,6 +23439,12 @@ body {
   font-weight: bold;
   color: #FFFFFF;
   line-height: 42px; }
+
+#task_description {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #000000;
+  width: 100%; }
 
 .cust-table {
   display: table;

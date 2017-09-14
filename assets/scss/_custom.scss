@@ -367,7 +367,7 @@ table tbody td {
 }
 
 // destroy the tiny MCE annoying domain settings popup because we cannot add sub-domain...
-#mceu_22 {
+.mce-notification-warning {
   display: none;
 }
 
@@ -544,4 +544,12 @@ body {
   font-weight: bold;
   color: #FFFFFF;
   line-height: 42px;
+}
+
+// task screen, custom description
+#task_description {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #000000;
+  width: 100%;
 }

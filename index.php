@@ -112,6 +112,7 @@ require 'includes/header_end.php';
     var shownData;
     var op_id;
     var opFull;
+    var task_text_mce;
     // -- EO Dashboard --
 
     // -- Build a VIN --
@@ -583,6 +584,36 @@ require 'includes/header_end.php';
             unsaved = false;
         })
         // -- End VIN Page --
+
+        // -- Task Page --
+        .on("click", ".display-task-info", function() {
+            $.post("/ondemand/admin/tasks.php?action=get_task_info", {task_id: $(this).attr("id")}, function(data) {
+                $("#modalTaskInfo").html(data);
+
+                task_text_mce = tinymce.init({
+                    selector:'textarea#task-text',
+                    menubar: false,
+                    plugins: ['advlist autolink lists charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime table contextmenu paste code'],
+                    toolbar: 'undo redo | insert | styleselect | bold italic | bullist numlist outdent indent'
+                });
+            }).done(function() {
+                $("#modalTaskInfo").modal();
+            }).fail(function(data) { // if we're receiving a header error
+                $("body").append(data); // echo an error and log it
+            });
+        })
+        .on("click", "#update_task_btn", function() {
+            var form_info = $("#task_details").serialize();
+            var task_id = $(this).data("taskid");
+
+            $.post("/ondemand/admin/tasks.php?action=update_task&" + form_info, {task_id: task_id}, function(data) {
+                $("body").append(data);
+                $("#modalTaskInfo").modal('hide');
+
+                unsaved = false;
+            });
+        })
+        // -- End Task Page --
     ;
 
     var clockInterval = setInterval(function() {
