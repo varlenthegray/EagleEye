@@ -130,16 +130,12 @@ HEREDOC;
             $pct_complete = $task['pct_completed'] * 100;
 
             switch($task['priority']) {
-                case 'Low':
-                    $sel_low = "selected";
+                case 'Week\'s End':
+                    $sel_we = "selected";
                     break;
 
-                case 'Moderate':
-                    $sel_mod = "selected";
-                    break;
-
-                case 'High':
-                    $sel_high = "selected";
+                case 'Day\'s End':
+                    $sel_de = "selected";
                     break;
 
                 case 'Immediate':
@@ -147,7 +143,7 @@ HEREDOC;
                     break;
 
                 default:
-                    $sel_low = "selected";
+                    $sel_we = "selected";
                     break;
             }
 
@@ -173,9 +169,8 @@ HEREDOC;
                                         <td>Priority:</td>
                                         <td>
                                             <select name="priority" id="priority" class="form-control">
-                                                <option value="Low" $sel_low>Low</option>
-                                                <option value="Moderate" $sel_mod>Moderate</option>
-                                                <option value="High" $sel_high>High</option>
+                                                <option value="Week's End" $sel_we>Week's End</option>
+                                                <option value="Day's End" $sel_de>Day's End</option>
                                                 <option value="Immediate" $sel_imm>Immediate</option>
                                             </select>
                                         </td>
