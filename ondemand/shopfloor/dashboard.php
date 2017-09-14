@@ -99,7 +99,7 @@ switch($_REQUEST['action']) {
         $output = array();
         $i = 0;
 
-        $self_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.*, rooms.iteration AS rIteration FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE");
+        $self_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.*, rooms.iteration AS rIteration FROM op_queue JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE");
 
         if($self_qry->num_rows > 0) {
             while($self = $self_qry->fetch_assoc()) {
