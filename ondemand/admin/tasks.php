@@ -9,7 +9,7 @@ switch($action) {
     case 'submit_feedback':
         $task_desc = sanitizeInput($_REQUEST['description']);
 
-        if($_SESSION['userInfo']['id'] === 16) {
+        if($_SESSION['userInfo']['id'] === '16') {
             $submitted_by = $_SESSION['shop_user']['id'];
             $submitted_name = $_SESSION['shop_user']['name'];
         } else {
