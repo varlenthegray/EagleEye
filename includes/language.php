@@ -3,7 +3,7 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define("RELEASE_DATE", "9/14/17");
+define("RELEASE_DATE", "9/18/17");
 
 // Global definitions
 define("LOGO_TEXT", "Stone Mountain Cabinetry"); // The logo text displayed
