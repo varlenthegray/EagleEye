@@ -23446,6 +23446,9 @@ body {
   border-top: 1px solid #000000;
   width: 100%; }
 
+.modal-header {
+  cursor: move; }
+
 .cust-table {
   display: table;
   width: 100%;

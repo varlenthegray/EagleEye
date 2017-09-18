@@ -234,9 +234,7 @@ switch ($search) {
                     }
                 }
 
-                $dealer_prefix = substr($result['dealer_code'], 0,3);
-
-                $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%$dealer_prefix%'");
+                $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['contractor_dealer_code']}%'");
                 $dealer = $dealer_qry->fetch_assoc();
 
                 /** BEGIN LISTING OF SO'S */

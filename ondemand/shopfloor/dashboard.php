@@ -1114,6 +1114,10 @@ HEREDOC;
                               UNIX_TIMESTAMP(), '{$room['iteration']}')")) {
                                 $dbconn->query("UPDATE rooms SET $bracket = '$next_op' WHERE id = '$room_id'");
 
+                                if((int)$cur_op_info['id'] === 140) {
+                                    $dbconn->query("UPDATE rooms SET order_status = '$' WHERE id = '$room_id'");
+                                }
+
                                 echo displayToast("success", "Successfully completed operation.<br /> Moved on to {$next_op_info['op_id']}: {$next_op_info['job_title']} in {$next_op_info['responsible_dept']}.", "Operation Completed");
                             } else {
                                 dbLogSQLErr($dbconn);

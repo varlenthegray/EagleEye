@@ -200,6 +200,10 @@ require_once ("header_start.php");
         });
     });
 
+    $(".modal").draggable({
+        handle: ".modal-header"
+    });
+
     <?php
         if($_SESSION['userInfo']['id'] !== '16') {
             $id = $_SESSION['userInfo']['id'];
