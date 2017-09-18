@@ -13,6 +13,8 @@ switch($_REQUEST['action']) {
 
         if($quote_qry->num_rows > 0) {
             while($quote = $quote_qry->fetch_assoc()) {
+                $prev_room = null;
+
                 $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '{$quote['so_num']}' ORDER BY room ASC LIMIT 0, 1");
                 $room =  $room_qry->fetch_assoc();
 
@@ -36,8 +38,8 @@ switch($_REQUEST['action']) {
 
                 $output['data'][$i][] = $quote['so_num'];
                 $output['data'][$i][] = "<strong>{$quote['contractor_dealer_code']}_{$quote['project']}</strong>";
-                $output['data'][$i][] = $sales_op_display;
-                $output['data'][$i][] = $sample_op_display;
+                $output['data'][$i][] = null;
+                $output['data'][$i][] = null;
                 $output['data'][$i]['DT_RowId'] = $quote['so_num'];
 
                 $i += 1;
@@ -63,14 +65,18 @@ switch($_REQUEST['action']) {
                         $sample_op_display = "";
                     }
 
-                    if(substr($room['iteration'], -3, 3) !== '.01') {
-                        $indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                    if($room['room'] === $prev_room) {
+                        $indent = "margin-left:55px";
+                        $addl_room_info = substr($room['iteration'], -3, 3);
                     } else {
-                        $indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                        $indent = "margin-left:40px";
+                        $addl_room_info = "{$room['room']}{$room['iteration']}";
                     }
 
+                    $prev_room = $room['room'];
+
                     $output['data'][$i][] = $quote['so_num'];
-                    $output['data'][$i][] = "$indent{$room['room']}{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}-{$room['room_name']}";
+                    $output['data'][$i][] = "<span style='$indent'>$addl_room_info-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}-{$room['room_name']}</span>";
                     $output['data'][$i][] = $sales_op_display;
                     $output['data'][$i][] = $sample_op_display;
                     $output['data'][$i]['DT_RowId'] = $quote['so_num'];
@@ -91,6 +97,8 @@ switch($_REQUEST['action']) {
 
         if($quote_qry->num_rows > 0) {
             while($quote = $quote_qry->fetch_assoc()) {
+                $prev_room = null;
+
                 $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '{$quote['so_num']}' ORDER BY room ASC LIMIT 0, 1");
                 $room =  $room_qry->fetch_assoc();
 
@@ -114,8 +122,8 @@ switch($_REQUEST['action']) {
 
                 $output['data'][$i][] = $quote['so_num'];
                 $output['data'][$i][] = "<strong>{$quote['contractor_dealer_code']}_{$quote['project']}</strong>";
-                $output['data'][$i][] = $preprod_op_display;
-                $output['data'][$i][] = $main_op_display;
+                $output['data'][$i][] = null;
+                $output['data'][$i][] = null;
                 $output['data'][$i]['DT_RowId'] = $quote['so_num'];
 
                 $i += 1;
@@ -141,14 +149,18 @@ switch($_REQUEST['action']) {
                         $main_op_display = "";
                     }
 
-                    if(substr($room['iteration'], -3, 3) !== '.01') {
-                        $indent = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                    if($room['room'] === $prev_room) {
+                        $indent = "margin-left:60px";
+                        $addl_room_info = substr($room['iteration'], -3, 3);
                     } else {
-                        $indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                        $indent = "margin-left:40px";
+                        $addl_room_info = "{$room['room']}{$room['iteration']}";
                     }
 
+                    $prev_room = $room['room'];
+
                     $output['data'][$i][] = $quote['so_num'];
-                    $output['data'][$i][] = "$indent{$room['room']}{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}-{$room['room_name']}";
+                    $output['data'][$i][] = "<span style='$indent'>$addl_room_info-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}-{$room['room_name']}</span>";
                     $output['data'][$i][] = $preprod_op_display;
                     $output['data'][$i][] = $main_op_display;
                     $output['data'][$i]['DT_RowId'] = $quote['so_num'];

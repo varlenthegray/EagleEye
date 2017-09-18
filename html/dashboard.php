@@ -148,7 +148,7 @@ require '../includes/header_start.php';
         scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#quote_header.dt-custom-header">tipr',
-        "order": [[3, "asc"]]
+        "order": [[0, "asc"]]
     });
 
     var order_table = $("#orders_global_table").DataTable({
