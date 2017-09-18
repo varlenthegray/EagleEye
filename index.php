@@ -24,7 +24,7 @@ require 'includes/header_end.php';
     <div class="col-md-12">
         <div class="card-box">
             <div class="col-md-12">
-                <button class="btn btn-info waves-effect waves-light" id="btn_search_to_main"><i class="zmdi zmdi-arrow-left m-r-5"></i> <span>Return</span></button><br /><br />
+                <button class="btn btn-primary waves-effect waves-light" id="btn_search_to_main"><i class="zmdi zmdi-arrow-left m-r-5"></i> <span>GO BACK</span></button><br /><br />
 
                 <table class="table table-bordered tablesorter" id="search_results_global_table">
                     <thead>

@@ -17,6 +17,7 @@ require '../includes/header_start.php';
                                 <th width="40%">Quote</th>
                                 <th>Sales</th>
                                 <th>Sample</th>
+                                <th>SO#</th>
                             </tr>
                             </thead>
                             <tbody id="quote_table"></tbody>
@@ -34,6 +35,7 @@ require '../includes/header_start.php';
                                 <th width="40%">Order</th>
                                 <th>Pre-Production</th>
                                 <th>Main</th>
+                                <th>SO#</th>
                             </tr>
                             </thead>
                             <tbody id="orders_table"></tbody>
@@ -146,11 +148,11 @@ require '../includes/header_start.php';
         scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#quote_header.dt-custom-header">tipr',
-        "columnDefs": [{
-            "targets": [0],
-            "orderable": false
-        }],
-        "order": [[0, "asc"]]
+        "columnDefs": [
+            {"targets": [0],"orderable": false},
+            {"targets": [3], "visible": true}
+        ],
+        "order": [[3, "asc"]]
     });
 
     var order_table = $("#orders_global_table").DataTable({
@@ -162,7 +164,11 @@ require '../includes/header_start.php';
         scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#order_header.dt-custom-header">tipr',
-        "order": [[0, "asc"]]
+        "columnDefs": [
+            {"targets": [0],"orderable": false},
+            {"targets": [3], "visible": true}
+        ],
+        "order": [[3, "asc"]]
     });
     <?php
     }

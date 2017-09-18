@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A fully featured admin theme which can be used to build CRM, CMS, etc.">
-    <meta name="author" content="Coderthemes">
+    <meta name="description" content="A fully functional ERP designed to manage cabinetry and automation.">
+    <meta name="author" content="Stone Mountain Cabinetry & Millwork">
 
     <!-- App Favicon -->
     <link rel="shortcut icon" href="/assets/images/favicon.ico">
