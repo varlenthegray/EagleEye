@@ -514,12 +514,19 @@ switch ($search) {
                                                                 <td><label for="product_type">Product Type</label></td>
                                                                 <td>
                                                                     <select class="form-control" id="edit_product_type_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="product_type" value="<?php echo $room['product_type']; ?>">
-                                                                        <option value="C" <?php echo ($room['product_type'] === 'C') ? "selected" : null; ?>>Cabinet</option>
-                                                                        <option value="L" <?php echo ($room['product_type'] === 'L') ? "selected" : null; ?>>Closet</option>
-                                                                        <option value="S" <?php echo ($room['product_type'] === 'S') ? "selected" : null; ?>>Sample</option>
-                                                                        <option value="D" <?php echo ($room['product_type'] === 'D') ? "selected" : null; ?>>Display</option>
-                                                                        <option value="A" <?php echo ($room['product_type'] === 'A') ? "selected" : null; ?>>Add-on</option>
-                                                                        <option value="W" <?php echo ($room['product_type'] === 'W') ? "selected" : null; ?>>Warranty</option>
+                                                                        <?php
+                                                                        $pt_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type'");
+
+                                                                        while($pt = $pt_qry->fetch_assoc()) {
+                                                                            if($room['product_type'] === $pt['key']) {
+                                                                                $selected = "selected";
+                                                                            } else {
+                                                                                $selected = null;
+                                                                            }
+
+                                                                            echo "<option value='{$pt['key']}' $selected>{$pt['value']}</option>";
+                                                                        }
+                                                                        ?>
                                                                     </select>
                                                                 </td>
                                                             </tr>
@@ -1768,12 +1775,13 @@ switch ($search) {
                                                         <td><label for="product_type">Product Type</label></td>
                                                         <td>
                                                             <select class="form-control" name="product_type">
-                                                                <option value="Cabinet">Cabinet</option>
-                                                                <option value="Closet">Closet</option>
-                                                                <option value="Sample">Sample</option>
-                                                                <option value="Display">Display</option>
-                                                                <option value="Add-on">Add-on</option>
-                                                                <option value="Warranty">Warranty</option>
+                                                                <?php
+                                                                    $pt_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type'");
+
+                                                                    while($pt = $pt_qry->fetch_assoc()) {
+                                                                        echo "<option value='{$pt['key']}'>{$pt['value']}</option>";
+                                                                    }
+                                                                ?>
                                                             </select>
                                                         </td>
                                                     </tr>
