@@ -15,12 +15,28 @@ require '../includes/header_start.php';
                                 <label for="employee">Employee</label>
                                 <select name="employee" id="employee" class="form-control">
                                     <?php
-                                    $emp_qry = $dbconn->query("SELECT * FROM user");
+                                    $emp_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE");
 
                                     if($emp_qry->num_rows > 0) {
+                                        echo "<optgroup label='Active'>";
+
                                         while($employee = $emp_qry->fetch_assoc()) {
                                             echo "<option value='{$employee['id']}'>{$employee['name']}</option>";
                                         }
+
+                                        echo "</optgroup>";
+                                    }
+
+                                    $emp_qry = $dbconn->query("SELECT * FROM user WHERE account_status = FALSE");
+
+                                    if($emp_qry->num_rows > 0) {
+                                        echo "<optgroup label='In-active'>";
+
+                                        while($employee = $emp_qry->fetch_assoc()) {
+                                            echo "<option value='{$employee['id']}'>{$employee['name']}</option>";
+                                        }
+
+                                        echo "</optgroup>";
                                     }
                                     ?>
                                 </select>
