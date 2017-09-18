@@ -34,10 +34,10 @@ switch($_REQUEST['action']) {
                     $sample_op_display = "";
                 }
 
-                $output['data'][$i][] = "{$quote['so_num']}_{$quote['contractor_dealer_code']}_{$quote['project']}";
+                $output['data'][$i][] = $quote['so_num'];
+                $output['data'][$i][] = "<strong>{$quote['contractor_dealer_code']}_{$quote['project']}</strong>";
                 $output['data'][$i][] = $sales_op_display;
                 $output['data'][$i][] = $sample_op_display;
-                $output['data'][$i][] = $quote['so_num'];
                 $output['data'][$i]['DT_RowId'] = $quote['so_num'];
 
                 $i += 1;
@@ -69,10 +69,10 @@ switch($_REQUEST['action']) {
                         $indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
                     }
 
-                    $output['data'][$i][] = "$indent{$room['room']}{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}";
+                    $output['data'][$i][] = $quote['so_num'];
+                    $output['data'][$i][] = "$indent{$room['room']}{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}-{$room['room_name']}";
                     $output['data'][$i][] = $sales_op_display;
                     $output['data'][$i][] = $sample_op_display;
-                    $output['data'][$i][] = $quote['so_num'];
                     $output['data'][$i]['DT_RowId'] = $quote['so_num'];
 
                     $i += 1;
@@ -112,11 +112,10 @@ switch($_REQUEST['action']) {
                     $main_op_display = "";
                 }
 
-
-                $output['data'][$i][] = "{$quote['so_num']}_{$quote['contractor_dealer_code']}_{$quote['project']}";
+                $output['data'][$i][] = $quote['so_num'];
+                $output['data'][$i][] = "<strong>{$quote['contractor_dealer_code']}_{$quote['project']}</strong>";
                 $output['data'][$i][] = $preprod_op_display;
                 $output['data'][$i][] = $main_op_display;
-                $output['data'][$i][] = $quote['so_num'];
                 $output['data'][$i]['DT_RowId'] = $quote['so_num'];
 
                 $i += 1;
@@ -148,10 +147,10 @@ switch($_REQUEST['action']) {
                         $indent = "&nbsp;&nbsp;&nbsp;&nbsp;";
                     }
 
-                    $output['data'][$i][] = "$indent{$room['room']}{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}";
+                    $output['data'][$i][] = $quote['so_num'];
+                    $output['data'][$i][] = "$indent{$room['room']}{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}-{$room['room_name']}";
                     $output['data'][$i][] = $preprod_op_display;
                     $output['data'][$i][] = $main_op_display;
-                    $output['data'][$i][] = $quote['so_num'];
                     $output['data'][$i]['DT_RowId'] = $quote['so_num'];
 
                     $i += 1;

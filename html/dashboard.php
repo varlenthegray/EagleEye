@@ -14,10 +14,10 @@ require '../includes/header_start.php';
                         <table id="quote_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
+                                <th width="5%">SO#</th>
                                 <th width="40%">Quote</th>
                                 <th>Sales</th>
                                 <th>Sample</th>
-                                <th>SO#</th>
                             </tr>
                             </thead>
                             <tbody id="quote_table"></tbody>
@@ -32,10 +32,10 @@ require '../includes/header_start.php';
                         <table id="orders_global_table" class="table table-striped table-bordered" width="100%">
                             <thead>
                             <tr>
+                                <th width="5%">SO#</th>
                                 <th width="40%">Order</th>
                                 <th>Pre-Production</th>
                                 <th>Main</th>
-                                <th>SO#</th>
                             </tr>
                             </thead>
                             <tbody id="orders_table"></tbody>
@@ -148,10 +148,6 @@ require '../includes/header_start.php';
         scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#quote_header.dt-custom-header">tipr',
-        "columnDefs": [
-            {"targets": [0],"orderable": false},
-            {"targets": [3], "visible": true}
-        ],
         "order": [[3, "asc"]]
     });
 
@@ -164,11 +160,7 @@ require '../includes/header_start.php';
         scrollY: '31.5vh',
         scrollCollapse: true,
         "dom": '<"#order_header.dt-custom-header">tipr',
-        "columnDefs": [
-            {"targets": [0],"orderable": false},
-            {"targets": [3], "visible": true}
-        ],
-        "order": [[3, "asc"]]
+        "order": [[0, "asc"]]
     });
     <?php
     }
