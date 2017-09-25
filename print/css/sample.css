@@ -14,14 +14,15 @@ html {
 }
 
 #wrapper {
-    width: 100vw;
-    height: 100vh;
+    width: 8.5in;
+    height: 11in;
 }
 
 #header {
     border-bottom: 1px solid #000;
     width: 100%;
     padding-bottom: 5px;
+    position: relative;
 }
 
 .clearfix {

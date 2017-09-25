@@ -558,3 +558,17 @@ body {
 .modal-header {
   cursor: move;
 }
+
+// wiggle, nofication
+@keyframes wiggle {
+  0% {transform:rotate(4deg);}
+  10% {transform:rotate(-4deg);}
+  70% {transform:rotate(4deg);}
+  80% {transform:rotate(-4deg);}
+}
+
+.wiggler {
+  -webkit-animation: wiggle 3s infinite;
+  -moz-animation: wiggle 3s infinite;
+  animation: wiggle 3s infinite;
+}

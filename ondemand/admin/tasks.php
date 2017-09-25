@@ -18,29 +18,8 @@ switch($action) {
         }
 
         if($dbconn->query("INSERT INTO tasks (name, description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved) 
-         VALUES ('', '$task_desc', UNIX_TIMESTAMP(), null, 'Low', 1, null, $submitted_by, FALSE);")) {
-            $mail_to = "ben@smcm.us";
-            $mail_subject = "New Feedback Submitted";
-            $mail_message = <<<HEREDOC
-<p>A new task has been created in EagleEye by . Here is the contents of the feedback:</p>
-
-<p>$task_desc</p>
-
-<p>Thanks,<br/>
-<br/>
-Your Automated Task List</p>
-HEREDOC;
-
-            // To send HTML mail, the Content-type header must be set
-            $mail_headers[] = 'MIME-Version: 1.0';
-            $mail_headers[] = 'Content-type: text/html; charset=iso-8859-1';
-
-            // Additional headers
-            $mail_headers[] = 'To: Ben <ben@smcm.us>';
-            $mail_headers[] = 'Reply-To: Ben <ben@smcm.us>';
-            $mail_headers[] = 'X-Mailer: PHP/' . phpversion();;
-
-            $result = mail($mail_to, $mail_subject, $mail_message, implode("\r\n", $mail_headers));
+         VALUES ('', '$task_desc', UNIX_TIMESTAMP(), null, 'Week\'s End', 1, null, $submitted_by, FALSE);")) {
+            $dbconn->query("INSERT INTO alerts (type, status, message, time_created, time_acknowledged, alert_user, icon, type_id, color) VALUES ('feedback', 'new', 'New feedback submitted by $submitted_name.', UNIX_TIMESTAMP(), null, 1, 'icon-bubble', $dbconn->insert_id, 'bg-warning')");
 
             echo displayToast("success", "Successfully logged feedback.", "Feedback Logged");
         } else {

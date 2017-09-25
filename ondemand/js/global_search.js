@@ -347,9 +347,11 @@ $("body")
 
         var iteration_info = $("#room_add_iteration_" + active_room_id).serialize();
 
-        $.post("/ondemand/shopfloor/gen_actions.php?action=add_iteration&" + iteration_info, function(data) {
-            $('body').append(data);
-        });
+        console.log(iteration_info);
+
+        // $.post("/ondemand/shopfloor/gen_actions.php?action=add_iteration&" + iteration_info, function(data) {
+        //     $('body').append(data);
+        // });
 
         unsaved = false;
     })

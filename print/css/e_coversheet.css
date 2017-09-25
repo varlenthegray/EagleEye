@@ -25,12 +25,12 @@ td {
 }
 
 #wrapper {
-    width: 99vw;
-    height: 99vh;
+    width: 8.5in;
+    height: 11in;
 }
 
 #header_container {
-
+    position: relative;
 }
 
 #header_left {

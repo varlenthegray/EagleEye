@@ -214,6 +214,9 @@ require '../includes/header_start.php';
     $("#order_header").html("<h4>Orders</h4>");
     $("#active_header").html("<h4>Operations (Active) for <?php echo $_SESSION['shop_user']['name']; ?></h4>");
 
+    active_table.ajax.reload(null,false);
+    updateQueuedJobs();
+
     dash_auto_interval = setInterval(function() {
         <?php
         if($_SESSION['userInfo']['account_type'] <= 4) {

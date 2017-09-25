@@ -832,19 +832,19 @@ switch ($search) {
                                                                         <?php
                                                                         if(!empty($room['delivery_date'])) {
                                                                             switch ($room['days_to_ship']) {
-                                                                                case 'Green':
+                                                                                case 'G':
                                                                                     $status_color = "job-color-green";
 
                                                                                     break;
-                                                                                case 'Yellow':
+                                                                                case 'Y':
                                                                                     $status_color = "job-color-yellow";
 
                                                                                     break;
-                                                                                case 'Orange':
+                                                                                case 'N':
                                                                                     $status_color = "job-color-orange";
 
                                                                                     break;
-                                                                                case 'Red':
+                                                                                case 'R':
                                                                                     $status_color = "job-color-red";
 
                                                                                     break;
@@ -878,12 +878,13 @@ switch ($search) {
                                                                     <td><label for="product_type">Product Type</label></td>
                                                                     <td>
                                                                         <select class="form-control" id="edit_product_type_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="product_type" value="<?php echo $room['product_type']; ?>">
-                                                                            <option value="C">Cabinet</option>
-                                                                            <option value="L">Closet</option>
-                                                                            <option value="S">Sample</option>
-                                                                            <option value="D">Display</option>
-                                                                            <option value="A">Add-on</option>
-                                                                            <option value="W">Warranty</option>
+                                                                            <?php
+                                                                            $pt_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type'");
+
+                                                                            while($pt = $pt_qry->fetch_assoc()) {
+                                                                                echo "<option value='{$pt['key']}'>{$pt['value']}</option>";
+                                                                            }
+                                                                            ?>
                                                                         </select>
                                                                     </td>
                                                                 </tr>
@@ -910,10 +911,10 @@ switch ($search) {
                                                                     <td><label for="days_to_ship">Days to Ship</label></td>
                                                                     <td>
                                                                         <select class="form-control days-to-ship" id="edit_days_to_ship_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="days_to_ship" data-type="iteration" data-room="<?php echo $room['room']; ?>">
-                                                                            <option value="G" <?php echo ($room['days_to_ship'] === 'Green') ? "selected" : null; ?>>Green (34)</option>
-                                                                            <option value="Y" <?php echo ($room['days_to_ship'] === 'Yellow') ? "selected" : null; ?>>Yellow (14)</option>
-                                                                            <option value="N" <?php echo ($room['days_to_ship'] === 'Orange') ? "selected" : null; ?>>Orange (10)</option>
-                                                                            <option value="R" <?php echo ($room['days_to_ship'] === 'Red') ? "selected" : null; ?>>Red (5)</option>
+                                                                            <option value="G" <?php echo ($room['days_to_ship'] === 'G') ? "selected" : null; ?>>Green (34)</option>
+                                                                            <option value="Y" <?php echo ($room['days_to_ship'] === 'Y') ? "selected" : null; ?>>Yellow (14)</option>
+                                                                            <option value="N" <?php echo ($room['days_to_ship'] === 'N') ? "selected" : null; ?>>Orange (10)</option>
+                                                                            <option value="R" <?php echo ($room['days_to_ship'] === 'R') ? "selected" : null; ?>>Red (5)</option>
                                                                         </select>
                                                                     </td>
                                                                 </tr>
@@ -1579,24 +1580,25 @@ switch ($search) {
                                         <?php echo "</div></td>";
                                         echo "</tr>";
                                         /** END DISPLAY OF PRINT */
-                                    /** BEGIN DISPLAY OF ATTACHMENTS */
-                                    echo "<tr id='tr_attachments_{$room['id']}' style='display: none;'>";
-                                    echo "  <td colspan='10'><div id='div_attachments_{$room['id']}' style='display: none;'>";
-                                    ?>
 
-                                    <div class="col-md-12">
-                                        <?php
-                                        $scanned_directory = array_diff(scandir($attachment_dir), array('..', '.'));
-
-                                        foreach($scanned_directory as $file) {
-                                            echo "<a href='{$http_base}$file' target='_blank'>$file</a><br />";
-                                        }
+                                        /** BEGIN DISPLAY OF ATTACHMENTS */
+                                        echo "<tr id='tr_attachments_{$room['id']}' style='display: none;'>";
+                                        echo "  <td colspan='10'><div id='div_attachments_{$room['id']}' style='display: none;'>";
                                         ?>
-                                    </div>
 
-                                    <?php echo "</div></td>";
-                                    echo "</tr>";
-                                    /** END DISPLAY OF ATTACHMENTS */
+                                        <div class="col-md-12">
+                                            <?php
+                                            $scanned_directory = array_diff(scandir($attachment_dir), array('..', '.'));
+
+                                            foreach($scanned_directory as $file) {
+                                                echo "<a href='{$http_base}$file' target='_blank'>$file</a><br />";
+                                            }
+                                            ?>
+                                        </div>
+
+                                        <?php echo "</div></td>";
+                                        echo "</tr>";
+                                        /** END DISPLAY OF ATTACHMENTS */
                                     /** END SINGLE ROOM DISPLAY */
                                 }
                             }
@@ -1818,36 +1820,7 @@ switch ($search) {
                                             <div class="col-md-3">
                                                 <fieldset class="form-group">
                                                     <label for="room_notes">Room Notes</label>
-                                                    <textarea class="form-control" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3" data-toggle="popover" data-placement="top" data-trigger="focus" title="" data-html="true" data-content="<table style='font-size: 9px;'>
-                        <tr>
-                            <td>CON = Conestoga</td>
-                            <td class='text-md-right'>RW = Rework</td>
-                        </tr>
-                        <tr>
-                            <td>DEL = Delivery</td>
-                            <td class='text-md-right'>S/B = Scheduled Back</td>
-                        </tr>
-                        <tr>
-                            <td>DPL = Diminishing Punch List</td>
-                            <td class='text-md-right'>SEL = Selections</td>
-                        </tr>
-                        <tr>
-                            <td>EM = Email</td>
-                            <td class='text-md-right'>T/W = This Week</td>
-                        </tr>
-                        <tr>
-                            <td>ETA = Estimated Time of Arrival</td>
-                            <td class='text-md-right'>W/A = Will Advise</td>
-                        </tr>
-                        <tr>
-                            <td>FU = Follow Up</td>
-                            <td class='text-md-right'>W/C = Will Contact</td>
-                        </tr>
-                        <tr>
-                            <td>N/A = Not Available</td>
-                            <td class='text-md-right'>WO = Work Order</td>
-                        </tr>
-                    </table>" data-original-title="Abbreviations"></textarea>
+                                                    <textarea class="form-control" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3"></textarea>
                                                 </fieldset>
                                             </div>
 

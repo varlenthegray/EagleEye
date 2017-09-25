@@ -1,25 +1,90 @@
 @page {
-    margin: 0 0 0 4mm;
+    margin: 2mm 0 0 4mm;
+}
+
+@media print {
+    .wrapper {
+        page-break-after: always;
+    }
 }
 
 html, body {
     padding: 0;
     margin: 0;
     -webkit-print-color-adjust: exact;
-    font-size: 8pt;
+    font-size: 7pt;
+    font-family: 'Roboto', sans-serif;
 }
 
-#wrapper {
-    width: calc(100vw - 4px);
-    height: calc(100vh - 54px);
-    border: 2px solid #000;
-    margin-top: 25px;
-    padding-top: 25px;
+.wrapper {
+    width: 2in;
+    height: 4in;
+    position: relative;
 }
 
-#logo {
+.vin {
+    width: 100%;
+    text-align: center;
+    padding-top: 10px;
+    font-size: 1.1em;
+}
+
+.vin span {
+    font-weight: bold;
+}
+
+.details_container {
+    width: 100%;
+    padding-top: 20px;
+}
+
+.details_left {
+    width: 40%;
+    float: left;
+}
+
+.details_left span {
+    padding-left: 15px;
+}
+
+.details_right {
+    width: 60%;
+    float: right;
+    font-weight: bold;
+}
+
+.qr-code {
+    text-align: center;
+    clear: both;
     position: absolute;
-    top: 0;
-    left: calc(50% - 42px);
-    z-index: 9999;
+    bottom: 30px;
+    left: calc(50% - 25px);
+}
+
+.smcm_text {
+    font-size: 18pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    width: 100%;
+    text-align: center;
+}
+
+.smcm_text .small {
+    font-size: .7em;
+    text-transform: uppercase;
+}
+
+.smcm_text .ul_default {
+    margin-bottom: -4px;
+    border-bottom: 2px solid #000;
+}
+
+.exp_date {
+    font-size: 12pt;
+    font-weight: bold;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
 }
