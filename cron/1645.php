@@ -1,7 +1,6 @@
 <?php
-//set_include_path("/home/trustedprogrammer/domains/dev-smc.trustedprogrammer.com/public_html/includes/");
-set_include_path("/home/trustedprogrammer/domains/smc.trustedprogrammer.com/public_html/includes/");
-
+//set_include_path("/home/3erp.us/domains/dev.3erp.us/public_html/includes/");
+set_include_path("/home/3erp.us/public_html/includes/");
 // flip these around when pushing to prod
 
 require ("config.php");
@@ -20,7 +19,7 @@ if($user_qry->num_rows > 0) {
             $time_out = mktime(20, 45, 0);
         } else {
             // create the time of 12:45PM, running as root so it needs to be based on UTC
-            $time_out = mktime(16, 45, 0);
+            $time_out = mktime(16, 15, 0);
         }
 
 
