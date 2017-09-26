@@ -988,7 +988,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="2" name="species_grade_<?php echo $room['id']; ?>" id="species_grade_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'species_grade'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'species_grade' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['species_grade']) {
@@ -1006,7 +1006,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="10" name="finish_type_<?php echo $room['id']; ?>" id="finish_type_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_type'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_type' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['finish_type']) {
@@ -1024,7 +1024,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="18" name="construction_method_<?php echo $room['id']; ?>" id="construction_method_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'construction_method'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'construction_method' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['construction_method']) {
@@ -1042,7 +1042,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="24" name="carcass_interior_species_<?php echo $room['id']; ?>" id="carcass_interior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_species'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_species' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_interior_species']) {
@@ -1060,7 +1060,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="29" name="drawer_boxes_<?php echo $room['id']; ?>" id="drawer_boxes_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'drawer_boxes'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'drawer_boxes' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['drawer_boxes']) {
@@ -1080,7 +1080,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="3" name="door_design_<?php echo $room['id']; ?>" id="door_design_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'door_design'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'door_design' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['door_design']) {
@@ -1098,7 +1098,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="11" name="finish_code_<?php echo $room['id']; ?>" id="finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' OR segment = 'benjamin_moore_paints' OR segment = 'sherwin_williams_paints'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['finish_code']) {
@@ -1116,7 +1116,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="19" name="carcass_exterior_species_<?php echo $room['id']; ?>" id="carcass_exterior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_species'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_species' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_exterior_species']) {
@@ -1134,7 +1134,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="25" name="carcass_interior_finish_type_<?php echo $room['id']; ?>" id="carcass_interior_finish_type_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_finish_type'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_type' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_interior_finish_type']) {
@@ -1154,7 +1154,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="4" name="style_rail_width_<?php echo $room['id']; ?>" id="style_rail_width_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'style_rail_width'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'style_rail_width' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['style_rail_width']) {
@@ -1172,7 +1172,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="12" name="sheen_<?php echo $room['id']; ?>" id="sheen_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['sheen']) {
@@ -1190,7 +1190,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="21" name="carcass_exterior_finish_type_<?php echo $room['id']; ?>" id="carcass_exterior_finish_type_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_finish_type'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_type' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_exterior_finish_type']) {
@@ -1208,7 +1208,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="26" name="carcass_interior_finish_code_<?php echo $room['id']; ?>" id="carcass_interior_finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' OR segment = 'benjamin_moore_paints' OR segment = 'sherwin_williams_paints'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_interior_finish_code']) {
@@ -1229,13 +1229,13 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="13" name="glaze_<?php echo $room['id']; ?>" id="glaze_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['glaze']) {
                                                                                 $glaze_selected = "selected";
                                                                             } else {
-                                                                                $glaze_selected = ($segment['key'] === "0" && empty($room['glaze'])) ?"selected" : null;
+                                                                                $glaze_selected = ($segment['key'] === "0000" && empty($room['glaze'])) ? "selected" : null;
                                                                             }
 
                                                                             echo "<option value='{$segment['key']}' $glaze_selected>{$segment['value']} ({$segment['key']})</option>";
@@ -1247,7 +1247,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="21" name="carcass_exterior_finish_code_<?php echo $room['id']; ?>" id="carcass_exterior_finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' OR segment = 'benjamin_moore_paints' OR segment = 'sherwin_williams_paints'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_exterior_finish_code']) {
@@ -1265,7 +1265,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="27" name="carcass_interior_glaze_color_<?php echo $room['id']; ?>" id="carcass_interior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_interior_glaze_color']) {
@@ -1285,7 +1285,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="4" name="panel_raise_door_<?php echo $room['id']; ?>" id="panel_raise_door_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['panel_raise_door']) {
@@ -1303,7 +1303,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="14" name="glaze_technique_<?php echo $room['id']; ?>" id="glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['glaze_technique']) {
@@ -1321,7 +1321,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="22" name="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_exterior_glaze_color']) {
@@ -1339,7 +1339,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="28" name="carcass_interior_glaze_technique_<?php echo $room['id']; ?>" id="carcass_interior_glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_interior_glaze_technique'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_interior_glaze_technique']) {
@@ -1359,7 +1359,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="5" name="panel_raise_sd_<?php echo $room['id']; ?>" id="panel_raise_sd_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['panel_raise_sd']) {
@@ -1377,7 +1377,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="15" name="antiquing_<?php echo $room['id']; ?>" id="antiquing_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'antiquing'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'antiquing' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['antiquing']) {
@@ -1395,7 +1395,7 @@ switch ($search) {
                                                                 <td class="custom-border-none">
                                                                     <select tabindex="23" name="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_exterior_glaze_technique'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['carcass_exterior_glaze_technique']) {
@@ -1420,7 +1420,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="6" name="panel_raise_td_<?php echo $room['id']; ?>" id="panel_raise_td_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['panel_raise_td']) {
@@ -1438,7 +1438,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="16" name="worn_edges_<?php echo $room['id']; ?>" id="worn_edges_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'worn_edges'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'worn_edges' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['worn_edges']) {
@@ -1461,7 +1461,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-tr">
                                                                     <select tabindex="7" name="edge_profile_<?php echo $room['id']; ?>" id="edge_profile_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'edge_profile'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'edge_profile' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['edge_profile']) {
@@ -1479,7 +1479,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-rb">
                                                                     <select tabindex="17" name="distress_level_<?php echo $room['id']; ?>" id="distress_level_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'distress_level'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'distress_level' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['distress_level']) {
@@ -1502,7 +1502,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-right">
                                                                     <select tabindex="8" name="framing_bead_<?php echo $room['id']; ?>" id="framing_bead_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_bead'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_bead' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['framing_bead']) {
@@ -1526,7 +1526,7 @@ switch ($search) {
                                                                 <td class="custom-border-1px-rb">
                                                                     <select tabindex="9" name="framing_options_<?php echo $room['id']; ?>" id="framing_options_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
                                                                         <?php
-                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_options'");
+                                                                        $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_options' ORDER BY `key` ASC");
 
                                                                         while($segment = $segment_qry->fetch_assoc()) {
                                                                             if($segment['key'] === $room['framing_options']) {
