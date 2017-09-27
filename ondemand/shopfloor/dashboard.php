@@ -416,7 +416,7 @@ switch($_REQUEST['action']) {
         break;
 
     case 'start_operation':
-        $id = sanitizeInput($_POST['id']);
+        $id = sanitizeInput($_REQUEST['id']);
         $operation = sanitizeInput($_REQUEST['operation']);
         $ae[] = $_SESSION['shop_user']['id'];
         $active_employees = json_encode($ae);
@@ -453,7 +453,7 @@ switch($_REQUEST['action']) {
 
                 $changes = null; // our changes are nothing presently
 
-                $active = json_decode($results['active_employees']); // grab the current list of active employees
+                $active = json_decode($results['active_employees'], true); // grab the current list of active employees
 
                 $active[] = $_SESSION['shop_user']['id']; // add individual to the list of active employees
 
