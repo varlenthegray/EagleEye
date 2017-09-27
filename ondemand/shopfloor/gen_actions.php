@@ -370,8 +370,8 @@ switch($_REQUEST['action']) {
 
         if($dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, sales_bracket, sales_bracket_priority, preproduction_bracket, 
          preproduction_bracket_priority, sample_bracket, sample_bracket_priority, doordrawer_bracket, doordrawer_bracket_priority, custom_bracket, custom_bracket_priority, main_bracket, 
-          main_bracket_priority, individual_bracket_buildout, order_status, shipping_bracket, shipping_bracket_priority, install_bracket, install_bracket_priority, delivery_date, iteration) VALUES 
-           ('$sonum', '$room', '$room_name', '$product_type', 1, 4, 85, 4, 83, 4, 38, 4, 45, 4, 50, 4, '$ind_bracket_final', '$order_status', 66, 4, 15, 4, '$delivery_date', $iteration);")) {
+          main_bracket_priority, individual_bracket_buildout, order_status, shipping_bracket, shipping_bracket_priority, install_bracket, install_bracket_priority, delivery_date, iteration, days_to_ship) VALUES 
+           ('$sonum', '$room', '$room_name', '$product_type', 1, 4, 85, 4, 83, 4, 38, 4, 45, 4, 50, 4, '$ind_bracket_final', '$order_status', 66, 4, 15, 4, '$delivery_date', $iteration, '$days_to_ship');")) {
             if(!empty($notes)) {
                 $inserted_id = $dbconn->insert_id;
 
