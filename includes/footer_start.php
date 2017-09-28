@@ -22,7 +22,6 @@ require_once ("header_start.php");
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-
 <!-- Footer -->
 <footer class="footer text-right">
     <div class="container">
@@ -189,7 +188,8 @@ require_once ("header_start.php");
         // want to be respectful there is no need to bother them any more.
     }
 
-    $("body").on("click", "#feedback-submit", function() {
+    $("body")
+        .on("click", "#feedback-submit", function() {
         var description = tinyMCE.get('feedback-text').getContent();
 
         $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: description}, function(data) {
@@ -198,7 +198,10 @@ require_once ("header_start.php");
 
             tinyMCE.get('feedback-text').setContent("");
         });
-    });
+    })
+        .on("click", "#notification_list", function() {
+            $.post("/ondemand/alerts.php?action=viewed_alerts");
+        });
 
     $(".modal").draggable({
         handle: ".modal-header"
@@ -207,6 +210,20 @@ require_once ("header_start.php");
     <?php
         if($_SESSION['userInfo']['id'] !== '16') {
             $id = $_SESSION['userInfo']['id'];
+
+    ?>
+
+        $.post("/ondemand/alerts.php?action=update_alerts", function(data) {
+            $("#notification_list").html(data);
+        });
+
+        setInterval(function() {
+            $.post("/ondemand/alerts.php?action=update_alerts", function(data) {
+                $("#notification_list").html(data);
+            });
+        }, 10000);
+
+    <?php
         } else {
             $id = $_SESSION['shop_user']['id'];
         }
@@ -224,6 +241,8 @@ require_once ("header_start.php");
             }
         }
     ?>
+
+
 </script>
 
 <!-- jQuery  -->
