@@ -62,8 +62,6 @@ require '../includes/header_start.php';
     </div>
 </div>
 
-
-
 <script>
     $("#date_range").daterangepicker();
 

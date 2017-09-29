@@ -534,9 +534,9 @@ switch ($search) {
                                                                 <td><label for="iteration">Iteration</label></td>
                                                                 <td>
                                                                     <div class="input-group">
-                                                                        <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['id']; ?>" data-addto="sequence" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional sequence"> <span class="zmdi zmdi-plus-1"></span> </span>
+                                                                        <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['id']; ?>" data-addto="sequence" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional sequence" style="font-size:10px;"> +1 </span>
                                                                         <input type="text" class="form-control" id="edit_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly>
-                                                                        <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['id']; ?>" data-addto="iteration" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
+                                                                        <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['id']; ?>" data-addto="iteration" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration" style="font-size:10px;"> +.01 </span>
                                                                     </div>
                                                                 </td>
                                                             </tr>
@@ -1574,6 +1574,7 @@ switch ($search) {
                                             <?php
                                                 echo "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank'>Print Engineering Coversheet</a><br />";
                                                 echo "<a href='/print/sample.php?room_id={$room['id']}' target='_blank'>Print Sample Request</a><br />";
+                                                echo "<a href='/print/sample_label.php?room_id={$room['id']}' target='_blank'>Print Sample Label</a><br />";
                                             ?>
                                         </div>
 

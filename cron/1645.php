@@ -1,6 +1,6 @@
 <?php
 //set_include_path("/home/3erp.us/domains/dev.3erp.us/public_html/includes/");
-set_include_path("/home/3erp.us/public_html/includes/");
+set_include_path("/home/threeerp/public_html/includes/");
 // flip these around when pushing to prod
 
 require ("config.php");

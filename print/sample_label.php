@@ -14,7 +14,7 @@ if (!file_exists($PNG_TEMP_DIR)) mkdir($PNG_TEMP_DIR);
 // the temp QR code
 $filename = $PNG_TEMP_DIR . 'tempQR.png';
 
-$room_id = sanitizeInput($_REQUEST['id']);
+$room_id = sanitizeInput($_REQUEST['room_id']);
 
 $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$room_id'");
 $room = $room_qry->fetch_assoc();
@@ -48,7 +48,7 @@ function translateVIN($segment, $key) {
 
 <div class="wrapper">
     <div class="vin">
-        <span><?php echo "{$so['so_num']}{$room['room']}-{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}_{$so['contractor_dealer_code']}"; ?></span><br />
+        <span><?php echo "{$room['room_name']}<br />{$so['so_num']}{$room['room']}-{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}_{$so['contractor_dealer_code']}"; ?></span><br />
         <?php echo "{$room['species_grade']}{$room['construction_method']}{$room['door_design']}-{$room['panel_raise_door']}{$room['panel_raise_sd']}{$room['panel_raise_td']}
             -{$room['edge_profile']}{$room['framing_bead']}{$room['framing_options']}{$room['style_rail_width']}_{$room['finish_type']}{$room['finish_code']}{$room['sheen']}-
                 {$room['glaze']}-{$room['glaze_technique']}{$room['antiquing']}{$room['worn_edges']}{$room['distress_level']}"; ?>
@@ -112,7 +112,7 @@ function translateVIN($segment, $key) {
     </div>
 
     <div class="vin">
-        <span><?php echo "{$so['so_num']}{$room['room']}-{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}_{$so['contractor_dealer_code']}"; ?></span><br />
+        <span><?php echo "{$room['room_name']}<br />{$so['so_num']}{$room['room']}-{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}_{$so['contractor_dealer_code']}"; ?></span><br />
         <?php echo "{$room['species_grade']}{$room['construction_method']}{$room['door_design']}-{$room['panel_raise_door']}{$room['panel_raise_sd']}{$room['panel_raise_td']}
             -{$room['edge_profile']}{$room['framing_bead']}{$room['framing_options']}{$room['style_rail_width']}_{$room['finish_type']}{$room['finish_code']}{$room['sheen']}-
                 {$room['glaze']}-{$room['glaze_technique']}{$room['antiquing']}{$room['worn_edges']}{$room['distress_level']}"; ?>
@@ -164,12 +164,12 @@ function translateVIN($segment, $key) {
 
     <div class="qr-code">
         <?php
-        QRcode::png('Demo Text', $filename, QR_ECLEVEL_H, 2, 0);
+        QRcode::png('http://www.stonemountaincabinetry.com/', $filename, QR_ECLEVEL_H, 2, 0);
         echo '<img src="' . $PNG_WEB_DIR . basename($filename) . '" />';
         ?>
     </div>
 
-    <div class="exp_date">Expiration: Jan 2019</div>
+    <div class="exp_date">Expires<br /> Jan 2019</div>
 </div>
 
 </body>

@@ -420,6 +420,7 @@ switch($_REQUEST['action']) {
         $operation = sanitizeInput($_REQUEST['operation']);
         $ae[] = $_SESSION['shop_user']['id'];
         $active_employees = json_encode($ae);
+        $active = array();
 
         $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'");
 
@@ -453,7 +454,7 @@ switch($_REQUEST['action']) {
 
                 $changes = null; // our changes are nothing presently
 
-                $active = json_decode($results['active_employees'], true); // grab the current list of active employees
+                $active = json_decode($results['active_employees']); // grab the current list of active employees
 
                 $active[] = $_SESSION['shop_user']['id']; // add individual to the list of active employees
 
