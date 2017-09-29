@@ -26,7 +26,7 @@ if($user_qry->num_rows > 0) {
 <body>
 
 <div id="wrapper">
-    <div id="pre-header no-print">
+    <div id="pre-header" class="no-print">
         <table>
             <tr>
                 <td>
