@@ -117,12 +117,11 @@ if($user_qry->num_rows > 0) {
         <table>
             <?php
                 $total_days = ($end_date - $start_date) / 86400;
-
                 $current_day = $start_date;
-
                 $prev_op_id = null;
-
                 $audit_id = null;
+
+                $week_total = 0;
 
                 for($i = 0; $i <= $total_days; $i++) {
                     $next_day = (int)$current_day + 86400;
@@ -240,7 +239,7 @@ if($user_qry->num_rows > 0) {
                                     $ended_readable = (!empty($ended)) ? date(TIME_ONLY, $ended) : "End of Shift";
 
                                     echo "<tr>";
-                                    echo "<td>{$day['oID']} - $so</td>";
+                                    echo "<td>$so</td>";
                                     echo "<td>{$day['responsible_dept']}</td>";
                                     echo "<td>{$day['opID']}: {$day['job_title']} $addl_op</td>";
                                     echo "<td>$started_readable</td>";
@@ -269,6 +268,18 @@ if($user_qry->num_rows > 0) {
 
                             $total_length_worked = $time_out - $time_in;
 
+                            if($total_length_worked >= 35100) {
+                                // deduct 1 hour for 2 15 min breaks and 1 30 min lunch
+                                $total_length_worked -= 3600;
+                            } elseif($total_length_worked <= 26100 && $total_length_worked >= 20700) {
+                                // deduct 45 minutes for 1 15 min break and 1 30 min lunch
+                                $total_length_worked -= 2700;
+                            } elseif($total_length_worked <= 20700 && $total_length_worked >= 9000) {
+                                $total_length_worked -= 1800;
+                            }
+
+                            $week_total += $total_length_worked;
+
                             $total_length_worked_hours = floor($total_length_worked / 3600);
                             $total_length_worked_mins = floor(($total_length_worked % 3600) / 60);
 
@@ -287,6 +298,16 @@ if($user_qry->num_rows > 0) {
 
                     $current_day = $next_day;
                 }
+
+                echo "<tr class='excluded_bg' style='height:4px;'><td colspan='6'></td></tr>";
+                echo "<tr class='excluded_bg' style='height:4px;'><td colspan='6'></td></tr>";
+
+                $week_total_hours = floor($week_total / 3600);
+                $week_total_mins = floor(($week_total % 3600) / 60);
+
+                $week_total_mins = (strlen($week_total_mins) === 1) ? "0$week_total_mins" : $week_total_mins;
+
+                echo "<tr class='excluded_bg' style='height:4px;'><td colspan='6' style='text-align:right;'>Week Total: $week_total_hours:$week_total_mins</td></tr>";
             ?>
         </table>
     </div>
