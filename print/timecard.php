@@ -147,7 +147,7 @@ if($user_qry->num_rows > 0) {
                                     $ended = null;
 
                                     // ordering it by start time null first, then non-null causing things to be out of order
-                                    $start_end_qry = $dbconn->query("SELECT * FROM op_audit_trail WHERE op_id = {$day['op_id']} AND timestamp >= $current_day AND timestamp <= $next_day ORDER BY op_audit_trail.start_time IS NULL, op_audit_trail.start_time ASC");
+                                    $start_end_qry = $dbconn->query("SELECT * FROM op_audit_trail WHERE op_id = {$day['op_id']} AND timestamp >= $current_day AND timestamp <= $next_day ORDER BY start_time ASC");
 
                                     while($start_end = $start_end_qry->fetch_assoc()) {
                                         $changed_array = json_decode($start_end['changed'], true);
@@ -219,7 +219,7 @@ if($user_qry->num_rows > 0) {
                                     }
 
                                     if(empty($ended)) {
-                                        $ended = strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 16:45");
+                                        $ended = (date("N", $current_day) < 5) ? strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 16:45") : strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 12:15");
                                     }
 
                                     if(!empty($ended) && !empty($started)) {
