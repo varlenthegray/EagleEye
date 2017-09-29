@@ -219,7 +219,7 @@ require 'includes/header_end.php';
             unloadPage('workcenter');
         })
         .on("click", "#nav_timecard", function() {
-            unloadPage('timecard');
+            window.open("/print/timecard.php", "_blank");
         })
         .on("click", "#nav_job-management", function() {
             unloadPage('job_management');
