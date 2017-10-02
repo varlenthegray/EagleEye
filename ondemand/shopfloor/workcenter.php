@@ -15,7 +15,7 @@ switch($action) {
         if($op_qry->num_rows > 0) {
             $op = $op_qry->fetch_assoc();
 
-            $header = "Job Management: ". $op['so_parent'] . "-" . $op['room'] . " (" . $op['op_id'] . ": " . $op['job_title'] . ")";
+            $header = "Operation Management: ". $op['so_parent'] . "-" . $op['room'] . " (" . $op['op_id'] . ": " . $op['job_title'] . ")";
 
             echo <<<HEREDOC
         <div class="modal-dialog" role="document">
@@ -73,7 +73,7 @@ HEREDOC;
 
         break;
     case 'display_jiq':
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.so_parent AS op_queueSOParent, op_queue.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id JOIN sales_order ON op_queue.so_parent = sales_order.so_num WHERE active = FALSE AND completed = FALSE AND published = TRUE ORDER BY op_queue.so_parent DESC, operations.op_id DESC;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.so_parent AS op_queueSOParent, op_queue.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id JOIN sales_order ON op_queue.so_parent = sales_order.so_num WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.job_title != 'N/A' ORDER BY op_queue.so_parent DESC, operations.op_id DESC;");
 
         $output = array();
         $i = 0;
