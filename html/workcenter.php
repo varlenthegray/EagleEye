@@ -134,9 +134,9 @@ require '../includes/header_start.php';
         }
     });
 
-    $("#jiq_header").html("<h4>Jobs in Queue</h4>");
-    $("#active_header").html("<h4>Active Jobs</h4>");
-    $("#completed_header").html("<h4>Completed Jobs</h4>");
+    $("#jiq_header").html("<h4>Ops in Queue</h4>");
+    $("#active_header").html("<h4>Active Ops</h4>");
+    $("#completed_header").html("<h4>Completed Ops</h4>");
 
     wc_auto_interval = setInterval(function() {
         jiq_table.ajax.reload(null,false);
