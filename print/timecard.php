@@ -288,9 +288,44 @@ if($user_qry->num_rows > 0) {
                             echo "<tr class='excluded_bg' style='height:4px;'><td colspan='6'></td></tr>";
                             echo "<tr class='excluded_bg'><td colspan='5'>Clocked In: $time_in_human / Clocked Out: $time_out_human</td><td>$total_length_worked_hours:$total_length_worked_mins</td></tr>";
                         } else {
-                            $total_length_worked = '0:00';
+                            echo "<tr class='excluded_bg'><td colspan='6'><h4>Nothing to report</h4></td></tr>";
 
-                            echo "<tr><td colspan='6'><h4>Nothing to report</h4></td></tr>";
+                            $timecard_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = '$employee' AND time_in >= $current_day AND time_out <= $next_day");
+
+                            if($timecard_qry->num_rows > 0) {
+                                echo "<tr class='excluded_bg' style='height:4px;'><td colspan='6'></td></tr>";
+
+                                while($timecard = $timecard_qry->fetch_assoc()) {
+                                    $time_in = $timecard['time_in'];
+                                    $time_out = $timecard['time_out'];
+
+                                    $time_in_human = date(TIME_ONLY, $time_in);
+                                    $time_out_human = date(TIME_ONLY, $time_out);
+
+                                    $total_length_worked = $time_out - $time_in;
+
+                                    if($total_length_worked >= 35100) {
+                                        // deduct 1 hour for 2 15 min breaks and 1 30 min lunch
+                                        $total_length_worked -= 3600;
+                                    } elseif($total_length_worked <= 26100 && $total_length_worked >= 20700) {
+                                        // deduct 45 minutes for 1 15 min break and 1 30 min lunch
+                                        $total_length_worked -= 2700;
+                                    } elseif($total_length_worked <= 20700 && $total_length_worked >= 9000) {
+                                        $total_length_worked -= 1800;
+                                    }
+
+                                    $week_total += $total_length_worked;
+
+                                    $total_length_worked_hours = floor($total_length_worked / 3600);
+                                    $total_length_worked_mins = floor(($total_length_worked % 3600) / 60);
+
+                                    $total_length_worked_mins = (strlen($total_length_worked_mins) === 1) ? "0$total_length_worked_mins" : $total_length_worked_mins;
+
+                                    echo "<tr class='excluded_bg'><td colspan='5'>Clocked In: $time_in_human / Clocked Out: $time_out_human</td><td>$total_length_worked_hours:$total_length_worked_mins</td></tr>";
+                                }
+                            }
+
+                            $total_length_worked = '0:00';
                         }
 
                         echo "<tr class='excluded_bg' style='height:4px;'><td colspan='6'></td></tr>";
