@@ -16,10 +16,10 @@ if($user_qry->num_rows > 0) {
 
         if(date("D") !== 'Fri') {
             // create the time of 4:45PM, running as root so it needs to be based on UTC
-            $time_out = mktime(20, 45, 0);
+            $time_out = mktime(16, 45, 0);
         } else {
             // create the time of 12:45PM, running as root so it needs to be based on UTC
-            $time_out = mktime(16, 15, 0);
+            $time_out = mktime(12, 15, 0);
         }
 
 
