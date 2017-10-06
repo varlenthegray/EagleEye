@@ -2,6 +2,8 @@
 require '../../includes/header_start.php';
 require ("../../assets/php/composer/vendor/autoload.php"); // require carbon for date formatting, http://carbon.nesbot.com/
 
+//outputPHPErrs();
+
 use Carbon\Carbon; // prep carbon
 
 switch($_REQUEST['action']) {
@@ -465,7 +467,7 @@ switch($_REQUEST['action']) {
                         $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees)];
                         $final_changes = json_encode($changes);
 
-                        if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())"))
+                        if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())"))
                             echo displayToast("success", "Successfully started operation.", "Started Operation");
                         else
                             dbLogSQLErr($dbconn);
@@ -477,7 +479,7 @@ switch($_REQUEST['action']) {
                         $changes = ["Active"=>TRUE, "Resumed Time"=>time(), "Active Employees"=>json_decode($active_employees)];
                         $final_changes = json_encode($changes);
 
-                        if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())"))
+                        if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())"))
                             echo displayToast("success", "Successfully resumed operation.", "Resumed Operation");
                         else
                             dbLogSQLErr($dbconn);
@@ -542,7 +544,7 @@ switch($_REQUEST['action']) {
                         $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes];
                         $final_changes = json_encode($changes);
 
-                        $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())");
+                        $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
 
                         echo displayToast("success", "Successfully started a non-billable operation.", "Started Non-Billable operation");
                     } else {
@@ -825,9 +827,9 @@ HEREDOC;
 
         break;
     case 'pause_operation':
-        $id = sanitizeInput($_POST['opID'], $dbconn); // operation ID from the queue
-        $notes = sanitizeInput($_POST['notes'], $dbconn); // notes to submit to the operation
-        $qty = sanitizeInput($_POST['qty']); // quantity completed
+        $id = sanitizeInput($_REQUEST['opID'], $dbconn); // operation ID from the queue
+        $notes = sanitizeInput($_REQUEST['notes'], $dbconn); // notes to submit to the operation
+        $qty = sanitizeInput($_REQUEST['qty']); // quantity completed
 
         $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the item from the operation queue
         $op_queue = $op_queue_qry->fetch_assoc();
@@ -865,7 +867,7 @@ HEREDOC;
             $changed = ["End time"=>time(), "Active"=>$active, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Partially Completed"=>true, "Active Employees"=>json_decode($active_employees)];
             $changed = json_encode($changed);
 
-            if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP())"))
+            if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())"))
                 echo displayToast("info", "Operation has been marked as partially completed.", "Partially Closed Operation");
             else
                 dbLogSQLErr($dbconn);
@@ -1092,7 +1094,7 @@ HEREDOC;
                 $changed = json_encode($changed); // encode the audit trail for retrieval later
 
                 // if we're able to insert into the audit trail successfully
-                if ($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP())")) {
+                if ($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())")) {
                     // now we need to deactivate any old ops if bracket is published
                     $bracket_ops = array();
 
@@ -1156,7 +1158,7 @@ HEREDOC;
                 }
 
                 // if we're able to insert into the audit trail successfully
-                if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP())")) {
+                if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())")) {
                     // find out if the brackets are the same for the next op vs this op
                     if($next_op_info['bracket'] === $cur_op_info['bracket']) {
                         // grab the room and see if the bracket is published
