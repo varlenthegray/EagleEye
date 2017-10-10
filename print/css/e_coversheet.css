@@ -27,6 +27,7 @@ td {
 #wrapper {
     width: 8.5in;
     height: 11in;
+    float: left;
 }
 
 #header_container {
@@ -179,6 +180,13 @@ input[type=checkbox] {
 
 .gray_bg {
     background-color: #CCCCCC;
+}
+
+#save_button {
+    float: left;
+    position: relative;
+    top: calc(50% - 10px);
+    left: 20px;
 }
 
 input[type=text], textarea {

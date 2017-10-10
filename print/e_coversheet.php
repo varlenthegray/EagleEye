@@ -37,586 +37,590 @@ function translateVIN($segment, $key) {
 <body>
 
 <div id="wrapper">
-    <div id="header_container">
-        <div id="header_left">
-            <div id="page_type">
-                <table>
-                    <tr>
-                        <td colspan="2" id="page_type_header"><?php echo ($info['rOrderStatus'] === '$') ? "Job" : "Quote"; ?></td>
-                    </tr>
-                    <tr>
-                        <td class="definition">Dealer PO#:</td>
-                        <td class="value"><?php echo $info['so_parent']; ?></td>
-                    </tr>
-                    <tr>
-                        <td class="definition">Room:</td>
-                        <td class="value"><?php echo $info['room']; ?></td>
-                    </tr>
-                    <tr>
-                        <td class="definition">Sequence:</td>
-                        <td class="value"><?php echo substr($info['iteration'], 0, 1); ?></td>
-                    </tr>
-                    <tr>
-                        <td class="definition">Iteration:</td>
-                        <td class="value"><?php echo substr($info['iteration'], -3, 3); ?></td>
-                    </tr>
-                    <tr>
-                        <td class="definition">Sales Order #:</td>
-                        <td class="value"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <div id="logo_container">
-            <div id="logo"><img src="/assets/images/smc_logo.png" width="170px" /></div>
-
-            <div id="company_info">
-                Stone Mountain Cabinetry, Inc.<br />
-                206 Vista Blvd<br/>
-                Arden, NC 28704<br />
-                828.966.9000<br/>
-                orders@smcm.us
-            </div>
-        </div>
-
-        <div id="header_right">
-            <div id="page_info">
-                <table>
-                    <tr>
-                        <td width="80px"># of Pages:</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>Date:</td>
-                        <td><?php echo date("m/d/Y"); ?></td>
-                    </tr>
-                    <tr>
-                        <td>Product Type:</td>
-                        <td><?php echo translateVIN('product_type', $info['product_type']); ?></td>
-                    </tr>
-                    <tr>
-                        <td>Lead time:</td>
-                        <td><?php echo translateVIN('days_to_ship', $info['days_to_ship']); ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Ship VIA:</strong></td>
-                        <td><?php echo (trim($info['vin_ship_via']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['vin_ship_via']}<br />"; ?></td>
-                    </tr>
-                    <tr>
-                        <td><strong>Ship To:</strong></td>
-                        <td>
-                            <?php
-                            echo (trim($info['contact1_name']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['contact1_name']}<br />";
-                            echo (trim($info['mailing_addr']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['mailing_addr']}<br />";
-                            echo (trim($info['mailing_city']) === '') ? "<span class='highlight'>___________ , ___ , _______</span><br />" : "{$info['mailing_city']}, {$info['mailing_state']} {$info['mailing_zip']}<br />";
-                            ?>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <div id="vin">VIN: <span><?php echo $info['vin_code']; ?></span></div>
-    </div>
-
-    <div id="main_section">
-        <table>
-            <tr>
-                <th width="10%"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></th>
-                <th class="text-md-right"><?php echo "{$info['contractor_dealer_code']} - {$dealer_info['dealer_name']}"; ?>&nbsp;</th>
-            </tr>
-            <tr class="border_thin_bottom">
-                <td class="gray_bg">Delivery Notes:</td>
-                <td><textarea name="delivery_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"></textarea></td>
-            </tr>
-            <tr class="border_thin_bottom">
-                <td class="gray_bg">Global Notes:</td>
-                <td><textarea name="global_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $info['vin_notes']; ?></textarea></td>
-            </tr>
-            <tr>
-                <td class="gray_bg">Layout Notes:</td>
-                <td><textarea name="layout_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"></textarea></td>
-            </tr>
-        </table>
-
-        <table>
-            <tr>
-                <th width="10%">Attributes:</th>
-                <th width="12%">&nbsp;</th>
-                <th>&nbsp;</th>
-                <th>&nbsp;</th>
-                <th>QTY</th>
-                <th>Amount</th>
-                <th class="text-md-center">%</th>
-                <th class="text-md-right">Sub-Total&nbsp;</th>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td class="gray_bg">Carcass:</td>
-                <td class="border_thin_bottom">Species/Grade:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('species_grade', $info['species_grade']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="dd_species_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_species_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Construction:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('construction_method', $info['construction_method']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="construction_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="construction_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Door Design:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('door_design', $info['door_design']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="dd_design_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_deign_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Door Panel Raise:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_door']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Short Drawer Raise:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_sd']); ?></td>
-                <td class="border_thin_bottom"><input type="text" name="sd_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                <td class="border_thin_bottom">$<span id="short_drawer_raise_price"></span></td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_sd_raise_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Tall Drawer Raise:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_td']); ?></td>
-                <td class="border_thin_bottom"><input type="text" name="td_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                <td class="border_thin_bottom">$<span id="tall_drawer_raise_price"></span></td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_td_raise_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Edge Profile:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('edge_profile', $info['edge_profile']); ?></td>
-                <td class="border_thin_bottom"><input type="text" name="edge_profile_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                <td class="border_thin_bottom">$<span id="edge_profile_price"></span></td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_edge_profile_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Framing Bead:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('framing_bead', $info['framing_bead']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Frame Option:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('framing_options', $info['framing_options']); ?></td>
-                <td class="border_thin_bottom"><input type="text" name="frame_opt_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                <td class="border_thin_bottom">$<span id="frame_option_price"></span></td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_frame_option_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Styles/Rails:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('style_rail_width', $info['style_rail_width']); ?></td>
-                <td class="border_thin_bottom"><input type="text" name="style_rail_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                <td class="border_thin_bottom">$<span id="styles_rails_price"></span></td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_style_rail_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Finish Type:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('finish_type', $info['finish_type']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Finish Code:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Sheen:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('sheen', $info['sheen']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Glaze Color:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['glaze']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Glaze Technique:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('glaze_technique', $info['glaze_technique']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom"><input type="checkbox" id="antiquing" style="margin-left:20px;" <?php echo ($info['antiquing'] !== '0') ? "checked" : null; ?> disabled> Antiquing</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('antiquing', $info['antiquing']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="antiquing_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_antiquing_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom"><input type="checkbox" id="worn_edges" style="margin-left:20px;" <?php echo ($info['worn_edges'] !== '0') ? "checked" : null; ?> disabled> Worn Edges</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('worn_edges', $info['worn_edges']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="worn_edges_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_worn_edges_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom"><input type="checkbox" id="distressing" style="margin-left:20px;" <?php echo ($info['distress_level'] !== '0') ? "checked" : null; ?> disabled> Distressing</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('distress_level', $info['distress_level']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="distressing_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_distressing_subtotal"></span></td>
-            </tr>
-            <tr class="border_top">
-                <td>&nbsp;</td>
-                <td class="gray_bg">Door/Drawer Head:</td>
-                <td class="border_thin_bottom">Exterior Species:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('carcass_exterior_species', $info['carcass_exterior_species']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_species_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="ext_species_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Exterior Finish Type:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('carcass_exterior_finish_type', $info['carcass_exterior_finish_type']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_finish_type_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="ext_finish_type_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Exterior Finish Code:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_finish_code_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="ext_finish_code_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Exterior Glaze Color:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['carcass_exterior_glaze_color']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_glaze_color_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="ext_glaze_color_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Exterior Glaze Technique:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('carcass_exterior_glaze_technique', $info['carcass_exterior_glaze_technique']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="ext_glaze_technique_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Interior Species:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('carcass_interior_species', $info['carcass_interior_species']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="interior_species_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="int_species_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Interior Finish Type:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('carcass_interior_finish_type', $info['carcass_interior_finish_type']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="interior_finish_type_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="int_finish_type_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Interior Finish Code:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="interior_finish_code_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="int_finish_code_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Interior Glaze Color:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['carcass_interior_glaze_color']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="interior_glaze_color_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="int_glaze_color_subtotal"></span></td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Interior Glaze Technique:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('carcass_interior_glaze_technique', $info['carcass_interior_glaze_technique']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="interior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="int_glaze_technique_subtotal"></span></td>
-            </tr>
-            <tr class="border_double_bottom">
-                <td>&nbsp;</td>
-                <td>&nbsp;</td>
-                <td class="border_thin_bottom">Drawer Box:</td>
-                <td class="border_thin_bottom"><?php echo translateVIN('drawer_boxes', $info['drawer_boxes']); ?></td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                <td class="text-md-center border_thin_bottom"><input type="text" name="drawer_boxes_pct" value="0.00" maxlength="4">%</td>
-                <td class="text-md-right border_thin_bottom">$<span id="dd_drawer_box_subtotal"></span></td>
-            </tr>
-        </table>
-    </div>
-
-    <div id="terms_box">
-        <table>
-            <tr>
-                <td class="text-underline">Please check box to accept terms</td>
-                <td>(Must be checked to validate acceptance)</td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="checkbox" id="lead_start"> Lead time starts once quote has been signed below & deposit has been received</td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="checkbox" id="50_deposit"> I approve 50% deposit to be charged:</td>
-            </tr>
-            <tr>
-                <td colspan="2">
+    <form name="e_coversheet_total" id="e_coversheet_total">
+        <div id="header_container">
+            <div id="header_left">
+                <div id="page_type">
                     <table>
                         <tr>
-                            <td width="20px">&nbsp;</td>
-                            <td><input type="checkbox" id="deposit_ACH"> ACH</td>
-                            <td><input type="checkbox" id="deposit_check"> Attached photocopy of check</td>
-                            <td><input type="checkbox" id="deposit_credit"> Credit Card (<span id="credit_card_pct"></span>%)</td>
+                            <td colspan="2" id="page_type_header"><?php echo ($info['rOrderStatus'] === '$') ? "Job" : "Quote"; ?></td>
+                        </tr>
+                        <tr>
+                            <td class="definition">Dealer PO#:</td>
+                            <td class="value"><?php echo $info['so_parent']; ?></td>
+                        </tr>
+                        <tr>
+                            <td class="definition">Room:</td>
+                            <td class="value"><?php echo $info['room']; ?></td>
+                        </tr>
+                        <tr>
+                            <td class="definition">Sequence:</td>
+                            <td class="value"><?php echo substr($info['iteration'], 0, 1); ?></td>
+                        </tr>
+                        <tr>
+                            <td class="definition">Iteration:</td>
+                            <td class="value"><?php echo substr($info['iteration'], -3, 3); ?></td>
+                        </tr>
+                        <tr>
+                            <td class="definition">Sales Order #:</td>
+                            <td class="value"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></td>
                         </tr>
                     </table>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="checkbox" id="final_payment"> Final payment due upon delivery & will be charged to ACH account prior to offloading<br/><span style="margin-left:25px;">(Exceptions to made prior to delivery)</span></td>
-            </tr>
-            <tr>
-                <td colspan="2" style="height: 5px;"></td>
-            </tr>
-            <tr>
-                <td><span class="text-underline">Finish/Sample</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Check only one)</td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="checkbox" id="door_approved"> I have seen the Door style w/ Finish and it is APPROVED</td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="checkbox" id="door_approved"> I APPROVE the Finish & Door style without seeing a sample</td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="checkbox" id="door_approved"> I request a Sample for approval &nbsp;&nbsp;&nbsp; (Overall Size)</td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <table style="margin-left: 20px;">
-                        <tr>
-                            <td width="100px"><input type="checkbox" id="sample_block"> Sample Block</td>
-                            <td class="text-md-right">$<span id="sample_block_price"></span></td>
-                            <td class="text-md-center" width="100px">5 1/4" x 6 1/8"</td>
-                            <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" id="door_only"> Door Only</td>
-                            <td class="text-md-right">$<span id="door_only_price"></span></td>
-                            <td class="text-md-center">12" x 15"</td>
-                            <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" id="door_drawer"> Door & Drawer</td>
-                            <td class="text-md-right">$<span id="door_drawer_price"></span></td>
-                            <td class="text-md-center">15 1/2" x 23 1/2"</td>
-                            <td>(Door & Drawer Front attached)</td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" id="inset_square"> Inset Square</td>
-                            <td class="text-md-right">$<span id="inset_square_price"></span></td>
-                            <td class="text-md-center">15 1/2" x 23 1/2"</td>
-                            <td>(Door, Drawer Front & Frame)</td>
-                        </tr>
-                        <tr>
-                            <td><input type="checkbox" id="inset_beaded"> Inset Beaded</td>
-                            <td class="text-md-right">$<span id="inset_beaded_price"></span></td>
-                            <td class="text-md-center">16 1/2" x 23 1/2"</td>
-                            <td>(Door, Drawer Front & Frame)</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </div>
+                </div>
+            </div>
 
-    <div id="charge_summary">
-        <table align="right">
-            <tr>
-                <td colspan="2">
+            <div id="logo_container">
+                <div id="logo"><img src="/assets/images/smc_logo.png" width="170px" /></div>
+
+                <div id="company_info">
+                    Stone Mountain Cabinetry, Inc.<br />
+                    206 Vista Blvd<br/>
+                    Arden, NC 28704<br />
+                    828.966.9000<br/>
+                    orders@smcm.us
+                </div>
+            </div>
+
+            <div id="header_right">
+                <div id="page_info">
                     <table>
-                        <tr class="border_thin_bottom">
-                            <td width="230px">Upcharges:</td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<span id="final_upcharges"></span></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td>Cabinet List Price:</td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<input type="text" name="list_price" value="0.00" maxlength="10"></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td>Modifications & Accessories:</td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<input type="text" name="mods_accessories" value="0.00" maxlength="10"></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td>Lead Time: <span class="em_box" style="margin-left: 50px;">Standard</span></td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<span id="final_leadtime"></span></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td>Sub Total:</td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<span id="final_subtotal"></span></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td>Multiplier:</td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right"><input type="text" name="multiplier" value="0.407" maxlength="5" class="static_width" style="width:23px;"></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td>Net:</td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<span id="final_net"></span></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td>Shipping Zone: <span class="em_box" style="margin-left: 20px;"><input type="text" name="final_ship_zone" id="final_ship_zone" value="" maxlength="1" class="static_width" style="width:10px;text-align:center;"></span> <span id="final_ship_zone_miles"></span></td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<span id="final_shipping"></span></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td><input type="checkbox" id="final_freight_check" class="no-print"> Min. Freight: (Under 6 Cabinets)</td>
-                            <td>$<span id="min_freight_price"></span></td>
-                            <td class="text-md-right">$<span id="final_freight"></span></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td><input type="checkbox" id="final_jobsite_check" class="no-print"> Jobsite Delivery:</td>
-                            <td>$<span id="jobsite_del_price"></span></td>
-                            <td class="text-md-right">$<span id="final_jobsite"></span></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td><input type="checkbox" id="final_cc_check" class="no-print"> Credit Card: +3.5%</td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<span id="final_cc"></span></td>
-                        </tr>
-                        <tr class="border_thin_bottom">
-                            <td>Samples</td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<span id="final_samples"></span></td>
-                        </tr>
-                        <tr class="em_box">
-                            <td>Sub Total:</td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<span id="final_last_subtotal"></span></td>
-                        </tr>
-                        <tr class="header em_box">
-                            <td>Total Amount</td>
-                            <td>&nbsp;</td>
-                            <td class="text-md-right">$<span id="final_total"></span></td>
+                        <tr>
+                            <td width="80px"># of Pages:</td>
+                            <td>1</td>
                         </tr>
                         <tr>
-                            <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
-                            <td class="text-md-right em_box">$<span id="final_deposit"></span></td>
+                            <td>Date:</td>
+                            <td><?php echo date("m/d/Y"); ?></td>
+                        </tr>
+                        <tr>
+                            <td>Product Type:</td>
+                            <td><?php echo translateVIN('product_type', $info['product_type']); ?></td>
+                        </tr>
+                        <tr>
+                            <td>Lead time:</td>
+                            <td><?php echo translateVIN('days_to_ship', $info['days_to_ship']); ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ship VIA:</strong></td>
+                            <td><?php echo (trim($info['vin_ship_via']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['vin_ship_via']}<br />"; ?></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ship To:</strong></td>
+                            <td>
+                                <?php
+                                echo (trim($info['contact1_name']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['contact1_name']}<br />";
+                                echo (trim($info['mailing_addr']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['mailing_addr']}<br />";
+                                echo (trim($info['mailing_city']) === '') ? "<span class='highlight'>___________ , ___ , _______</span><br />" : "{$info['mailing_city']}, {$info['mailing_state']} {$info['mailing_zip']}<br />";
+                                ?>
+                            </td>
                         </tr>
                     </table>
-                </td>
-            </tr>
-        </table>
-    </div>
+                </div>
+            </div>
 
-    <div id="signature">
-        Signature: ______________________________________________________________________________<br/>
-        (Signature confirms acceptance and acknowledges that the deposit will be auto-drafted within 24 hours)
-    </div>
+            <div id="vin">VIN: <span><?php echo $info['vin_code']; ?></span></div>
+        </div>
 
-    <div id="closing_statement">Thank you! Our Commitment is to Quality in Both our Cabinetry & Our Customer Service!</div>
+        <div id="main_section">
+            <table>
+                <tr>
+                    <th width="10%"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></th>
+                    <th class="text-md-right"><?php echo "{$info['contractor_dealer_code']} - {$dealer_info['dealer_name']}"; ?>&nbsp;</th>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="gray_bg">Delivery Notes:</td>
+                    <td><textarea name="delivery_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"></textarea></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="gray_bg">Global Notes:</td>
+                    <td><textarea name="global_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $info['vin_notes']; ?></textarea></td>
+                </tr>
+                <tr>
+                    <td class="gray_bg">Layout Notes:</td>
+                    <td><textarea name="layout_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"></textarea></td>
+                </tr>
+            </table>
+
+            <table>
+                <tr>
+                    <th width="10%">Attributes:</th>
+                    <th width="12%">&nbsp;</th>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                    <th>QTY</th>
+                    <th>Amount</th>
+                    <th class="text-md-center">%</th>
+                    <th class="text-md-right">Sub-Total&nbsp;</th>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td class="gray_bg">Carcass:</td>
+                    <td class="border_thin_bottom">Species/Grade:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('species_grade', $info['species_grade']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="dd_species_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_species_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Construction:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('construction_method', $info['construction_method']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="construction_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="construction_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Door Design:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('door_design', $info['door_design']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="dd_design_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_deign_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Door Panel Raise:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_door']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Short Drawer Raise:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_sd']); ?></td>
+                    <td class="border_thin_bottom"><input type="text" name="sd_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
+                    <td class="border_thin_bottom">$<span id="short_drawer_raise_price"></span></td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_sd_raise_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Tall Drawer Raise:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_td']); ?></td>
+                    <td class="border_thin_bottom"><input type="text" name="td_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
+                    <td class="border_thin_bottom">$<span id="tall_drawer_raise_price"></span></td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_td_raise_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Edge Profile:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('edge_profile', $info['edge_profile']); ?></td>
+                    <td class="border_thin_bottom"><input type="text" name="edge_profile_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
+                    <td class="border_thin_bottom">$<span id="edge_profile_price"></span></td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_edge_profile_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Framing Bead:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('framing_bead', $info['framing_bead']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Frame Option:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('framing_options', $info['framing_options']); ?></td>
+                    <td class="border_thin_bottom"><input type="text" name="frame_opt_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
+                    <td class="border_thin_bottom">$<span id="frame_option_price"></span></td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_frame_option_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Styles/Rails:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('style_rail_width', $info['style_rail_width']); ?></td>
+                    <td class="border_thin_bottom"><input type="text" name="style_rail_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
+                    <td class="border_thin_bottom">$<span id="styles_rails_price"></span></td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_style_rail_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Finish Type:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_type', $info['finish_type']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Finish Code:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Sheen:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('sheen', $info['sheen']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Glaze Color:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['glaze']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Glaze Technique:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('glaze_technique', $info['glaze_technique']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom"><input type="checkbox" id="antiquing" style="margin-left:20px;" <?php echo ($info['antiquing'] !== '0') ? "checked" : null; ?> disabled> Antiquing</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('antiquing', $info['antiquing']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="antiquing_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_antiquing_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom"><input type="checkbox" id="worn_edges" style="margin-left:20px;" <?php echo ($info['worn_edges'] !== '0') ? "checked" : null; ?> disabled> Worn Edges</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('worn_edges', $info['worn_edges']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="worn_edges_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_worn_edges_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom"><input type="checkbox" id="distressing" style="margin-left:20px;" <?php echo ($info['distress_level'] !== '0') ? "checked" : null; ?> disabled> Distressing</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('distress_level', $info['distress_level']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="distressing_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_distressing_subtotal"></span></td>
+                </tr>
+                <tr class="border_top">
+                    <td>&nbsp;</td>
+                    <td class="gray_bg">Door/Drawer Head:</td>
+                    <td class="border_thin_bottom">Exterior Species:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_exterior_species', $info['carcass_exterior_species']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_species_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="ext_species_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Exterior Finish Type:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_exterior_finish_type', $info['carcass_exterior_finish_type']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_finish_type_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="ext_finish_type_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Exterior Finish Code:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_finish_code_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="ext_finish_code_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Exterior Glaze Color:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['carcass_exterior_glaze_color']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_glaze_color_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="ext_glaze_color_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Exterior Glaze Technique:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_exterior_glaze_technique', $info['carcass_exterior_glaze_technique']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="ext_glaze_technique_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Interior Species:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_interior_species', $info['carcass_interior_species']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="interior_species_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="int_species_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Interior Finish Type:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_interior_finish_type', $info['carcass_interior_finish_type']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="interior_finish_type_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="int_finish_type_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Interior Finish Code:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="interior_finish_code_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="int_finish_code_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Interior Glaze Color:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['carcass_interior_glaze_color']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="interior_glaze_color_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="int_glaze_color_subtotal"></span></td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Interior Glaze Technique:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_interior_glaze_technique', $info['carcass_interior_glaze_technique']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="interior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="int_glaze_technique_subtotal"></span></td>
+                </tr>
+                <tr class="border_double_bottom">
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td class="border_thin_bottom">Drawer Box:</td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('drawer_boxes', $info['drawer_boxes']); ?></td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom"><input type="text" name="drawer_boxes_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom">$<span id="dd_drawer_box_subtotal"></span></td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="terms_box">
+            <table>
+                <tr>
+                    <td class="text-underline">Please check box to accept terms</td>
+                    <td>(Must be checked to validate acceptance)</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="checkbox" id="lead_start"> Lead time starts once quote has been signed below & deposit has been received</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="checkbox" id="50_deposit"> I approve 50% deposit to be charged:</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <td width="20px">&nbsp;</td>
+                                <td><input type="checkbox" id="deposit_ACH"> ACH</td>
+                                <td><input type="checkbox" id="deposit_check"> Attached photocopy of check</td>
+                                <td><input type="checkbox" id="deposit_credit"> Credit Card (<span id="credit_card_pct"></span>%)</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="checkbox" id="final_payment"> Final payment due upon delivery & will be charged to ACH account prior to offloading<br/><span style="margin-left:25px;">(Exceptions to made prior to delivery)</span></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="height: 5px;"></td>
+                </tr>
+                <tr>
+                    <td><span class="text-underline">Finish/Sample</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Check only one)</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="checkbox" id="door_approved"> I have seen the Door style w/ Finish and it is APPROVED</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="checkbox" id="door_approved"> I APPROVE the Finish & Door style without seeing a sample</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="checkbox" id="door_approved"> I request a Sample for approval &nbsp;&nbsp;&nbsp; (Overall Size)</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table style="margin-left: 20px;">
+                            <tr>
+                                <td width="100px"><input type="checkbox" id="sample_block"> Sample Block</td>
+                                <td class="text-md-right">$<span id="sample_block_price"></span></td>
+                                <td class="text-md-center" width="100px">5 1/4" x 6 1/8"</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="door_only"> Door Only</td>
+                                <td class="text-md-right">$<span id="door_only_price"></span></td>
+                                <td class="text-md-center">12" x 15"</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="door_drawer"> Door & Drawer</td>
+                                <td class="text-md-right">$<span id="door_drawer_price"></span></td>
+                                <td class="text-md-center">15 1/2" x 23 1/2"</td>
+                                <td>(Door & Drawer Front attached)</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="inset_square"> Inset Square</td>
+                                <td class="text-md-right">$<span id="inset_square_price"></span></td>
+                                <td class="text-md-center">15 1/2" x 23 1/2"</td>
+                                <td>(Door, Drawer Front & Frame)</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="inset_beaded"> Inset Beaded</td>
+                                <td class="text-md-right">$<span id="inset_beaded_price"></span></td>
+                                <td class="text-md-center">16 1/2" x 23 1/2"</td>
+                                <td>(Door, Drawer Front & Frame)</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="charge_summary">
+            <table align="right">
+                <tr>
+                    <td colspan="2">
+                        <table>
+                            <tr class="border_thin_bottom">
+                                <td width="230px">Upcharges:</td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<span id="final_upcharges"></span></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td>Cabinet List Price:</td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<input type="text" name="list_price" value="0.00" maxlength="10"></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td>Modifications & Accessories:</td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<input type="text" name="mods_accessories" value="0.00" maxlength="10"></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td>Lead Time: <span class="em_box" style="margin-left: 50px;">Standard</span></td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<span id="final_leadtime"></span></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td>Sub Total:</td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<span id="final_subtotal"></span></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td>Multiplier:</td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right"><input type="text" name="multiplier" value="0.407" maxlength="5" class="static_width" style="width:23px;"></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td>Net:</td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<span id="final_net"></span></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td>Shipping Zone: <span class="em_box" style="margin-left: 20px;"><input type="text" name="final_ship_zone" id="final_ship_zone" value="" maxlength="1" class="static_width" style="width:10px;text-align:center;"></span> <span id="final_ship_zone_miles"></span></td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<span id="final_shipping"></span></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td><input type="checkbox" id="final_freight_check" class="no-print"> Min. Freight: (Under 6 Cabinets)</td>
+                                <td>$<span id="min_freight_price"></span></td>
+                                <td class="text-md-right">$<span id="final_freight"></span></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td><input type="checkbox" id="final_jobsite_check" class="no-print"> Jobsite Delivery:</td>
+                                <td>$<span id="jobsite_del_price"></span></td>
+                                <td class="text-md-right">$<span id="final_jobsite"></span></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td><input type="checkbox" id="final_cc_check" class="no-print"> Credit Card: +3.5%</td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<span id="final_cc"></span></td>
+                            </tr>
+                            <tr class="border_thin_bottom">
+                                <td>Samples</td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<span id="final_samples"></span></td>
+                            </tr>
+                            <tr class="em_box">
+                                <td>Sub Total:</td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<span id="final_last_subtotal"></span></td>
+                            </tr>
+                            <tr class="header em_box">
+                                <td>Total Amount</td>
+                                <td>&nbsp;</td>
+                                <td class="text-md-right">$<span id="final_total"></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
+                                <td class="text-md-right em_box">$<span id="final_deposit"></span></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="signature">
+            Signature: ______________________________________________________________________________<br/>
+            (Signature confirms acceptance and acknowledges that the deposit will be auto-drafted within 24 hours)
+        </div>
+
+        <div id="closing_statement">Thank you! Our Commitment is to Quality in Both our Cabinetry & Our Customer Service!</div>
+    </form>
 </div>
+
+<div class="no-print" id="save_button"><input type="button" value="Save" id="save" name="save" /></div>
 
 <script src="/assets/js/jquery.min.js"></script>
 
@@ -1063,6 +1067,13 @@ function translateVIN($segment, $key) {
         })
         .on("keyup", "#final_ship_zone", function() {
             $(this).val($(this).val().toUpperCase());
+        })
+        .on("click", "#save", function() {
+            var e_coversheet = $("#e_coversheet_total").serialize();
+
+            $.post("/ondemand/print/e_coversheet.php?action=save_sheet&" + e_coversheet, function(data) {
+
+            });
         })
     ;
 </script>

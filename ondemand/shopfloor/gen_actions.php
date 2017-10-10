@@ -294,6 +294,9 @@ switch($_REQUEST['action']) {
 
         break;
     case 'save_so':
+        $note_id = null;
+        $inquiry_id = null;
+
         $dealer_code = sanitizeInput($_REQUEST['dealer_code']);
         $project = sanitizeInput($_REQUEST['project']);
         $contact_1 = sanitizeInput($_REQUEST['contact_1']);
@@ -316,6 +319,31 @@ switch($_REQUEST['action']) {
         $order_status = sanitizeInput($_REQUEST['order_status']);
         $so_num = sanitizeInput($_REQUEST['so_num']);
 
+        $so_note = sanitizeInput($_REQUEST['note']);
+        $inquiry = sanitizeInput($_REQUEST['inquiry']);
+
+        $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$so_num'");
+        $so = $so_qry->fetch_assoc();
+
+        $followup_date = sanitizeInput($_REQUEST['inquiry_followup_date']);
+        $followup_individual = sanitizeInput($_REQUEST['inquiry_requested_of']);
+
+        if(!empty($so_note)) {
+            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$so_note', 'so_note', UNIX_TIMESTAMP(), '{$_SESSION['userInfo']['id']}', '{$so['id']}')");
+            $note_id = $dbconn->insert_id;
+        }
+
+        if(!empty($inquiry)) {
+            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$inquiry', 'so_inquiry', UNIX_TIMESTAMP(), '{$_SESSION['userInfo']['id']}', '{$so['id']}')");
+            $inquiry_id = $dbconn->insert_id;
+        }
+
+        if(!empty($followup_date)) {
+            $followup = strtotime($followup_date);
+
+            $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('so_inquiry', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'SO# $so_num, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $inquiry_id)");
+        }
+
         if($dbconn->query("UPDATE sales_order SET contractor_dealer_code = '$dealer_code', project = '$project', contact1_name = '$contact_1', contact2_name = '$contact_2', physical_addr = '$physical_addr',
          project_addr = '$project_addr', contact1_cell = '$cell_1', contact2_cell = '$cell_2', physical_city = '$ph_city', physical_state = '$ph_state', physical_zip = '$ph_zip', project_city = '$p_city',
           project_state = '$p_state', project_zip = '$p_zip', contact1_business_ph = '$business_1', contact2_business_ph = '$business_2', project_landline = '$p_landline', contact1_email = '$email_1', 
@@ -324,8 +352,6 @@ switch($_REQUEST['action']) {
         } else {
             dbLogSQLErr($dbconn);
         }
-
-
 
         break;
     case 'add_iteration':
@@ -457,6 +483,21 @@ switch($_REQUEST['action']) {
             echo displayToast("success", "VIN has been updated for SO $so_num room $room iteration $iteration.", "VIN Updated");
         } else {
             dbLogSQLErr($dbconn);
+        }
+
+        break;
+    case 'reply_inquiry':
+        $reply_id = sanitizeInput($_REQUEST['id']);
+        $reply_text = sanitizeInput($_REQUEST['reply']);
+
+        if(!empty($reply_text)) {
+            if($dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$reply_text', 'inquiry_reply', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$reply_id')")) {
+                echo displayToast("success", "Replied to inquiry.", "Inquiry Replied");
+            } else {
+                echo dbLogSQLErr($dbconn);
+            }
+        } else {
+            echo displayToast("error", "No message to reply with.", "Unable to reply to Inquiry");
         }
 
         break;

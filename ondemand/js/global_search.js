@@ -342,6 +342,24 @@ $("body")
         unsaved = false;
     })
 
+    .on("click", ".reply_to_inquiry", function(e) {
+        e.preventDefault();
+
+        var reply_id = $(this).attr('id');
+
+        $("[id^=inquiry_reply_line_]").not("#inquiry_reply_line_" + reply_id).hide(100);
+        $("#inquiry_reply_line_" + reply_id).toggle(250);
+    })
+    .on("click", ".inquiry_reply_btn", function() {
+        var reply_id = $(this).attr("id");
+        var reply_text = $("#inquiry_reply_" + reply_id).val();
+
+        $.post("/ondemand/shopfloor/gen_actions.php?action=reply_inquiry", {reply: reply_text, id: reply_id}, function(data) {
+            $("body").append(data);
+            $("#inquiry_reply_line_" + reply_id).val("").hide(100);
+        });
+    })
+
     .on("click", ".iteration_save", function(e) {
         e.stopPropagation();
 

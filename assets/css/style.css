@@ -23470,6 +23470,9 @@ body {
   height: 42px;
   width: 10px; }
 
+.table-v-top td {
+  vertical-align: top !important; }
+
 .cust-table {
   display: table;
   width: 100%;

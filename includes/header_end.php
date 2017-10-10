@@ -42,6 +42,9 @@
     <!-- Full Calendar-->
     <link href="/assets/plugins/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
 
+    <!-- SocketIO -->
+    <script src="/server/node_modules/socket.io-client/dist/socket.io.js"></script>
+
     <!-- datatables -->
     <script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="/assets/plugins/datatables/dataTables.bootstrap4.min.js"></script>
@@ -113,7 +116,9 @@
             content: "You have unsaved changes, do you wish to proceed?",
             type: 'orange',
             typeAnimated: true
-        }
+        };
+
+        //var socket = io.connect({secure: true});
     </script>
 
     <?php
