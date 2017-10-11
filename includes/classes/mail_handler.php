@@ -1,23 +1,26 @@
 <?php
-require ("../includes/header_start.php");
-require("../includes/classes/mail_handler.php");
+/**
+ * Created by PhpStorm.
+ * User: Ben
+ * Date: 10/11/2017
+ * Time: 11:09 AM
+ */
 
-outputPHPErrs();
-
-$mail = new \MailHandler\mail_handler();
-
-$from = 'ben@smcm.us';
-$to = 'ben@smcm.us';
+namespace MailHandler;
 
 
-$headers = "From: " . strip_tags($from) . "\r\n";
-$headers .= "Reply-To: ". strip_tags($from) . "\r\n";
-$headers .= "MIME-Version: 1.0\r\n";
-$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+class mail_handler {
+    public function sendMessage($to, $from, $subject, $message) {
+        $headers = "From: EagleEye <dashboard@3erp.us>\r\n";
+        $headers .= "Reply-To: ". strip_tags($from) . "\r\n";
+        $headers .= "MIME-Version: 1.0\r\n";
+        $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
-$message_out = '<!DOCTYPE html><html lang="en">';
+        $message_out = '<!DOCTYPE html><html lang="en">';
 
-$message_out .= <<<HEADER
+        $message_out .= <<<HEADER
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
@@ -27,9 +30,9 @@ $message_out .= <<<HEADER
         a, a:visited {color:#000000;text-decoration:none;font-style:italic;}  
         a:hover {text-decoration:underline;}
 
-        .wrapper {width:70%;margin:0 auto;padding-top:5px;}
-        .logo {float:right;}
-        .header-text {float:left;font-size:2.5em;font-weight:bold;text-decoration:underline;padding-top:25px;}
+        .wrapper {width:100%;margin:0 auto;padding-top:5px;}
+        .header-text {font-size:2.5em;font-weight:bold;text-decoration:underline;padding-top:25px;}
+        .header-table {border:none;border-collapse:collapse;width:100%;}
         .clearfix {clear:both;}
         .main-window {margin-top:10px;}
         .main-window .header {font-size:1.5em;font-weight:bold;}
@@ -40,13 +43,16 @@ $message_out .= <<<HEADER
 </head>
 HEADER;
 
-$message_out .= <<<BODY
+        $message_out .= <<<BODY
 <body>
 <div class="wrapper">
     <div class="header">
-        <div class="header-text">EagleEye Systems</div>
-
-        <div class="logo"><img src="https://3erp.us/assets/images/logo.png" width="150px" /></div>
+        <table class="header-table">
+            <tr>
+                <td class="header-text">EagleEye Systems</td>
+                <td class="logo"><img src="https://3erp.us/assets/images/logo_150.png" /></td>
+            </tr>
+        </table>
 
         <div class="clearfix"></div>
     </div>
@@ -73,4 +79,6 @@ $message_out .= <<<BODY
 </html>
 BODY;
 
-return mail($to, $subject, $message_out, $headers);
+        return mail($to, $subject, $message_out, $headers);
+    }
+}

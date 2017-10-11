@@ -12,7 +12,35 @@ require_once ("header_start.php");
                 <h4 class="modal-title" id="myModalLabel">Feedback</h4>
             </div>
             <div class="modal-body">
-                <textarea class="form-control" id="feedback-text" style="width:100%;height:200px;"></textarea>
+                <div class="row">
+                    <div class="col-md-12">
+                        <textarea class="form-control" id="feedback-text" style="width:100%;height:200px;"></textarea>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-1" style="padding-top:3px;"><label for="feedback_to">Notify: </label></div>
+
+                    <div class="col-md-4">
+                        <select name="feedback_to" id="feedback_to" class="form-control">
+                            <optgroup label="Office">
+                                <option value="9">Production Administrator</option>
+                                <option value="14">Shop Foreman</option>
+                                <option value="7">General Manager</option>
+                                <option value="1">IT</option>
+                                <option value="10">Engineering</option>
+                            </optgroup>
+
+                            <optgroup label="Shop">
+                                <option value="15">Box</option>
+                                <option value="12">Customs</option>
+                                <option value="11">Assembly</option>
+                                <option value="22">Finishing</option>
+                                <option value="15">Edge Banding</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
@@ -190,15 +218,17 @@ require_once ("header_start.php");
 
     $("body")
         .on("click", "#feedback-submit", function() {
-        var description = tinyMCE.get('feedback-text').getContent();
+            var description = tinyMCE.get('feedback-text').getContent();
+            var feedback_to = $("#feedback_to").val();
 
-        $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: description}, function(data) {
-            $("body").append(data);
-            $("#feedback-page").modal('hide');
+            $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: description, assignee: feedback_to}, function(data) {
+                $("body").append(data);
+                $("#feedback-page").modal('hide');
+                unsaved = false;
 
-            tinyMCE.get('feedback-text').setContent("");
-        });
-    })
+                tinyMCE.get('feedback-text').setContent("");
+            });
+        })
         .on("click", "#notification_list", function() {
             $.post("/ondemand/alerts.php?action=viewed_alerts");
         });
