@@ -28,7 +28,8 @@ switch($action) {
          VALUES ('', '$task_desc', UNIX_TIMESTAMP(), null, 'Week\'s End', $assignee, null, $submitted_by, FALSE);")) {
             $dbconn->query("INSERT INTO alerts (type, status, message, time_created, time_acknowledged, alert_user, icon, type_id, color) VALUES ('feedback', 'new', 'New feedback submitted by $submitted_name.', UNIX_TIMESTAMP(), null, 1, 'icon-bubble', $dbconn->insert_id, 'bg-warning')");
 
-            $mail->sendMessage($notify['email'], $_SESSION['userInfo']['email'], 'New Feedback Logged', $task_desc);
+            if(!empty($notify['email']))
+                $mail->sendMessage($notify['email'], $_SESSION['userInfo']['email'], 'New Feedback Logged', $task_desc);
 
             echo displayToast("success", "Successfully logged feedback.", "Feedback Logged");
         } else {

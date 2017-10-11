@@ -36,7 +36,7 @@ require_once ("header_start.php");
                                 <option value="12">Customs</option>
                                 <option value="11">Assembly</option>
                                 <option value="22">Finishing</option>
-                                <option value="15">Edge Banding</option>
+                                <option value="11">Shipping</option>
                             </optgroup>
                         </select>
                     </div>
