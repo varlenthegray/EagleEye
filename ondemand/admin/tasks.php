@@ -43,7 +43,7 @@ switch($action) {
 
         $output = array();
 
-        $tasks_qry = $dbconn->query("SELECT tasks.id AS taskID, tasks.name AS taskName, user.name AS userName, tasks.*, user.* FROM tasks LEFT JOIN user ON tasks.assigned_to = user.id WHERE resolved = FALSE ORDER BY user.name, tasks.priority, tasks.created ASC;");
+        $tasks_qry = $dbconn->query("SELECT tasks.id AS taskID, tasks.name AS taskName, user.name AS userName, tasks.*, user.* FROM tasks LEFT JOIN user ON tasks.assigned_to = user.id WHERE resolved = FALSE;");
 
         if($tasks_qry->num_rows > 0) {
             while($task = $tasks_qry->fetch_assoc()) {
@@ -70,20 +70,18 @@ switch($action) {
                 $created = date(DATE_TIME_ABBRV, $task['created']);
 
                 $output['data'][$i][] = $task['taskID'];
-                $output['data'][$i][] = $name;
-                $output['data'][$i][] = $short_desc;
                 $output['data'][$i][] = $task['userName'];
                 $output['data'][$i][] = $created;
+                $output['data'][$i][] = $short_desc;
                 $output['data'][$i][] = $task['priority'];
                 $output['data'][$i][] = $task['eta_hrs'] . " $humanized_eta";
-                $output['data'][$i][] = $last_updated;
                 $output['data'][$i][] = $task['pct_completed'] * 100 . "%";
+                $output['data'][$i][] = $last_updated;
                 $output['data'][$i]['DT_RowId'] = $task['taskID'];
 
                 $i += 1;
             }
         } else {
-            $output['data'][0][] = "&nbsp;";
             $output['data'][0][] = "&nbsp;";
             $output['data'][0][] = "&nbsp;";
             $output['data'][0][] = "None Available";
@@ -155,46 +153,57 @@ switch($action) {
                             </div>
                             <div class="modal-body">
                                 <div class="task_hide">
-                                    <table>
-                                        <tr>
-                                            <td>Assigned To:</td>
-                                            <td>
-                                                <select name="assigned_to" id="assigned_to" class="form-control">
-                                                    $user_opts                                        
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Perform By:</td>
-                                            <td>
-                                                <select name="perform_by" id="perform_by" class="form-control">
-                                                    $perform_opts                                        
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>Priority:</td>
-                                            <td>
-                                                <select name="priority" id="priority" class="form-control">
-                                                    <option value="3 - End of Week" $sel_we>End of Week</option>
-                                                    <option value="2 - End of Day" $sel_de>End of Day</option>
-                                                    <option value="1 - Immediate" $sel_imm>Immediate</option>
-                                                </select>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>ETA</td>
-                                            <td><input type="text" value="{$task['eta_hrs']}" placeholder="Hours" name="eta" id="eta" class="form-control" style="width:85%;float:left;" maxlength="2" /><span style="float:right;line-height:30px;">&nbsp;HRS</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td>% Complete:</td>
-                                            <td><input type="text" value="$pct_complete" placeholder="Percent" name="pct_completed" id="pct_completed" class="form-control" style="width:90%;float:left;" maxlength="3"><span style="float:right;line-height:30px;">&nbsp;%</span> </td>
-                                        </tr>
-                                    </table>
-    
-                                    <div id="task_description" class="task_description">{$task['description']}</div>
-                                
-                                    <div id="task_created_by">-- $created_by</div>                                
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table>
+                                                <tr>
+                                                    <td>Assigned To:</td>
+                                                    <td>
+                                                        <select name="assigned_to" id="assigned_to" class="form-control">
+                                                            $user_opts                                        
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Perform By:</td>
+                                                    <td>
+                                                        <select name="perform_by" id="perform_by" class="form-control">
+                                                            <option value="" selected></option>
+                                                            $perform_opts                                        
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Priority:</td>
+                                                    <td>
+                                                        <select name="priority" id="priority" class="form-control">
+                                                            <option value="3 - End of Week" $sel_we>End of Week</option>
+                                                            <option value="2 - End of Day" $sel_de>End of Day</option>
+                                                            <option value="1 - Immediate" $sel_imm>Immediate</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>ETA</td>
+                                                    <td><input type="text" value="{$task['eta_hrs']}" placeholder="Hours" name="eta" id="eta" class="form-control" style="width:85%;float:left;" maxlength="2" /><span style="float:right;line-height:30px;">&nbsp;HRS</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>% Complete:</td>
+                                                    <td><input type="text" value="$pct_complete" placeholder="Percent" name="pct_completed" id="pct_completed" class="form-control" style="width:90%;float:left;" maxlength="3"><span style="float:right;line-height:30px;">&nbsp;%</span> </td>
+                                                </tr>
+                                            </table>
+            
+                                            <div id="task_description" class="task_description">{$task['description']}</div>
+                                        
+                                            <div id="task_created_by">-- $created_by</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <textarea class="form-control" name="addl_notes" id="addl_notes" style="width:100%;height:100px;"></textarea>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <div id="split_body" class="task_description" style="display:none;">
@@ -212,9 +221,10 @@ switch($action) {
                                                 <optgroup label="Office">
                                                     <option value="9">Production Administrator</option>
                                                     <option value="14">Shop Foreman</option>
-                                                    <option value="7">General Manager</option>
+                                                    <option value="7">Robert</option>
                                                     <option value="1">IT</option>
                                                     <option value="10">Engineering</option>
+                                                    <option value="8">Accounting</option>
                                                 </optgroup>
                     
                                                 <optgroup label="Shop">
@@ -252,9 +262,10 @@ switch($action) {
                                                 <optgroup label="Office">
                                                     <option value="9">Production Administrator</option>
                                                     <option value="14">Shop Foreman</option>
-                                                    <option value="7">General Manager</option>
+                                                    <option value="7">Robert</option>
                                                     <option value="1">IT</option>
                                                     <option value="10">Engineering</option>
+                                                    <option value="8">Accounting</option>
                                                 </optgroup>
                     
                                                 <optgroup label="Shop">

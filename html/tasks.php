@@ -10,14 +10,13 @@ require '../includes/header_start.php';
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th>NAME</th>
-                        <th>SHORT DESC</th>
                         <th>ASSIGNED TO</th>
                         <th>CREATED</th>
+                        <th>SHORT DESC</th>
                         <th>PRIORITY</th>
                         <th>ETA</th>
-                        <th>LAST UPDATED</th>
                         <th>% COMPLETED</th>
+                        <th>LAST UPDATED</th>
                     </tr>
                     </thead>
                     <tbody id="tasks_information_table">
@@ -43,7 +42,7 @@ require '../includes/header_start.php';
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand display-task-info");
         },
-        "order": [],
+        "order": [0,'desc'],
         "dom": 'rti',
         "pageLength": 25
     });

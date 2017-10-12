@@ -26,9 +26,10 @@ require_once ("header_start.php");
                             <optgroup label="Office">
                                 <option value="9">Production Administrator</option>
                                 <option value="14">Shop Foreman</option>
-                                <option value="7">General Manager</option>
+                                <option value="7">Robert</option>
                                 <option value="1">IT</option>
                                 <option value="10">Engineering</option>
+                                <option value="8">Accounting</option>
                             </optgroup>
 
                             <optgroup label="Shop">
