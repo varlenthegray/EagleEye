@@ -894,22 +894,22 @@ HEREDOC;
                                         <label for='rework_reason'>Reason for Rework</label>
                                         <select class='form-control' id='rework_reason'>
                                             <optgroup label='Material/Hardware'>
-                                                <option value='MW'>MW</option>
-                                                <option value='MD'>MD</option>
+                                                <option value='Material Workmanship'>Material Workmanship</option>
+                                                <option value='Material Defective'>Material Defective</option>
                                             </optgroup>
                                             <optgroup label='Workmanship'>
-                                                <option value='WU'>WU</option>
-                                                <option value='WT'>WT</option>
+                                                <option value='Workmanship Unacceptable'>Workmanship Unacceptable</option>
+                                                <option value='Workmanship Training'>Workmanship Training</option>
                                             </optgroup>
                                             <optgroup label='Equipment'>
-                                                <option value='EB'>EB</option>
-                                                <option value='EM'>EM</option>
-                                                <option value='ET'>ET</option>
+                                                <option value='Equipment Failure'>Equipment Failure</option>
+                                                <option value='Equipment Maintenance'>Equipment Maintenance</option>
+                                                <option value='Equipment Training'>Equipment Training</option>
                                             </optgroup>
                                             <optgroup label='Other'>
-                                                <option value='OD'>OD</option>
-                                                <option value='OA'>OA</option>
-                                                <option value='OT'>OT</option>
+                                                <option value='Documentation'>Documentation</option>
+                                                <option value='Accuracy'>Accuracy</option>
+                                                <option value='Training'>Training</option>
                                             </optgroup>
                                         </select>
                                     </fieldset>

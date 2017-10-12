@@ -40,6 +40,16 @@ require_once ("header_start.php");
                             </optgroup>
                         </select>
                     </div>
+
+                    <div class="col-md-1" style="padding-top:3px;"><label for="feedback_priority">Priority: </label></div>
+
+                    <div class="col-md-4">
+                        <select name="feedback_priority" id="feedback_priority" class="form-control">
+                            <option value="3 - End of Week">End of Week</option>
+                            <option value="2 - End of Day">End of Day</option>
+                            <option value="1 - Immediate">Immediate</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -220,8 +230,9 @@ require_once ("header_start.php");
         .on("click", "#feedback-submit", function() {
             var description = tinyMCE.get('feedback-text').getContent();
             var feedback_to = $("#feedback_to").val();
+            var priority = $("#feedback_priority").val();
 
-            $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: description, assignee: feedback_to}, function(data) {
+            $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: description, assignee: feedback_to, priority: priority}, function(data) {
                 $("body").append(data);
                 $("#feedback-page").modal('hide');
                 unsaved = false;

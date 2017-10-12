@@ -43,7 +43,7 @@ require '../includes/header_start.php';
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand display-task-info");
         },
-        "order": [[0,"desc"]],
+        "order": [],
         "dom": 'rti',
         "pageLength": 25
     });

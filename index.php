@@ -107,12 +107,8 @@ require 'includes/header_end.php';
     }
     ?>
 
-    var tr;
-    var row;
-    var shownData;
     var op_id;
     var opFull;
-    var task_text_mce;
     // -- EO Dashboard --
 
     // -- Build a VIN --
@@ -594,13 +590,6 @@ require 'includes/header_end.php';
         .on("click", ".display-task-info", function() {
             $.post("/ondemand/admin/tasks.php?action=get_task_info", {task_id: $(this).attr("id")}, function(data) {
                 $("#modalTaskInfo").html(data);
-
-                task_text_mce = tinymce.init({
-                    selector:'textarea#task-text',
-                    menubar: false,
-                    plugins: ['advlist autolink lists charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime table contextmenu paste code'],
-                    toolbar: 'undo redo | insert | styleselect | bold italic | bullist numlist outdent indent'
-                });
             }).done(function() {
                 $("#modalTaskInfo").modal();
             }).fail(function(data) { // if we're receiving a header error
@@ -617,6 +606,36 @@ require 'includes/header_end.php';
 
                 unsaved = false;
             });
+        })
+        .on("click", "#split_task_btn", function() {
+            $(".task_hide").toggle(100);
+
+            tinymce.remove('#split-text-1');
+            tinymce.remove('#split-text-2');
+
+            $("#split_body").toggle(250);
+
+            tinymce.init({
+                selector:'#split-text-1',
+                menubar: false,
+                plugins: ['advlist autolink lists charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime table contextmenu paste code'],
+                toolbar: 'undo redo | insert | styleselect | bold italic | bullist numlist outdent indent'
+            });
+
+            tinymce.init({
+                selector:'#split-text-2',
+                menubar: false,
+                plugins: ['advlist autolink lists charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime table contextmenu paste code'],
+                toolbar: 'undo redo | insert | styleselect | bold italic | bullist numlist outdent indent'
+            });
+
+            setTimeout(function() {
+                if($("#split_body").is(":visible")) {
+                    $("#split_task_enabled").val("1");
+                } else {
+                    $("#split_task_enabled").val("0");
+                }
+            }, 250);
         })
         // -- End Task Page --
     ;

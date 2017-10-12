@@ -23440,7 +23440,7 @@ body {
   color: #FFFFFF;
   line-height: 42px; }
 
-#task_description {
+.task_description {
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid #000000;

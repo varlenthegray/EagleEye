@@ -12,6 +12,7 @@ switch($action) {
     case 'submit_feedback':
         $task_desc = sanitizeInput($_REQUEST['description']);
         $assignee = sanitizeInput($_REQUEST['assignee']);
+        $priority = sanitizeInput($_REQUEST['priority']);
 
         if($_SESSION['userInfo']['id'] === '16') {
             $submitted_by = $_SESSION['shop_user']['id'];
@@ -25,8 +26,8 @@ switch($action) {
         $notify = $notify_qry->fetch_assoc();
 
         if($dbconn->query("INSERT INTO tasks (name, description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved) 
-         VALUES ('', '$task_desc', UNIX_TIMESTAMP(), null, 'Week\'s End', $assignee, null, $submitted_by, FALSE);")) {
-            $dbconn->query("INSERT INTO alerts (type, status, message, time_created, time_acknowledged, alert_user, icon, type_id, color) VALUES ('feedback', 'new', 'New feedback submitted by $submitted_name.', UNIX_TIMESTAMP(), null, 1, 'icon-bubble', $dbconn->insert_id, 'bg-warning')");
+         VALUES ('', '$task_desc', UNIX_TIMESTAMP(), null, '$priority', $assignee, null, $submitted_by, FALSE);")) {
+            $dbconn->query("INSERT INTO alerts (type, status, message, time_created, time_acknowledged, alert_user, icon, type_id, color) VALUES ('feedback', 'new', 'New feedback submitted by $submitted_name.', UNIX_TIMESTAMP(), null, $assignee, 'icon-bubble', $dbconn->insert_id, 'bg-warning')");
 
             if(!empty($notify['email']))
                 $mail->sendMessage($notify['email'], $_SESSION['userInfo']['email'], 'New Feedback Logged', $task_desc);
@@ -42,7 +43,7 @@ switch($action) {
 
         $output = array();
 
-        $tasks_qry = $dbconn->query("SELECT tasks.id AS taskID, tasks.name AS taskName, user.name AS userName, tasks.*, user.* FROM tasks LEFT JOIN user ON tasks.assigned_to = user.id WHERE resolved = FALSE ORDER BY created DESC;");
+        $tasks_qry = $dbconn->query("SELECT tasks.id AS taskID, tasks.name AS taskName, user.name AS userName, tasks.*, user.* FROM tasks LEFT JOIN user ON tasks.assigned_to = user.id WHERE resolved = FALSE ORDER BY user.name, tasks.priority, tasks.created ASC;");
 
         if($tasks_qry->num_rows > 0) {
             while($task = $tasks_qry->fetch_assoc()) {
@@ -106,7 +107,7 @@ switch($action) {
         if($task_qry->num_rows === 1) {
             $task = $task_qry->fetch_assoc();
 
-            $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE");
+            $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
 
             while($user = $user_qry->fetch_assoc()) {
                 $selected = ($user['id'] === $task['assigned_to']) ? "selected" : null;
@@ -116,18 +117,26 @@ switch($action) {
                 if($user['id'] === $task['submitted_by']) $created_by = $user['name'];
             }
 
+            $perform_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
+
+            while($perform = $perform_qry->fetch_assoc()) {
+                $per_selected = ($perform['id'] === $task['perform_by']) ? "selected" : null;
+
+                $perform_opts .= "<option value='{$perform['id']}' $per_selected>{$perform['name']}</option>";
+            }
+
             $pct_complete = $task['pct_completed'] * 100;
 
             switch($task['priority']) {
-                case 'Week\'s End':
+                case '3 - Week\'s End':
                     $sel_we = "selected";
                     break;
 
-                case 'Day\'s End':
+                case '2 - Day\'s End':
                     $sel_de = "selected";
                     break;
 
-                case 'Immediate':
+                case '1 - Immediate':
                     $sel_imm = "selected";
                     break;
 
@@ -142,46 +151,141 @@ switch($action) {
                         <form name="task_details" id="task_details">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                <h4 class="modal-title" id="modalTaskTitle"><input type="text" value="{$task['name']}" placeholder="Task Title" maxlength="200" name="task_title" id="task_title" class="form-control" style="width:97%;" /></h4>
+                                <h4 class="modal-title" id="modalTaskTitle"><input type="text" value="{$task['name']}" placeholder="Task Title" maxlength="200" name="task_title" id="task_title" class="form-control task_hide" style="width:97%;" /></h4>
                             </div>
                             <div class="modal-body">
-                                <table>
-                                    <tr>
-                                        <td>Assigned To:</td>
-                                        <td>
-                                            <select name="assigned_to" id="assigned_to" class="form-control">
-                                                $user_opts                                        
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Priority:</td>
-                                        <td>
-                                            <select name="priority" id="priority" class="form-control">
-                                                <option value="Week's End" $sel_we>Week's End</option>
-                                                <option value="Day's End" $sel_de>Day's End</option>
-                                                <option value="Immediate" $sel_imm>Immediate</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>ETA</td>
-                                        <td><input type="text" value="{$task['eta_hrs']}" placeholder="Hours" name="eta" id="eta" class="form-control" style="width:85%;float:left;" maxlength="2" /><span style="float:right;line-height:30px;">&nbsp;HRS</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>% Complete:</td>
-                                        <td><input type="text" value="$pct_complete" placeholder="Percent" name="pct_completed" id="pct_completed" class="form-control" style="width:90%;float:left;" maxlength="3"><span style="float:right;line-height:30px;">&nbsp;%</span> </td>
-                                    </tr>
-                                </table>
+                                <div class="task_hide">
+                                    <table>
+                                        <tr>
+                                            <td>Assigned To:</td>
+                                            <td>
+                                                <select name="assigned_to" id="assigned_to" class="form-control">
+                                                    $user_opts                                        
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Perform By:</td>
+                                            <td>
+                                                <select name="perform_by" id="perform_by" class="form-control">
+                                                    $perform_opts                                        
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Priority:</td>
+                                            <td>
+                                                <select name="priority" id="priority" class="form-control">
+                                                    <option value="3 - End of Week" $sel_we>End of Week</option>
+                                                    <option value="2 - End of Day" $sel_de>End of Day</option>
+                                                    <option value="1 - Immediate" $sel_imm>Immediate</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ETA</td>
+                                            <td><input type="text" value="{$task['eta_hrs']}" placeholder="Hours" name="eta" id="eta" class="form-control" style="width:85%;float:left;" maxlength="2" /><span style="float:right;line-height:30px;">&nbsp;HRS</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>% Complete:</td>
+                                            <td><input type="text" value="$pct_complete" placeholder="Percent" name="pct_completed" id="pct_completed" class="form-control" style="width:90%;float:left;" maxlength="3"><span style="float:right;line-height:30px;">&nbsp;%</span> </td>
+                                        </tr>
+                                    </table>
     
-                                <div id="task_description">{$task['description']}</div>
+                                    <div id="task_description" class="task_description">{$task['description']}</div>
                                 
-                                <div id="task_created_by">-- $created_by</div>
+                                    <div id="task_created_by">-- $created_by</div>                                
+                                </div>
+                                
+                                <div id="split_body" class="task_description" style="display:none;">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <textarea class="form-control" name="split-text-1" id="split-text-1" style="width:100%;height:100px;">{$task['description']}</textarea>
+                                        </div>
+                                    </div>
+                    
+                                    <div class="row" style="margin-top:5px;">
+                                        <div class="col-md-1" style="padding-top:3px;"><label for="split_feedback_to_1">Notify: </label></div>
+                    
+                                        <div class="col-md-4">
+                                            <select name="split_feedback_to_1" id="split_feedback_to_1" class="form-control">
+                                                <optgroup label="Office">
+                                                    <option value="9">Production Administrator</option>
+                                                    <option value="14">Shop Foreman</option>
+                                                    <option value="7">General Manager</option>
+                                                    <option value="1">IT</option>
+                                                    <option value="10">Engineering</option>
+                                                </optgroup>
+                    
+                                                <optgroup label="Shop">
+                                                    <option value="15">Box</option>
+                                                    <option value="12">Customs</option>
+                                                    <option value="11">Assembly</option>
+                                                    <option value="22">Finishing</option>
+                                                    <option value="11">Shipping</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-1" style="padding-top:3px;"><label for="split_1_priority">Priority: </label></div>
+                                        
+                                        <div class="col-md-4">
+                                            <select name="split_1_priority" id="split_1_priority" class="form-control">
+                                                <option value="3 - End of Week">End of Week</option>
+                                                <option value="2 - End of Day">End of Day</option>
+                                                <option value="1 - Immediate">Immediate</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row" style="margin-top:20px;">
+                                        <div class="col-md-12">
+                                            <textarea class="form-control" name="split-text-2" id="split-text-2" style="width:100%;height:100px;">{$task['description']}</textarea>
+                                        </div>
+                                    </div>
+                    
+                                    <div class="row" style="margin-top:5px;">
+                                        <div class="col-md-1" style="padding-top:3px;"><label for="split_feedback_to_2">Notify: </label></div>
+                    
+                                        <div class="col-md-4">
+                                            <select name="split_feedback_to_2" id="split_feedback_to_2" class="form-control">
+                                                <optgroup label="Office">
+                                                    <option value="9">Production Administrator</option>
+                                                    <option value="14">Shop Foreman</option>
+                                                    <option value="7">General Manager</option>
+                                                    <option value="1">IT</option>
+                                                    <option value="10">Engineering</option>
+                                                </optgroup>
+                    
+                                                <optgroup label="Shop">
+                                                    <option value="15">Box</option>
+                                                    <option value="12">Customs</option>
+                                                    <option value="11">Assembly</option>
+                                                    <option value="22">Finishing</option>
+                                                    <option value="11">Shipping</option>
+                                                </optgroup>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="col-md-1" style="padding-top:3px;"><label for="split_2_priority">Priority: </label></div>
+                                        
+                                        <div class="col-md-4">
+                                            <select name="split_2_priority" id="split_2_priority" class="form-control">
+                                                <option value="3 - End of Week">End of Week</option>
+                                                <option value="2 - End of Day">End of Day</option>
+                                                <option value="1 - Immediate">Immediate</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary-outline waves-effect waves-light" id="split_task_btn" data-taskid="{$task['id']}">Split Task</button>
                                 <button type="button" class="btn btn-primary waves-effect waves-light" id="update_task_btn" data-taskid="{$task['id']}">Update Task</button>
                             </div>
+                            
+                            <input type='hidden' name='split_task_enabled' value='0' id='split_task_enabled' />
                         </form>
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
@@ -194,20 +298,66 @@ HEREDOC;
         break;
     case 'update_task':
         $task_id = sanitizeInput($_REQUEST['task_id']);
-        $task_title = sanitizeInput($_REQUEST['task_title']);
-        $assigned_to = sanitizeInput($_REQUEST['assigned_to']);
-        $priority = sanitizeInput($_REQUEST['priority']);
-        $eta = sanitizeInput($_REQUEST['eta']);
-        $pct_completed = sanitizeInput($_REQUEST['pct_completed']) / 100;
 
-        $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
+        $task_split = (bool)$_REQUEST['split_task_enabled'];
 
-        if($dbconn->query("UPDATE tasks SET name = '$task_title', last_updated = NOW(), priority = '$priority', 
-          assigned_to = '$assigned_to', resolved = $resolved, pct_completed = '$pct_completed', eta_hrs = '$eta' WHERE id = '$task_id'")) {
-            echo displayToast("success", "Updated task successfully.", "Task Updated");
-            echo "<script>task_table.ajax.reload(null,false);</script>";
+        if($task_split) {
+            $split_1_text = sanitizeInput($_REQUEST['split-text-1']);
+            $split_1_notify = sanitizeInput($_REQUEST['split_feedback_to_1']);
+            $split_1_priority = sanitizeInput($_REQUEST['split_1_priority']);
+
+            $split_2_text = sanitizeInput($_REQUEST['split-text-2']);
+            $split_2_notify = sanitizeInput($_REQUEST['split_feedback_to_2']);
+            $split_2_priority = sanitizeInput($_REQUEST['split_2_priority']);
+
+            $db_stmt = $dbconn->prepare("INSERT INTO tasks (name, description, created,  priority, assigned_to, submitted_by, resolved) VALUES ('', ?, UNIX_TIMESTAMP(), ?, ?, {$_SESSION['userInfo']['id']}, FALSE);");
+
+            if(!$db_stmt) dbLogSQLErr($dbconn);
+
+            $db_stmt->bind_param("ssi", $desc, $priority, $assignee);
+
+            try {
+                $desc = $split_1_text;
+                $priority = $split_1_priority;
+                $assignee = $split_1_notify;
+
+                $db_stmt->execute();
+            } catch(Exception $e) {
+                echo displayToast("error", "Unable to create task 1: $e", "Task 1 Error");
+            }
+
+            try {
+                $desc = $split_2_text;
+                $priority = $split_2_priority;
+                $assignee = $split_2_notify;
+
+                $db_stmt->execute();
+            } catch(Exception $e) {
+                echo displayToast("error", "Unable to create task 2: $e", "Task 2 Error");
+            }
+
+            $dbconn->query("UPDATE tasks SET pct_completed = 1, resolved = TRUE, last_updated = UNIX_TIMESTAMP() WHERE id = $task_id");
+
+            echo displayToast("success", "Split task successfully.", "Task Split");
+
+            $db_stmt->close();
         } else {
-            dbLogSQLErr($dbconn);
+            $task_title = sanitizeInput($_REQUEST['task_title']);
+            $assigned_to = sanitizeInput($_REQUEST['assigned_to']);
+            $priority = sanitizeInput($_REQUEST['priority']);
+            $eta = sanitizeInput($_REQUEST['eta']);
+            $perform_by = sanitizeInput($_REQUEST['perform_by']);
+            $pct_completed = sanitizeInput($_REQUEST['pct_completed']) / 100;
+
+            $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
+
+            if($dbconn->query("UPDATE tasks SET name = '$task_title', last_updated = NOW(), priority = '$priority', 
+          assigned_to = '$assigned_to', resolved = $resolved, pct_completed = '$pct_completed', eta_hrs = '$eta', perform_by = '$perform_by' WHERE id = '$task_id'")) {
+                echo displayToast("success", "Updated task successfully.", "Task Updated");
+                echo "<script>task_table.ajax.reload(null,false);</script>";
+            } else {
+                dbLogSQLErr($dbconn);
+            }
         }
 
         break;

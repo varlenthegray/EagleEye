@@ -105,7 +105,7 @@ require '../includes/header_start.php';
         scrollY: '68vh',
         scrollCollapse: true,
         "order": [[4, "asc"]],
-        "dom": '<"#jiq_header.dt-custom-header"><?php echo ((bool)$_SESSION['user_prefs']['filters_enabled']) ? "ftipr" : "tipr"; ?>',
+        "dom": '<"#jiq_header.dt-custom-header"><?php echo ((bool)$_SESSION['userInfo']['pref_filters']) ? "ftipr" : "tipr"; ?>',
         "oLanguage": {
             "sSearch": "Filter: "
         }
@@ -116,7 +116,7 @@ require '../includes/header_start.php';
         "pageLength": 25,
         scrollY: '25.65vh',
         scrollCollapse: true,
-        "dom": '<"#active_header.dt-custom-header"><?php echo ((bool)$_SESSION['user_prefs']['filters_enabled']) ? "ftipr" : "tipr"; ?>',
+        "dom": '<"#active_header.dt-custom-header"><?php echo ((bool)$_SESSION['userInfo']['pref_filters']) ? "ftipr" : "tipr"; ?>',
         "oLanguage": {
             "sSearch": "Filter: "
         }
@@ -128,7 +128,7 @@ require '../includes/header_start.php';
         "order": [[4, "desc"]],
         scrollY: '25.65vh',
         scrollCollapse: true,
-        "dom": '<"#completed_header.dt-custom-header"><?php echo ((bool)$_SESSION['user_prefs']['filters_enabled']) ? "ftipr" : "tipr"; ?>',
+        "dom": '<"#completed_header.dt-custom-header"><?php echo ((bool)$_SESSION['userInfo']['pref_filters']) ? "ftipr" : "tipr"; ?>',
         "oLanguage": {
             "sSearch": "Filter: "
         }
