@@ -302,11 +302,11 @@ HEREDOC;
         $task_split = (bool)$_REQUEST['split_task_enabled'];
 
         if($task_split) {
-            $split_1_text = sanitizeInput($_REQUEST['split-text-1']);
+            $split_1_text = sanitizeInput($_REQUEST['s_text_1']);
             $split_1_notify = sanitizeInput($_REQUEST['split_feedback_to_1']);
             $split_1_priority = sanitizeInput($_REQUEST['split_1_priority']);
 
-            $split_2_text = sanitizeInput($_REQUEST['split-text-2']);
+            $split_2_text = sanitizeInput($_REQUEST['s_text_2']);
             $split_2_notify = sanitizeInput($_REQUEST['split_feedback_to_2']);
             $split_2_priority = sanitizeInput($_REQUEST['split_2_priority']);
 
@@ -337,6 +337,15 @@ HEREDOC;
             }
 
             $dbconn->query("UPDATE tasks SET pct_completed = 1, resolved = TRUE, last_updated = UNIX_TIMESTAMP() WHERE id = $task_id");
+
+            $usr_1_qry = $dbconn->query("SELECT email FROM user WHERE id = $split_1_notify");
+            $usr_1 = $usr_1_qry->fetch_assoc();
+
+            $usr_2_qry = $dbconn->query("SELECT email FROM user WHERE id = $split_2_notify");
+            $usr_2 = $usr_2_qry->fetch_assoc();
+
+            $mail->sendMessage($usr_1['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", $split_1_text);
+            $mail->sendMessage($usr_2['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", $split_2_text);
 
             echo displayToast("success", "Split task successfully.", "Task Split");
 

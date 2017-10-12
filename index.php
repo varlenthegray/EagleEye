@@ -600,7 +600,10 @@ require 'includes/header_end.php';
             var form_info = $("#task_details").serialize();
             var task_id = $(this).data("taskid");
 
-            $.post("/ondemand/admin/tasks.php?action=update_task&" + form_info, {task_id: task_id}, function(data) {
+            var s_text_1 = tinyMCE.get('split-text-1').getContent();
+            var s_text_2 = tinyMCE.get('split-text-2').getContent();
+
+            $.post("/ondemand/admin/tasks.php?action=update_task&" + form_info, {task_id: task_id, s_text_1: s_text_1, s_text_2: s_text_2}, function(data) {
                 $("body").append(data);
                 $("#modalTaskInfo").modal('hide');
 
