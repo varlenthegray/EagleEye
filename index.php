@@ -599,9 +599,8 @@ require 'includes/header_end.php';
         .on("click", "#update_task_btn", function() {
             var form_info = $("#task_details").serialize();
             var task_id = $(this).data("taskid");
-
-            var s_text_1 = tinyMCE.get('split-text-1').getContent();
-            var s_text_2 = tinyMCE.get('split-text-2').getContent();
+            var s_text_1 = $("#split-text-1").val();
+            var s_text_2 = $("#split-text-2").val();
 
             $.post("/ondemand/admin/tasks.php?action=update_task&" + form_info, {task_id: task_id, s_text_1: s_text_1, s_text_2: s_text_2}, function(data) {
                 $("body").append(data);
@@ -612,25 +611,7 @@ require 'includes/header_end.php';
         })
         .on("click", "#split_task_btn", function() {
             $(".task_hide").toggle(100);
-
-            tinymce.remove('#split-text-1');
-            tinymce.remove('#split-text-2');
-
             $("#split_body").toggle(250);
-
-            tinymce.init({
-                selector:'#split-text-1',
-                menubar: false,
-                plugins: ['advlist autolink lists charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime table contextmenu paste code'],
-                toolbar: 'undo redo | insert | styleselect | bold italic | bullist numlist outdent indent'
-            });
-
-            tinymce.init({
-                selector:'#split-text-2',
-                menubar: false,
-                plugins: ['advlist autolink lists charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime table contextmenu paste code'],
-                toolbar: 'undo redo | insert | styleselect | bold italic | bullist numlist outdent indent'
-            });
 
             setTimeout(function() {
                 if($("#split_body").is(":visible")) {

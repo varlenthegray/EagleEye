@@ -96,13 +96,6 @@
     <script>
         var userTZ = '<?php echo $_SESSION['userInfo']['timezone']; ?>';
 
-        tinymce.init({
-            selector:'textarea#feedback-text',
-            menubar: false,
-            plugins: ['advlist autolink lists charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime table contextmenu paste code'],
-            toolbar: 'undo redo | insert | styleselect | bold italic | bullist numlist outdent indent'
-        });
-
         setInterval(function() {
             $.ajax({
                 cache: false,

@@ -229,7 +229,7 @@ require_once ("header_start.php");
 
     $("body")
         .on("click", "#feedback-submit", function() {
-            var description = tinyMCE.get('feedback-text').getContent();
+            var description = $("#feedback-text").val();
             var feedback_to = $("#feedback_to").val();
             var priority = $("#feedback_priority").val();
 
@@ -237,8 +237,7 @@ require_once ("header_start.php");
                 $("body").append(data);
                 $("#feedback-page").modal('hide');
                 unsaved = false;
-
-                tinyMCE.get('feedback-text').setContent("");
+                $("#feedback-text").val("");
             });
         })
         .on("click", "#notification_list", function() {

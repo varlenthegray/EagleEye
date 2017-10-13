@@ -36,8 +36,8 @@ class mail_handler {
         .clearfix {clear:both;}
         .main-window {margin-top:10px;}
         .main-window .header {font-size:1.5em;font-weight:bold;}
-        .main-window .information {margin-top:8px;}
-        .main-window .signature {padding:25px 0 0 10px;}
+        .main-window .information {margin-top:25px;}
+        .main-window .signature {padding:25px 0 0 10px;margin:25px 0 0 10px;}
         .footer {margin-top:25px;font-size:.8em;}
     </style>
 </head>

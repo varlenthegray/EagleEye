@@ -106,3 +106,8 @@ function calcDelDate($days_to_ship) {
 
     return date("m/d/Y", $final_date);
 }
+
+function mail_nl2br($string) {
+    //return preg_replace('/\<br(\s*)?\/?\>/i', "\n", $string);
+    return str_replace('\\n', '<br />', $string);
+}

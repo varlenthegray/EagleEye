@@ -9,9 +9,9 @@ define("RELEASE_DATE", "10/12/17");
 define("LOGO_TEXT", "Stone Mountain Cabinetry"); // The logo text displayed
 define("TAB_TEXT", "SMCM - Dashboard"); // The text displayed in the title bar/tab
 define("FOOTER_TEXT", "SMCM"); // Footer copyright name specifically
-define("DATE_TIME_DEFAULT", "M jS Y @ g:i:s A T"); // the default date/time format to use
+define("DATE_TIME_DEFAULT", "M jS Y g:i:s A T"); // the default date/time format to use
 define("DATE_DEFAULT", "n/j/y"); // the default date format to use
-define("DATE_TIME_ABBRV", "n/j/y @ g:i:s A"); // the abbreviated date/time format to use
+define("DATE_TIME_ABBRV", "n/j/y g:i:s A"); // the abbreviated date/time format to use
 define("TIME_ONLY", "g:i:s A"); // format for only time excluding date
 define("SITE_URL", "http://smc.trustedprogrammer.com/"); // the SITE URL, used to configure header_start.php's includes
 

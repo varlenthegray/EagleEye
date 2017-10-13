@@ -552,6 +552,8 @@ body {
   padding-top: 10px;
   border-top: 1px solid #000000;
   width: 100%;
+  max-height: 175px;
+  overflow-y: auto;
 }
 
 // modal header

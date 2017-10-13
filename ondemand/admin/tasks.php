@@ -25,12 +25,12 @@ switch($action) {
         $notify_qry = $dbconn->query("SELECT * FROM user WHERE id = $assignee");
         $notify = $notify_qry->fetch_assoc();
 
-        if($dbconn->query("INSERT INTO tasks (name, description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved) 
+        if($dbconn->query("INSERT INTO tasks (name, description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved)
          VALUES ('', '$task_desc', UNIX_TIMESTAMP(), null, '$priority', $assignee, null, $submitted_by, FALSE);")) {
             $dbconn->query("INSERT INTO alerts (type, status, message, time_created, time_acknowledged, alert_user, icon, type_id, color) VALUES ('feedback', 'new', 'New feedback submitted by $submitted_name.', UNIX_TIMESTAMP(), null, $assignee, 'icon-bubble', $dbconn->insert_id, 'bg-warning')");
 
             if(!empty($notify['email']))
-                $mail->sendMessage($notify['email'], $_SESSION['userInfo']['email'], 'New Feedback Logged', $task_desc);
+                $mail->sendMessage($notify['email'], $_SESSION['userInfo']['email'], 'New Feedback Logged', mail_nl2br($task_desc));
 
             echo displayToast("success", "Successfully logged feedback.", "Feedback Logged");
         } else {
@@ -126,11 +126,11 @@ switch($action) {
             $pct_complete = $task['pct_completed'] * 100;
 
             switch($task['priority']) {
-                case '3 - Week\'s End':
+                case '3 - End of Week':
                     $sel_we = "selected";
                     break;
 
-                case '2 - Day\'s End':
+                case '2 - End of Day':
                     $sel_de = "selected";
                     break;
 
@@ -143,13 +143,19 @@ switch($action) {
                     break;
             }
 
+            $task_description = nl2br($task['description']);
+
+            $task_initial_comment_time = date(DATE_TIME_ABBRV, $task['created']);
+
+            $desc_nl = str_ireplace("<br />", "\r\n", $task['description']);
+
             echo <<<HEREDOC
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <form name="task_details" id="task_details">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                <h4 class="modal-title" id="modalTaskTitle"><input type="text" value="{$task['name']}" placeholder="Task Title" maxlength="200" name="task_title" id="task_title" class="form-control task_hide" style="width:97%;" /></h4>
+                                <h4 class="modal-title" id="modalTaskTitle">Task Details</h4>
                             </div>
                             <div class="modal-body">
                                 <div class="task_hide">
@@ -193,23 +199,21 @@ switch($action) {
                                                 </tr>
                                             </table>
             
-                                            <div id="task_description" class="task_description">{$task['description']}</div>
-                                        
-                                            <div id="task_created_by">-- $created_by</div>
+                                            <div id="task_description" class="task_description"><strong>($created_by $task_initial_comment_time):</strong> $task_description</div>
                                         </div>
                                     </div>
                                     
-                                    <div class="row">
+                                    <div class="row" style="margin-top:15px;">
                                         <div class="col-md-12">
                                             <textarea class="form-control" name="addl_notes" id="addl_notes" style="width:100%;height:100px;"></textarea>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div id="split_body" class="task_description" style="display:none;">
+                                <div id="split_body" style="display:none;">
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <textarea class="form-control" name="split-text-1" id="split-text-1" style="width:100%;height:100px;">{$task['description']}</textarea>
+                                            <textarea class="form-control" name="split-text-1" id="split-text-1" style="width:100%;height:150px;">$desc_nl</textarea>
                                         </div>
                                     </div>
                     
@@ -250,7 +254,7 @@ switch($action) {
                                     
                                     <div class="row" style="margin-top:20px;">
                                         <div class="col-md-12">
-                                            <textarea class="form-control" name="split-text-2" id="split-text-2" style="width:100%;height:100px;">{$task['description']}</textarea>
+                                            <textarea class="form-control" name="split-text-2" id="split-text-2" style="width:100%;height:150px;">$desc_nl</textarea>
                                         </div>
                                     </div>
                     
@@ -312,6 +316,9 @@ HEREDOC;
 
         $task_split = (bool)$_REQUEST['split_task_enabled'];
 
+        $task_qry = $dbconn->query("SELECT * FROM tasks WHERE id = $task_id");
+        $task = $task_qry->fetch_assoc();
+
         if($task_split) {
             $split_1_text = sanitizeInput($_REQUEST['s_text_1']);
             $split_1_notify = sanitizeInput($_REQUEST['split_feedback_to_1']);
@@ -321,7 +328,7 @@ HEREDOC;
             $split_2_notify = sanitizeInput($_REQUEST['split_feedback_to_2']);
             $split_2_priority = sanitizeInput($_REQUEST['split_2_priority']);
 
-            $db_stmt = $dbconn->prepare("INSERT INTO tasks (name, description, created,  priority, assigned_to, submitted_by, resolved) VALUES ('', ?, UNIX_TIMESTAMP(), ?, ?, {$_SESSION['userInfo']['id']}, FALSE);");
+            $db_stmt = $dbconn->prepare("INSERT INTO tasks (name, description, created,  priority, assigned_to, submitted_by, resolved, split_by) VALUES ('', ?, UNIX_TIMESTAMP(), ?, ?, {$task['submitted_by']}, FALSE, {$_SESSION['userInfo']['id']});");
 
             if(!$db_stmt) dbLogSQLErr($dbconn);
 
@@ -355,8 +362,8 @@ HEREDOC;
             $usr_2_qry = $dbconn->query("SELECT email FROM user WHERE id = $split_2_notify");
             $usr_2 = $usr_2_qry->fetch_assoc();
 
-            $mail->sendMessage($usr_1['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", $split_1_text);
-            $mail->sendMessage($usr_2['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", $split_2_text);
+            $mail->sendMessage($usr_1['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", nl2br($split_1_text));
+            $mail->sendMessage($usr_2['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", nl2br($split_2_text));
 
             echo displayToast("success", "Split task successfully.", "Task Split");
 
@@ -368,11 +375,16 @@ HEREDOC;
             $eta = sanitizeInput($_REQUEST['eta']);
             $perform_by = sanitizeInput($_REQUEST['perform_by']);
             $pct_completed = sanitizeInput($_REQUEST['pct_completed']) / 100;
+            $reply_text = sanitizeInput($_REQUEST['addl_notes']);
 
             $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
 
             if($dbconn->query("UPDATE tasks SET name = '$task_title', last_updated = NOW(), priority = '$priority', 
-          assigned_to = '$assigned_to', resolved = $resolved, pct_completed = '$pct_completed', eta_hrs = '$eta', perform_by = '$perform_by' WHERE id = '$task_id'")) {
+                assigned_to = '$assigned_to', resolved = $resolved, pct_completed = '$pct_completed', eta_hrs = '$eta', perform_by = '$perform_by' WHERE id = '$task_id'")) {
+                if(!empty($reply_text)) {
+                    $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$reply_text', 'task_reply', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, $task_id)");
+                }
+
                 echo displayToast("success", "Updated task successfully.", "Task Updated");
                 echo "<script>task_table.ajax.reload(null,false);</script>";
             } else {
