@@ -336,7 +336,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td class="gray_bg">Door/Drawer Head:</td>
                     <td class="border_thin_bottom">Exterior Species:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_exterior_species', $info['carcass_exterior_species']); ?></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('species_grade', $info['carcass_exterior_species']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_species_pct" value="0.00" maxlength="4">%</td>
@@ -346,7 +346,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Exterior Finish Type:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_exterior_finish_type', $info['carcass_exterior_finish_type']); ?></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_type', $info['carcass_exterior_finish_type']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_finish_type_pct" value="0.00" maxlength="4">%</td>
@@ -376,7 +376,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Exterior Glaze Technique:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_exterior_glaze_technique', $info['carcass_exterior_glaze_technique']); ?></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('glaze_technique', $info['carcass_exterior_glaze_technique']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
@@ -386,7 +386,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Interior Species:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_interior_species', $info['carcass_interior_species']); ?></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('species_grade', $info['carcass_interior_species']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom"><input type="text" name="interior_species_pct" value="0.00" maxlength="4">%</td>
@@ -396,7 +396,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Interior Finish Type:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_interior_finish_type', $info['carcass_interior_finish_type']); ?></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_type', $info['carcass_interior_finish_type']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom"><input type="text" name="interior_finish_type_pct" value="0.00" maxlength="4">%</td>
@@ -426,7 +426,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Interior Glaze Technique:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('carcass_interior_glaze_technique', $info['carcass_interior_glaze_technique']); ?></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('glaze_technique', $info['carcass_interior_glaze_technique']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom"><input type="text" name="interior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
