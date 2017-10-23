@@ -49,10 +49,10 @@ switch($action) {
             while($task = $tasks_qry->fetch_assoc()) {
                 $short_desc = strip_tags(substr($task['description'], 0, 40) . "...");
 
-                if(empty($task['last_update'])) {
-                    $last_updated = "New";
-                } else {
+                if(!empty($task['last_updated'])) {
                     $last_updated = date(DATE_TIME_ABBRV, $task['last_update']);
+                } else {
+                    $last_updated = "New";
                 }
 
                 if(empty($task['name'])) {
@@ -149,6 +149,18 @@ switch($action) {
 
             $desc_nl = str_ireplace("<br />", "\r\n", $task['description']);
 
+            $notes_desc = "<strong>($created_by $task_initial_comment_time):</strong> $task_description";
+
+            $addl_notes_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'task_reply' AND type_id = $task_id");
+
+            if($addl_notes_qry->num_rows > 0) {
+                while($addl_notes = $addl_notes_qry->fetch_assoc()) {
+                    $comment_time = date(DATE_TIME_ABBRV, $addl_notes['timestamp']);
+
+                    $notes_desc .= "<br /><br /><strong>({$addl_notes['name']} $comment_time):</strong> {$addl_notes['note']}";
+                }
+            }
+
             echo <<<HEREDOC
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -199,7 +211,7 @@ switch($action) {
                                                 </tr>
                                             </table>
             
-                                            <div id="task_description" class="task_description"><strong>($created_by $task_initial_comment_time):</strong> $task_description</div>
+                                            <div id="task_description" class="task_description">$notes_desc</div>
                                         </div>
                                     </div>
                                     
@@ -379,7 +391,7 @@ HEREDOC;
 
             $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
 
-            if($dbconn->query("UPDATE tasks SET name = '$task_title', last_updated = NOW(), priority = '$priority', 
+            if($dbconn->query("UPDATE tasks SET name = '$task_title', last_updated = UNIX_TIMESTAMP(), priority = '$priority', 
                 assigned_to = '$assigned_to', resolved = $resolved, pct_completed = '$pct_completed', eta_hrs = '$eta', perform_by = '$perform_by' WHERE id = '$task_id'")) {
                 if(!empty($reply_text)) {
                     $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$reply_text', 'task_reply', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, $task_id)");
