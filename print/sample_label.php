@@ -2,6 +2,8 @@
 require '../includes/header_start.php';
 require '../assets/php/phpqrcode/qrlib.php';
 
+outputPHPErrs();
+
 //set it to writable location, a place for temp generated PNG files
 $PNG_TEMP_DIR = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'temp' . DIRECTORY_SEPARATOR;
 
@@ -28,10 +30,14 @@ function translateVIN($segment, $key) {
     if($segment === 'finish_code') {
         $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' OR segment = 'benjamin_moore_paints' OR segment = 'sherwin_williams_paints') AND `key` = '$key'");
     } else {
-        $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
+        $vin_qry = $dbconn->query("SELECT `value` FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
     }
 
-    $vin = $vin_qry->fetch_assoc();
+    if($vin_qry->num_rows === 1) {
+        $vin = $vin_qry->fetch_assoc();
+    } else {
+        $vin = null;
+    }
 
     return "{$key} = {$vin['value']}";
 }
@@ -80,9 +86,9 @@ function translateVIN($segment, $key) {
             <?php echo translateVIN("species_grade", $room['species_grade']); ?><br />
             <?php echo translateVIN("construction_method", $room['construction_method']); ?><br />
             <?php echo translateVIN("door_design", $room['door_design']); ?><br />
-            <?php echo translateVIN("panel_raise_door", $room['panel_raise_door']); ?><br />
-            <?php echo translateVIN("panel_raise_sd", $room['panel_raise_sd']); ?><br />
-            <?php echo translateVIN("panel_raise_td", $room['panel_raise_td']); ?><br />
+            <?php echo translateVIN("panel_raise", $room['panel_raise_door']); ?><br />
+            <?php echo translateVIN("panel_raise", $room['panel_raise_sd']); ?><br />
+            <?php echo translateVIN("panel_raise", $room['panel_raise_td']); ?><br />
             <?php echo translateVIN("edge_profile", $room['edge_profile']); ?><br />
             <?php echo translateVIN("framing_bead", $room['framing_bead']); ?><br />
             <?php echo translateVIN("framing_options", $room['framing_options']); ?><br />
