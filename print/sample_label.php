@@ -80,9 +80,9 @@ function translateVIN($segment, $key) {
             <?php echo translateVIN("species_grade", $room['species_grade']); ?><br />
             <?php echo translateVIN("construction_method", $room['construction_method']); ?><br />
             <?php echo translateVIN("door_design", $room['door_design']); ?><br />
-            <?php echo translateVIN("panel_raise", $room['panel_raise_door']); ?><br />
-            <?php echo translateVIN("panel_raise", $room['panel_raise_sd']); ?><br />
-            <?php echo translateVIN("panel_raise", $room['panel_raise_td']); ?><br />
+            <?php echo translateVIN("panel_raise_door", $room['panel_raise_door']); ?><br />
+            <?php echo translateVIN("panel_raise_sd", $room['panel_raise_sd']); ?><br />
+            <?php echo translateVIN("panel_raise_td", $room['panel_raise_td']); ?><br />
             <?php echo translateVIN("edge_profile", $room['edge_profile']); ?><br />
             <?php echo translateVIN("framing_bead", $room['framing_bead']); ?><br />
             <?php echo translateVIN("framing_options", $room['framing_options']); ?><br />
