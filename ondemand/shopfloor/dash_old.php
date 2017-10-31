@@ -3,9 +3,9 @@ require '../../includes/header_start.php';
 require ("../../assets/php/composer/vendor/autoload.php"); // require carbon for date formatting, http://carbon.nesbot.com/
 require("../../includes/classes/queue.php");
 
-//outputPHPErrs();
+use Carbon\Carbon;
 
-use Carbon\Carbon; // prep carbon
+//outputPHPErrs();
 
 $queue = new Queue\queue();
 
@@ -179,15 +179,23 @@ switch($_REQUEST['action']) {
 
         break;
     case 'display_active_jobs':
+        $id = $_SESSION['shop_user']['id'];
+
         $output = array();
         $i = 0;
 
-        $self_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.*, rooms.iteration AS rIteration FROM op_queue JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE");
+        $queue_qry = $dbconn->query("SELECT queue.*, queue.id AS qID, operations.*, rooms.*, sales_order.* FROM queue 
+          LEFT JOIN operations ON queue.operation = operations.id
+            LEFT JOIN rooms ON queue.type_id = rooms.id
+              LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num
+                WHERE active_emp LIKE '%\"$id\"%' AND status = 'Active')");
 
-        if($self_qry->num_rows > 0) {
-            while($self = $self_qry->fetch_assoc()) {
+        if($queue_qry->num_rows > 0) {
+            while($self = $queue_qry->fetch_assoc()) {
                 if(!empty($self['subtask'])) {
                     $subtask = " ({$self['subtask']})";
+                } else {
+                    $subtask = null;
                 }
 
                 if($self['job_title'] === 'Non-Billable' || $self['job_title'] === 'On The Fly') {
@@ -244,53 +252,46 @@ switch($_REQUEST['action']) {
             $output['data'][$i][] = "";
             $output['data'][$i][] = "";
             $output['data'][$i][] = "";
-
-            $i += 1;
         }
 
         echo json_encode($output);
 
         break;
     case 'display_job_queue':
-        $queue = sanitizeInput($_REQUEST['queue']);
-        $external_brackets = ['Non-Billable'];
+        $sel_queue = sanitizeInput($_REQUEST['queue']);
 
-        $output = array();
         $i = 0;
+        $output = array();
 
-        if($queue === 'self') {
-            $queue_qry = $dbconn->query("SELECT * FROM user WHERE id = '{$_SESSION['shop_user']['id']}'");
-            $queue_sql = $queue_qry->fetch_assoc();
+        // general queue
+        $queue_qry = $dbconn->query("SELECT queue.*, queue.id AS qID, operations.*, rooms.*, sales_order.* FROM queue 
+          LEFT JOIN operations ON queue.operation = operations.id
+            LEFT JOIN rooms ON queue.type_id = rooms.id
+              LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num
+                WHERE queue.type = 'room' AND responsible_dept = '$sel_queue' AND (status = 'New' OR status = 'Partially Completed' OR status = 'Rework')
+                  AND (active_emp NOT LIKE '%\"{$_SESSION['shop_user']}%\"' OR active_emp IS NULL) 
+                    AND (assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR assigned_to IS NULL) AND published = TRUE");
 
+        if($queue_qry->num_rows > 0){
+            while($queue = $queue_qry->fetch_assoc()) {
+                $release_date = date(DATE_DEFAULT, $queue['created']);
 
-        }
+                if(empty($queue['priority'])) {
+                    $pt_weight_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$queue['product_type']}'");
+                    $pt_weight = $pt_weight_qry->fetch_assoc();
 
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.*, rooms.* FROM op_queue
-              JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id
-               WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
-                AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) 
-                 AND (assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR assigned_to IS NULL) ORDER BY op_queue.priority, op_queue.so_parent, op_queue.room ASC;");
+                    $dts_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'days_to_ship' AND `key` = '{$queue['days_to_ship']}'");
+                    $dts = $dts_qry->fetch_assoc();
 
-        if($op_queue_qry->num_rows > 0) {
-            while($op_queue = $op_queue_qry->fetch_assoc()) {
-                if($op_queue['rework']) {
-                    $rework = "(Rework)";
+                    $age = (((time() - $queue['created']) / 60) / 60) / 24;
+
+                    $priority = ($pt_weight['weight'] * $dts['weight']) * $age;
                 } else {
-                    $rework = null;
+                    $priority = $queue['priority'];
                 }
 
-                $sonum = $op_queue['so_parent'] . "-" . $op_queue['room'];
-                $operation = "{$op_queue['op_id']}: {$op_queue['job_title']} $rework";
-                $release_date = date(DATE_DEFAULT, $op_queue['created']);
-
-                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$op_queue['product_type']}'");
-                $vin = $vin_qry->fetch_assoc();
-
-                $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$op_queue['room_id']}'");
-                $room = $room_qry->fetch_assoc();
-
-                if(!empty($op_queue['assigned_to'])) {
-                    $assigned_usrs = json_decode($op_queue['assigned_to']);
+                if(!empty($queue['assigned_to'])) {
+                    $assigned_usrs = json_decode($queue['assigned_to']);
 
                     $name = null;
 
@@ -306,49 +307,34 @@ switch($_REQUEST['action']) {
                     $assignee = "&nbsp;";
                 }
 
-                if(empty($op_queue['priority'])) {
-                    $pt_weight_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'product_type' AND `column` = '{$room['product_type']}'");
-                    $pt_weight = $pt_weight_qry->fetch_assoc();
-
-                    $dts_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'days_to_ship' AND `column` = '{$room['days_to_ship']}'");
-                    $dts = $dts_qry->fetch_assoc();
-
-                    $age = (((time() - $op_queue['created']) / 60) / 60) / 24;
-
-                    $priority = ($pt_weight['weight'] * $dts['weight']) * $age;
-                } else {
-                    $priority = $op_queue['priority'];
-                }
-
-                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-play'></i></button>";
+                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$queue['qID']}'><i class='zmdi zmdi-play'></i></button>";
                 $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
-                $output['data'][$i][] = $room['room_name'];
-                $output['data'][$i][] = $operation;
+                $output['data'][$i][] = "{$queue['so_parent']}{$queue['room']}-{$queue['iteration']}";
+                $output['data'][$i][] = $queue['room_name'];
+                $output['data'][$i][] = "{$queue['op_id']}: {$queue['job_title']}";
                 $output['data'][$i][] = $release_date;
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = $assignee;
                 $output['data'][$i][] = $priority;
-                $output['data'][$i]['DT_RowId'] = $op_queue['so_parent'];
+                $output['data'][$i]['DT_RowId'] = $queue['so_parent'];
                 $output['data'][$i]['weight'] = $priority;
 
-                $i += 1;
+                $i++;
             }
         }
 
-//        $assigned_ops_qry = $dbconn->query("SELECT * FROM op_queue WHERE assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%'");
+        // assigned queue
+        $assigned_qry = $dbconn->query("SELECT queue.*, queue.id AS qID, operations.*, rooms.*, sales_order.* FROM queue 
+          LEFT JOIN operations ON queue.operation = operations.id
+            LEFT JOIN rooms ON queue.type_id = rooms.id
+              LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num
+                WHERE queue.type = 'room' AND (status = 'New' OR status = 'Partially Completed' OR status = 'Rework')
+                  AND (active_emp NOT LIKE '%\"{$_SESSION['shop_user']}%\"' OR active_emp IS NULL) 
+                    AND assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND published = TRUE");
 
-        $assigned_ops_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.*, rooms.* FROM op_queue
-              JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id
-               WHERE completed = FALSE AND published = TRUE AND assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%' ORDER BY op_queue.so_parent, op_queue.room ASC;");
-
-        if($assigned_ops_qry->num_rows > 0) {
-            while($assigned_ops = $assigned_ops_qry->fetch_assoc()) {
-                $full_assigned_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.*, rooms.* FROM op_queue 
-                 JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE op_queue.id = '{$assigned_ops['queueID']}'");
-                $full_assigned_info = $full_assigned_qry->fetch_assoc();
-
-                $assigned_usrs = json_decode($full_assigned_info['assigned_to']);
+        if($assigned_qry->num_rows > 0) {
+            while($assigned = $assigned_qry->fetch_assoc()) {
+                $assigned_usrs = json_decode($assigned['assigned_to']);
 
                 $name = null;
 
@@ -361,52 +347,72 @@ switch($_REQUEST['action']) {
 
                 $assignee = substr($name, 0, -2);
 
-                $sonum = $full_assigned_info['so_parent'] . "-" . $full_assigned_info['room'];
-                $operation = $full_assigned_info['op_id'] . ": " . $full_assigned_info['job_title'];
-                $release_date = date(DATE_DEFAULT, $full_assigned_info['created']);
+                $release_date = date(DATE_DEFAULT, $assigned['created']);
 
-                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$full_assigned_info['product_type']}'");
-                $vin = $vin_qry->fetch_assoc();
+                if(empty($assigned['priority'])) {
+                    $pt_weight_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$assigned['product_type']}'");
+                    $pt_weight = $pt_weight_qry->fetch_assoc();
 
-                $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$full_assigned_info['room_id']}'");
-                $room = $room_qry->fetch_assoc();
+                    $dts_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'days_to_ship' AND `key` = '{$assigned['days_to_ship']}'");
+                    $dts = $dts_qry->fetch_assoc();
 
-                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-play'></i></button>";
+                    $age = (((time() - $queue['created']) / 60) / 60) / 24;
+
+                    $priority = ($pt_weight['weight'] * $dts['weight']) * $age;
+                } else {
+                    $priority = $queue['priority'];
+                }
+
+                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$assigned['qID']}'><i class='zmdi zmdi-play'></i></button>";
                 $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "{$full_assigned_info['so_parent']}{$full_assigned_info['room']}-{$vin['key']}{$full_assigned_info['iteration']}";
-                $output['data'][$i][] = $room['room_name'];
-                $output['data'][$i][] = $operation;
+                $output['data'][$i][] = "{$assigned['so_parent']}{$assigned['room']}-{$assigned['iteration']}";
+                $output['data'][$i][] = $assigned['room_name'];
+                $output['data'][$i][] = "{$assigned['op_id']}: {$assigned['job_title']}";
                 $output['data'][$i][] = $release_date;
                 $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = $assignee;
-                $output['data'][$i]['DT_RowId'] = $full_assigned_info['so_parent'];
+                $output['data'][$i][] = $priority;
+                $output['data'][$i]['DT_RowId'] = $assigned['so_parent'];
+                $output['data'][$i]['weight'] = $priority;
 
-                $i += 1;
+                $i++;
             }
         }
 
-        $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND responsible_dept = '$queue' ORDER BY job_title ASC");
+        // always present queue
+        $always_visible_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND responsible_dept = '$sel_queue'");
 
-        if($op_queue_qry->num_rows > 0) {
-            while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $id = $op_queue['id'];
-                $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
-                $release_date = date(DATE_DEFAULT, $op_queue['created']);
-                $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
-                $op_info_payload = json_encode($op_info);
+        if($always_visible_qry->num_rows > 0) {
+            while($always_visible = $always_visible_qry->fetch_assoc()) {
+                $release_date = date(DATE_DEFAULT, $always_visible['created']);
 
-                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='$id'><i class='zmdi zmdi-play'></i></button>";
+                if(empty($assigned['priority'])) {
+                    $pt_weight_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND `key` = '{$always_visible['product_type']}'");
+                    $pt_weight = $pt_weight_qry->fetch_assoc();
+
+                    $dts_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'days_to_ship' AND `key` = '{$always_visible['days_to_ship']}'");
+                    $dts = $dts_qry->fetch_assoc();
+
+                    $age = (((time() - $queue['created']) / 60) / 60) / 24;
+
+                    $priority = ($pt_weight['weight'] * $dts['weight']) * $age;
+                } else {
+                    $priority = $queue['priority'];
+                }
+
+                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$always_visible['id']}'><i class='zmdi zmdi-play'></i></button>";
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "---------";
                 $output['data'][$i][] = "---------";
-                $output['data'][$i][] = $operation;
+                $output['data'][$i][] = "{$always_visible['op_id']}: {$always_visible['job_title']}";
                 $output['data'][$i][] = "Now";
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i][] = $priority;
+                $output['data'][$i]['DT_RowId'] = $always_visible['so_parent'];
+                $output['data'][$i]['weight'] = $priority;
 
-                $i += 1;
+                $i++;
             }
         }
 
@@ -644,7 +650,7 @@ HEREDOC;
 
         break;
 
-    case 'get_pause_info':
+    case 'pause_operation':
         $id = sanitizeInput($_REQUEST['opID'], $dbconn); // operation ID from the queue
         $notes = sanitizeInput($_REQUEST['notes'], $dbconn); // notes to submit to the operation
         $qty = sanitizeInput($_REQUEST['qty']); // quantity completed
@@ -654,59 +660,64 @@ HEREDOC;
         echo $pause_op;
 
         break;
-    case 'pause_operation':
-        $id = sanitizeInput($_REQUEST['opID'], $dbconn); // operation ID from the queue
-        $notes = sanitizeInput($_REQUEST['notes'], $dbconn); // notes to submit to the operation
-        $qty = sanitizeInput($_REQUEST['qty']); // quantity completed
+    case 'get_pause_info':
+        $id = sanitizeInput($_REQUEST['opID']);
 
-        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the item from the operation queue
-        $op_queue = $op_queue_qry->fetch_assoc();
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE op_queue.id = '$id'");
 
-        $time = date(DATE_TIME_ABBRV); // grab the current time
+        if($op_queue_qry->num_rows === 1) {
+            $op_queue = $op_queue_qry->fetch_assoc();
 
-        $room_id = $op_queue['room_id']; // assign the room ID for use inside of function incrementJob
+            $header = "Partially Complete {$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']} {$op_queue['op_id']}: {$op_queue['job_title']}";
 
-        $finalnotes = null; // define final notes as null initially
+            echo <<<HEREDOC
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">$header</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <fieldset class='form-group'>
+                                <label for='qtyCompleted'>Quantity Completed</label>
+                                <input type='text' class='form-control' style="width:20%;" id='qtyCompleted' name='qtyComplete' placeholder='Requested {$op_queue['qty_requested']}'  data-toggle='tooltip' data-placement='top' value='{$op_queue['qty_requested']}'>
+                            </fieldset>
+                        
+                            <fieldset class="form-group">
+                                <label for="notes">Notes</label>
+                                <textarea class="form-control" id="notes" name="notes" style="height: 107px" placeholder="Notes and information related to operation."></textarea>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary waves-effect waves-light" id="pause_op" data-id="$id">Update</button>
+                </div>
+            </div>
+        </div>
+HEREDOC;
 
-        if(empty($op_queue['notes'])) { // if no notes exist
-            $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />"; // the notes equals the name and the time
-        } else { // otherwise notes exist
-            $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />" . $op_queue['notes']; // concatenate the notes
-        }
-
-        $op_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
-        $op_results = $op_qry->fetch_assoc();
-        $active_emp = json_decode($op_results['active_employees']);
-
-        if(in_array($_SESSION['shop_user']['id'], $active_emp)) {
-            $loc = array_search($_SESSION['shop_user']['id'], $active_emp);
-            unset($active_emp[$loc]);
-        }
-
-        if(count($active_emp) > 0) {
-            $active = "TRUE";
         } else {
-            $active = "FALSE";
-        }
-
-        $active_employees = json_encode($active_emp);
-
-        if($dbconn->query("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = $active, notes = '$finalnotes', qty_completed = '$qty', partially_completed = TRUE, completed = FALSE, active_employees = '$active_employees' WHERE id = $id")) {
-            $changed = ["End time"=>time(), "Active"=>$active, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Partially Completed"=>true, "Active Employees"=>json_decode($active_employees)];
-            $changed = json_encode($changed);
-
-            if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())"))
-                echo displayToast("info", "Operation has been marked as partially completed.", "Partially Closed Operation");
-            else
-                dbLogSQLErr($dbconn);
-        } else {
+            http_response_code(400); // send bad request response
             dbLogSQLErr($dbconn);
-            die();
         }
-
 
         break;
 
+    case 'complete_operation':
+        $id = sanitizeInput($_POST['opID'], $dbconn); // operation ID from the queue
+        $notes = sanitizeInput($_POST['notes'], $dbconn); // notes to submit to the operation
+        $qty = sanitizeInput($_POST['qty']); // quantity completed
+        $rw_reqd = sanitizeInput($_POST['rework_reqd']); // rework required
+        $rw_reason = sanitizeInput($_POST['rework_reason']); // reason for rework
+        $opnum = sanitizeInput($_POST['opnum']); // operation number itself
+
+        $queue->stopOp($id, $notes, $qty, $rw_reqd, $rw_reason, $opnum);
+
+        break;
     case 'get_stop_info':
         $id = sanitizeInput($_REQUEST['opID']);
 
@@ -742,7 +753,7 @@ HEREDOC;
                                         </select>
                                     </fieldset>
                                 </div>";
-                
+
                 $qty_completed = "<div class='col-md-3'>
                                     <fieldset class='form-group'>
                                         <label for='qtyCompleted'>Quantity Completed</label>
@@ -806,17 +817,6 @@ HEREDOC;
             http_response_code(400); // send bad request response
             dbLogSQLErr($dbconn);
         }
-
-        break;
-    case 'complete_operation':
-        $id = sanitizeInput($_POST['opID'], $dbconn); // operation ID from the queue
-        $notes = sanitizeInput($_POST['notes'], $dbconn); // notes to submit to the operation
-        $qty = sanitizeInput($_POST['qty']); // quantity completed
-        $rw_reqd = sanitizeInput($_POST['rework_reqd']); // rework required
-        $rw_reason = sanitizeInput($_POST['rework_reason']); // reason for rework
-        $opnum = sanitizeInput($_POST['opnum']); // operation number itself
-
-        $queue->stopOp($id, $notes, $qty, $rw_reqd, $rw_reason, $opnum);
 
         break;
 }

@@ -161,7 +161,8 @@ switch($action) {
                 }
             }
 
-            echo <<<HEREDOC
+            echo /** @lang HTML */
+            <<<HEREDOC
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <form name="task_details" id="task_details">

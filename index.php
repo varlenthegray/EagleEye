@@ -458,24 +458,9 @@ require 'includes/header_end.php';
         // -- End Dashboard --
 
         // -- Workcenter --
-        .on("click", ".wc-edit-queue", function() {
+        .on("click", ".wc-view-queue-so", function() {
             var id = $(this).attr("id");
             $("#global_search").val(id).trigger("keyup");
-        })
-        .on("click", "#wc-jiq-update", function() {
-            if(!$("#published").is(":checked")) {
-                var id = $(this).data("id");
-
-                $.post("/ondemand/shopfloor/workcenter.php?action=update_queued_job", {id: id}, function(data) {
-                    $('body').append(data);
-                });
-            } else {
-                displayToast("info", "Nothing to change.", "No changes");
-            }
-
-            $("#viewJobInfo").modal('hide');
-
-            jiq_table.ajax.reload(null,false);
         })
         // -- End Workcenter --
 

@@ -99,7 +99,7 @@ require '../includes/header_start.php';
         "ajax": "/ondemand/shopfloor/workcenter.php?action=display_jiq",
         "pageLength": 25,
         "createdRow": function(row,data,dataIndex) {
-            $(row).addClass("cursor-hand wc-edit-queue");
+            $(row).addClass("cursor-hand wc-view-queue-so");
         },
         "paging": false,
         scrollY: '68vh',
