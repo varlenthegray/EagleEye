@@ -182,7 +182,11 @@ switch($_REQUEST['action']) {
         $output = array();
         $i = 0;
 
-        $self_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.*, rooms.iteration AS rIteration FROM op_queue JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE");
+        $self_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority, op_queue.subtask, operations.responsible_dept, op_queue.start_time, op_queue.room_id FROM op_queue
+              JOIN operations ON op_queue.operation_id = operations.id
+                JOIN rooms ON op_queue.room_id = rooms.id
+                  WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE;");
 
         if($self_qry->num_rows > 0) {
             while($self = $self_qry->fetch_assoc()) {
@@ -196,40 +200,32 @@ switch($_REQUEST['action']) {
                     $zeroed = true;
                     $notes_btn = null;
                 } else {
-                    $pause_btn = "<button class='btn waves-effect btn-primary pull-left pause-operation' id='{$self['opID']}'><i class='zmdi zmdi-pause'></i></button>";
-                    $notes_btn = "<button class='btn waves-effect btn-primary pull-left op-notes' style='margin-left:4px;' id='{$self['opID']}'><i class='fa fa-sticky-note-o'></i></button>";
+                    $pause_btn = "<button class='btn waves-effect btn-primary pull-left pause-operation' id='{$self['id']}'><i class='zmdi zmdi-pause'></i></button>";
+                    $notes_btn = "<button class='btn waves-effect btn-primary pull-left op-notes' style='margin-left:4px;' id='{$self['id']}'><i class='fa fa-sticky-note-o'></i></button>";
                     $margin = '4px';
                     $zeroed = false;
                 }
 
-                $operation = $self['op_id'] . ": " . $self['job_title'] . $subtask;
                 $start_time = ($self['resumed_time'] === null) ? date(TIME_ONLY, $self['start_time']) : date(TIME_ONLY, $self['resumed_time']);
 
-                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$self['product_type']}'");
-                $vin = $vin_qry->fetch_assoc();
-
-                $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$self['room_id']}'");
-                $room = $room_qry->fetch_assoc();
-
-                if(!empty($self['so_parent'])) {
-                    $so = "{$self['so_parent']}{$self['room']}-{$vin['key']}{$self['rIteration']}";
-                } else {
+                if($self['job_title'] === 'Non-Billable' || $self['job_title'] === 'On The Fly') {
                     $so = "---------";
-                }
-
-                if(!empty($room['room_name'])) {
-                    $room = $room['room_name'];
-                } else {
                     $room = "---------";
+                } elseif($self['job_title'] === 'Honey Do') {
+                    $so = $self['room_id'];
+                    $room = "---------";
+                } else {
+                    $so = "{$self['so_parent']}{$self['room']}-{$self['iteration']}";
+                    $room = $self['room_name'];
                 }
 
                 $time = Carbon::createFromTimestamp($self['start_time']); // grab the carbon timestamp
 
-                $output['data'][$i][] = "$pause_btn <button class='btn waves-effect btn-primary pull-left complete-operation' id='{$self['opID']}' style='margin-left:$margin;'><i class='zmdi zmdi-stop'></i></button> $notes_btn";
+                $output['data'][$i][] = "$pause_btn <button class='btn waves-effect btn-primary pull-left complete-operation' id='{$self['id']}' style='margin-left:$margin;'><i class='zmdi zmdi-stop'></i></button> $notes_btn";
                 $output['data'][$i][] = $so;
                 $output['data'][$i][] = $room;
                 $output['data'][$i][] = $self['responsible_dept'];
-                $output['data'][$i][] = $operation;
+                $output['data'][$i][] = "{$self['op_id']}: {$self['job_title']} $subtask";
                 $output['data'][$i][] = $start_time;
                 $output['data'][$i][] = $time->diffForHumans(null,true); // obtain the difference in readable format for humans!
                 $output['data'][$i]['DT_RowId'] = (!$zeroed) ?  $self['so_parent'] : null;
@@ -253,23 +249,50 @@ switch($_REQUEST['action']) {
         break;
     case 'display_job_queue':
         $queue = sanitizeInput($_REQUEST['queue']);
-        $external_brackets = ['Non-Billable'];
 
         $output = array();
         $i = 0;
 
-        if($queue === 'self') {
-            $queue_qry = $dbconn->query("SELECT * FROM user WHERE id = '{$_SESSION['shop_user']['id']}'");
-            $queue_sql = $queue_qry->fetch_assoc();
+        $hd_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, op_queue.rework, op_queue.active_employees, 
+          op_queue.assigned_to, op_queue.priority, op_queue.room_id FROM op_queue
+              JOIN operations ON op_queue.operation_id = operations.id
+                  WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
+                    AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) 
+                      AND (op_queue.assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR op_queue.assigned_to IS NULL)
+                        AND operations.job_title = 'Honey Do';");
 
+        if($hd_qry->num_rows > 0) {
+            while($hd = $hd_qry->fetch_assoc()) {
+                if($hd['rework']) {
+                    $rework = "(Rework)";
+                } else {
+                    $rework = null;
+                }
 
+                $release_date = date(DATE_DEFAULT, $hd['created']);
+
+                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$hd['id']}'><i class='zmdi zmdi-play'></i></button>";
+                $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i][] = $hd['room_id'];
+                $output['data'][$i][] = "---------";
+                $output['data'][$i][] = "{$hd['op_id']}: {$hd['job_title']} $rework";
+                $output['data'][$i][] = $release_date;
+                $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i][] = "&nbsp;";
+                $output['data'][$i][] = "&nbsp;";
+
+                $i += 1;
+            }
         }
 
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.*, rooms.* FROM op_queue
-              JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id
-               WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
-                AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) 
-                 AND (assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR assigned_to IS NULL) ORDER BY op_queue.priority, op_queue.so_parent, op_queue.room ASC;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority FROM op_queue
+              JOIN operations ON op_queue.operation_id = operations.id
+                JOIN rooms ON op_queue.room_id = rooms.id
+                  WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
+                    AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) 
+                      AND (assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR assigned_to IS NULL)
+                        AND operations.job_title != 'Honey Do' ORDER BY op_queue.priority ASC;");
 
         if($op_queue_qry->num_rows > 0) {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
@@ -279,15 +302,7 @@ switch($_REQUEST['action']) {
                     $rework = null;
                 }
 
-                $sonum = $op_queue['so_parent'] . "-" . $op_queue['room'];
-                $operation = "{$op_queue['op_id']}: {$op_queue['job_title']} $rework";
                 $release_date = date(DATE_DEFAULT, $op_queue['created']);
-
-                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$op_queue['product_type']}'");
-                $vin = $vin_qry->fetch_assoc();
-
-                $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$op_queue['room_id']}'");
-                $room = $room_qry->fetch_assoc();
 
                 if(!empty($op_queue['assigned_to'])) {
                     $assigned_usrs = json_decode($op_queue['assigned_to']);
@@ -320,11 +335,11 @@ switch($_REQUEST['action']) {
                     $priority = $op_queue['priority'];
                 }
 
-                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-play'></i></button>";
+                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['id']}'><i class='zmdi zmdi-play'></i></button>";
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
-                $output['data'][$i][] = $room['room_name'];
-                $output['data'][$i][] = $operation;
+                $output['data'][$i][] = $op_queue['room_name'];
+                $output['data'][$i][] = "{$op_queue['op_id']}: {$op_queue['job_title']} $rework";
                 $output['data'][$i][] = $release_date;
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = $assignee;
@@ -336,19 +351,15 @@ switch($_REQUEST['action']) {
             }
         }
 
-//        $assigned_ops_qry = $dbconn->query("SELECT * FROM op_queue WHERE assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%'");
-
-        $assigned_ops_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.*, rooms.* FROM op_queue
-              JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id
-               WHERE completed = FALSE AND published = TRUE AND assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%' ORDER BY op_queue.so_parent, op_queue.room ASC;");
+        $assigned_ops_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority FROM op_queue
+              JOIN operations ON op_queue.operation_id = operations.id
+                JOIN rooms ON op_queue.room_id = rooms.id
+                  WHERE completed = FALSE AND published = TRUE AND assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%' ORDER BY op_queue.priority ASC;");
 
         if($assigned_ops_qry->num_rows > 0) {
             while($assigned_ops = $assigned_ops_qry->fetch_assoc()) {
-                $full_assigned_qry = $dbconn->query("SELECT op_queue.id AS queueID, operations.id AS opID, op_queue.*, operations.*, rooms.* FROM op_queue 
-                 JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE op_queue.id = '{$assigned_ops['queueID']}'");
-                $full_assigned_info = $full_assigned_qry->fetch_assoc();
-
-                $assigned_usrs = json_decode($full_assigned_info['assigned_to']);
+                $assigned_usrs = json_decode($assigned_ops['assigned_to']);
 
                 $name = null;
 
@@ -360,27 +371,24 @@ switch($_REQUEST['action']) {
                 }
 
                 $assignee = substr($name, 0, -2);
+                $release_date = date(DATE_DEFAULT, $assigned_ops['created']);
 
-                $sonum = $full_assigned_info['so_parent'] . "-" . $full_assigned_info['room'];
-                $operation = $full_assigned_info['op_id'] . ": " . $full_assigned_info['job_title'];
-                $release_date = date(DATE_DEFAULT, $full_assigned_info['created']);
-
-                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$full_assigned_info['product_type']}'");
+                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$assigned_ops['product_type']}'");
                 $vin = $vin_qry->fetch_assoc();
 
-                $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$full_assigned_info['room_id']}'");
+                $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$assigned_ops['room_id']}'");
                 $room = $room_qry->fetch_assoc();
 
-                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['queueID']}'><i class='zmdi zmdi-play'></i></button>";
+                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$assigned_ops['id']}'><i class='zmdi zmdi-play'></i></button>";
                 $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "{$full_assigned_info['so_parent']}{$full_assigned_info['room']}-{$vin['key']}{$full_assigned_info['iteration']}";
+                $output['data'][$i][] = "{$assigned_ops['so_parent']}{$assigned_ops['room']}-{$vin['key']}{$assigned_ops['iteration']}";
                 $output['data'][$i][] = $room['room_name'];
-                $output['data'][$i][] = $operation;
+                $output['data'][$i][] = "{$assigned_ops['op_id']}: {$assigned_ops['job_title']}";
                 $output['data'][$i][] = $release_date;
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = $assignee;
-                $output['data'][$i]['DT_RowId'] = $full_assigned_info['so_parent'];
+                $output['data'][$i]['DT_RowId'] = $assigned_ops['so_parent'];
 
                 $i += 1;
             }
@@ -484,98 +492,19 @@ HEREDOC;
             if($op_query->num_rows === 1) {
                 $op_info = $op_query->fetch_assoc();
 
-                if($op !== '000: On The Fly') { // if it's not "on the fly"
-                    if(!empty($op_info['sub_tasks'])) {
-                        $sub_tasks = json_decode($op_info['sub_tasks']);
-
-                        $operation = $op_info['op_id'] . ": " . $op_info['job_title'];
+                switch($op) {
+                    case '000: On The Fly':
                         $current_time = date("g:i A");
                         $responsible_dept = $op_info['responsible_dept'];
+                        $all_ops = null;
 
-                        if(!empty($sub_tasks)) {
-                            $sub_tasklist = '';
+                        $ops_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = FALSE ORDER BY op_id ASC");
 
-                            foreach($sub_tasks as $task) {
-                                $task_id = explode("(", $task);
-                                $task_id_readable = str_replace(" ", "_", $task_id['0']);
-
-                                $task_id_readable = strtolower(rtrim($task_id_readable, "_("));
-                                $task_id = rtrim($task_id['0'], "(");
-
-                                $sub_tasklist .= "<div class='radio'><input type='radio' class='form-control' id='$task_id_readable' name='nonBillableTask' value='$task_id' /> <label for='$task_id_readable'>$task</label></div>";
-                            }
-                        } else {
-                            $sub_tasklist = null;
+                        while($op = $ops_qry->fetch_assoc()) {
+                            $all_ops .= "<option value='{$op['id']}'>{$op['op_id']}: {$op['job_title']}</option>";
                         }
 
-                        $sub_tasklist .= "<div class='radio'><input type='radio' class='form-control' id='other_subtask' name='nonBillableTask' value='Other' /> <label for='other_subtask'>Other</label></div>";
-
                         echo <<<HEREDOC
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h4 class="modal-title" id="modalStartJobTitle">Start a non-billable operation at <span id="start_job_time">$current_time</span> as $responsible_dept?</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    $sub_tasklist
-                                </div>
-                                
-                                <div class="col-md-8 has-danger" id="other_notes_section" style="height: 138px; display: none;">
-                                    <label for="information">Non-Billable - Other Notes</label>
-                                    <textarea class="form-control form-control-danger" id="other_notes_field" name="other_notes" placeholder="Other Notes" style="height: 100%;" required></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="$id">Start Operation</button>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal-dialog -->
-HEREDOC;
-                    } else {
-                        $operation = $op_info['op_id'] . ": " . $op_info['job_title'];
-                        $current_time = date("g:i A");
-                        $responsible_dept = $op_info['responsible_dept'];
-
-                        echo <<<HEREDOC
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h4 class="modal-title" id="modalStartJobTitle">Start $operation at <span id="start_job_time">$current_time</span> as $responsible_dept?</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-8" id="notes_section" style="height: 138px;">
-                                    <label for="notes_field">Notes</label>
-                                    <textarea class="form-control" id="notes_field" name="notes_field" placeholder="Notes regarding this operation." style="height: 90%;"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                            <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="$id">Start Operation</button>
-                        </div>
-                    </div><!-- /.modal-content -->
-                </div><!-- /.modal-dialog -->
-HEREDOC;
-                    }
-                } else { // if it is "on the fly"
-                    $current_time = date("g:i A");
-                    $responsible_dept = $op_info['responsible_dept'];
-                    $all_ops = null;
-
-                    $ops_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = FALSE ORDER BY op_id ASC");
-
-                    while($op = $ops_qry->fetch_assoc()) {
-                        $all_ops .= "<option value='{$op['id']}'>{$op['op_id']}: {$op['job_title']}</option>";
-                    }
-
-                    echo <<<HEREDOC
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -635,6 +564,120 @@ HEREDOC;
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
 HEREDOC;
+
+                        break;
+
+                    case '000: Honey Do':
+                        $operation = $op_info['op_id'] . ": " . $op_info['job_title'];
+                        $current_time = date("g:i A");
+                        $responsible_dept = $op_info['responsible_dept'];
+
+                        echo <<<HEREDOC
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="modalStartJobTitle">Start $operation at <span id="start_job_time">$current_time</span> as $responsible_dept?</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-8" id="notes_section" style="height: 138px;">
+                                    <label for="notes_field">Notes</label>
+                                    <textarea class="form-control" id="notes_field" name="notes_field" placeholder="Notes regarding this operation." style="height: 90%;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="$id">Start Operation</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+HEREDOC;
+
+                        break;
+                    default:
+                        if(!empty($op_info['sub_tasks'])) {
+                            $sub_tasks = json_decode($op_info['sub_tasks']);
+
+                            $operation = $op_info['op_id'] . ": " . $op_info['job_title'];
+                            $current_time = date("g:i A");
+                            $responsible_dept = $op_info['responsible_dept'];
+
+                            if(!empty($sub_tasks)) {
+                                $sub_tasklist = '';
+
+                                foreach($sub_tasks as $task) {
+                                    $task_id = explode("(", $task);
+                                    $task_id_readable = str_replace(" ", "_", $task_id['0']);
+
+                                    $task_id_readable = strtolower(rtrim($task_id_readable, "_("));
+                                    $task_id = rtrim($task_id['0'], "(");
+
+                                    $sub_tasklist .= "<div class='radio'><input type='radio' class='form-control' id='$task_id_readable' name='nonBillableTask' value='$task_id' /> <label for='$task_id_readable'>$task</label></div>";
+                                }
+                            } else {
+                                $sub_tasklist = null;
+                            }
+
+                            $sub_tasklist .= "<div class='radio'><input type='radio' class='form-control' id='other_subtask' name='nonBillableTask' value='Other' /> <label for='other_subtask'>Other</label></div>";
+
+                            echo <<<HEREDOC
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="modalStartJobTitle">Start a non-billable operation at <span id="start_job_time">$current_time</span> as $responsible_dept?</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    $sub_tasklist
+                                </div>
+                                
+                                <div class="col-md-8 has-danger" id="other_notes_section" style="height: 138px; display: none;">
+                                    <label for="information">Non-Billable - Other Notes</label>
+                                    <textarea class="form-control form-control-danger" id="other_notes_field" name="other_notes" placeholder="Other Notes" style="height: 100%;" required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="$id">Start Operation</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+HEREDOC;
+                        } else {
+                            $operation = $op_info['op_id'] . ": " . $op_info['job_title'];
+                            $current_time = date("g:i A");
+                            $responsible_dept = $op_info['responsible_dept'];
+
+                            echo <<<HEREDOC
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title" id="modalStartJobTitle">Start $operation at <span id="start_job_time">$current_time</span> as $responsible_dept?</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-8" id="notes_section" style="height: 138px;">
+                                    <label for="notes_field">Notes</label>
+                                    <textarea class="form-control" id="notes_field" name="notes_field" placeholder="Notes regarding this operation." style="height: 90%;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-primary waves-effect waves-light" id="start_job" data-startid="$id">Start Operation</button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+HEREDOC;
+                        }
+
+                        break;
                 }
             } else {
                 http_response_code(400); // send bad request response
@@ -645,69 +688,6 @@ HEREDOC;
         break;
 
     case 'get_pause_info':
-        $id = sanitizeInput($_REQUEST['opID'], $dbconn); // operation ID from the queue
-        $notes = sanitizeInput($_REQUEST['notes'], $dbconn); // notes to submit to the operation
-        $qty = sanitizeInput($_REQUEST['qty']); // quantity completed
-
-        $pause_op = $queue->pauseOp($id, $notes, $qty);
-
-        echo $pause_op;
-
-        break;
-    case 'pause_operation':
-        $id = sanitizeInput($_REQUEST['opID'], $dbconn); // operation ID from the queue
-        $notes = sanitizeInput($_REQUEST['notes'], $dbconn); // notes to submit to the operation
-        $qty = sanitizeInput($_REQUEST['qty']); // quantity completed
-
-        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the item from the operation queue
-        $op_queue = $op_queue_qry->fetch_assoc();
-
-        $time = date(DATE_TIME_ABBRV); // grab the current time
-
-        $room_id = $op_queue['room_id']; // assign the room ID for use inside of function incrementJob
-
-        $finalnotes = null; // define final notes as null initially
-
-        if(empty($op_queue['notes'])) { // if no notes exist
-            $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />"; // the notes equals the name and the time
-        } else { // otherwise notes exist
-            $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />" . $op_queue['notes']; // concatenate the notes
-        }
-
-        $op_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
-        $op_results = $op_qry->fetch_assoc();
-        $active_emp = json_decode($op_results['active_employees']);
-
-        if(in_array($_SESSION['shop_user']['id'], $active_emp)) {
-            $loc = array_search($_SESSION['shop_user']['id'], $active_emp);
-            unset($active_emp[$loc]);
-        }
-
-        if(count($active_emp) > 0) {
-            $active = "TRUE";
-        } else {
-            $active = "FALSE";
-        }
-
-        $active_employees = json_encode($active_emp);
-
-        if($dbconn->query("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = $active, notes = '$finalnotes', qty_completed = '$qty', partially_completed = TRUE, completed = FALSE, active_employees = '$active_employees' WHERE id = $id")) {
-            $changed = ["End time"=>time(), "Active"=>$active, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Partially Completed"=>true, "Active Employees"=>json_decode($active_employees)];
-            $changed = json_encode($changed);
-
-            if($dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES ('$id', '{$_SESSION['shop_user']['id']}', '$changed', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())"))
-                echo displayToast("info", "Operation has been marked as partially completed.", "Partially Closed Operation");
-            else
-                dbLogSQLErr($dbconn);
-        } else {
-            dbLogSQLErr($dbconn);
-            die();
-        }
-
-
-        break;
-
-    case 'get_stop_info':
         $id = sanitizeInput($_REQUEST['opID']);
 
         $op_queue_qry = $dbconn->query("SELECT op_queue.id AS opID, op_queue.*, operations.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE op_queue.id = '$id'");
@@ -715,11 +695,67 @@ HEREDOC;
         if($op_queue_qry->num_rows === 1) {
             $op_queue = $op_queue_qry->fetch_assoc();
 
+            $header = "Partially Complete {$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']} {$op_queue['op_id']}: {$op_queue['job_title']}";
+
+            echo <<<HEREDOC
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">$header</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <fieldset class='form-group'>
+                                <label for='qtyCompleted'>Quantity Completed</label>
+                                <input type='text' class='form-control' style="width:20%;" id='qtyCompleted' name='qtyComplete' placeholder='Requested {$op_queue['qty_requested']}'  data-toggle='tooltip' data-placement='top' value='{$op_queue['qty_requested']}'>
+                            </fieldset>
+                        
+                            <fieldset class="form-group">
+                                <label for="notes">Notes</label>
+                                <textarea class="form-control" id="notes" name="notes" style="height: 107px" placeholder="Notes and information related to operation."></textarea>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary waves-effect waves-light" id="pause_op" data-id="$id">Update</button>
+                </div>
+            </div>
+        </div>
+HEREDOC;
+
+        } else {
+            http_response_code(400); // send bad request response
+            dbLogSQLErr($dbconn);
+        }
+
+        break;
+    case 'pause_operation':
+        $id = sanitizeInput($_REQUEST['opID'], $dbconn); // operation ID from the queue
+        $notes = sanitizeInput($_REQUEST['notes'], $dbconn); // notes to submit to the operation
+
+        echo $queue->pauseOp($id, $notes);
+
+        break;
+
+    case 'get_stop_info':
+        $id = sanitizeInput($_REQUEST['opID']);
+
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority FROM op_queue
+              JOIN operations ON op_queue.operation_id = operations.id
+                JOIN rooms ON op_queue.room_id = rooms.id
+                  WHERE op_queue.id = '$id';");
+
+        if($op_queue_qry->num_rows === 1) {
+            $op_queue = $op_queue_qry->fetch_assoc();
+
             if($op_queue['op_id'] !== '000') {
-                $rework_box = '<div class="col-md-3"><div class="form-group row"><div class="col-sm-12"><div class="checkbox checkbox-primary"><input id="rework_reqd" type="checkbox" value="true" name="rework"><label for="rework_reqd" style="margin-top:21px;">Rework Required</label></div></div></div></div>';
-                $rework_codes = "<div class='col-md-3'>
-                                    <fieldset class='form-group rework_reason_group' style='display:none;'>
-                                        <label for='rework_reason'>Reason for Rework</label>
+                $rework_box = '<div class="col-md-3"><div class="form-group row"><div class="col-sm-12"><div class="checkbox checkbox-primary"><input id="rework_reqd" type="checkbox" value="true" name="rework"><label for="rework_reqd">Rework Required</label></div></div></div></div>';
+                $rework_select = "<div class='col-md-3 rework_reason_group' style='display:none;'>
                                         <select class='form-control' id='rework_reason'>
                                             <optgroup label='Material/Hardware'>
                                                 <option value='Material Workmanship'>Material Workmanship</option>
@@ -740,15 +776,16 @@ HEREDOC;
                                                 <option value='Training'>Training</option>
                                             </optgroup>
                                         </select>
-                                    </fieldset>
-                                </div>";
+                                    </div>";
+                $rework_codes = "<div class='col-md-3'><fieldset class='form-group rework_reason_group' style='display:none;'><label for='rework_reason'>Reason for Rework</label></fieldset></div> $rework_select";
+
                 
-                $qty_completed = "<div class='col-md-3'>
-                                    <fieldset class='form-group'>
-                                        <label for='qtyCompleted'>Quantity Completed</label>
-                                        <input type='text' class='form-control' id='qtyCompleted' name='qtyComplete' placeholder='Requested {$op_queue['qty_requested']}'  data-toggle='tooltip' data-placement='top' value='{$op_queue['qty_requested']}'>
-                                    </fieldset>                                                        
-                                </div>";
+//                $qty_completed = "<div class='col-md-3'>
+//                                    <fieldset class='form-group'>
+//                                        <label for='qtyCompleted'>Quantity Completed</label>
+//                                        <input type='text' class='form-control' id='qtyCompleted' name='qtyComplete' placeholder='Requested {$op_queue['qty_requested']}'  data-toggle='tooltip' data-placement='top' value='{$op_queue['qty_requested']}'>
+//                                    </fieldset>
+//                                </div>";
 
                 $header = "Complete {$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']} {$op_queue['op_id']}: {$op_queue['job_title']}";
             } else {
@@ -770,11 +807,11 @@ HEREDOC;
                     <div class="row">
                         <div class="col-md-12">
                             <div class="row">
-                                $qty_completed
-                                
-                                $rework_box
-                                
-                                $rework_codes
+                                <div class="col-md-12">
+                                    $rework_box
+                                    
+                                    $rework_codes
+                                </div>
                             </div>
                             
                             <div class="row">
@@ -816,7 +853,7 @@ HEREDOC;
         $rw_reason = sanitizeInput($_POST['rework_reason']); // reason for rework
         $opnum = sanitizeInput($_POST['opnum']); // operation number itself
 
-        $queue->stopOp($id, $notes, $qty, $rw_reqd, $rw_reason, $opnum);
+        $queue->stopOp($id, $notes, $rw_reqd, $rw_reason, $opnum);
 
         break;
 }

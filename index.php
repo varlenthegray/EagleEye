@@ -295,7 +295,7 @@ require 'includes/header_end.php';
             opFull = $(this).closest('tr').find('td').eq(4).html();
             op_id = $(this).attr("id");
 
-            if(opFull.substring(0,3) === '000') {
+            if(opFull === '000: Non-Billable' || opFull === '000: On The Fly') {
                 $.post("/ondemand/shopfloor/dashboard.php?action=get_start_info", {opID: op_id, op: opFull}, function(data) {
                     $("#modalStartJob").html(data);
                 }).done(function() {
@@ -605,6 +605,17 @@ require 'includes/header_end.php';
                     $("#split_task_enabled").val("0");
                 }
             }, 250);
+        })
+        .on("click", "#create_op_btn", function() {
+            var form_info = $("#task_details").serialize();
+            var task_id = $(this).data("taskid");
+
+            $.post("/ondemand/admin/tasks.php?action=create_operation&" + form_info, {task_id: task_id}, function(data) {
+                $("body").append(data);
+                $("#modalTaskInfo").modal('hide');
+
+                unsaved = false;
+            });
         })
         // -- End Task Page --
     ;

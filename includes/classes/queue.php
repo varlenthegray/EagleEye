@@ -173,76 +173,53 @@ class queue {
         $otf_notes = sanitizeInput($_REQUEST['otf_notes']);
         $otf_iteration = sanitizeInput($_REQUEST['otf_iteration']);
 
-        if($otf) {
-            $otf_notes = "$otf_notes [$time - {$_SESSION['shop_user']['name']} <i>OTF Created</i>]<br />";
-        } else {
-            $notes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />";
-        }
+        $notes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />";
 
-        if(substr($operation, 0, 3) !== '000') { // if this is not a triple-zero operation
-            $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the existing op queue id
+        switch($operation) {
+            case '000: Non-Billable':
+                $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'"); // grab the normal op info
 
-            if($qry->num_rows > 0) {  // if we were able to find the operation inside of the queue
-                $results = $qry->fetch_assoc(); // grab the information
+                if($admin_qry->num_rows > 0) { // if we were able to get the operation
+                    $admin_results = $admin_qry->fetch_assoc();
 
-                $changes = null; // our changes are nothing presently
+                    if((bool)$admin_results['always_visible']) { // check to confirm this is an always visible op
+                        $active[] = $_SESSION['shop_user']['id']; // add individual to the list of active employees
 
-                $active = json_decode($results['active_employees']); // grab the current list of active employees
+                        $active_employees = json_encode($active); // re-encode it for saving
 
-                $active[] = $_SESSION['shop_user']['id']; // add individual to the list of active employees
+                        // create the op queue listing to be able to update information
+                        $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, started_by, subtask, notes) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '{$_SESSION['shop_user']['id']}', '$subtask', '$notes')");
 
-                $active_employees = json_encode($active); // re-encode it for saving
+                        $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
 
-                if($results['start_time'] === null) { // if this op queue item has never been started
-                    if($dbconn->query("UPDATE op_queue SET active = TRUE, start_time = UNIX_TIMESTAMP(), active_employees = '$active_employees' WHERE id = '$id'")) {
-                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees)];
+                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes];
                         $final_changes = json_encode($changes);
 
-                        $stmt = $dbconn->prepare("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
-                        $stmt->bind_param("iis", $id, $shop_usr_id, $final_changes);
+                        $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
 
-                        $shop_usr_id = $_SESSION['shop_user']['id'];
-
-                        $stmt_result = $stmt->execute();
-                        $stmt->close();
-
-                        if($stmt_result)
-                            echo displayToast("success", "Successfully started operation.", "Started Operation");
-                        else
-                            dbLogSQLErr($dbconn);
+                        echo displayToast("success", "Successfully started a non-billable operation.", "Started Non-Billable operation");
                     } else {
-                        dbLogSQLErr($dbconn);
+                        echo displayToast("error", "Unable to properly start this operation (not always visible).", "Error Starting Operation.");
                     }
-                } else { // if the operation has been started previously
-                    $stmt = $dbconn->prepare("UPDATE op_queue SET active = TRUE, resumed_time = UNIX_TIMESTAMP(), active_employees = ? WHERE id = ?");
-                    $stmt->bind_param("si", $active_employees, $id);
-                    $stmt_result = $stmt->execute();
-                    $stmt->close();
-
-                    if($stmt_result) {
-                        $changes = ["Active"=>TRUE, "Resumed Time"=>time(), "Active Employees"=>json_decode($active_employees)];
-                        $final_changes = json_encode($changes);
-
-                        $stmt = $dbconn->prepare("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
-                        $stmt->bind_param("iis", $id, $_SESSION['shop_user']['id'], $final_changes);
-                        $stmt_result = $stmt->execute();
-                        $stmt->close();
-
-                        if($stmt_result)
-                            echo displayToast("success", "Successfully resumed operation.", "Resumed Operation");
-                        else
-                            dbLogSQLErr($dbconn);
-                    } else {
-                        dbLogSQLErr($dbconn);
-                    }
+                } else {
+                    dbLogSQLErr($dbconn);
                 }
-            } else { // we were unable to find an operation in the queue that existed
-                dbLogSQLErr($dbconn); // gonna throw an error here...
-            }
-        } else { // this is a triple-zero op
-            if($otf) { // this is an on-the-fly operation
+
+                break;
+
+            case '000: On The Fly':
+                $otf_info = null;
+
+                $otf_notes = "$otf_notes [$time - {$_SESSION['shop_user']['name']} <i>OTF Created</i>]<br />";
+
+                $otf_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = $otf_so AND room = '$otf_room' AND iteration = '$otf_iteration'");
+
+                if($otf_qry->num_rows > 0) {
+                    $otf_info = $otf_qry->fetch_assoc();
+                }
+
                 // first check to see if anything exists in the op queue with this operation id, room, so# and iteration
-                $exists_qry = $dbconn->query("SELECT * FROM op_queue WHERE so_parent = '$otf_so' AND room = '$otf_room' AND operation_id = '$otf_op' AND iteration = '$otf_iteration' AND published = TRUE AND completed = FALSE");
+                $exists_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = '$otf_op' AND room_id = '{$otf_info['id']}' AND published = TRUE AND completed = FALSE");
 
                 if($exists_qry->num_rows > 0) { // if the operation already exists
                     echo displayToast("error", "Unable to create On The Fly operation. Already exists.", "Op Exists");
@@ -263,17 +240,17 @@ class queue {
                         $operation = $op_qry->fetch_assoc();
 
                         // create the op queue listing to be able to update information
-                        $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, so_parent, room, iteration, operation_id, start_time, active, created, active_employees, started_by, notes, otf_created) 
-                            VALUES (?, ?, ?, ?, ?, UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), ?, ?, ?, TRUE)");
+                        $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, start_time, active, created, active_employees, started_by, notes, otf_created) 
+                            VALUES (?, ?, UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), ?, ?, ?, TRUE)");
 
-                        $stmt = $dbconn->prepare("INSERT INTO queue (type, type_id, operation, status, created, published, active_emp, subtask, otf, priority, assigned_to) 
-                            VALUES ('room', ?, ?, 'Active', UNIX_TIMESTAMP(), TRUE, ?, ?, ?, ?, ?)");
+                        $active[] = $_SESSION['shop_user']['id']; // add individual to the list of active employees
 
-                        $stmt->bind_param("iisdisis");
+                        $active_employees = json_encode($active); // re-encode it for saving
 
+                        $stmt->bind_param("iisis", $room_id, $operation['id'], $active_employees, $_SESSION['shop_user']['id'], $otf_notes);
 
-//                        $dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, iteration, operation_id, start_time, active, created, active_employees, started_by, notes, otf_created)
-//                            VALUES ('$room_id', '$otf_so', '$otf_room', '$otf_iteration', '{$operation['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '{$_SESSION['shop_user']['id']}', '$otf_notes', TRUE)");
+                        $stmt->execute();
+                        $stmt->close();
 
                         $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
 
@@ -287,35 +264,138 @@ class queue {
                         dbLogSQLErr($dbconn);
                     }
                 }
-            } else { // this is not an on-the-fly op
-                $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'"); // grab the normal op info
 
-                if($admin_qry->num_rows > 0) { // if we were able to get the operation
-                    $admin_results = $admin_qry->fetch_assoc();
+                break;
 
-                    if((bool)$admin_results['always_visible']) { // check to confirm this is an always visible op
-                        // create the op queue listing to be able to update information
-                        $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, started_by, subtask, notes) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '{$_SESSION['shop_user']['id']}', '$subtask', '$notes')");
+            case '000: Honey Do':
+                $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the existing op queue id
 
-                        $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
+                if($qry->num_rows > 0) {  // if we were able to find the operation inside of the queue
+                    $results = $qry->fetch_assoc(); // grab the information
 
-                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes];
-                        $final_changes = json_encode($changes);
+                    $changes = null; // our changes are nothing presently
 
-                        $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
+                    $active = json_decode($results['active_employees']); // grab the current list of active employees
 
-                        echo displayToast("success", "Successfully started a non-billable operation.", "Started Non-Billable operation");
-                    } else {
-                        echo displayToast("error", "Unable to properly start this operation (not always visible).", "Error Starting Operation.");
+                    $active[] = $_SESSION['shop_user']['id']; // add individual to the list of active employees
+
+                    $active_employees = json_encode($active); // re-encode it for saving
+
+                    if($results['start_time'] === null) { // if this op queue item has never been started
+                        if($dbconn->query("UPDATE op_queue SET active = TRUE, start_time = UNIX_TIMESTAMP(), active_employees = '$active_employees' WHERE id = '$id'")) {
+                            $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees)];
+                            $final_changes = json_encode($changes);
+
+                            $shop_usr_id = $_SESSION['shop_user']['id'];
+
+                            $stmt = $dbconn->prepare("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
+                            $stmt->bind_param("iis", $id, $shop_usr_id, $final_changes);
+
+                            $stmt_result = $stmt->execute();
+                            $stmt->close();
+
+                            if($stmt_result)
+                                echo displayToast("success", "Successfully started operation.", "Started Operation");
+                            else
+                                dbLogSQLErr($dbconn);
+                        } else {
+                            dbLogSQLErr($dbconn);
+                        }
+                    } else { // if the operation has been started previously
+                        $stmt = $dbconn->prepare("UPDATE op_queue SET active = TRUE, resumed_time = UNIX_TIMESTAMP(), active_employees = ? WHERE id = ?");
+                        $stmt->bind_param("si", $active_employees, $id);
+                        $stmt_result = $stmt->execute();
+                        $stmt->close();
+
+                        if($stmt_result) {
+                            $changes = ["Active"=>TRUE, "Resumed Time"=>time(), "Active Employees"=>json_decode($active_employees)];
+                            $final_changes = json_encode($changes);
+
+                            $stmt = $dbconn->prepare("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
+                            $stmt->bind_param("iis", $id, $_SESSION['shop_user']['id'], $final_changes);
+                            $stmt_result = $stmt->execute();
+                            $stmt->close();
+
+                            if($stmt_result)
+                                echo displayToast("success", "Successfully resumed operation.", "Resumed Operation");
+                            else
+                                dbLogSQLErr($dbconn);
+                        } else {
+                            dbLogSQLErr($dbconn);
+                        }
                     }
-                } else {
-                    dbLogSQLErr($dbconn);
+                } else { // we were unable to find an operation in the queue that existed
+                    dbLogSQLErr($dbconn); // gonna throw an error here...
                 }
-            }
+
+                break;
+
+            default:
+                $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the existing op queue id
+
+                if($qry->num_rows > 0) {  // if we were able to find the operation inside of the queue
+                    $results = $qry->fetch_assoc(); // grab the information
+
+                    $changes = null; // our changes are nothing presently
+
+                    $active = json_decode($results['active_employees']); // grab the current list of active employees
+
+                    $active[] = $_SESSION['shop_user']['id']; // add individual to the list of active employees
+
+                    $active_employees = json_encode($active); // re-encode it for saving
+
+                    if($results['start_time'] === null) { // if this op queue item has never been started
+                        if($dbconn->query("UPDATE op_queue SET active = TRUE, start_time = UNIX_TIMESTAMP(), active_employees = '$active_employees' WHERE id = '$id'")) {
+                            $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees)];
+                            $final_changes = json_encode($changes);
+
+                            $stmt = $dbconn->prepare("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
+                            $stmt->bind_param("iis", $id, $shop_usr_id, $final_changes);
+
+                            $shop_usr_id = $_SESSION['shop_user']['id'];
+
+                            $stmt_result = $stmt->execute();
+                            $stmt->close();
+
+                            if($stmt_result)
+                                echo displayToast("success", "Successfully started operation.", "Started Operation");
+                            else
+                                dbLogSQLErr($dbconn);
+                        } else {
+                            dbLogSQLErr($dbconn);
+                        }
+                    } else { // if the operation has been started previously
+                        $stmt = $dbconn->prepare("UPDATE op_queue SET active = TRUE, resumed_time = UNIX_TIMESTAMP(), active_employees = ? WHERE id = ?");
+                        $stmt->bind_param("si", $active_employees, $id);
+                        $stmt_result = $stmt->execute();
+                        $stmt->close();
+
+                        if($stmt_result) {
+                            $changes = ["Active"=>TRUE, "Resumed Time"=>time(), "Active Employees"=>json_decode($active_employees)];
+                            $final_changes = json_encode($changes);
+
+                            $stmt = $dbconn->prepare("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
+                            $stmt->bind_param("iis", $id, $_SESSION['shop_user']['id'], $final_changes);
+                            $stmt_result = $stmt->execute();
+                            $stmt->close();
+
+                            if($stmt_result)
+                                echo displayToast("success", "Successfully resumed operation.", "Resumed Operation");
+                            else
+                                dbLogSQLErr($dbconn);
+                        } else {
+                            dbLogSQLErr($dbconn);
+                        }
+                    }
+                } else { // we were unable to find an operation in the queue that existed
+                    dbLogSQLErr($dbconn); // gonna throw an error here...
+                }
+
+                break;
         }
     }
 
-    function pauseOp($id, $notes, $qty) {
+    function pauseOp($id, $notes) {
         global $dbconn;
 
         $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the item from the operation queue
@@ -335,6 +415,7 @@ class queue {
 
         $op_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
         $op_results = $op_qry->fetch_assoc();
+
         $active_emp = json_decode($op_results['active_employees']);
 
         if(in_array($_SESSION['shop_user']['id'], $active_emp)) {
@@ -350,8 +431,8 @@ class queue {
 
         $active_employees = json_encode($active_emp);
 
-        if($dbconn->query("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = $active, notes = '$finalnotes', qty_completed = '$qty', partially_completed = TRUE, completed = FALSE, active_employees = '$active_employees' WHERE id = $id")) {
-            $changed = ["End time"=>time(), "Active"=>$active, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Partially Completed"=>true, "Active Employees"=>json_decode($active_employees)];
+        if($dbconn->query("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = $active, notes = '$finalnotes', partially_completed = TRUE, completed = FALSE, active_employees = '$active_employees' WHERE id = $id")) {
+            $changed = ["End time"=>time(), "Active"=>$active, "Notes"=>$finalnotes, "Partially Completed"=>true, "Active Employees"=>json_decode($active_employees)];
             $changed = json_encode($changed);
 
             $stmt = $dbconn->prepare("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
@@ -368,7 +449,7 @@ class queue {
         }
     }
 
-    function stopOp($id, $notes, $qty, $rw_reqd, $rw_reason, $opnum) {
+    function stopOp($id, $notes, $rw_reqd, $rw_reason, $opnum) {
         global $dbconn;
 
         $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the item from the operation queue
@@ -472,9 +553,9 @@ class queue {
         }
 
         if($rw_reqd === 'true') { // rework is required
-            $stmt = $dbconn->prepare("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = FALSE, notes = ?, qty_completed = ?, completed = TRUE, partially_completed = FALSE, rework = TRUE, active_employees = NULL WHERE id = ?");
+            $stmt = $dbconn->prepare("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = FALSE, notes = ?, completed = TRUE, partially_completed = FALSE, rework = TRUE, active_employees = NULL WHERE id = ?");
 
-            $stmt->bind_param("sii", $finalnotes, $qty, $id);
+            $stmt->bind_param("si", $finalnotes, $id);
 
             if($stmt->execute()) {
                 $stmt->close();
@@ -521,11 +602,10 @@ class queue {
                     $room = $room_qry->fetch_assoc();
 
                     // now, create the operation that SHOULD be active
-                    $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, active, completed, rework, qty_requested, 
-                             partially_completed, created, iteration) VALUES (?, ?, ?, ?, 4, FALSE, FALSE, TRUE, 1, FALSE, 
-                              UNIX_TIMESTAMP(), ?)");
+                    $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, active, completed, rework,
+                             partially_completed, created) VALUES (?, ?, FALSE, FALSE, TRUE, FALSE, UNIX_TIMESTAMP())");
 
-                    $stmt->bind_param("iisid", $room_id, $room['so_parent'], $room['room'], $next_op, $room['iteration']);
+                    $stmt->bind_param("ii", $room_id, $next_op);
 
                     if($stmt->execute()) {
                         $stmt->close();
@@ -546,8 +626,8 @@ class queue {
             }
         } else {
             // if we've successfully communicated the update to the operation and not completing rework
-            $stmt = $dbconn->prepare("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = FALSE, notes = ?, qty_completed = ?, completed = TRUE, partially_completed = FALSE, rework = FALSE, active_employees = NULL WHERE id = ?");
-            $stmt->bind_param("sii", $finalnotes, $qty, $id);
+            $stmt = $dbconn->prepare("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = FALSE, notes = ?, completed = TRUE, partially_completed = FALSE, rework = FALSE, active_employees = NULL WHERE id = ?");
+            $stmt->bind_param("si", $finalnotes, $id);
 
             if($stmt->execute()) {
                 $changed = ["End time"=>time(), "Active"=>false, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Completed"=>true, "Active Employees"=>'[]']; // set what has changed for audit trail
@@ -607,11 +687,10 @@ class queue {
                             $room = $room_qry->fetch_assoc();
 
                             // now, create the operation that SHOULD be active
-                            $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, active, completed, rework, qty_requested, 
-                             partially_completed, created, iteration) VALUES (?, ?, ?, ?, 4, FALSE, FALSE, FALSE, 1, FALSE, 
-                              UNIX_TIMESTAMP(), ?)");
+                            $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, partially_completed, created) 
+                              VALUES (?, ?, FALSE, FALSE, FALSE, FALSE, UNIX_TIMESTAMP())");
 
-                            $stmt->bind_param("iisid", $room_id, $room['so_parent'], $room['room'], $next_op, $room['iteration']);
+                            $stmt->bind_param("ii", $room_id, $next_op);
 
                             if($stmt->execute()) {
                                 $stmt->close();

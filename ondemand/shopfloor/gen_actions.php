@@ -26,107 +26,14 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
         $dbinfo = $dbinfo_qry->fetch_assoc();
 
         // now that we've cleaned up the operations; it's time to get that operation flowing
-        $dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, start_time, end_priority, end_time, active, 
-         completed, rework, notes, qty_requested, qty_completed, qty_rework, resumed_time, resumed_priority, partially_completed, created) VALUES ('$roomid', 
-          '{$dbinfo['so_parent']}', '{$dbinfo['room']}', '$operation', NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, NULL, 1, NULL, NULL, NULL, 
-           NULL, NULL, UNIX_TIMESTAMP())");
+        $dbconn->query("INSERT INTO op_queue (room_id, operation_id, start_time, end_time, active, 
+         completed, rework, notes, resumed_time, partially_completed, created) VALUES ('$roomid', 
+          '$operation', NULL, NULL, FALSE, FALSE, FALSE, NULL, NULL, NULL, UNIX_TIMESTAMP())");
     } else {
         while($op_queue = $op_queue_qry->fetch_assoc()) {
             $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
         }
     }
-
-
-    /*
-    // now we need to create the ops and/or activate the appropriate ops based on what's selected (and deactivate any old ones) if bracket is published
-    if((bool)$bracket_pub) {
-        $ops = array();
-
-        // bracket is published, time to build the bracket operations
-        $all_bracket_ops_qry = $dbconn->query("SELECT * FROM operations WHERE bracket = '$bracket' AND always_visible = FALSE");
-
-        // create an array of all the ops
-        while($all_bracket_ops = $all_bracket_ops_qry->fetch_assoc()) {
-            // if the operation is not an x98 operation then add it to the array, otherwise exclude it
-            if((int)substr($all_bracket_ops['op_id'], -2) !== 98) {
-                $ops[] = $all_bracket_ops['id'];
-            }
-        }
-
-        // grab all operations in the queue for this room that are not OTF
-        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE room_id = '$roomid' AND otf_created = FALSE");
-
-        // if we were able to find any operations in the queue
-        if($op_queue_qry->num_rows > 0) {
-            // for every operation
-            while($op_queue = $op_queue_qry->fetch_assoc()) {
-                // lets find out if this operation is part of the bracket
-                if(in_array($op_queue['operation_id'], $ops)) {
-                    // it's part of the bracket, is it this operation?
-                    if($op_queue['operation_id'] === $operation) {
-                        // it is this operation, is it unpublished?
-                        if(!(bool)$op_queue['published']) {
-                            // publish it, foo!
-                            $dbconn->query("UPDATE op_queue SET published = TRUE where id = '{$op_queue['id']}'");
-                        }
-                    } else {
-                        // nope, it's part of the queue but it's not this operation, lets unpublish it!
-                        $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['id']}'");
-                    }
-                }
-            }
-        } else {
-            // no operations exist in the queue for this room that are NOT OTF! BLANK SLATE BABY!
-
-            // grab the room information for creation of the queued operation
-            $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$roomid'");
-            $room = $room_qry->fetch_assoc();
-
-            // now, create the operation that SHOULD be active
-            $dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, active, completed, rework, qty_requested, 
-             partially_completed, created, iteration) VALUES ('$roomid', '{$room['so_parent']}', '{$room['room']}', '$operation', 4, FALSE, FALSE, FALSE, 1, FALSE, 
-              UNIX_TIMESTAMP(), '{$room['iteration']}')");
-        }
-
-        // we've deactivated and/or published all operations related to the queue, now lets create the operation in the queue if it's not there
-        $ind_op_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = '$operation' AND room_id = '$roomid'");
-
-        if($ind_op_qry->num_rows === 0) {
-            // grab the room information for creation of the queued operation
-            $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$roomid'");
-            $room = $room_qry->fetch_assoc();
-
-            // now, create the operation that SHOULD be active
-            $dbconn->query("INSERT INTO op_queue (room_id, so_parent, room, operation_id, start_priority, active, completed, rework, qty_requested, 
-             partially_completed, created, iteration) VALUES ('$roomid', '{$room['so_parent']}', '{$room['room']}', '$operation', 4, FALSE, FALSE, FALSE, 1, FALSE, 
-              UNIX_TIMESTAMP(), '{$room['iteration']}')");
-        }
-    } else {
-        // bracket is NOT published, tis time to deactivate ALL operations
-        $ops = array();
-
-        // bracket is NOT published, time to build the bracket
-        $all_bracket_ops_qry = $dbconn->query("SELECT * FROM operations WHERE bracket = '$bracket' AND always_visible = FALSE");
-
-        // create an array of all the ops
-        while($all_bracket_ops = $all_bracket_ops_qry->fetch_assoc()) {
-            $ops[] = $all_bracket_ops['id'];
-        }
-
-        // time to find all ops in the query that contain this room
-        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE room_id = '$roomid' AND completed = FALSE AND published = TRUE AND otf_created = FALSE");
-
-        if($op_queue_qry->num_rows > 0) {
-            // if there are operations that are not completed, are published and are not OTF
-            while($op_queue = $op_queue_qry->fetch_assoc()) {
-                // for all operations in the queue
-                if(in_array($op_queue['operation_id'], $ops)) {
-                    // if it's a bracket operation deactivate it
-                    $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['id']}'");
-                }
-            }
-        }
-    }*/
 }
 
 switch($_REQUEST['action']) {
