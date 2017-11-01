@@ -202,9 +202,9 @@ switch ($search) {
 
         break;
     case "general":
-        $qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num LIKE 
-            '%$find%' OR project LIKE '%$find%' OR contractor_dealer_code LIKE '%$find%'
-            OR project_mgr LIKE '%$find%' ORDER BY so_num DESC");
+        $qry = $dbconn->query("SELECT * FROM sales_order WHERE LOWER(so_num) LIKE LOWER('%$find%') OR LOWER(contractor_dealer_code) LIKE LOWER('%$find%') 
+          OR LOWER(project) LIKE LOWER('%$find%') OR LOWER(project_mgr) LIKE LOWER('%$find%') OR LOWER(contact1_name) LIKE LOWER('%$find%') OR LOWER(contact2_name) LIKE LOWER('%$find%')  
+              ORDER BY so_num DESC");
 
         if($qry->num_rows > 0) {
             while($result = $qry->fetch_assoc()) {
