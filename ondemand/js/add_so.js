@@ -42,4 +42,16 @@ $("body")
 
             $("#modalAddCustomer").modal('hide');
         });
-    });
+    })
+    .on("change", "#mailing_addr_chk", function() {
+        $("#mailing_addr_disp_1").toggle();
+        $("#mailing_addr_disp_2").toggle();
+    })
+    .on("change", "#billing_addr_chk", function() {
+        $("#billing_info_disp_1").toggle();
+        $("#billing_info_disp_2").toggle();
+    })
+    .on("change", "#contractor_chk", function() {
+        $("#contractor_disp").toggle();
+    })
+;

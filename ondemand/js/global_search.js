@@ -270,6 +270,8 @@ $("body")
 
         var edit_info = $("#room_edit_" + active_room_id).serialize();
 
+        console.log(edit_info);
+
         $.post("/ondemand/shopfloor/gen_actions.php?action=update_room&" + edit_info, function(data) {
             $('body').append(data);
         });

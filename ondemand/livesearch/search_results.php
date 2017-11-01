@@ -1,8 +1,13 @@
 <?php
 require_once ("../../includes/header_start.php");
+require_once ("../../includes/classes/search.php");
+
+//outputPHPErrs();
 
 $find = sanitizeInput($_REQUEST['find']);
 $search = sanitizeInput($_REQUEST['search'], $dbconn);
+
+$sClass = new \Search\search();
 
 function determinePriority($priority) {
     switch($priority) {
@@ -140,67 +145,6 @@ HEREDOC;
 }
 
 switch ($search) {
-    case "room":
-        $qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$find'");
-
-        if($qry->num_rows > 0) {
-            while($result = $qry->fetch_assoc()) {
-                $salesPriority = determinePriority($result['sales_bracket_priority']);
-                $preprodPriority = determinePriority($result['preproduction_bracket_priority']);
-                $samplePriority = determinePriority($result['sample_bracket_priority']);
-                $doorPriority = determinePriority($result['doordrawer_bracket_priority']);
-                $customsPriority = determinePriority($result['customs_bracket_priority']);
-                $boxPriority = determinePriority($result['box_bracket_priority']);
-
-                $salesBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$result['sales_bracket']}")->fetch_assoc();
-                $salesBracketName = $salesBracket['op_id'] . "-" . $salesBracket['job_title'];
-
-                $preprodBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$result['preproduction_bracket']}")->fetch_assoc();
-                $preprodBracketName = $preprodBracket['op_id'] . "-" . $preprodBracket['job_title'];
-
-                $sampleBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$result['sample_bracket']}")->fetch_assoc();
-                $sampleBracketName = $sampleBracket['op_id'] . "-" . $sampleBracket['job_title'];
-
-                $doorBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$result['doordrawer_bracket']}")->fetch_assoc();
-                $doorBrackettName = $doorBracket['op_id'] . "-" . $doorBracket['job_title'];
-
-                $customsBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$result['custom_bracket']}")->fetch_assoc();
-                $customsBracketName = $customsBracket['op_id'] . "-" . $customsBracket['job_title'];
-
-                $mainBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$result['box_bracket']}")->fetch_assoc();
-                $mainBracketName = $mainBracket['op_id'] . "-" . $mainBracket['job_title'];
-
-
-
-                echo "<tr class='cursor-hand' onclick='displayRoomInfo({$result['id']})'>";
-                echo "    <td>{$result['room']}-{$result['room_name']}</td>";
-                echo "    <td class='$salesPriority'>$salesBracketName</td>";
-                echo "    <td class='$preprodPriority'>$preprodBracketName</td>";
-                echo "    <td class='$samplePriority'>$sampleBracketName</td>";
-                echo "    <td class='$doorPriority'>$doorBrackettName</td>";
-                echo "    <td class='$customsPriority'>$customsBracketName</td>";
-                echo "    <td class='$boxPriority'>$mainBracketName</td>";
-                echo "</tr>";
-            }
-        } else {
-            echo "<tr>";
-            echo "    <td colspan='7'>No results to display</td>";
-            echo "</tr>";
-        }
-
-        break;
-    case "edit_so_num":
-        $qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$find'");
-
-        if($qry->num_rows > 0) {
-            $result = $qry->fetch_assoc();
-
-            echo json_encode($result);
-        } else {
-            echo "no results";
-        }
-
-        break;
     case "general":
         $qry = $dbconn->query("SELECT * FROM sales_order WHERE LOWER(so_num) LIKE LOWER('%$find%') OR LOWER(contractor_dealer_code) LIKE LOWER('%$find%') 
           OR LOWER(project) LIKE LOWER('%$find%') OR LOWER(project_mgr) LIKE LOWER('%$find%') OR LOWER(contact1_name) LIKE LOWER('%$find%') OR LOWER(contact2_name) LIKE LOWER('%$find%')  
@@ -379,77 +323,18 @@ switch ($search) {
                                     <tr>
                                         <td>Dealer Email:</td>
                                         <td><?php echo "<a href='mailto:{$so_info['email']}'>{$so_info['email']}</a>"; ?></td>
-                                        <td><label for="physical_addr">Physical Address</label></td>
-                                        <td><input type="text" name="physical_addr" class="form-control" placeholder="Physical Address" id="physical_addr" value="<?php echo $result['physical_addr']; ?>"></td>
+                                        <td colspan="2"></td>
                                         <td colspan="2">
                                             <input type="text" style="width:50%;float:left;" name="cell_2" class="form-control mask-phone" placeholder="Cell Phone" id="cell_2" value="<?php echo $result['contact2_cell']; ?>">
                                             <input type="text" style="width:50%;float:left;" name="business_2" class="form-control mask-phone" placeholder="Business Phone" id="business_2" value="<?php echo $result['contact2_business_ph']; ?>">
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><label for="order_status">Order Status</label></td>
-                                        <td>
-                                            <select class="form-control" id="order_status" name="order_status">
-                                                <option <?php echo ($result['order_status'] === ')') ? "selected" : null; ?> value=")">Lost</option>
-                                                <option <?php echo ($result['order_status'] === '#') ? "selected" : null; ?> value="#">Quote</option>
-                                                <option <?php echo ($result['order_status'] === '$') ? "selected" : null; ?> value="$">Job</option>
-                                                <option <?php echo ($result['order_status'] === '(') ? "selected" : null; ?> value="(">Completed</option>
-                                            </select>
-                                        </td>
+                                        <td colspan="2"></td>
                                         <td colspan="2" style="width: 260px;">
-                                            <input type="text" style="width:33.3%;float:left;" name="ph_city" class="form-control" placeholder="City" id="ph_city" value="<?php echo $result['physical_city']; ?>">
-                                            <select style="width:33.3%;float:left;" class="form-control" id="ph_state" name="ph_state">
-                                                <option value="AL" <?php echo ($result['physical_state'] === 'AL') ? "selected" : null; ?>>Alabama</option>
-                                                <option value="AK" <?php echo ($result['physical_state'] === 'AK') ? "selected" : null; ?>>Alaska</option>
-                                                <option value="AR" <?php echo ($result['physical_state'] === 'AR') ? "selected" : null; ?>>Arkansas</option>
-                                                <option value="CA" <?php echo ($result['physical_state'] === 'CA') ? "selected" : null; ?>>California</option>
-                                                <option value="CO" <?php echo ($result['physical_state'] === 'CO') ? "selected" : null; ?>>Colorado</option>
-                                                <option value="CT" <?php echo ($result['physical_state'] === 'CT') ? "selected" : null; ?>>Connecticut</option>
-                                                <option value="DE" <?php echo ($result['physical_state'] === 'DE') ? "selected" : null; ?>>Delaware</option>
-                                                <option value="FL" <?php echo ($result['physical_state'] === 'FL') ? "selected" : null; ?>>Florida</option>
-                                                <option value="GA" <?php echo ($result['physical_state'] === 'GA') ? "selected" : null; ?>>Georgia</option>
-                                                <option value="HI" <?php echo ($result['physical_state'] === 'HI') ? "selected" : null; ?>>Hawaii</option>
-                                                <option value="ID" <?php echo ($result['physical_state'] === 'ID') ? "selected" : null; ?>>Idaho</option>
-                                                <option value="IL" <?php echo ($result['physical_state'] === 'IL') ? "selected" : null; ?>>Illinois</option>
-                                                <option value="IN" <?php echo ($result['physical_state'] === 'IN') ? "selected" : null; ?>>Indiana</option>
-                                                <option value="IA" <?php echo ($result['physical_state'] === 'IA') ? "selected" : null; ?>>Iowa</option>
-                                                <option value="KS" <?php echo ($result['physical_state'] === 'KS') ? "selected" : null; ?>>Kansas</option>
-                                                <option value="KY" <?php echo ($result['physical_state'] === 'KY') ? "selected" : null; ?>>Kentucky</option>
-                                                <option value="LA" <?php echo ($result['physical_state'] === 'LA') ? "selected" : null; ?>>Louisiana</option>
-                                                <option value="ME" <?php echo ($result['physical_state'] === 'ME') ? "selected" : null; ?>>Maine</option>
-                                                <option value="MD" <?php echo ($result['physical_state'] === 'MD') ? "selected" : null; ?>>Maryland</option>
-                                                <option value="MA" <?php echo ($result['physical_state'] === 'MA') ? "selected" : null; ?>>Massachusetts</option>
-                                                <option value="MI" <?php echo ($result['physical_state'] === 'MI') ? "selected" : null; ?>>Michigan</option>
-                                                <option value="MN" <?php echo ($result['physical_state'] === 'MN') ? "selected" : null; ?>>Minnesota</option>
-                                                <option value="MS" <?php echo ($result['physical_state'] === 'MS') ? "selected" : null; ?>>Mississippi</option>
-                                                <option value="MO" <?php echo ($result['physical_state'] === 'MO') ? "selected" : null; ?>>Missouri</option>
-                                                <option value="MT" <?php echo ($result['physical_state'] === 'MT') ? "selected" : null; ?>>Montana</option>
-                                                <option value="NE" <?php echo ($result['physical_state'] === 'NE') ? "selected" : null; ?>>Nebraska</option>
-                                                <option value="NV" <?php echo ($result['physical_state'] === 'NV') ? "selected" : null; ?>>Nevada</option>
-                                                <option value="NH" <?php echo ($result['physical_state'] === 'NH') ? "selected" : null; ?>>New Hampshire</option>
-                                                <option value="NJ" <?php echo ($result['physical_state'] === 'NJ') ? "selected" : null; ?>>New Jersey</option>
-                                                <option value="NM" <?php echo ($result['physical_state'] === 'NM') ? "selected" : null; ?>>New Mexico</option>
-                                                <option value="NY" <?php echo ($result['physical_state'] === 'NY') ? "selected" : null; ?>>New York</option>
-                                                <option value="NC" <?php echo ($result['physical_state'] === 'NC') ? "selected" : null; ?>>North Carolina</option>
-                                                <option value="ND" <?php echo ($result['physical_state'] === 'ND') ? "selected" : null; ?>>North Dakota</option>
-                                                <option value="OH" <?php echo ($result['physical_state'] === 'OH') ? "selected" : null; ?>>Ohio</option>
-                                                <option value="OK" <?php echo ($result['physical_state'] === 'OK') ? "selected" : null; ?>>Oklahoma</option>
-                                                <option value="OR" <?php echo ($result['physical_state'] === 'OR') ? "selected" : null; ?>>Oregon</option>
-                                                <option value="PA" <?php echo ($result['physical_state'] === 'PA') ? "selected" : null; ?>>Pennsylvania</option>
-                                                <option value="RI" <?php echo ($result['physical_state'] === 'RI') ? "selected" : null; ?>>Rhode Island</option>
-                                                <option value="SC" <?php echo ($result['physical_state'] === 'SC') ? "selected" : null; ?>>South Carolina</option>
-                                                <option value="SD" <?php echo ($result['physical_state'] === 'SD') ? "selected" : null; ?>>South Dakota</option>
-                                                <option value="TN" <?php echo ($result['physical_state'] === 'TN') ? "selected" : null; ?>>Tennessee</option>
-                                                <option value="TX" <?php echo ($result['physical_state'] === 'TX') ? "selected" : null; ?>>Texas</option>
-                                                <option value="UT" <?php echo ($result['physical_state'] === 'UT') ? "selected" : null; ?>>Utah</option>
-                                                <option value="VT" <?php echo ($result['physical_state'] === 'VT') ? "selected" : null; ?>>Vermont</option>
-                                                <option value="VA" <?php echo ($result['physical_state'] === 'VA') ? "selected" : null; ?>>Virginia</option>
-                                                <option value="WA" <?php echo ($result['physical_state'] === 'WA') ? "selected" : null; ?>>Washington</option>
-                                                <option value="WV" <?php echo ($result['physical_state'] === 'WV') ? "selected" : null; ?>>West Virginia</option>
-                                                <option value="WI" <?php echo ($result['physical_state'] === 'WI') ? "selected" : null; ?>>Wisconsin</option>
-                                                <option value="WY" <?php echo ($result['physical_state'] === 'WY') ? "selected" : null; ?>>Wyoming</option>
-                                            </select>
-                                            <input type="text" style="width:33.3%;float:left;" name="ph_zip" class="form-control mask-zip" placeholder="Zip" id="ph_zip" value="<?php echo $result['physical_zip']; ?>">
+                                            <input style="width:33.3%;float:left;" type="text" name="contractor_name" class="form-control" placeholder="Contractor Name" id="contractor_name" value="<?php echo $result['contractor_name']; ?>">
+                                            <input style="width:33.3%;float:left;" type="text" name="contractor_business_num" class="form-control" placeholder="C. Business Number" id="contractor_business_num" value="<?php echo $result['contractor_business']; ?>">
+                                            <input style="width:33.3%;float:left;" type="text" name="contractor_cell_num" class="form-control" placeholder="C. Cell Number" id="contractor_cell_num" value="<?php echo $result['contractor_cell']; ?>">
                                         <td><label for="email_2">Email Address</label></td>
                                         <td><input type="text" name="email_2" class="form-control" placeholder="Email Address" id="email_2" value="<?php echo $result['contact2_email']; ?>"></td>
                                     </tr>
@@ -663,9 +548,27 @@ switch ($search) {
                                         $attachment_code = "btn_secondary disabled";
                                     }
 
+                                    switch($room['order_status']) {
+                                        case '$':
+                                            $order_status = '[Job (Deposit Received)]';
+                                            break;
+
+                                        case '#':
+                                            $order_status = '[Quote (No Deposit)]';
+                                            break;
+
+                                        case '(':
+                                            $order_status = '[Completed]';
+                                            break;
+
+                                        case ')':
+                                            $order_status = '[Lost]';
+                                            break;
+                                    }
+
                                     echo "<tr class='cursor-hand' id='manage_bracket_{$room['id']}'>";
                                     echo "  <td class='nowrap'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect btn-primary' id='show_vin_room_{$room['id']}'><i class='zmdi zmdi-developer-board'></i></button> <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button> <button class='btn waves-effect btn-primary' id='print_{$room['id']}'><i class='fa fa-print'></i></button></td>";
-                                    echo "  <td>{$tab}{$room_name}</td>";
+                                    echo "  <td>{$tab}{$room_name} <span class='pull-right' style='margin-right:5px;'>$order_status</span></td>";
                                     echo "  $sales_published_display";
                                     echo "  $sample_published_display";
                                     echo "  $preprod_published_display";
@@ -695,7 +598,7 @@ switch ($search) {
                                                                     <td><label for="delivery_date">Delivery Date</label></td>
                                                                     <td>
                                                                         <div class="input-group">
-                                                                            <input type="text" class="form-control delivery_date <?php echo $status_color; ?>" id="edit_del_date_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="delivery_date" placeholder="Delivery Date" value="<?php echo (!empty($room['delivery_date'])) ? date("m/d/Y", $room['delivery_date']) : ""; ?>">
+                                                                            <input type="text" class="form-control delivery_date" id="edit_del_date_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="delivery_date" placeholder="Delivery Date" value="<?php echo (!empty($room['delivery_date'])) ? date("m/d/Y", $room['delivery_date']) : ""; ?>">
                                                                             <span class="input-group-addon bg-custom b-0"><i class="icon-calender"></i></span>
                                                                         </div>
 
@@ -739,8 +642,10 @@ switch ($search) {
                                                                     <td><label for="order_status">Order Status</label></td>
                                                                     <td>
                                                                         <select class="form-control" id="edit_order_status_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="order_status">
+                                                                            <option value=")" <?php echo ($room['order_status'] === ')') ? "selected" : null; ?>>Lost</option>
                                                                             <option value="#" <?php echo ($room['order_status'] === '#') ? "selected" : null; ?>>Quote (No Deposit)</option>
                                                                             <option value="$" <?php echo ($room['order_status'] === '$') ? "selected" : null; ?>>Job (Deposit Received)</option>
+                                                                            <option value="(" <?php echo ($room['order_status'] === '(') ? "selected" : null; ?>>Completed</option>
                                                                         </select>
                                                                     </td>
                                                                 </tr>
@@ -1885,8 +1790,10 @@ switch ($search) {
                                                         <td><label for="order_status">Order Status</label></td>
                                                         <td>
                                                             <select class="form-control" name="order_status">
-                                                                <option value="#">Quote</option>
-                                                                <option value="$">Job</option>
+                                                                <option value=")">Lost</option>
+                                                                <option value="#">Quote (No Deposit)</option>
+                                                                <option value="$">Job (Deposit Received)</option>
+                                                                <option value="(">Completed</option>
                                                             </select>
                                                         </td>
                                                     </tr>
@@ -1942,53 +1849,8 @@ switch ($search) {
         }
 
         break;
-    case "gen_json":
-        $qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num LIKE 
-            '%$find%' OR project LIKE '%$find%' OR contractor_dealer_code LIKE '%$find%'
-            OR project_mgr LIKE '%$find%' ORDER BY so_num DESC LIMIT 0,25");
-
-        $return = array();
-
-        if($qry->num_rows > 0) {
-            while($result = $qry->fetch_assoc()) {
-                $qry2 = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '{$result['so_num']}'");
-
-                $soColor = "job-color-green";
-
-                if($qry2->num_rows > 0) {
-                    $bracketPri['sample'] = 4;
-                    $bracketPri['main'] = 4;
-                    $bracketPri['door'] = 4;
-                    $bracketPri['customs'] = 4;
-
-                    while($result2 = $qry2->fetch_assoc()) {
-                        $bracketPri['sample'] = ($result2['sample_bracket_priority'] < $bracketPri['sample']) ? $result2['sample_bracket_priority'] : $bracketPri['sample'];
-                        $bracketPri['main'] = ($result2['main_bracket_priority'] < $bracketPri['main']) ? $result2['main_bracket_priority'] : $bracketPri['main'];
-                        $bracketPri['door'] = ($result2['doordrawer_bracket_priority'] < $bracketPri['door']) ? $result2['doordrawer_bracket_priority'] : $bracketPri['door'];
-                        $bracketPri['customs'] = ($result2['custom_bracket_priority'] < $bracketPri['customs']) ? $result2['custom_bracket_priority'] : $bracketPri['customs'];
-                    }
-
-                    if(in_array("1", $bracketPri, true)) {
-                        $soColor = "job-color-red";
-                    } elseif(in_array("2", $bracketPri, true)) {
-                        $soColor = "job-color-orange";
-                    } elseif(in_array("3", $bracketPri, true)) {
-                        $soColor = "job-color-yellow";
-                    }
-                }
-
-                $dealer_prefix = substr($result['dealer_code'], 0,3);
-
-                $dealer_qry = $dbconn->query("SELECT dealer_name FROM dealers WHERE dealer_id LIKE '%$dealer_prefix%'");
-                $dealer = $dealer_qry->fetch_assoc();
-
-                $account_type = ($result['account_type'] === 'R') ? "Retail" : "Wholesale";
-
-                $return[] = ['id'=>$result['so_num'], 'so_num'=>$result['so_num'], 'purchase_order'=>$result['project'], 'salesperson'=>$result['salesperson'], 'dealer_contractor'=>"{$result['dealer_code']}: {$dealer['dealer_name']}", 'account_type'=>$account_type, 'project_mgr_contact'=>$result['project_manager']];
-            }
-        }
-
-        echo json_encode($return);
+    case "find_base":
+        $sClass->displayResults($find);
 
         break;
     default:

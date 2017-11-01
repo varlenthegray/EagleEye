@@ -12,8 +12,8 @@ switch($_SERVER['SCRIPT_NAME']) {
 
 <!-- Navigation Bar-->
 <header id="topnav">
-    <div class="custom-logo hidden-print">
-        <img src="../assets/images/logo.png" height="80px" />
+    <div class="custom-logo hidden-print" style="background-color:rgba(255,255,255,1);margin-right:130px;position:reliatve;z-index:2;width:230px;">
+        <img src="../assets/images/logo_new.png" height="130px" />
     </div>
 
     <!-- fake fields are a workaround for chrome autofill getting the wrong fields (such as search) -->
@@ -66,7 +66,7 @@ switch($_SERVER['SCRIPT_NAME']) {
                 </ul>
             </div> <!-- end menu-extras -->
 
-            <div id="clock"></div>
+            <div id="clock" style="z-index:999;color:#000;position:absolute;top:40px;right:-110px;"></div>
 
             <div class="clearfix"></div>
         </div> <!-- end container -->

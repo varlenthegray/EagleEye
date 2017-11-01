@@ -107,36 +107,22 @@ switch($_REQUEST['action']) {
 
         break;
     case 'update_room':
-        $dealer_code = sanitizeInput($_REQUEST['dealer_code']);
-        $account_type = sanitizeInput($_REQUEST['account_type']);
-        $dealer = sanitizeInput($_REQUEST['dealer']);
-        $contact = sanitizeInput($_REQUEST['contact']);
-        $phone_number = sanitizeInput($_REQUEST['phone_number']);
-        $email = sanitizeInput($_REQUEST['email']);
-        $salesperson = sanitizeInput($_REQUEST['salesperson']);
-        $shipping_addr = sanitizeInput($_REQUEST['shipping_addr']);
-        $city = sanitizeInput($_REQUEST['city']);
-        $p_state = sanitizeInput($_REQUEST['p_state']);
-        $zip = sanitizeInput($_REQUEST['zip']);
         $delivery_date = sanitizeInput($_REQUEST['delivery_date']);
-        $room = sanitizeInput($_REQUEST['room']);
         $product_type = sanitizeInput($_REQUEST['product_type']);
         $iteration = sanitizeInput($_REQUEST['iteration']);
-        $order_status = sanitizeInput($_REQUEST['order_status']);
+        $order_status = sanitizeInput(html_entity_decode($_REQUEST['order_status']));
         $days_to_ship = sanitizeInput($_REQUEST['days_to_ship']);
         $room_name = sanitizeInput($_REQUEST['room_name']);
         $notes = sanitizeInput($_REQUEST['room_notes']);
-        $sonum = sanitizeInput($_REQUEST['sonum']);
-        $room = sanitizeInput($_REQUEST['room']);
         $roomid = sanitizeInput($_REQUEST['roomid']);
 
         if(empty($delivery_date)) {
-            $delivery_date = '';
+            $delivery_date = null;
         } elseif(!empty($delivery_date)) {
-             $delivery_date = ",delivery_date = '" . strtotime($delivery_date) . "'";
+             $delivery_date = ",delivery_date = " . strtotime($delivery_date) . "";
          }
 
-        if($dbconn->query("UPDATE rooms SET product_type = '$product_type', order_status = '$order_status', days_to_ship = '$days_to_ship', room_name = '$room_name' $delivery_date WHERE id = $roomid")) {
+        if($dbconn->query("UPDATE rooms SET product_type = '$product_type', order_status = '$order_status', days_to_ship = '$days_to_ship', room_name = '$room_name' $delivery_date  WHERE id = $roomid")) {
             if(!empty($notes)) {
                 if($dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$roomid')")) {
                     echo displayToast("success", "Successfully updated the room.", "Room Updated");
@@ -229,6 +215,10 @@ switch($_REQUEST['action']) {
         $so_note = sanitizeInput($_REQUEST['note']);
         $inquiry = sanitizeInput($_REQUEST['inquiry']);
 
+        $contractor_name = sanitizeInput($_REQUEST['contractor_name']);
+        $contractor_business = sanitizeInput($_REQUEST['contractor_business_num']);
+        $contractor_cell = sanitizeInput($_REQUEST['contractor_cell_num']);
+
         $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$so_num'");
         $so = $so_qry->fetch_assoc();
 
@@ -251,10 +241,10 @@ switch($_REQUEST['action']) {
             $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('so_inquiry', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'SO# $so_num, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $inquiry_id)");
         }
 
-        if($dbconn->query("UPDATE sales_order SET contractor_dealer_code = '$dealer_code', project = '$project', contact1_name = '$contact_1', contact2_name = '$contact_2', physical_addr = '$physical_addr',
-         project_addr = '$project_addr', contact1_cell = '$cell_1', contact2_cell = '$cell_2', physical_city = '$ph_city', physical_state = '$ph_state', physical_zip = '$ph_zip', project_city = '$p_city',
+        if($dbconn->query("UPDATE sales_order SET contractor_dealer_code = '$dealer_code', project = '$project', contact1_name = '$contact_1', contact2_name = '$contact_2',
+         project_addr = '$project_addr', contact1_cell = '$cell_1', contact2_cell = '$cell_2', project_city = '$p_city',
           project_state = '$p_state', project_zip = '$p_zip', contact1_business_ph = '$business_1', contact2_business_ph = '$business_2', project_landline = '$p_landline', contact1_email = '$email_1', 
-           contact2_email = '$email_2', order_status = '$order_status' WHERE so_num = '$so_num'")) {
+           contact2_email = '$email_2', contractor_name = '$contractor_name', contractor_business = '$contractor_business', contractor_cell = '$contractor_cell' WHERE so_num = '$so_num'")) {
             echo displayToast("success", "Successfully updated Sales Order information for $so_num.", "Updated Information");
         } else {
             dbLogSQLErr($dbconn);
