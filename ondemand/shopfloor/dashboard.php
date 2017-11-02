@@ -164,8 +164,8 @@ switch($_REQUEST['action']) {
 
         $self_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
             op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority, op_queue.subtask, operations.responsible_dept, op_queue.start_time, op_queue.room_id FROM op_queue
-              JOIN operations ON op_queue.operation_id = operations.id
-                JOIN rooms ON op_queue.room_id = rooms.id
+              LEFT JOIN operations ON op_queue.operation_id = operations.id
+                LEFT JOIN rooms ON op_queue.room_id = rooms.id
                   WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE;");
 
         if($self_qry->num_rows > 0) {
