@@ -725,9 +725,9 @@ HEREDOC;
         $id = sanitizeInput($_REQUEST['opID']);
 
         $op_queue_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
-            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority FROM op_queue
-              JOIN operations ON op_queue.operation_id = operations.id
-                JOIN rooms ON op_queue.room_id = rooms.id
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority, op_queue.subtask FROM op_queue
+              LEFT JOIN operations ON op_queue.operation_id = operations.id
+                LEFT JOIN rooms ON op_queue.room_id = rooms.id
                   WHERE op_queue.id = '$id';");
 
         if($op_queue_qry->num_rows === 1) {
