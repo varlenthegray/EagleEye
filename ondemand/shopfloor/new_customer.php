@@ -24,7 +24,7 @@ if($qry->num_rows > 0) {
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-md-3">
-                            <input type="text" class="form-control" id="new_so_num" name="new_so_num" placeholder="SO #" value="<?php echo $next_so; ?>">
+                            <input type="text" class="form-control" id="so_num" name="so_num" placeholder="SO #" value="<?php echo $next_so; ?>">
                             <div class="radio" style="margin-top: 5px;">
                                 <input name="cu_type" id="retail" value="retail" type="radio"><label for="retail"> Retail</label><br/>
                                 <input name="cu_type" id="distribution" value="distribution" type="radio"><label for="distribution"> Distribution</label><br/>
@@ -34,12 +34,12 @@ if($qry->num_rows > 0) {
                     </div>
 
                     <form id="add_retail_customer" style="display:none;">
-                        <table style="width:100%;">
+                        <table style="width:100%;margin-top:8px;">
                             <tr>
                                 <td style="width: 33.3%;">
-                                    <select class="form-control" id="contractor_dealer_code" name="contractor_dealer_code">
+                                    <select class="form-control" id="dealer_code" name="dealer_code">
                                         <?php
-                                        $dealer_qry = $dbconn->query("SELECT * FROM dealers");
+                                        $dealer_qry = $dbconn->query("SELECT * FROM dealers ORDER BY dealer_id ASC;");
 
                                         while($dealer = $dealer_qry->fetch_assoc()) {
                                             echo "<option value='{$dealer['dealer_id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
@@ -145,21 +145,21 @@ if($qry->num_rows > 0) {
                                 <td colspan="2">&nbsp;</td>
                             </tr>
                             <tr>
-                                <td colspan="3"><div style="width:100%;height:3px;border:2px solid #BBB;margin:5px 0;border-radius:5px;"></div></td>
+                                <td colspan="3"><div style="width:100%;height:3px;border:2px solid #132882;margin:5px 0;border-radius:5px;"></div></td>
                             </tr>
                             <tr>
-                                <td colspan="3"><div class="checkbox"><input id="mailing_addr_chk" type="checkbox"><label for="mailing_addr_chk"> Different Mailing Address</label></div></td>
+                                <td colspan="3"><div class="checkbox"><input id="secondary_addr_chk" type="checkbox"><label for="secondary_addr_chk"> Customer Secondary Address</label></div></td>
                             </tr>
-                            <tr style="display:none;" id="mailing_addr_disp_1">
-                                <td colspan="2"><input type="text" name="mailing_addr" class="form-control" placeholder="Mailing Address" id="mailing_addr"></td>
-                                <td><input type="text" name="mailing_landline" class="form-control" placeholder="Mailing Landline" id="mailing_landline"></td>
+                            <tr style="display:none;" class="secondary_addr_disp">
+                                <td colspan="2"><input type="text" name="secondary_addr" class="form-control" placeholder="Secondary Address" id="secondary_addr"></td>
+                                <td><input type="text" name="secondary_landline" class="form-control" placeholder="Secondary Landline" id="secondary_landline"></td>
                             </tr>
-                            <tr style="display:none;" id="mailing_addr_disp_2">
+                            <tr style="display:none;" class="secondary_addr_disp">
                                 <td colspan="2">
                                     <table style="width: 100%;">
                                         <tr>
-                                            <td style="width: 33.3%;"><input type="text" name="mailing_city" class="form-control" placeholder="Mailing City" id="mailing_city"></td>
-                                            <td style="width: 33.3%;"><select class="form-control" id="mailing_state" name="mailing_state">
+                                            <td style="width: 33.3%;"><input type="text" name="secondary_city" class="form-control" placeholder="Secondary City" id="secondary_city"></td>
+                                            <td style="width: 33.3%;"><select class="form-control" id="secondary_state" name="secondary_state">
                                                     <option value="AL">Alabama</option>
                                                     <option value="AK">Alaska</option>
                                                     <option value="AZ">Arizona</option>
@@ -211,43 +211,109 @@ if($qry->num_rows > 0) {
                                                     <option value="WI">Wisconsin</option>
                                                     <option value="WY">Wyoming</option>
                                                 </select></td>
-                                            <td style="width: 33.3%;"><input type="text" name="mailing_zip" class="form-control" placeholder="Mailing Zip" id="mailing_zip"></td>
+                                            <td style="width: 33.3%;"><input type="text" name="secondary_zip" class="form-control" placeholder="Secondary Zip" id="secondary_zip"></td>
                                         </tr>
                                     </table>
                                 </td>
                                 <td>&nbsp;</td>
                             </tr>
                             <tr>
-                                <td colspan="3"><div style="width:100%;height:3px;border:2px solid #BBB;margin:5px 0;border-radius:5px;"></div></td>
+                                <td colspan="3"><div style="width:100%;height:3px;border:2px solid #132882;margin:5px 0;border-radius:5px;"></div></td>
                             </tr>
                             <tr>
+                                <td colspan="3"><div class="checkbox"><input id="contractor_chk" type="checkbox"><label for="contractor_chk"> Contractor</label></div></td>
+                            </tr>
+                            <tr style="display:none;" class="contractor_disp">
+                                <td><input type="text" name="contractor_name" class="form-control" placeholder="Contractor Name" id="contractor_name"></td>
+                                <td><input type="text" name="contractor_business_num" class="form-control" placeholder="Contractor Business Number" id="contractor_business_num"></td>
+                                <td><input type="text" name="contractor_cell_num" class="form-control" placeholder="Contractor Cell Number" id="contractor_cell_num"></td>
+                            </tr>
+                            <tr style="display:none;" class="contractor_disp">
+                                <td><input type="text" name="contractor_addr" class="form-control" placeholder="Contractor Address" id="contractor_addr"></td>
+                                <td colspan="2">
+                                    <table style="width: 100%;">
+                                        <tr>
+                                            <td style="width: 33.3%;"><input type="text" name="contractor_city" class="form-control" placeholder="Contractor City" id="contractor_city"></td>
+                                            <td style="width: 33.3%;"><select class="form-control" id="contractor_state" name="contractor_state">
+                                                    <option value="AL">Alabama</option>
+                                                    <option value="AK">Alaska</option>
+                                                    <option value="AZ">Arizona</option>
+                                                    <option value="AR">Arkansas</option>
+                                                    <option value="CA">California</option>
+                                                    <option value="CO">Colorado</option>
+                                                    <option value="CT">Connecticut</option>
+                                                    <option value="DE">Delaware</option>
+                                                    <option value="FL">Florida</option>
+                                                    <option value="GA">Georgia</option>
+                                                    <option value="HI">Hawaii</option>
+                                                    <option value="ID">Idaho</option>
+                                                    <option value="IL">Illinois</option>
+                                                    <option value="IN">Indiana</option>
+                                                    <option value="IA">Iowa</option>
+                                                    <option value="KS">Kansas</option>
+                                                    <option value="KY">Kentucky</option>
+                                                    <option value="LA">Louisiana</option>
+                                                    <option value="ME">Maine</option>
+                                                    <option value="MD">Maryland</option>
+                                                    <option value="MA">Massachusetts</option>
+                                                    <option value="MI">Michigan</option>
+                                                    <option value="MN">Minnesota</option>
+                                                    <option value="MS">Mississippi</option>
+                                                    <option value="MO">Missouri</option>
+                                                    <option value="MT">Montana</option>
+                                                    <option value="NE">Nebraska</option>
+                                                    <option value="NV">Nevada</option>
+                                                    <option value="NH">New Hampshire</option>
+                                                    <option value="NJ">New Jersey</option>
+                                                    <option value="NM">New Mexico</option>
+                                                    <option value="NY">New York</option>
+                                                    <option value="NC" selected>North Carolina</option>
+                                                    <option value="ND">North Dakota</option>
+                                                    <option value="OH">Ohio</option>
+                                                    <option value="OK">Oklahoma</option>
+                                                    <option value="OR">Oregon</option>
+                                                    <option value="PA">Pennsylvania</option>
+                                                    <option value="RI">Rhode Island</option>
+                                                    <option value="SC">South Carolina</option>
+                                                    <option value="SD">South Dakota</option>
+                                                    <option value="TN">Tennessee</option>
+                                                    <option value="TX">Texas</option>
+                                                    <option value="UT">Utah</option>
+                                                    <option value="VT">Vermont</option>
+                                                    <option value="VA">Virginia</option>
+                                                    <option value="WA">Washington</option>
+                                                    <option value="WV">West Virginia</option>
+                                                    <option value="WI">Wisconsin</option>
+                                                    <option value="WY">Wyoming</option>
+                                                </select></td>
+                                            <td style="width: 33.3%;"><input type="text" name="contractor_zip" class="form-control" placeholder="Contractor Zip" id="contractor_zip"></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr style="display:none;" class="contractor_disp">
+                                <td><input type="text" name="contractor_email" class="form-control" placeholder="Contractor Email Address" id="contractor_email"></td>
+                                <td colspan="2">&nbsp;</td>
+                            </tr>
+                            <tr style="display:none;" class="contractor_disp">
                                 <td><input type="text" name="project_mgr" class="form-control" placeholder="Project Manager" id="project_mgr"></td>
                                 <td><input type="text" name="project_mgr_cell" class="form-control" placeholder="Project Manager Cell" id="project_mgr_cell"></td>
                                 <td><input type="text" name="project_mgr_email" class="form-control" placeholder="Project Manager Email" id="project_mgr_email"></td>
                             </tr>
                             <tr>
-                                <td colspan="3"><div style="width:100%;height:3px;border:2px solid #BBB;margin:5px 0;border-radius:5px;"></div></td>
+                                <td colspan="3"><div style="width:100%;height:3px;border:2px solid #132882;margin:5px 0;border-radius:5px;"></div></td>
                             </tr>
                             <tr>
-                                <td colspan="3"><div class="checkbox"><input id="contractor_chk" type="checkbox"><label for="contractor_chk"> Contractor</label></div></td>
+                                <td><div class="checkbox"><input id="billing_addr_chk" type="checkbox"><label for="billing_addr_chk"> Billing Information</label></div></td>
+                                <td style="display:none;" class="billing_info_disp"><label class="c-input c-radio"><input id="bill_homeowner" name="bill_to" type="radio" value="homeowner"><span class="c-indicator"></span>Bill Homeowner</label></td>
+                                <td style="display:none;" class="billing_info_disp"><label class="c-input c-radio"><input id="bill_contractor" name="bill_to" type="radio" value="contractor"><span class="c-indicator"></span>Bill Contractor</label></td>
                             </tr>
-                            <tr style="display:none;" id="contractor_disp">
-                                <td><input type="text" name="contractor_name" class="form-control" placeholder="Contractor Name" id="contractor_name"></td>
-                                <td><input type="text" name="contractor_business_num" class="form-control" placeholder="Contractor Business Number" id="contractor_business_num"></td>
-                                <td><input type="text" name="contractor_cell_num" class="form-control" placeholder="Contractor Cell Number" id="contractor_cell_num"></td>
-                            </tr>
-                            <tr>
-                                <td colspan="3"><div style="width:100%;height:3px;border:2px solid #BBB;margin:5px 0;border-radius:5px;"></div></td>
-                            </tr>
-                            <tr>
-                                <td colspan="3"><div class="checkbox"><input id="billing_addr_chk" type="checkbox"><label for="billing_addr_chk"> Different Billing Information</label></div></td>
-                            </tr>
-                            <tr style="display:none;" id="billing_info_disp_1">
+                            <tr style="display:none;" class="billing_info_disp">
                                 <td><input type="text" name="billing_contact" class="form-control" placeholder="Billing Contact" id="billing_contact"></td>
                                 <td><input type="text" name="billing_landline" class="form-control" placeholder="Billing Landline" id="billing_landline"></td>
                                 <td><input type="text" name="billing_cell" class="form-control" placeholder="Billing Cell" id="billing_cell"></td>
                             </tr>
-                            <tr style="display:none;" id="billing_info_disp_2">
+                            <tr style="display:none;" class="billing_info_disp">
                                 <td><input type="text" name="billing_addr" class="form-control" placeholder="Billing Address" id="billing_addr"></td>
                                 <td colspan="2">
                                     <table style="width: 100%;">
@@ -310,11 +376,19 @@ if($qry->num_rows > 0) {
                                     </table>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr style="display:none;" class="billing_info_disp">
+                                <td style="height:8px"></td>
+                            </tr>
+                            <tr style="display:none;" class="billing_info_disp">
                                 <td colspan="3">
                                     <input type="text" name="billing_account" autocomplete="off" class="form-control pull-left" placeholder="ACH Account #" id="billing_account" style="width: 50%;">
                                     <input type="text" name="billing_routing" autocomplete="off" class="form-control pull-right" placeholder="ACH Routing #" id="billing_routing" style="width: 50%;">
                                 </td>
+                            </tr>
+                            <tr style="display:none;" class="billing_info_disp">
+                                <td><input type="text" name="billing_cc_num" class="form-control" placeholder="Credit Card #" id="billing_cc_num"></td>
+                                <td><input type="text" name="billing_cc_exp" class="form-control" placeholder="Exp. Date" id="billing_cc_exp"></td>
+                                <td><input type="text" name="billing_cc_ccv" class="form-control" placeholder="CCV Code" id="billing_cc_ccv"></td>
                             </tr>
                         </table>
                     </form>

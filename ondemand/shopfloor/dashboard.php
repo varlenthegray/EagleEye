@@ -24,7 +24,7 @@ switch($_REQUEST['action']) {
 
             if($room_qry->num_rows > 0) {
                 $output['data'][$i][] = $so['so_num'];
-                $output['data'][$i][] = "<strong>{$so['contractor_dealer_code']}_{$so['project']}</strong>";
+                $output['data'][$i][] = "<strong>{$so['dealer_code']}_{$so['project_name']}</strong>";
                 $output['data'][$i][] = null;
                 $output['data'][$i][] = null;
                 $output['data'][$i]['DT_RowId'] = $so['so_num'];
@@ -107,7 +107,7 @@ switch($_REQUEST['action']) {
 
             if($room_qry->num_rows > 0) {
                 $output['data'][$i][] = $so['so_num'];
-                $output['data'][$i][] = "<strong>{$so['contractor_dealer_code']}_{$so['project']}</strong>";
+                $output['data'][$i][] = "<strong>{$so['dealer_code']}_{$so['project_name']}</strong>";
                 $output['data'][$i][] = null;
                 $output['data'][$i][] = null;
                 $output['data'][$i]['DT_RowId'] = $so['so_num'];

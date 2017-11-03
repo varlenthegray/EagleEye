@@ -54,7 +54,7 @@ function translateVIN($segment, $key) {
 
 <div class="wrapper">
     <div class="vin">
-        <span><?php echo "{$room['room_name']}<br />{$so['so_num']}{$room['room']}-{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}_{$so['contractor_dealer_code']}"; ?></span><br />
+        <span><?php echo "{$room['room_name']}<br />{$so['so_num']}{$room['room']}-{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}_{$so['dealer_code']}"; ?></span><br />
         <?php echo "{$room['species_grade']}{$room['construction_method']}{$room['door_design']}-{$room['panel_raise_door']}{$room['panel_raise_sd']}{$room['panel_raise_td']}
             -{$room['edge_profile']}{$room['framing_bead']}{$room['framing_options']}{$room['style_rail_width']}_{$room['finish_type']}{$room['finish_code']}{$room['sheen']}-
                 {$room['glaze']}-{$room['glaze_technique']}{$room['antiquing']}{$room['worn_edges']}{$room['distress_level']}"; ?>
@@ -118,7 +118,7 @@ function translateVIN($segment, $key) {
     </div>
 
     <div class="vin">
-        <span><?php echo "{$room['room_name']}<br />{$so['so_num']}{$room['room']}-{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}_{$so['contractor_dealer_code']}"; ?></span><br />
+        <span><?php echo "{$room['room_name']}<br />{$so['so_num']}{$room['room']}-{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}_{$so['dealer_code']}"; ?></span><br />
         <?php echo "{$room['species_grade']}{$room['construction_method']}{$room['door_design']}-{$room['panel_raise_door']}{$room['panel_raise_sd']}{$room['panel_raise_td']}
             -{$room['edge_profile']}{$room['framing_bead']}{$room['framing_options']}{$room['style_rail_width']}_{$room['finish_type']}{$room['finish_code']}{$room['sheen']}-
                 {$room['glaze']}-{$room['glaze_technique']}{$room['antiquing']}{$room['worn_edges']}{$room['distress_level']}"; ?>

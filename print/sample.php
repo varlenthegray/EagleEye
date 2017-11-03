@@ -3,7 +3,7 @@ require '../includes/header_start.php';
 
 $id = sanitizeInput($_REQUEST['room_id']);
 
-$info_qry = $dbconn->query("SELECT sales_order.order_status AS orderStatus, sales_order.*, rooms.* FROM rooms LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num WHERE rooms.id = '$id'");
+$info_qry = $dbconn->query("SELECT sales_order.*, rooms.* FROM rooms LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num WHERE rooms.id = '$id'");
 $info = $info_qry->fetch_assoc();
 
 function translateVIN($segment, $key) {
@@ -123,11 +123,11 @@ function displayOrder($ordered_var, $human_name) {
                             <?php
                             echo (trim($info['ship_site']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['ship_site']}<br />";
                             echo "<br />";
-                            echo (trim($info['contact1_name']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['contact1_name']}<br />";
-                            echo (trim($info['mailing_addr']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['mailing_addr']}<br />";
-                            echo (trim($info['mailing_city']) === '') ? "<span class='highlight'>___________ , ___ , _______</span><br />" : "{$info['mailing_city']}, {$info['mailing_state']} {$info['mailing_zip']}<br />";
-                            echo (trim($info['contact1_email']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['contact1_email']}<br />";
-                            echo (trim($info['contact1_cell']) === '') ? "<span class='highlight'>________________________</span>" : "{$info['contact1_cell']}<br />";
+                            echo (trim($info['name_1']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['name_1']}<br />";
+                            echo (trim($info['secondary_addr']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['secondary_addr']}<br />";
+                            echo (trim($info['secondary_city']) === '') ? "<span class='highlight'>___________ , ___ , _______</span><br />" : "{$info['secondary_city']}, {$info['secondary_state']} {$info['secondary_zip']}<br />";
+                            echo (trim($info['email_1']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['email_1']}<br />";
+                            echo (trim($info['cell_1']) === '') ? "<span class='highlight'>________________________</span>" : "{$info['cell_1']}<br />";
                             ?>
                         </td>
                     </tr>

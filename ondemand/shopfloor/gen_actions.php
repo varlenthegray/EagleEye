@@ -190,45 +190,66 @@ switch($_REQUEST['action']) {
         $note_id = null;
         $inquiry_id = null;
 
-        $dealer_code = sanitizeInput($_REQUEST['dealer_code']);
-        $project = sanitizeInput($_REQUEST['project']);
-        $contact_1 = sanitizeInput($_REQUEST['contact_1']);
-        $contact_2 = sanitizeInput($_REQUEST['contact_2']);
-        $physical_addr = sanitizeInput($_REQUEST['physical_addr']);
-        $project_addr = sanitizeInput($_REQUEST['project_addr']);
-        $cell_1 = sanitizeInput($_REQUEST['cell_1']);
-        $cell_2 = sanitizeInput($_REQUEST['cell_2']);
-        $ph_city = sanitizeInput($_REQUEST['ph_city']);
-        $ph_state = sanitizeInput($_REQUEST['ph_state']);
-        $ph_zip = sanitizeInput($_REQUEST['ph_zip']);
-        $p_city = sanitizeInput($_REQUEST['p_city']);
-        $p_state = sanitizeInput($_REQUEST['p_state']);
-        $p_zip = sanitizeInput($_REQUEST['p_zip']);
-        $business_1 = sanitizeInput($_REQUEST['business_1']);
-        $business_2 = sanitizeInput($_REQUEST['business_2']);
-        $p_landline = sanitizeInput($_REQUEST['p_landline']);
-        $email_1 = sanitizeInput($_REQUEST['email_1']);
-        $email_2 = sanitizeInput($_REQUEST['email_2']);
-        $order_status = sanitizeInput($_REQUEST['order_status']);
         $so_num = sanitizeInput($_REQUEST['so_num']);
 
-        $so_note = sanitizeInput($_REQUEST['note']);
-        $inquiry = sanitizeInput($_REQUEST['inquiry']);
+        $dealer_code = sanitizeInput($_REQUEST['dealer_code']);
+
+        $project_name = sanitizeInput($_REQUEST['project_name']);
+        $project_addr = sanitizeInput($_REQUEST['project_addr']);
+        $project_city = sanitizeInput($_REQUEST['project_city']);
+        $project_state = sanitizeInput($_REQUEST['project_state']);
+        $project_zip = sanitizeInput($_REQUEST['project_zip']);
+        $project_landline = sanitizeInput($_REQUEST['project_landline']);
+
+        $name_1 = sanitizeInput($_REQUEST['name_1']);
+        $cell_1 = sanitizeInput($_REQUEST['cell_1']);
+        $business_1 = sanitizeInput($_REQUEST['business_1']);
+        $email_1 = sanitizeInput($_REQUEST['email_1']);
+
+        $name_2 = sanitizeInput($_REQUEST['name_2']);
+        $cell_2 = sanitizeInput($_REQUEST['cell_2']);
+        $business_2 = sanitizeInput($_REQUEST['business_2']);
+        $email_2 = sanitizeInput($_REQUEST['email_2']);
+
+        $secondary_addr = sanitizeInput($_REQUEST['secondary_addr']);
+        $secondary_landline = sanitizeInput($_REQUEST['secondary_landline']);
+        $secondary_city = sanitizeInput($_REQUEST['secondary_city']);
+        $secondary_state = sanitizeInput($_REQUEST['secondary_state']);
+        $secondary_zip = sanitizeInput($_REQUEST['secondary_zip']);
 
         $contractor_name = sanitizeInput($_REQUEST['contractor_name']);
-        $contractor_business = sanitizeInput($_REQUEST['contractor_business_num']);
-        $contractor_cell = sanitizeInput($_REQUEST['contractor_cell_num']);
+        $contractor_business = sanitizeInput($_REQUEST['contractor_business']);
+        $contractor_cell = sanitizeInput($_REQUEST['contractor_cell']);
+        $contractor_addr = sanitizeInput($_REQUEST['contractor_addr']);
+        $contractor_city = sanitizeInput($_REQUEST['contractor_city']);
+        $contractor_state = sanitizeInput($_REQUEST['contractor_state']);
+        $contractor_zip = sanitizeInput($_REQUEST['contractor_zip']);
+        $contractor_email = sanitizeInput($_REQUEST['contractor_email']);
+        $project_mgr = sanitizeInput($_REQUEST['project_mgr']);
+        $project_mgr_cell = sanitizeInput($_REQUEST['project_mgr_cell']);
+        $project_mgr_email = sanitizeInput($_REQUEST['project_mgr_email']);
+
+        $bill_to = sanitizeInput($_REQUEST['bill_to']);
+        $billing_contact = sanitizeInput($_REQUEST['billing_contact']);
+        $billing_landline = sanitizeInput($_REQUEST['billing_landline']);
+        $billing_cell = sanitizeInput($_REQUEST['billing_cell']);
+        $billing_addr = sanitizeInput($_REQUEST['billing_addr']);
+        $billing_city = sanitizeInput($_REQUEST['billing_city']);
+        $billing_state = sanitizeInput($_REQUEST['billing_state']);
+        $billing_zip = sanitizeInput($_REQUEST['billing_zip']);
+        $billing_account = sanitizeInput($_REQUEST['billing_account']);
+        $billing_routing = sanitizeInput($_REQUEST['billing_routing']);
+        $billing_cc_num = sanitizeInput($_REQUEST['billing_cc_num']);
+        $billing_cc_exp = sanitizeInput($_REQUEST['billing_cc_exp']);
+        $billing_cc_ccv = sanitizeInput($_REQUEST['billing_cc_ccv']);
+
+        $inquiry = sanitizeInput($_REQUEST['inquiry']);
 
         $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$so_num'");
         $so = $so_qry->fetch_assoc();
 
         $followup_date = sanitizeInput($_REQUEST['inquiry_followup_date']);
         $followup_individual = sanitizeInput($_REQUEST['inquiry_requested_of']);
-
-        if(!empty($so_note)) {
-            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$so_note', 'so_note', UNIX_TIMESTAMP(), '{$_SESSION['userInfo']['id']}', '{$so['id']}')");
-            $note_id = $dbconn->insert_id;
-        }
 
         if(!empty($inquiry)) {
             $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$inquiry', 'so_inquiry', UNIX_TIMESTAMP(), '{$_SESSION['userInfo']['id']}', '{$so['id']}')");
@@ -241,10 +262,15 @@ switch($_REQUEST['action']) {
             $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('so_inquiry', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'SO# $so_num, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $inquiry_id)");
         }
 
-        if($dbconn->query("UPDATE sales_order SET contractor_dealer_code = '$dealer_code', project = '$project', contact1_name = '$contact_1', contact2_name = '$contact_2',
-         project_addr = '$project_addr', contact1_cell = '$cell_1', contact2_cell = '$cell_2', project_city = '$p_city',
-          project_state = '$p_state', project_zip = '$p_zip', contact1_business_ph = '$business_1', contact2_business_ph = '$business_2', project_landline = '$p_landline', contact1_email = '$email_1', 
-           contact2_email = '$email_2', contractor_name = '$contractor_name', contractor_business = '$contractor_business', contractor_cell = '$contractor_cell' WHERE so_num = '$so_num'")) {
+        if($dbconn->query("UPDATE sales_order SET dealer_code = '$dealer_code', project_name = '$project_name', project_addr = '$project_addr', project_city = '$project_city',
+          project_state = '$project_state', project_zip = '$project_zip', project_landline = '$project_landline', name_1 = '$name_1', cell_1 = '$cell_1', business_1 = '$business_1', 
+            email_1 = '$email_1', name_2 = '$name_2', cell_2 = '$cell_2', business_2 = '$business_2', email_2 = '$email_2', secondary_addr = '$secondary_addr', secondary_landline = '$secondary_landline',
+              secondary_city = '$secondary_city', secondary_state = '$secondary_state', secondary_zip = '$secondary_zip', contractor_name = '$contractor_name', contractor_business = '$contractor_business',
+                contractor_cell = '$contractor_cell', contractor_addr = '$contractor_addr', contractor_city = '$contractor_city', contractor_state = '$contractor_state', contractor_zip = '$contractor_zip',
+                  contractor_email = '$contractor_email', project_mgr = '$project_mgr', project_mgr_cell = '$project_mgr_cell', project_mgr_email = '$project_mgr_email', bill_to = '$bill_to',
+                    billing_contact = '$billing_contact', billing_landline = '$billing_landline', billing_cell = '$billing_cell', billing_addr = '$billing_addr', billing_city = '$billing_city',
+                      billing_state = '$billing_state', billing_zip = '$billing_zip', billing_account = '$billing_account', billing_routing = '$billing_routing', billing_cc_num = '$billing_cc_num',
+                        billing_cc_exp = '$billing_cc_exp', billing_cc_ccv = '$billing_cc_ccv' WHERE so_num = '$so_num'")) {
             echo displayToast("success", "Successfully updated Sales Order information for $so_num.", "Updated Information");
         } else {
             dbLogSQLErr($dbconn);

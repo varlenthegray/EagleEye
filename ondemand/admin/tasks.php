@@ -25,8 +25,8 @@ switch($action) {
         $notify_qry = $dbconn->query("SELECT * FROM user WHERE id = $assignee");
         $notify = $notify_qry->fetch_assoc();
 
-        if($dbconn->query("INSERT INTO tasks (name, description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved)
-         VALUES ('', '$task_desc', UNIX_TIMESTAMP(), null, '$priority', $assignee, null, $submitted_by, FALSE);")) {
+        if($dbconn->query("INSERT INTO tasks (description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved)
+         VALUES ('$task_desc', UNIX_TIMESTAMP(), null, '$priority', $assignee, null, $submitted_by, FALSE);")) {
             $dbconn->query("INSERT INTO alerts (type, status, message, time_created, time_acknowledged, alert_user, icon, type_id, color) VALUES ('feedback', 'new', 'New feedback submitted by $submitted_name.', UNIX_TIMESTAMP(), null, $assignee, 'icon-bubble', $dbconn->insert_id, 'bg-warning')");
 
             if(!empty($notify['email']))
@@ -342,7 +342,7 @@ HEREDOC;
             $split_2_notify = sanitizeInput($_REQUEST['split_feedback_to_2']);
             $split_2_priority = sanitizeInput($_REQUEST['split_2_priority']);
 
-            $db_stmt = $dbconn->prepare("INSERT INTO tasks (name, description, created,  priority, assigned_to, submitted_by, resolved, split_by) VALUES ('', ?, UNIX_TIMESTAMP(), ?, ?, {$task['submitted_by']}, FALSE, {$_SESSION['userInfo']['id']});");
+            $db_stmt = $dbconn->prepare("INSERT INTO tasks (description, created,  priority, assigned_to, submitted_by, resolved, split_by) VALUES (?, UNIX_TIMESTAMP(), ?, ?, {$task['submitted_by']}, FALSE, {$_SESSION['userInfo']['id']});");
 
             if(!$db_stmt) dbLogSQLErr($dbconn);
 

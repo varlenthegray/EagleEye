@@ -37,21 +37,19 @@ $("body")
             cuData = $("#add_distributor_cc").serialize();
         }
 
-        $.post("/ondemand/shopfloor/job_actions.php?action=add_customer&" + cuData, {new_so_num: $("#new_so_num").val()}, function(data) {
+        $.post("/ondemand/shopfloor/job_actions.php?action=add_customer&" + cuData, {so_num: $("#so_num").val()}, function(data) {
             $("body").append(data);
 
             $("#modalAddCustomer").modal('hide');
         });
     })
-    .on("change", "#mailing_addr_chk", function() {
-        $("#mailing_addr_disp_1").toggle();
-        $("#mailing_addr_disp_2").toggle();
+    .on("change", "#secondary_addr_chk", function() {
+        $(".secondary_addr_disp").toggle();
     })
     .on("change", "#billing_addr_chk", function() {
-        $("#billing_info_disp_1").toggle();
-        $("#billing_info_disp_2").toggle();
+        $(".billing_info_disp").toggle();
     })
     .on("change", "#contractor_chk", function() {
-        $("#contractor_disp").toggle();
+        $(".contractor_disp").toggle();
     })
 ;

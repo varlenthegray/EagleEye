@@ -6,7 +6,7 @@ $room_id = sanitizeInput($_REQUEST['room_id']);
 $info_qry = $dbconn->query("SELECT rooms.*, sales_order.*, rooms.order_status AS rOrderStatus FROM rooms LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num WHERE rooms.id = '$room_id'");
 $info = $info_qry->fetch_assoc();
 
-$dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$info['contractor_dealer_code']}'");
+$dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$info['dealer_code']}'");
 $dealer_info = $dealer_qry->fetch_assoc();
 
 $sheen_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' AND `key` = '{$info['sheen']}'");
@@ -108,9 +108,9 @@ function translateVIN($segment, $key) {
                             <td><strong>Ship To:</strong></td>
                             <td>
                                 <?php
-                                echo (trim($info['contact1_name']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['contact1_name']}<br />";
-                                echo (trim($info['mailing_addr']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['mailing_addr']}<br />";
-                                echo (trim($info['mailing_city']) === '') ? "<span class='highlight'>___________ , ___ , _______</span><br />" : "{$info['mailing_city']}, {$info['mailing_state']} {$info['mailing_zip']}<br />";
+                                echo (trim($info['name_1']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['name_1']}<br />";
+                                echo (trim($info['secondary_addr']) === '') ? "<span class='highlight'>________________________</span><br />" : "{$info['secondary_addr']}<br />";
+                                echo (trim($info['secondary_city']) === '') ? "<span class='highlight'>___________ , ___ , _______</span><br />" : "{$info['secondary_city']}, {$info['secondary_state']} {$info['secondary_zip']}<br />";
                                 ?>
                             </td>
                         </tr>
@@ -125,7 +125,7 @@ function translateVIN($segment, $key) {
             <table>
                 <tr>
                     <th width="10%"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></th>
-                    <th class="text-md-right"><?php echo "{$info['contractor_dealer_code']} - {$dealer_info['dealer_name']}"; ?>&nbsp;</th>
+                    <th class="text-md-right"><?php echo "{$info['dealer_code']} - {$dealer_info['dealer_name']}"; ?>&nbsp;</th>
                 </tr>
                 <tr class="border_thin_bottom">
                     <td class="gray_bg">Delivery Notes:</td>

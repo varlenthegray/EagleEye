@@ -13,22 +13,22 @@ class search {
     function displayResults($find) {
         global $dbconn;
 
-        $qry = $dbconn->query("SELECT * FROM sales_order WHERE LOWER(so_num) LIKE LOWER('%$find%') OR LOWER(contractor_dealer_code) LIKE LOWER('%$find%') 
-          OR LOWER(project) LIKE LOWER('%$find%') OR LOWER(project_mgr) LIKE LOWER('%$find%') OR LOWER(contact1_name) LIKE LOWER('%$find%') OR LOWER(contact2_name) LIKE LOWER('%$find%')  
+        $qry = $dbconn->query("SELECT * FROM sales_order WHERE LOWER(so_num) LIKE LOWER('%$find%') OR LOWER(dealer_code) LIKE LOWER('%$find%') 
+          OR LOWER(project_name) LIKE LOWER('%$find%') OR LOWER(project_mgr) LIKE LOWER('%$find%') OR LOWER(name_1) LIKE LOWER('%$find%') OR LOWER(name_2) LIKE LOWER('%$find%')  
               ORDER BY so_num DESC");
 
         if($qry->num_rows > 0) {
             while($result = $qry->fetch_assoc()) {
-                $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['contractor_dealer_code']}%'");
+                $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%'");
                 $dealer = $dealer_qry->fetch_assoc();
 
                 /** BEGIN LISTING OF SO'S */
                 echo "  <tr class='cursor-hand' id='show_room_{$result['so_num']}'>";
                 echo "    <td width='26px'><button class='btn waves-effect btn-primary pull-right' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button></td>";
                 echo "    <td>{$result['so_num']}</td>";
-                echo "    <td>{$result['project']}</td>";
+                echo "    <td>{$result['project_name']}</td>";
                 echo "    <td>{$dealer['contact']}</td>";
-                echo "    <td>{$result['contractor_dealer_code']}: {$dealer['dealer_name']}</td>";
+                echo "    <td>{$result['dealer_code']}: {$dealer['dealer_name']}</td>";
                 echo "  </tr>";
 
                 /** BEGIN ROOM INFORMATION */

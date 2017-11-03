@@ -322,7 +322,7 @@ $("body")
     .on("click", ".save_so", function() {
         var so_info = $("#form_so_" + active_so_num).serialize();
 
-        $.post('/ondemand/shopfloor/gen_actions.php?action=save_so&' + so_info, function(data) {
+        $.post('/ondemand/shopfloor/gen_actions.php?action=save_so&' + so_info + '&so_num=' + active_so_num, function(data) {
             $("body").append(data);
         });
 

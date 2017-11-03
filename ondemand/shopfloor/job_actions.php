@@ -1172,25 +1172,48 @@ HEREDOC;
         break;
     case 'add_customer':
         /** Global information */
-        $new_so_num = sanitizeInput($_REQUEST['new_so_num']);
+        $so_num = sanitizeInput($_REQUEST['so_num']);
 
         /** Retail information */
-        $contractor_dealer_code = sanitizeInput($_REQUEST['contractor_dealer_code']);
-        $contractor_dealer = sanitizeInput($_REQUEST['contractor_dealer']);
+        $dealer_code = sanitizeInput($_REQUEST['dealer_code']);
+
         $project_name = sanitizeInput($_REQUEST['project_name']);
         $project_addr = sanitizeInput($_REQUEST['project_addr']);
         $project_city = sanitizeInput($_REQUEST['project_city']);
         $project_state = sanitizeInput($_REQUEST['project_state']);
         $project_zip = sanitizeInput($_REQUEST['project_zip']);
         $project_landline = sanitizeInput($_REQUEST['project_landline']);
+
         $name_1 = sanitizeInput($_REQUEST['name_1']);
         $cell_1 = sanitizeInput($_REQUEST['cell_1']);
         $business_1 = sanitizeInput($_REQUEST['business_1']);
         $email_1 = sanitizeInput($_REQUEST['email_1']);
+
         $name_2 = sanitizeInput($_REQUEST['name_2']);
         $cell_2 = sanitizeInput($_REQUEST['cell_2']);
         $business_2 = sanitizeInput($_REQUEST['business_2']);
         $email_2 = sanitizeInput($_REQUEST['email_2']);
+
+        $secondary_addr = sanitizeInput($_REQUEST['secondary_addr']);
+        $secondary_landline = sanitizeInput($_REQUEST['secondary_landline']);
+        $secondary_city = sanitizeInput($_REQUEST['secondary_city']);
+        $secondary_state = sanitizeInput($_REQUEST['secondary_state']);
+        $secondary_zip = sanitizeInput($_REQUEST['secondary_zip']);
+
+        $contractor_name = sanitizeInput($_REQUEST['contractor_name']);
+        $contractor_business = sanitizeInput($_REQUEST['contractor_business_num']);
+        $contractor_cell = sanitizeInput($_REQUEST['contractor_cell_num']);
+        $contractor_addr = sanitizeInput($_REQUEST['contractor_addr']);
+        $contractor_city = sanitizeInput($_REQUEST['contractor_city']);
+        $contractor_state = sanitizeInput($_REQUEST['contractor_state']);
+        $contractor_zip = sanitizeInput($_REQUEST['contractor_zip']);
+        $contractor_email = sanitizeInput($_REQUEST['contractor_email']);
+
+        $project_mgr = sanitizeInput($_REQUEST['project_mgr']);
+        $project_mgr_cell = sanitizeInput($_REQUEST['project_mgr_cell']);
+        $project_mgr_email = sanitizeInput($_REQUEST['project_mgr_email']);
+
+        $bill_to = sanitizeInput($_REQUEST['bill_to']);
         $billing_contact = sanitizeInput($_REQUEST['billing_contact']);
         $billing_landline = sanitizeInput($_REQUEST['billing_landline']);
         $billing_cell = sanitizeInput($_REQUEST['billing_cell']);
@@ -1198,32 +1221,24 @@ HEREDOC;
         $billing_city = sanitizeInput($_REQUEST['billing_city']);
         $billing_state = sanitizeInput($_REQUEST['billing_state']);
         $billing_zip = sanitizeInput($_REQUEST['billing_zip']);
+
         $billing_account = sanitizeInput($_REQUEST['billing_account']);
         $billing_routing = sanitizeInput($_REQUEST['billing_routing']);
-        $mailing_addr = sanitizeInput($_REQUEST['mailing_addr']);
-        $mailing_landline = sanitizeInput($_REQUEST['mailing_landline']);
-        $mailing_city = sanitizeInput($_REQUEST['mailing_city']);
-        $mailing_state = sanitizeInput($_REQUEST['mailing_state']);
-        $mailing_zip = sanitizeInput($_REQUEST['mailing_zip']);
-        $project_mgr = sanitizeInput($_REQUEST['project_mgr']);
-        $project_mgr_cell = sanitizeInput($_REQUEST['project_mgr_cell']);
-        $project_mgr_email = sanitizeInput($_REQUEST['project_mgr_email']);
-        $contractor_name = sanitizeInput($_REQUEST['contractor_name']);
-        $contractor_business = sanitizeInput($_REQUEST['contractor_business_num']);
-        $contractor_cell = sanitizeInput($_REQUEST['contractor_cell_num']);
+        $billing_cc_num = sanitizeInput($_REQUEST['billing_cc_num']);
+        $billing_cc_exp = sanitizeInput($_REQUEST['billing_cc_exp']);
+        $billing_cc_ccv = sanitizeInput($_REQUEST['billing_cc_ccv']);
 
-        if($dbconn->query("INSERT INTO sales_order (so_num, contractor_dealer_code, project, 
-         project_addr, project_city, project_state, project_zip, project_landline, contact1_name, contact1_cell, 
-          contact1_business_ph, contact1_email, contact2_name, contact2_cell, contact2_business_ph, contact2_email, 
-           billing_contact, billing_landline, billing_cell, billing_addr, billing_city, billing_state, billing_zip, 
-            ach_account_num, ach_routing_num, mailing_addr, mailing_city, mailing_state, mailing_zip, mailing_landline, 
-             project_mgr, project_mgr_cell, project_mgr_email, contractor_name, contractor_business, contractor_cell) 
-               VALUES ('$new_so_num', '$contractor_dealer_code', '$project_name', '$project_addr', 
-                '$project_city', '$project_state', '$project_zip', '$project_landline', '$name_1', '$cell_1', '$business_1', 
-                 '$email_1', '$name_2', '$cell_2', '$business_2', '$email_2', '$billing_contact', '$billing_landline', '$billing_cell', 
-                  '$billing_addr', '$billing_city', '$billing_state', '$billing_zip', '$billing_account', '$billing_routing', '$mailing_addr', 
-                   '$mailing_city', '$mailing_state', '$mailing_zip', '$mailing_landline', '$project_mgr', '$project_mgr_cell', '$project_mgr_email',
-                    '$contractor_name', '$contractor_business', '$contractor_cell')")) {
+        if($dbconn->query("INSERT INTO sales_order (so_num, dealer_code, project_name, project_addr, project_city, project_state, project_zip, 
+          project_landline, name_1, cell_1, business_1, email_1, name_2, cell_2, business_2, email_2, secondary_addr, secondary_city, secondary_state, 
+            secondary_zip, secondary_landline, contractor_name, contractor_business, contractor_cell, contractor_email, project_mgr, project_mgr_cell, 
+              project_mgr_email, bill_to, billing_contact, billing_landline, billing_cell, billing_addr, billing_city, billing_state, billing_zip, 
+                billing_account, billing_routing, billing_cc_num, billing_cc_exp, billing_cc_ccv, contractor_zip, contractor_state, contractor_city, 
+                  contractor_addr) VALUES ('$so_num', '$dealer_code', '$project_name', '$project_addr', '$project_city', '$project_state', '$project_zip',
+                    '$project_landline', '$name_1', '$cell_1', '$business_1', '$email_1', '$name_2', '$cell_2', '$business_2', '$email_2', '$secondary_addr',
+                      '$secondary_city', '$secondary_state', '$secondary_zip', '$secondary_landline', '$contractor_name', '$contractor_business', '$contractor_cell',
+                        '$contractor_email', '$project_mgr', '$project_mgr_cell', '$project_mgr_email', '$bill_to', '$billing_contact', '$billing_landline',
+                          '$billing_cell', '$billing_addr', '$billing_city', '$billing_state', '$billing_zip', '$billing_account', '$billing_routing',
+                            '$billing_cc_num', '$billing_cc_exp', '$billing_cc_ccv', '$contractor_zip', '$contractor_state', '$contractor_city', '$contractor_addr')")) {
 
             echo displayToast("success", "Successfully created new SO.", "New SO Created");
         } else {
