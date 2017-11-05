@@ -269,10 +269,11 @@ $("body")
         e.stopPropagation();
 
         var edit_info = $("#room_edit_" + active_room_id).serialize();
+        var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
 
-        console.log(edit_info);
+        active_ops = JSON.stringify(active_ops);
 
-        $.post("/ondemand/shopfloor/gen_actions.php?action=update_room&" + edit_info, function(data) {
+        $.post("/ondemand/shopfloor/gen_actions.php?action=update_room&" + edit_info, {active_ops: active_ops}, function(data) {
             $('body').append(data);
         });
 
@@ -304,11 +305,10 @@ $("body")
         });
     })
 
+    /** Deprecated */
     .on("click", ".save_bracket", function() {
         var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
         var selected_ops = $("#form_bracket_" + active_room_id).serialize();
-
-        console.log(selected_ops);
 
         active_ops = JSON.stringify(active_ops);
 
@@ -318,6 +318,7 @@ $("body")
 
         unsaved = false;
     })
+    /** End Deprecated */
 
     .on("click", ".save_so", function() {
         var so_info = $("#form_so_" + active_so_num).serialize();

@@ -16,7 +16,7 @@ function translateVIN($segment, $key) {
     global $dbconn;
 
     if($segment === 'finish_code') {
-        $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' OR segment = 'benjamin_moore_paints' OR segment = 'sherwin_williams_paints') AND `key` = '$key'");
+        $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
     } else {
         $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
     }
@@ -255,16 +255,6 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td class="border_thin_bottom">Finish Type:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_type', $info['finish_type']); ?></td>
-                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-right border_thin_bottom gray_bg">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
                     <td class="border_thin_bottom">Finish Code:</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -345,16 +335,6 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td class="border_thin_bottom">Exterior Finish Type:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_type', $info['carcass_exterior_finish_type']); ?></td>
-                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom"><input type="text" name="exterior_finish_type_pct" value="0.00" maxlength="4">%</td>
-                    <td class="text-md-right border_thin_bottom">$<span id="ext_finish_type_subtotal"></span></td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
                     <td class="border_thin_bottom">Exterior Finish Code:</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -391,16 +371,6 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom"><input type="text" name="interior_species_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom">$<span id="int_species_subtotal"></span></td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                    <td class="border_thin_bottom">Interior Finish Type:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_type', $info['carcass_interior_finish_type']); ?></td>
-                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom"><input type="text" name="interior_finish_type_pct" value="0.00" maxlength="4">%</td>
-                    <td class="text-md-right border_thin_bottom">$<span id="int_finish_type_subtotal"></span></td>
                 </tr>
                 <tr>
                     <td>&nbsp;</td>

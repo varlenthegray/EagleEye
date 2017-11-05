@@ -160,7 +160,6 @@ require 'includes/header_end.php';
         var framing_bead = $("#framing_bead_" + room_id).find(":selected").val();
         var framing_options = $("#framing_options_" + room_id).find(":selected").val();
         var style_rail_width = $("#style_rail_width_" + room_id).find(":selected").val();
-        var finish_type = $("#finish_type_" + room_id).find(":selected").val();
         var finish_code = $("#finish_code_" + room_id).find(":selected").val();
         var sheen = $("#sheen_" + room_id).find(":selected").val();
         var glaze = $("#glaze_" + room_id).find(":selected").val();
@@ -169,20 +168,18 @@ require 'includes/header_end.php';
         var worn_edges = $("#worn_edges_" + room_id).find(":selected").val();
         var distress_level = $("#distress_level_" + room_id).find(":selected").val();
         var carcass_exterior_species = $("#carcass_exterior_species_" + room_id).find(":selected").val();
-        var carcass_exterior_finish_type = $("#carcass_exterior_finish_type_" + room_id).find(":selected").val();
         var carcass_exterior_finish_code = $("#carcass_exterior_finish_code_" + room_id).find(":selected").val();
         var carcass_exterior_glaze_color = $("#carcass_exterior_glaze_color_" + room_id).find(":selected").val();
         var carcass_exterior_glaze_technique = $("#carcass_exterior_glaze_technique_" + room_id).find(":selected").val();
         var carcass_interior_species = $("#carcass_interior_species_" + room_id).find(":selected").val();
-        var carcass_interior_finish_type = $("#carcass_interior_finish_type_" + room_id).find(":selected").val();
         var carcass_interior_finish_code = $("#carcass_interior_finish_code_" + room_id).find(":selected").val();
         var carcass_interior_glaze_color = $("#carcass_interior_glaze_color_" + room_id).find(":selected").val();
         var carcass_interior_glaze_technique = $("#carcass_interior_glaze_technique_" + room_id).find(":selected").val();
         var drawer_boxes = $("#drawer_boxes_" + room_id).find(":selected").val();
 
         $("#vin_code_" + room_id).val(so_num + room + "-" + iteration + "-" + product_type + order_status + days_to_ship + "_" + dealer_code + "_" + species_grade + construction_method + door_design + "-" + panel_raise_door + panel_raise_sd + panel_raise_td + "-" + edge_profile +
-            framing_bead + framing_options + style_rail_width + "_" + finish_type + finish_code + sheen + "-" + glaze + glaze_technique + antiquing + worn_edges + distress_level + "_" + carcass_exterior_species + carcass_exterior_finish_type + carcass_exterior_finish_code +
-            carcass_exterior_glaze_color + carcass_exterior_glaze_technique + "-" + carcass_interior_species + carcass_interior_finish_type + carcass_interior_finish_code + carcass_interior_glaze_color + carcass_interior_glaze_technique + "_" + drawer_boxes);
+            framing_bead + framing_options + style_rail_width + "_" + finish_code + sheen + "-" + glaze + glaze_technique + antiquing + worn_edges + distress_level + "_" + carcass_exterior_species + carcass_exterior_finish_code +
+            carcass_exterior_glaze_color + carcass_exterior_glaze_technique + "-" + carcass_interior_species + carcass_interior_finish_code + carcass_interior_glaze_color + carcass_interior_glaze_technique + "_" + drawer_boxes);
     }
 
     $(".js_loading").show();
@@ -539,6 +536,8 @@ require 'includes/header_end.php';
                 $("#iteration").html(data);
             });
         })
+
+        /** Deprecated */
         .on("click", ".create-vin", function() {
             var room_id = $(this).attr("id");
 
@@ -552,6 +551,8 @@ require 'includes/header_end.php';
 
             unsaved = false;
         })
+        /** End Deprecated */
+
         .on("click", ".print-sample", function() {
             var room_id = $(this).attr("id");
 

@@ -28,7 +28,7 @@ function translateVIN($segment, $key) {
     global $dbconn;
 
     if($segment === 'finish_code') {
-        $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' OR segment = 'benjamin_moore_paints' OR segment = 'sherwin_williams_paints') AND `key` = '$key'");
+        $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
     } else {
         $vin_qry = $dbconn->query("SELECT `value` FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
     }

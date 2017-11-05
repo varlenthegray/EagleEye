@@ -3,7 +3,7 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define("RELEASE_DATE", "11/01/17");
+define("RELEASE_DATE", "11/03/17");
 
 // Global definitions
 define("LOGO_TEXT", "Stone Mountain Cabinetry"); // The logo text displayed
@@ -58,3 +58,5 @@ define("NAV_ADD_SO", "Add SO"); // Adding a SO
 define("NAV_FEEDBACK", "Feedback"); // Providing feedback
 define("NAV_LOGOUT", "Logout"); // Logging out completely
 define("NAV_CLOCKOUT", "Clock Out"); // Clocking out early
+
+define("NAV_QUICKADD", "Quick Add"); // Quick add button

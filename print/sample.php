@@ -9,7 +9,7 @@ $info = $info_qry->fetch_assoc();
 function translateVIN($segment, $key) {
     global $dbconn;
 
-    $segment_def = ($segment === 'finish_code') ? "segment = 'standard_wiping_stains' OR segment = 'colourtone_paints' OR segment = 'benjamin_moore_paints' OR segment = 'sherwin_williams_paints'" : $segment_def = $segment;
+    $segment_def = ($segment === 'finish_code') ? "segment = 'finish_code'" : $segment_def = $segment;
 
     $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment_def' AND `key` = '$key'");
     $vin = $vin_qry->fetch_assoc();
@@ -232,7 +232,7 @@ function displayOrder($ordered_var, $human_name) {
             <tr>
                 <td>Finish Code:</td>
                 <td><?php echo (trim($info['finish_code']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['finish_code']}<br />"; ?></td>
-                <td><?php echo translateVIN('standard_wiping_stains', $info['finish_code']); ?></td>
+                <td><?php echo translateVIN('finish_code', $info['finish_code']); ?></td>
             </tr>
             <tr>
                 <td>Glaze</td>
