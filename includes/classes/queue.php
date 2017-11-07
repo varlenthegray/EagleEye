@@ -12,7 +12,13 @@ class queue {
     function wc_jobsInQueue() {
         global $dbconn;
 
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.so_parent AS op_queueSOParent, op_queue.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id JOIN sales_order ON op_queue.so_parent = sales_order.so_num WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.job_title != 'N/A' ORDER BY op_queue.so_parent DESC, operations.op_id DESC;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
+          rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
+              JOIN operations ON op_queue.operation_id = operations.id
+                JOIN rooms ON op_queue.room_id = rooms.id
+                  JOIN sales_order ON rooms.so_parent = sales_order.so_num
+                    WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.job_title != 'N/A'
+                      ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
 
         $output = array();
         $i = 0;
@@ -63,7 +69,13 @@ class queue {
     function wc_recentlyCompleted() {
         global $dbconn;
 
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.so_parent AS op_queueSOParent, op_queue.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active = FALSE AND completed = TRUE ORDER BY op_queue.end_time DESC, op_queue.so_parent DESC, operations.op_id DESC LIMIT 0,250;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
+          rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
+              JOIN operations ON op_queue.operation_id = operations.id
+                JOIN rooms ON op_queue.room_id = rooms.id
+                  JOIN sales_order ON rooms.so_parent = sales_order.so_num
+                    WHERE active = FALSE AND completed = TRUE
+                      ORDER BY sales_order.so_num DESC, operations.op_id DESC LIMIT 0,250;");
 
         $output = array();
         $i = 0;
@@ -96,7 +108,13 @@ class queue {
     function wc_activeJobs() {
         global $dbconn;
 
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, op_queue.so_parent AS op_queueSOParent, op_queue.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id LEFT JOIN sales_order ON op_queue.so_parent = sales_order.so_num WHERE active = TRUE AND published = TRUE AND (completed = FALSE OR completed IS NULL) ORDER BY op_queue.so_parent DESC, operations.op_id DESC;");
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
+          rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
+              JOIN operations ON op_queue.operation_id = operations.id
+                JOIN rooms ON op_queue.room_id = rooms.id
+                  JOIN sales_order ON rooms.so_parent = sales_order.so_num
+                    WHERE active = TRUE AND published = TRUE AND (completed = FALSE OR completed IS NULL)
+                      ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
 
         $output = array();
         $i = 0;
