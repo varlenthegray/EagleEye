@@ -131,17 +131,6 @@ require 'includes/header_end.php';
         }, 200);
     }
 
-    function loadPage(page) {
-        clearIntervals();
-
-        $(".js_loading").show();
-        $("#main_body").load("/html/" + page + ".php", function() {
-            $(".js_loading").hide();
-        });
-
-        backFromSearch();
-    }
-
     function calcVin(room_id) {
         var so_num = $("#vin_so_num_" + room_id).val();
         var room = $("#vin_room_" + room_id).val();
@@ -180,6 +169,17 @@ require 'includes/header_end.php';
         $("#vin_code_" + room_id).val(so_num + room + "-" + iteration + "-" + product_type + order_status + days_to_ship + "_" + dealer_code + "_" + species_grade + construction_method + door_design + "-" + panel_raise_door + panel_raise_sd + panel_raise_td + "-" + edge_profile +
             framing_bead + framing_options + style_rail_width + "_" + finish_code + sheen + "-" + glaze + glaze_technique + antiquing + worn_edges + distress_level + "_" + carcass_exterior_species + carcass_exterior_finish_code +
             carcass_exterior_glaze_color + carcass_exterior_glaze_technique + "-" + carcass_interior_species + carcass_interior_finish_code + carcass_interior_glaze_color + carcass_interior_glaze_technique + "_" + drawer_boxes);
+    }
+
+    function loadPage(page) {
+        clearIntervals();
+
+        $(".js_loading").show();
+        $("#main_body").load("/html/" + page + ".php", function() {
+            $(".js_loading").hide();
+        });
+
+        backFromSearch();
     }
 
     $(".js_loading").show();

@@ -12,8 +12,8 @@ switch($_SERVER['SCRIPT_NAME']) {
 
 <!-- Navigation Bar-->
 <header id="topnav">
-    <div class="custom-logo hidden-print" style="background-color:rgba(255,255,255,1);margin-right:130px;position:reliatve;z-index:2;width:230px;">
-        <img src="../assets/images/logo_new.png" height="130px" />
+    <div class="custom-logo hidden-print" style="margin-right:130px;position:reliatve;z-index:2;margin-top:-2px;">
+        <img src="../assets/images/logo_new.png" height="135px" />
     </div>
 
     <!-- fake fields are a workaround for chrome autofill getting the wrong fields (such as search) -->
@@ -84,7 +84,7 @@ switch($_SERVER['SCRIPT_NAME']) {
                     <li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>
                     <?php
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>" . NAV_ADD_SO . "</span></a></li>" : null;
-                        //echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_quick_add'><a><i class='zmdi zmdi-plus-circle-o m-r-5'></i><span>" . NAV_QUICKADD . "</span></a></li>" : null;
+                        echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_quick_add'><a><i class='zmdi zmdi-plus-circle-o m-r-5'></i><span>" . NAV_QUICKADD . "</span></a></li>" : null;
 
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li class='nav-separator'><span></span></li>" : null;
 

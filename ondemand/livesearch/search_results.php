@@ -1758,127 +1758,17 @@ switch ($search) {
                                 <div class="row">
                                     <div class="col-md-12">
                                         <form id="form_add_room_<?php echo $result['so_num']; ?>">
-                                            <div class="col-md-4">
-                                                    <table width="100%" class="table table-custom-nb">
-                                                        <tr>
-                                                            <td><label for="dealer_code">Dealer Code</label></td>
-                                                            <td>
-                                                                <select class="form-control dealer_code" name="dealer_code" readonly>
-                                                                    <?php
-                                                                    $dealers_qry = $dbconn->query("SELECT * FROM dealers");
-
-                                                                    while($dealer = $dealers_qry->fetch_assoc()) {
-                                                                        $selected = ($dealer['dealer_id'] === $result['dealer_code']) ? "selected" : "";
-                                                                        echo "<option value='{$dealer['id']}' $selected>{$dealer['dealer_id']} ({$dealer['contact']} of {$dealer['dealer_name']})</option>";
-                                                                    }
-                                                                    ?>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><label for="account_type">Account Type</label></td>
-                                                            <td>
-                                                                <select class="form-control" name="account_type" id="add_room_account_type_<?php echo $result['so_num']; ?>" readonly>
-                                                                    <option value="R">Retail</option>
-                                                                    <option value="W">Wholesale</option>
-                                                                    <option value="D">Distribution</option>
-                                                                </select>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><label for="dealer">Dealer</label></td>
-                                                            <?php
-                                                                $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '{$result['dealer_code']}%'");
-                                                                $dealer = $dealer_qry->fetch_assoc();
-                                                            ?>
-                                                            <td><input type="text" class="form-control" name="dealer" placeholder="Dealer" value="<?php echo $dealer['dealer_name']; ?>" id="add_room_dealer_<?php echo $result['so_num']; ?>" readonly></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><label for="contact">Contact</label></td>
-                                                            <td><input type="text" class="form-control" name="contact" placeholder="Contact" value="<?php echo $dealer['contact']; ?>" id="add_room_contact_<?php echo $result['so_num']; ?>" readonly></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><label for="phone_number">Phone Number</label></td>
-                                                            <td><input type="text" class="form-control mask-phone" name="phone_number" placeholder="Phone Number" value="<?php echo $dealer['phone']; ?>" id="add_room_phone_num_<?php echo $result['so_num']; ?>" readonly></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><label for="email">Email</label></td>
-                                                            <td><input type="text" class="form-control" name="email" placeholder="Email" value="<?php echo $dealer['email']; ?>" id="add_room_email_<?php echo $result['so_num']; ?>" readonly></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><label for="salesperson">Salesperson</label></td>
-                                                            <td><input type="text" class="form-control" name="salesperson" placeholder="Salesperson" value="<?php echo $result['salesperson']; ?>" id="add_room_salesperson_<?php echo $result['so_num']; ?>" readonly></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><label for="shipping_addr">Shipping Address</label></td>
-                                                            <td><input type="text" class="form-control" name="shipping_addr" placeholder="Shipping Address" value="<?php echo $dealer['shipping_address']; ?>" id="add_room_shipping_addr_<?php echo $result['so_num']; ?>" readonly></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td colspan="2"><input type="text" class="form-control pull-left" name="city" style="width: 33.3%;" placeholder="City" value="<?php echo $dealer['shipping_city']; ?>" id="add_room_shipping_city_<?php echo $result['so_num']; ?>" readonly><select readonly class="form-control pull-left" style="width: 33.3%;" name="p_state" id="add_room_shipping_state_<?php echo $result['so_num']; ?>">
-                                                                    <option value="AL">Alabama</option>
-                                                                    <option value="AK">Alaska</option>
-                                                                    <option value="AR">Arkansas</option>
-                                                                    <option value="CA">California</option>
-                                                                    <option value="CO">Colorado</option>
-                                                                    <option value="CT">Connecticut</option>
-                                                                    <option value="DE">Delaware</option>
-                                                                    <option value="FL">Florida</option>
-                                                                    <option value="GA">Georgia</option>
-                                                                    <option value="HI">Hawaii</option>
-                                                                    <option value="ID">Idaho</option>
-                                                                    <option value="IL">Illinois</option>
-                                                                    <option value="IN">Indiana</option>
-                                                                    <option value="IA">Iowa</option>
-                                                                    <option value="KS">Kansas</option>
-                                                                    <option value="KY">Kentucky</option>
-                                                                    <option value="LA">Louisiana</option>
-                                                                    <option value="ME">Maine</option>
-                                                                    <option value="MD">Maryland</option>
-                                                                    <option value="MA">Massachusetts</option>
-                                                                    <option value="MI">Michigan</option>
-                                                                    <option value="MN">Minnesota</option>
-                                                                    <option value="MS">Mississippi</option>
-                                                                    <option value="MO">Missouri</option>
-                                                                    <option value="MT">Montana</option>
-                                                                    <option value="NE">Nebraska</option>
-                                                                    <option value="NV">Nevada</option>
-                                                                    <option value="NH">New Hampshire</option>
-                                                                    <option value="NJ">New Jersey</option>
-                                                                    <option value="NM">New Mexico</option>
-                                                                    <option value="NY">New York</option>
-                                                                    <option value="NC" selected>North Carolina</option>
-                                                                    <option value="ND">North Dakota</option>
-                                                                    <option value="OH">Ohio</option>
-                                                                    <option value="OK">Oklahoma</option>
-                                                                    <option value="OR">Oregon</option>
-                                                                    <option value="PA">Pennsylvania</option>
-                                                                    <option value="RI">Rhode Island</option>
-                                                                    <option value="SC">South Carolina</option>
-                                                                    <option value="SD">South Dakota</option>
-                                                                    <option value="TN">Tennessee</option>
-                                                                    <option value="TX">Texas</option>
-                                                                    <option value="UT">Utah</option>
-                                                                    <option value="VT">Vermont</option>
-                                                                    <option value="VA">Virginia</option>
-                                                                    <option value="WA">Washington</option>
-                                                                    <option value="WV">West Virginia</option>
-                                                                    <option value="WI">Wisconsin</option>
-                                                                    <option value="WY">Wyoming</option>
-                                                                </select><input readonly type="text" class="form-control pull-left mask-zip" name="zip" style="width: 33.3%;" placeholder="ZIP" value="<?php echo $dealer['shipping_zip']; ?>" id="add_room_shipping_zip_<?php echo $result['so_num']; ?>"></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td><label for="delivery_date">Delivery Date</label></td>
-                                                            <td>
-                                                                <div class="input-group">
-                                                                    <input type="text" class="form-control delivery_date_add job-color-green" id="delivery_date_add_<?php echo $result['so_num']; ?>" name="delivery_date" placeholder="Delivery Date" value="<?php echo calcDelDate("Green"); ?>">
-                                                                    <span class="input-group-addon bg-custom b-0"><i class="icon-calender"></i></span>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                            </div>
                                             <div class="col-md-3">
                                                 <table width="100%" class="table table-custom-nb">
+                                                    <tr>
+                                                        <td><label for="delivery_date">Delivery Date</label></td>
+                                                        <td>
+                                                            <div class="input-group">
+                                                                <input type="text" class="form-control delivery_date_add job-color-green" id="delivery_date_add_<?php echo $result['so_num']; ?>" name="delivery_date" placeholder="Delivery Date" value="<?php echo calcDelDate("Green"); ?>">
+                                                                <span class="input-group-addon bg-custom b-0"><i class="icon-calender"></i></span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                                     <tr>
                                                         <td><label for="room">Room</label></td>
                                                         <td>
