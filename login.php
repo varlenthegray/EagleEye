@@ -21,11 +21,13 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
                 $dbconn->query("INSERT INTO timecards (employee, time_in) VALUES ('{$result['id']}', UNIX_TIMESTAMP())");
             }
 
+            $ip = $_SERVER['REMOTE_ADDR'];
+
+            $dbconn->query("UPDATE user SET last_login = UNIX_TIMESTAMP(), last_ip_address = '$ip' WHERE id = {$result['id']}");
+
             if($result['id'] !== '16') {
                 $_SESSION['shop_user'] = $result;
                 $_SESSION['shop_active'] = true;
-
-                $dbconn->query("UPDATE user SET last_login = UNIX_TIMESTAMP() WHERE id = {$result['id']}");
                 $_SESSION['userInfo']['justLoggedIn'] = true;
 
                 echo "<script type='text/javascript'>window.location.replace('index.php');</script>";

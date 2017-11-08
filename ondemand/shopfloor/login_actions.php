@@ -9,8 +9,13 @@ function login($result, $id) {
 
     $timecard_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = $id AND time_out IS NULL");
 
+    $ip = $_SERVER['REMOTE_ADDR'];
+
+    $dbconn->query("UPDATE user SET last_login = UNIX_TIMESTAMP(), last_ip_address = '$ip' WHERE id = $id");
+
     if($timecard_qry->num_rows === 0) { // if there is no timecard, we have to create one
         $dbconn->query("INSERT INTO timecards (employee, time_in) VALUES ('$id', UNIX_TIMESTAMP())");
+
         echo "success - clocked in";
     } else {
         echo "success";
