@@ -266,7 +266,7 @@ switch($_REQUEST['action']) {
         }
 
         $op_queue_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
-            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority FROM op_queue
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority, rooms.product_type, rooms.days_to_ship FROM op_queue
               JOIN operations ON op_queue.operation_id = operations.id
                 JOIN rooms ON op_queue.room_id = rooms.id
                   WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
@@ -302,10 +302,10 @@ switch($_REQUEST['action']) {
                 }
 
                 if(empty($op_queue['priority'])) {
-                    $pt_weight_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'product_type' AND `column` = '{$room['product_type']}'");
+                    $pt_weight_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'product_type' AND `column` = '{$op_queue['product_type']}'");
                     $pt_weight = $pt_weight_qry->fetch_assoc();
 
-                    $dts_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'days_to_ship' AND `column` = '{$room['days_to_ship']}'");
+                    $dts_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'days_to_ship' AND `column` = '{$op_queue['days_to_ship']}'");
                     $dts = $dts_qry->fetch_assoc();
 
                     $age = (((time() - $op_queue['created']) / 60) / 60) / 24;
