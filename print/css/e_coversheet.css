@@ -189,6 +189,15 @@ input[type=checkbox] {
     left: 20px;
 }
 
+.pull-right {
+    float: right;
+    margin-right: 5px;
+}
+
+.highlight_input {
+    background-color: rgba(255,255,0,.5);
+}
+
 input[type=text], textarea {
     border: none;
     padding: 0;
@@ -203,5 +212,9 @@ input[type=text], textarea {
 @media print {
     .no-print {
         display: none !important;
+    }
+
+    .highlight_input {
+        background-color: transparent;
     }
 }

@@ -176,7 +176,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Door Design:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('door_design', $info['door_design']); ?></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('door_design', $info['door_design']); ?> <input type="text" class="pull-right arh_highlight" name="dd_custom_pm" value=""></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="dd_design_pct" value="0.00" maxlength="4">%</td>
@@ -197,8 +197,10 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Short Drawer Raise:</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_sd']); ?></td>
-                    <td class="border_thin_bottom subtotal"><input type="text" name="sd_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                    <td class="border_thin_bottom subtotal">$<span id="short_drawer_raise_price"></span></td>
+                    <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
+                    <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
+                    <td class="border_thin_bottom toggle_gray"><input type="text" name="sd_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
+                    <td class="border_thin_bottom toggle_gray">$<span id="short_drawer_raise_price"></span></td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_sd_raise_subtotal"></span></td>
                 </tr>
@@ -207,8 +209,10 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Tall Drawer Raise:</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_td']); ?></td>
-                    <td class="border_thin_bottom subtotal"><input type="text" name="td_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                    <td class="border_thin_bottom subtotal">$<span id="tall_drawer_raise_price"></span></td>
+                    <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
+                    <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
+                    <td class="border_thin_bottom toggle_gray"><input type="text" name="td_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
+                    <td class="border_thin_bottom toggle_gray">$<span id="tall_drawer_raise_price"></span></td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_td_raise_subtotal"></span></td>
                 </tr>
@@ -217,8 +221,10 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Edge Profile:</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('edge_profile', $info['edge_profile']); ?></td>
-                    <td class="border_thin_bottom subtotal"><input type="text" name="edge_profile_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                    <td class="border_thin_bottom subtotal">$<span id="edge_profile_price"></span></td>
+                    <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
+                    <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
+                    <td class="border_thin_bottom toggle_gray"><input type="text" name="edge_profile_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
+                    <td class="border_thin_bottom toggle_gray">$<span id="edge_profile_price"></span></td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_edge_profile_subtotal"></span></td>
                 </tr>
@@ -237,8 +243,10 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Frame Option:</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('framing_options', $info['framing_options']); ?></td>
-                    <td class="border_thin_bottom subtotal"><input type="text" name="frame_opt_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                    <td class="border_thin_bottom subtotal">$<span id="frame_option_price"></span></td>
+                    <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
+                    <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
+                    <td class="border_thin_bottom toggle_gray"><input type="text" name="frame_opt_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
+                    <td class="border_thin_bottom toggle_gray">$<span id="frame_option_price"></span></td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_frame_option_subtotal"></span></td>
                 </tr>
@@ -247,8 +255,10 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Styles/Rails:</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('style_rail_width', $info['style_rail_width']); ?></td>
-                    <td class="border_thin_bottom subtotal"><input type="text" name="style_rail_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                    <td class="border_thin_bottom subtotal">$<span id="styles_rails_price"></span></td>
+                    <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
+                    <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
+                    <td class="border_thin_bottom toggle_gray"><input type="text" name="style_rail_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
+                    <td class="border_thin_bottom toggle_gray">$<span id="styles_rails_price"></span></td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_style_rail_subtotal"></span></td>
                 </tr>
@@ -256,7 +266,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?> <input type="text" class="pull-right arh_highlight" name="finish_code_pm" value=""></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
@@ -336,7 +346,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Exterior Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <input type="text" class="pull-right arh_highlight" name="e_finish_code_pm" value=""></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -376,7 +386,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Interior Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <input type="text" class="pull-right arh_highlight" name="i_finish_code_pm" value=""></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -880,7 +890,7 @@ function translateVIN($segment, $key) {
                         } else {
                             $(this).width($(this).width() - 8);
                         }
-                    } else if(((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 96 && event.keyCode <= 105) || event.keyCode === 190) && $(this).val().length < 10) {
+                    } else if(((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 96 && event.keyCode <= 105) || event.keyCode === 190)) {
                         if($(this).val() <= 4) {
                             $(this).width(18);
                         } else {
@@ -1118,8 +1128,10 @@ function translateVIN($segment, $key) {
             $("#charge_summary_arh").toggle(150);
             $(".pct_value").toggle(150);
             $(".subtotal").toggle(150);
+            $(".toggle_gray").toggle(150);
+
+            $(".arh_highlight").toggleClass('highlight_input');
         });
-    ;
 </script>
 </body>
 </html>
