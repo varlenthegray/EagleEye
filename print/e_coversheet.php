@@ -685,12 +685,10 @@ function translateVIN($segment, $key) {
     /** Attribute Subtotals */
     var construction_subtotal = 0.00;
     var ext_species_subtotal = 0.00;
-    var ext_finish_type_subtotal = 0.00;
     var ext_finish_code_subtotal = 0.00;
     var ext_glaze_color_subtotal = 0.00;
     var ext_glaze_technique_subtotal = 0.00;
     var int_species_subtotal = 0.00;
-    var int_finish_type_subtotal = 0.00;
     var int_finish_code_subtotal = 0.00;
     var int_glaze_color_subtotal = 0.00;
     var int_glaze_technique_subtotal = 0.00;
@@ -709,12 +707,10 @@ function translateVIN($segment, $key) {
 
     $("#construction_subtotal").html(construction_subtotal.toFixed(2));
     $("#ext_species_subtotal").html(ext_species_subtotal.toFixed(2));
-    $("#ext_finish_type_subtotal").html(ext_finish_type_subtotal.toFixed(2));
     $("#ext_finish_code_subtotal").html(ext_finish_code_subtotal.toFixed(2));
     $("#ext_glaze_color_subtotal").html(ext_glaze_color_subtotal.toFixed(2));
     $("#ext_glaze_technique_subtotal").html(ext_glaze_technique_subtotal.toFixed(2));
     $("#int_species_subtotal").html(int_species_subtotal.toFixed(2));
-    $("#int_finish_type_subtotal").html(int_finish_type_subtotal.toFixed(2));
     $("#int_finish_code_subtotal").html(int_finish_code_subtotal.toFixed(2));
     $("#int_glaze_color_subtotal").html(int_glaze_color_subtotal.toFixed(2));
     $("#int_glaze_technique_subtotal").html(int_glaze_technique_subtotal.toFixed(2));
@@ -735,12 +731,10 @@ function translateVIN($segment, $key) {
     /** Percent Fields */
     var construction_pct = $("#construction_pct").val();
     var exterior_species_pct = $("#exterior_species_pct").val();
-    var exterior_finish_type_pct = $("#exterior_finish_type_pct").val();
     var exterior_finish_code_pct = $("#exterior_finish_code_pct").val();
     var exterior_glaze_color_pct = $("#exterior_glaze_color_pct").val();
     var exterior_glaze_technique_pct = $("#exterior_glaze_technique_pct").val();
     var interior_species_pct = $("#interior_species_pct").val();
-    var interior_finish_type_pct = $("#interior_finish_type_pct").val();
     var interior_finish_code_pct = $("#interior_finish_code_pct").val();
     var interior_glaze_color_pct = $("#interior_glaze_color_pct").val();
     var interior_glaze_technique_pct = $("#interior_glaze_technique_pct").val();
@@ -770,30 +764,6 @@ function translateVIN($segment, $key) {
     }
 
     $('body')
-        .on("change", "#exterior_finish_type_rs", function() {
-            $(this).hide();
-            $("#rs_ext_ft").show();
-        })
-        .on("click", "#rs_ext_ft", function() {
-            $(this).hide();
-            $("#exterior_finish_type_rs").attr("checked", false).show();
-        })
-        .on("change", "#interior_finish_type_rs", function() {
-            $(this).hide();
-            $("#rs_int_ft").show();
-        })
-        .on("click", "#rs_int_ft", function() {
-            $(this).hide();
-            $("#interior_finish_type_rs").attr("checked", false).show();
-        })
-        .on("change", "#finish_type_rs", function() {
-            $(this).hide();
-            $("#rs_ft").show();
-        })
-        .on("click", "#rs_ft", function() {
-            $(this).hide();
-            $("#finish_type_rs").attr("checked", false).show();
-        })
         .on("focus", "input[type='text']", function() {
             $(this).select();
         })
@@ -810,7 +780,7 @@ function translateVIN($segment, $key) {
                         if($(this).val() <= 4) {
                             $(this).width(18);
                         } else {
-                            $(this).width($(this).width() + 8);
+                            $(this).width($(this).width() + 9);
                         }
                     }
                 }
@@ -824,12 +794,10 @@ function translateVIN($segment, $key) {
             /** Percent Fields */
             construction_pct = $("input[name='construction_pct'").val();
             exterior_species_pct = $("input[name='exterior_species_pct'").val();
-            exterior_finish_type_pct = $("input[name='exterior_finish_type_pct'").val();
             exterior_finish_code_pct = $("input[name='exterior_finish_code_pct'").val();
             exterior_glaze_color_pct = $("input[name='exterior_glaze_color_pct'").val();
             exterior_glaze_technique_pct = $("input[name='exterior_glaze_technique_pct'").val();
             interior_species_pct = $("input[name='interior_species_pct'").val();
-            interior_finish_type_pct = $("input[name='interior_finish_type_pct'").val();
             interior_finish_code_pct = $("input[name='interior_finish_code_pct'").val();
             interior_glaze_color_pct = $("input[name='interior_glaze_color_pct'").val();
             interior_glaze_technique_pct = $("input[name='interior_glaze_technique_pct'").val();
@@ -852,12 +820,10 @@ function translateVIN($segment, $key) {
             /** Attribute Subtotals */
             construction_subtotal = (construction_pct / 100) * cabinet_list_price;
             ext_species_subtotal = (exterior_species_pct / 100) * cabinet_list_price;
-            ext_finish_type_subtotal = (exterior_finish_type_pct / 100) * cabinet_list_price;
             ext_finish_code_subtotal = (exterior_finish_code_pct / 100) * cabinet_list_price;
             ext_glaze_color_subtotal = (exterior_glaze_color_pct / 100) * cabinet_list_price;
             ext_glaze_technique_subtotal = (exterior_glaze_technique_pct / 100) * cabinet_list_price;
             int_species_subtotal = (interior_species_pct / 100) * cabinet_list_price;
-            int_finish_type_subtotal = (interior_finish_type_pct / 100) * cabinet_list_price;
             int_finish_code_subtotal = (interior_finish_code_pct / 100) * cabinet_list_price;
             int_glaze_color_subtotal = (interior_glaze_color_pct / 100) * cabinet_list_price;
             int_glaze_technique_subtotal = (interior_glaze_technique_pct / 100) * cabinet_list_price;
@@ -875,12 +841,10 @@ function translateVIN($segment, $key) {
 
             $("#construction_subtotal").html(construction_subtotal.toFixed(2));
             $("#ext_species_subtotal").html(ext_species_subtotal.toFixed(2));
-            $("#ext_finish_type_subtotal").html(ext_finish_type_subtotal.toFixed(2));
             $("#ext_finish_code_subtotal").html(ext_finish_code_subtotal.toFixed(2));
             $("#ext_glaze_color_subtotal").html(ext_glaze_color_subtotal.toFixed(2));
             $("#ext_glaze_technique_subtotal").html(ext_glaze_technique_subtotal.toFixed(2));
             $("#int_species_subtotal").html(int_species_subtotal.toFixed(2));
-            $("#int_finish_type_subtotal").html(int_finish_type_subtotal.toFixed(2));
             $("#int_finish_code_subtotal").html(int_finish_code_subtotal.toFixed(2));
             $("#int_glaze_color_subtotal").html(int_glaze_color_subtotal.toFixed(2));
             $("#int_glaze_technique_subtotal").html(int_glaze_technique_subtotal.toFixed(2));
@@ -898,8 +862,8 @@ function translateVIN($segment, $key) {
             /** End Attribute Subtotals */
 
             /** Charge Summary */
-            final_upcharges = construction_subtotal + ext_species_subtotal + ext_finish_type_subtotal + ext_finish_code_subtotal + ext_glaze_color_subtotal + ext_glaze_technique_subtotal +
-                int_species_subtotal + int_finish_type_subtotal + int_finish_code_subtotal + int_glaze_color_subtotal + int_glaze_technique_subtotal + dd_species_subtotal +
+            final_upcharges = construction_subtotal + ext_species_subtotal + ext_finish_code_subtotal + ext_glaze_color_subtotal + ext_glaze_technique_subtotal +
+                int_species_subtotal + int_finish_code_subtotal + int_glaze_color_subtotal + int_glaze_technique_subtotal + dd_species_subtotal +
                 dd_deign_subtotal + dd_style_rail_subtotal + dd_sd_raise_subtotal + dd_td_raise_subtotal + dd_edge_profile_subtotal + dd_frame_option_subtotal + dd_antiquing_subtotal + dd_distressing_subtotal +
                 dd_worn_edges_subtotal + dd_drawer_box_subtotal;
             cabinet_list_price = $("input[name='list_price']").val();
