@@ -31,17 +31,15 @@ $("body")
     .on("click", "#submit_new_customer", function() {
         var cuData;
 
-        if($("input[name='cu_type']:checked").val() === 'retail') {
-            cuData = $("#add_retail_customer").serialize();
-        } else {
-            cuData = $("#add_distributor_cc").serialize();
-        }
+        cuData = $("#add_retail_customer").serialize();
 
         $.post("/ondemand/shopfloor/job_actions.php?action=add_customer&" + cuData, {so_num: $("#so_num").val()}, function(data) {
             $("body").append(data);
 
             $("#modalAddCustomer").modal('hide');
         });
+        
+        unsaved = false;
     })
     .on("change", "#secondary_addr_chk", function() {
         $(".secondary_addr_disp").toggle();

@@ -15,7 +15,7 @@ require '../includes/header_start.php';
                             <thead>
                             <tr>
                                 <th width="5%">SO#</th>
-                                <th width="40%">Quote</th>
+                                <th width="40%">Project</th>
                                 <th>Sales</th>
                                 <th>Sample</th>
                             </tr>
@@ -33,7 +33,7 @@ require '../includes/header_start.php';
                             <thead>
                             <tr>
                                 <th width="5%">SO#</th>
-                                <th width="40%">Order</th>
+                                <th width="40%">Project</th>
                                 <th>Pre-Production</th>
                                 <th>Main</th>
                             </tr>

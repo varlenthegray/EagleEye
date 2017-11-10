@@ -1675,8 +1675,10 @@ switch ($search) {
                                                                         <td><label for="order_status">Order Status</label></td>
                                                                         <td>
                                                                             <select class="form-control" id="edit_order_status_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="order_status">
+                                                                                <option value=")" <?php echo ($room['order_status'] === ')') ? "selected" : null; ?>>Lost</option>
                                                                                 <option value="#" <?php echo ($room['order_status'] === '#') ? "selected" : null; ?>>Quote (No Deposit)</option>
                                                                                 <option value="$" <?php echo ($room['order_status'] === '$') ? "selected" : null; ?>>Job (Deposit Recieved)</option>
+                                                                                <option value="(" <?php echo ($room['order_status'] === '(') ? "selected" : null; ?>>Completed</option>
                                                                             </select>
                                                                         </td>
                                                                     </tr>
@@ -1826,7 +1828,7 @@ switch ($search) {
                                                         <td>
                                                             <select class="form-control" name="order_status">
                                                                 <option value=")">Lost</option>
-                                                                <option value="#">Quote (No Deposit)</option>
+                                                                <option value="#" selected>Quote (No Deposit)</option>
                                                                 <option value="$">Job (Deposit Received)</option>
                                                                 <option value="(">Completed</option>
                                                             </select>

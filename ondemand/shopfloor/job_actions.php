@@ -1240,6 +1240,32 @@ HEREDOC;
                           '$billing_cell', '$billing_addr', '$billing_city', '$billing_state', '$billing_zip', '$billing_account', '$billing_routing',
                             '$billing_cc_num', '$billing_cc_exp', '$billing_cc_ccv', '$contractor_zip', '$contractor_state', '$contractor_city', '$contractor_addr')")) {
 
+            $op_qry = $dbconn->query("SELECT * FROM operations WHERE op_id != '000' AND job_title NOT LIKE '%N/A%' ORDER BY op_id;");
+
+            $ind_bracket = array();
+
+            $starting_ops = array();
+
+            while($op = $op_qry->fetch_assoc()) {
+                if(empty($starting_ops[$op['bracket']])) {
+                    $starting_ops[$op['bracket']] = $op['id'];
+                }
+
+                $ind_bracket[] = $op['id'];
+            }
+
+            $ind_bracket_final = json_encode($ind_bracket);
+
+            $dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, individual_bracket_buildout, order_status, sales_bracket, sample_bracket,
+              preproduction_bracket, doordrawer_bracket, main_bracket, custom_bracket, install_bracket, shipping_bracket, sales_published) 
+                VALUES ('$so_num', 'A', 'Auto-Generated: Intake', 'C', '$ind_bracket_final', '#', '{$starting_ops['Sales']}', '{$starting_ops['Sample']}', 
+                '{$starting_ops['Pre-Production']}', '{$starting_ops['Drawer & Doors']}', '{$starting_ops['Main']}', '{$starting_ops['Custom']}', 
+                  '{$starting_ops['Installation']}', '{$starting_ops['Shipping']}', TRUE);");
+
+            $room_id = $dbconn->insert_id;
+
+            $dbconn->query("INSERT INTO op_queue (room_id, operation_id, notes, created) VALUES ('$room_id', '{$starting_ops['Sales']}', 'Auto-generated.', UNIX_TIMESTAMP())");
+
             echo displayToast("success", "Successfully created new SO.", "New SO Created");
         } else {
             dbLogSQLErr($dbconn);

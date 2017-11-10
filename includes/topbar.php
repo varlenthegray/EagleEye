@@ -100,6 +100,7 @@ switch($_SERVER['SCRIPT_NAME']) {
                         echo "<li class='nav-separator'><span></span></li>";
 
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_workcenter'><a><i class='zmdi zmdi-receipt m-r-5'></i><span>" . NAV_WORKCENTER . "</span></a></li>" : null;
+                        echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_so_list'><a><i class='zmdi zmdi-accounts-list m-r-5'></i><span>" . NAV_SOLIST . "</span></a></li>" : null;
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_employees'><a><i class='zmdi zmdi-account-circle m-r-5'></i><span>" . NAV_EMPLOYEELOGIN . "</span></a></li>" : null;
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_timecard'><a><i class='zmdi zmdi-time m-r-5'></i><span>" . NAV_ACCOUNTING_TIMECARDS . "</span></a></li>" : null;
 

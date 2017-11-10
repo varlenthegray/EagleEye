@@ -22,6 +22,7 @@ define("NAV_DASHBOARD", "Dashboard"); // Navigation menu dashboard item name
 define("NAV_SHOPFLOOR", "Shopfloor"); // Navigation menu Shopfloor
 define("NAV_INDIVIDUAL", "Individual"); // Navigation menu Shopfloor Dashboard
 define("NAV_WORKCENTER", "Workcenter"); // Navigation menu, create bracket
+define("NAV_SOLIST", "SO List"); // Navigation menu SO List
 define("NAV_SHOP_LOGOUT", "Employee List"); // Navigation menu, log out
 define("NAV_BRACKET_MGMT", "Bracket Management"); // Navigation menu, bracket management
 //// Navigation > bracket management

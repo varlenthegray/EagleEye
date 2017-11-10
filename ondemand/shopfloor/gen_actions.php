@@ -442,6 +442,38 @@ switch($_REQUEST['action']) {
         }
 
         break;
+        
+    case 'get_so_list':
+        $output = array();
+        $i = 0;
+
+        $so_qry = $dbconn->query("SELECT sales_order.*, dealers.dealer_name, dealers.contact FROM sales_order LEFT JOIN dealers ON sales_order.dealer_code = dealers.dealer_id");
+
+        if($so_qry->num_rows > 0) {
+            while($so = $so_qry->fetch_assoc()) {
+                $output['data'][$i][] = $so['so_num'];
+                $output['data'][$i][] = $so['project_name'];
+                $output['data'][$i][] = $so['contact'];
+                $output['data'][$i][] = "{$so['dealer_name']}: {$so['contact']}";
+                $output['data'][$i]['DT_RowId'] = $so['so_num'];
+
+                $i += 1;
+            }
+        } else {
+            $output['data'][$i][] = "&nbsp;";
+            $output['data'][$i][] = "---------";
+            $output['data'][$i][] = "---------";
+            $output['data'][$i][] = "No SO's to list";
+            $output['data'][$i][] = "";
+            $output['data'][$i][] = "";
+            $output['data'][$i][] = "";
+
+            $i += 1;
+        }
+
+        echo json_encode($output);
+        
+        break;
 
     /** Deprecated */
     case 'update_VIN':

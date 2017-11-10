@@ -248,6 +248,9 @@ require 'includes/header_end.php';
         .on("click", "#nav_vin", function() {
             unloadPage('build_a_vin');
         })
+        .on("click", "#nav_so_list", function() {
+            unloadPage('so_list');
+        })
         // -- End Navigation --
 
         // -- Dashboard --
