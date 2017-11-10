@@ -1141,6 +1141,8 @@ function translateVIN($segment, $key) {
                 $(".subtotal").hide(150);
                 $(".toggle_gray").toggle(150);
                 $("#terms_box").hide(150);
+                $("#signature").hide(150);
+                $("#closing_statement").hide(150);
             } else {
                 if($("#arh_enabled").is(":checked")) {
                     $("#charge_summary_std").hide(150);
@@ -1154,6 +1156,8 @@ function translateVIN($segment, $key) {
                 $(".subtotal").show(150);
                 $(".toggle_gray").toggle(150);
                 $("#terms_box").show(150);
+                $("#signature").show(150);
+                $("#closing_statement").show(150);
             }
         })
     ;
