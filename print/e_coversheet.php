@@ -305,7 +305,7 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td class="border_thin_bottom"><input type="checkbox" id="antiquing" style="margin-left:20px;" <?php echo ($info['antiquing'] !== '0') ? "checked" : null; ?> disabled> Antiquing</td>
+                    <td class="border_thin_bottom"><input type="checkbox" id="antiquing" style="margin-left:20px;" <?php echo ($info['antiquing'] !== 'A0') ? "checked" : null; ?> disabled> Antiquing</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('antiquing', $info['antiquing']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -315,7 +315,7 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td class="border_thin_bottom"><input type="checkbox" id="worn_edges" style="margin-left:20px;" <?php echo ($info['worn_edges'] !== '0') ? "checked" : null; ?> disabled> Worn Edges</td>
+                    <td class="border_thin_bottom"><input type="checkbox" id="worn_edges" style="margin-left:20px;" <?php echo ($info['worn_edges'] !== 'W0') ? "checked" : null; ?> disabled> Worn Edges</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('worn_edges', $info['worn_edges']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -325,7 +325,7 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td class="border_thin_bottom"><input type="checkbox" id="distressing" style="margin-left:20px;" <?php echo ($info['distress_level'] !== '0') ? "checked" : null; ?> disabled> Distressing</td>
+                    <td class="border_thin_bottom"><input type="checkbox" id="distressing" style="margin-left:20px;" <?php echo ($info['distress_level'] !== 'T0') ? "checked" : null; ?> disabled> Distressing</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('distress_level', $info['distress_level']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -702,8 +702,9 @@ function translateVIN($segment, $key) {
 </div>
 
 <div class="no-print" id="save_button">
-    <input type="button" value="Save" id="save" name="save" /><br /><br />
-    <input type="checkbox" id="arh_enabled" name="arh_enabled" /> <label for="arh_enabled">ARH</label>
+    <!--<input type="button" value="Save" id="save" name="save" />--><br /><br />
+    <input type="checkbox" id="arh_enabled" name="arh_enabled" /> <label for="arh_enabled">ARH</label><br/><br/>
+    <input type="checkbox" id="hide_markup" name="hide_markup" /> <label for="hide_markup">Hide $</label>
 </div>
 
 <script src="/assets/js/jquery.min.js"></script>
@@ -1131,7 +1132,31 @@ function translateVIN($segment, $key) {
             $(".toggle_gray").toggle(150);
 
             $(".arh_highlight").toggleClass('highlight_input');
-        });
+        })
+        .on("change", "#hide_markup", function() {
+            if($(this).is(":checked")) {
+                $("#charge_summary_std").hide(150);
+                $("#charge_summary_arh").hide(150);
+                $(".pct_value").hide(150);
+                $(".subtotal").hide(150);
+                $(".toggle_gray").toggle(150);
+                $("#terms_box").hide(150);
+            } else {
+                if($("#arh_enabled").is(":checked")) {
+                    $("#charge_summary_std").hide(150);
+                    $("#charge_summary_arh").show(150);
+                } else {
+                    $("#charge_summary_std").show(150);
+                    $("#charge_summary_arh").hide(150);
+                }
+
+                $(".pct_value").show(150);
+                $(".subtotal").show(150);
+                $(".toggle_gray").toggle(150);
+                $("#terms_box").show(150);
+            }
+        })
+    ;
 </script>
 </body>
 </html>
