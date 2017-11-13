@@ -225,6 +225,37 @@ class queue {
 
                 break;
 
+            case '000: Cabinet Vision':
+                $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'"); // grab the normal op info
+
+                if($admin_qry->num_rows > 0) { // if we were able to get the operation
+                    $admin_results = $admin_qry->fetch_assoc();
+
+                    if((bool)$admin_results['always_visible']) { // check to confirm this is an always visible op
+                        $active[] = $_SESSION['shop_user']['id']; // add individual to the list of active employees
+
+                        $active_employees = json_encode($active); // re-encode it for saving
+
+                        // create the op queue listing to be able to update information
+                        $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, started_by, subtask, notes) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '{$_SESSION['shop_user']['id']}', '$subtask', '$notes')");
+
+                        $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
+
+                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes];
+                        $final_changes = json_encode($changes);
+
+                        $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
+
+                        echo displayToast("success", "Successfully started Cabinet Vision.", "Started Cabinet Vision");
+                    } else {
+                        echo displayToast("error", "Unable to properly start this operation (not always visible).", "Error Starting Operation.");
+                    }
+                } else {
+                    dbLogSQLErr($dbconn);
+                }
+
+                break;
+
             case '000: On The Fly':
                 $otf_info = null;
 
