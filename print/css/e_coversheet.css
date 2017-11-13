@@ -135,8 +135,8 @@ th, .header {
 }
 
 .border_thin_bottom {
-    border: solid #000;
-    border-width: 0 0 1px 0;
+    border: solid #000 !important;
+    border-width: 0 0 1px 0 !important;
 }
 
 input[type=checkbox] {
@@ -198,6 +198,10 @@ input[type=checkbox] {
     background-color: rgba(255,255,0,.5);
 }
 
+.arh_highlight {
+    display: none;
+}
+
 input[type=text], textarea {
     border: none;
     padding: 0;
@@ -207,6 +211,10 @@ input[type=text], textarea {
     text-align: right;
     font-family: 'Roboto', sans-serif;
     resize: none;
+}
+
+.align_left {
+    text-align: left !important;
 }
 
 @media print {
