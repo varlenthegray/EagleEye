@@ -594,95 +594,17 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td colspan="2">
                         <table>
-                            <tr class="border_thin_bottom">
-                                <td width="230px">Cabinets Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="cabinet_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Door Type/Wood Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="door_type_wood_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Cabinet Box Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="cabinet_box_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Door Style Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="door_style_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Wall Door Shape Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="wall_door_shape_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Drawer Front Type Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="drawer_front_type_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Drawer System Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="drawer_system_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Finish Type Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="finish_type_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Color Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="color_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Glazes Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="glazes_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Grain Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="grain_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Options/Upgrades Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="option_upgrade_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Special Effects Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="special_effects_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Additional Effects Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="addl_effects_total" value="0.00" maxlength="10"></td>
-                            </tr>
                             <tr class="em_box">
                                 <td>Products Sub Total:</td>
                                 <td>&nbsp;</td>
                                 <td class="text-md-right">$<input type="text" name="product_subtotal" value="0.00" maxlength="10"></td>
                             </tr>
                             <tr class="border_thin_bottom">
-                                <td>Sales Tax:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="sales_tax" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Shipping Charges:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="shipping_charges" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Multiplier:</td>
-                                <td class="text-md-right"><input type="text" name="multiplier" value=".335" maxlength="5"></td>
-                                <td class="text-md-right">$<input type="text" name="multiplier_total" value="0.00" maxlength="10"></td>
+                                <td>
+                                    Multiplier: <input type="radio" name="arh_multiplier_opts" id="arh_landed" value="arh_landed" checked><label for="arh_landed">Landed</label><input type="radio" name="arh_multiplier_opts" id="arh_pickup" value="arh_pickup"><label for="arh_pickup">Pickup</label>
+                                </td>
+                                <td class="text-md-right"><input type="text" id="arh_multiplier" name="arh_multiplier" value=".335" maxlength="5"></td>
+                                <td class="text-md-right">$<input type="text" id="arh_multiplier_total" name="arh_multiplier_total" value="0.00" maxlength="10"></td>
                             </tr>
                             <tr class="header em_box">
                                 <td>Total Amount:</td>
@@ -1165,6 +1087,13 @@ function translateVIN($segment, $key) {
                 $("#terms_box").show(150);
                 $("#signature").show(150);
                 $("#closing_statement").show(150);
+            }
+        })
+        .on("change", "input[name='arh_multiplier_opts']", function() {
+            if($("#arh_landed").is(":checked")) {
+                $("#arh_multiplier").val(".335");
+            } else {
+                $("#arh_multiplier").val(".322");
             }
         })
     ;
