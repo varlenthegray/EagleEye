@@ -921,7 +921,16 @@ switch ($search) {
                                                         <div class="col-md-12">
                                                             <fieldset class="form-group">
                                                                 <label for="room_notes">Room Notes</label>
-                                                                <textarea class="form-control" id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" style="width:100%;height:200px;"><?php echo $room['room_notes']; ?></textarea>
+                                                                <textarea class="form-control" id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" style="width:100%;height:200px;"><?php
+                                                                        $r_notes_qry = $dbconn->query("SELECT * FROM notes WHERE note_type = 'room_note' AND type_id = {$room['id']}");
+
+                                                                        if($r_notes_qry->num_rows > 0) {
+                                                                            while($r_notes = $r_notes_qry->fetch_assoc()) {
+                                                                                echo $r_notes['note'] . "\r\n\r\n";
+                                                                            }
+                                                                        }
+                                                                    ?>
+                                                                </textarea>
                                                             </fieldset>
                                                         </div>
                                                     </div>
