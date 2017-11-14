@@ -674,9 +674,11 @@ switch ($search) {
                                                     $inquiry_replies = null;
                                                 }
 
+                                                $notes = str_replace(" ", "&nbsp;", $so_inquiry['note']);
+
                                                 echo "<tr>";
                                                 echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$so_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
-                                                echo "  <td>{$so_inquiry['note']} -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
+                                                echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
                                                 echo "</tr>";
 
                                                 echo "<tr id='inquiry_reply_line_{$so_inquiry['nID']}' style='display:none;'>";

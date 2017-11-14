@@ -472,6 +472,8 @@ class queue {
             unset($active_emp[$loc]);
         }
 
+        $active_emp = array_values($active_emp);
+
         if(count($active_emp) > 0) {
             $active = "TRUE";
         } else {
