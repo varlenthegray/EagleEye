@@ -619,6 +619,26 @@ switch ($search) {
 
                             <div class="col-md-3">
                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <textarea class="form-control" name="inquiry" id="inquiry" placeholder="New Inquiry/Note" style="width:100%;height:350px;"></textarea>
+                                        <input type="text" name="inquiry_followup_date" id="inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
+                                        <label for="inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
+                                        <select name="inquiry_requested_of" id="inquiry_requested_of" class="form-control" style="width:50%;float:left;">
+                                            <option value="null" selected disabled></option>
+                                            <?php
+                                            $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC");
+
+                                            while($user = $user_qry->fetch_assoc()) {
+                                                echo "<option value='{$user['id']}'>{$user['name']}</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="row">
                                     <div class="col-md-12" style="min-height:149px;overflow:auto;">
                                         <p style="font-weight:bold;">Inquiries/Notes:</p>
 
@@ -655,7 +675,7 @@ switch ($search) {
                                                 }
 
                                                 echo "<tr>";
-                                                echo "  <td width='26px'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$so_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
+                                                echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$so_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
                                                 echo "  <td>{$so_inquiry['note']} -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
                                                 echo "</tr>";
 
@@ -672,24 +692,6 @@ switch ($search) {
                                             }
                                             ?>
                                         </table>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <textarea class="form-control" name="inquiry" id="inquiry" placeholder="New Inquiry/Note"></textarea>
-                                        <input type="text" name="inquiry_followup_date" id="inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
-                                        <label for="inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
-                                        <select name="inquiry_requested_of" id="inquiry_requested_of" class="form-control" style="width:50%;float:left;">
-                                            <option value="null" selected disabled></option>
-                                            <?php
-                                            $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC");
-
-                                            while($user = $user_qry->fetch_assoc()) {
-                                                echo "<option value='{$user['id']}'>{$user['name']}</option>";
-                                            }
-                                            ?>
-                                        </select>
                                     </div>
                                 </div>
                             </div>
