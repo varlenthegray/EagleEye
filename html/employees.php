@@ -65,7 +65,7 @@ use Carbon\Carbon; // prep carbon
                                         $time_in_display = "Never logged in";
                                     }
 
-                                    $ops_qry = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE active_employees LIKE '%\"{$result['id']}\"%' AND active = TRUE");
+                                    $ops_qry = $dbconn->query("SELECT * FROM op_queue LEFT JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id WHERE active_employees LIKE '%\"{$result['id']}\"%' AND active = TRUE");
 
                                     $final_ops = '';
 
@@ -77,7 +77,13 @@ use Carbon\Carbon; // prep carbon
                                                 $so_info = null;
                                             }
 
-                                            $operation = $so_info . $ops['op_id'] . ": " . $ops['job_title'];
+                                            if($ops['job_title'] === 'Non-Billable') {
+                                                $subtask = " ({$ops['subtask']})";
+                                            } else {
+                                                $subtask = null;
+                                            }
+
+                                            $operation = $so_info . $ops['op_id'] . ": " . $ops['job_title'] . $subtask;
                                             $final_ops .= $operation . ", ";
                                         }
                                     } else {
