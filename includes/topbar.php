@@ -84,7 +84,7 @@ switch($_SERVER['SCRIPT_NAME']) {
                     <li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>
                     <?php
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>" . NAV_ADD_SO . "</span></a></li>" : null;
-                        echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_quick_add'><a><i class='zmdi zmdi-plus-circle-o m-r-5'></i><span>" . NAV_QUICKADD . "</span></a></li>" : null;
+                        //echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_quick_add'><a><i class='zmdi zmdi-plus-circle-o m-r-5'></i><span>" . NAV_QUICKADD . "</span></a></li>" : null;
 
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li class='nav-separator'><span></span></li>" : null;
 
@@ -100,7 +100,16 @@ switch($_SERVER['SCRIPT_NAME']) {
                         echo "<li class='nav-separator'><span></span></li>";
 
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_workcenter'><a><i class='zmdi zmdi-receipt m-r-5'></i><span>" . NAV_WORKCENTER . "</span></a></li>" : null;
-                        echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_so_list'><a><i class='zmdi zmdi-accounts-list m-r-5'></i><span>" . NAV_SOLIST . "</span></a></li>" : null;
+
+                        echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li class='has-submenu'>
+                                        <a><i class='zmdi zmdi-assignment'></i>" . NAV_REPORTS . "</a>
+                                        <ul class='submenu'>
+                                            <li id='nav_so_list'><a><i class='zmdi zmdi-accounts-list m-r-5'></i>" . NAV_SOLIST . "</a></li>
+                                            <li id='nav_sales_list'><a><i class='zmdi zmdi-accounts-list m-r-5'></i>" . NAV_SALES_LIST . "</a></li>
+                                        </ul>
+                                    </li>"
+                            : null;
+
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_employees'><a><i class='zmdi zmdi-account-circle m-r-5'></i><span>" . NAV_EMPLOYEELOGIN . "</span></a></li>" : null;
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_timecard'><a><i class='zmdi zmdi-time m-r-5'></i><span>" . NAV_ACCOUNTING_TIMECARDS . "</span></a></li>" : null;
 
@@ -113,7 +122,6 @@ switch($_SERVER['SCRIPT_NAME']) {
                                     <ul class='submenu'>
                                         <li id='nav_kpi'><a><i class='zmdi zmdi-time-interval m-r-5'></i>" . NAV_KPI . "</a></li>
                                         <li id='nav_pbp'><a><i class='zmdi zmdi-trending-up m-r-5'></i>" . NAV_PBP . "</a></li>
-                                        <li id='nav_reports'><a><i class='zmdi zmdi-assignment m-r-5'></i>" . NAV_REPORTS . "</a></li>
                                         <li id='nav_adduser'><a><i class='zmdi zmdi-accounts-add m-r-5'></i>" . NAV_ADDUSER . "</a></li>
                                     </ul>
                                 </li>
