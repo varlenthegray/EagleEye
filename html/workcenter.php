@@ -96,7 +96,7 @@ require '../includes/header_start.php';
     });
 
     var jiq_table = $("#jobs_in_queue_global_table").DataTable({
-        "ajax": "/ondemand/shopfloor/workcenter.php?action=display_jiq",
+        "ajax": "/ondemand/display_actions.php?action=display_full_job_queue",
         "pageLength": 25,
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand wc-view-queue-so");
@@ -112,7 +112,7 @@ require '../includes/header_start.php';
     });
 
     var active_table = $("#active_jobs_global_table").DataTable({
-        "ajax": "/ondemand/shopfloor/workcenter.php?action=display_active_jobs",
+        "ajax": "/ondemand/display_actions.php?action=display_full_active_jobs",
         "pageLength": 25,
         scrollY: '25.65vh',
         scrollCollapse: true,
@@ -123,7 +123,7 @@ require '../includes/header_start.php';
     });
 
     var completed_table = $("#recently_completed_jobs_global_table").DataTable({
-        "ajax": "/ondemand/shopfloor/workcenter.php?action=display_recently_completed",
+        "ajax": "/ondemand/display_actions.php?action=display_full_recently_completed",
         "pageLength": 25,
         "order": [[4, "desc"]],
         scrollY: '25.65vh',

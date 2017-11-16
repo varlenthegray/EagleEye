@@ -1,13 +1,13 @@
 var unsaved = false;
 
 $(":input").change(function(){ //triggers change in all input fields including text type
-    if($(this).attr("id") !== "global_search" && $(this).attr("id") !== "viewing_queue" && $(this).attr("name") !== "ausernameidontcareabout" && $(this).attr("name") !== "apasswordidontcareabout" && $(this).attr('id') !== 'date_range') {
+    if(!$(this).hasClass("ignoreSaveAlert")) {
         unsaved = true;
     }
 });
 
 $(document).on('change', ':input', function(){ //triggers change in all input fields including text type
-    if($(this).attr("id") !== "global_search" && $(this).attr("id") !== "viewing_queue" && $(this).attr("name") !== "ausernameidontcareabout" && $(this).attr("name") !== "apasswordidontcareabout" && $(this).attr('id') !== 'date_range') {
+    if(!$(this).hasClass("ignoreSaveAlert")) {
         unsaved = true;
     }
 });

@@ -609,3 +609,20 @@ body {
   color: #FFFFFF;
   font-weight: bold;
 }
+
+.highlight_so {
+  background-color: #F9F9F9;
+}
+
+.table_outline {
+  table {
+    border: 1px solid #000;
+    border-collapse: separate;
+    border-radius: 5px;
+  }
+
+  td, th {
+    border: none;
+    border-collapse: collapse;
+  }
+}

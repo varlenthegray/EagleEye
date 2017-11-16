@@ -1,5 +1,5 @@
 @page {
-    margin: 5mm 8mm 5mm 8mm;
+    margin: 5mm 6mm 5mm 15mm;
 }
 
 body {
@@ -152,12 +152,12 @@ input[type=checkbox] {
 }
 
 #terms_box {
-    width: 60%;
+    width: 50%;
     float: left;
 }
 
 #charge_summary {
-    width: 40%;
+    width: 50%;
     float: right;
 }
 

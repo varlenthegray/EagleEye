@@ -17,8 +17,8 @@ switch($_SERVER['SCRIPT_NAME']) {
     </div>
 
     <!-- fake fields are a workaround for chrome autofill getting the wrong fields (such as search) -->
-    <input type="text" name="ausernameidontcareabout" style="display:none;">
-    <input type="password" name="apasswordidontcareabout" style="display:none;">
+    <input class="ignoreSaveAlert" type="text" name="ausernameidontcareabout" style="display:none;">
+    <input class="ignoreSaveAlert" type="password" name="apasswordidontcareabout" style="display:none;">
 
     <div class="topbar-main hidden-print">
         <div class="container">
@@ -79,7 +79,7 @@ switch($_SERVER['SCRIPT_NAME']) {
                 <!-- Navigation Menu-->
                 <ul class="navigation-menu">
                     <div role="search" class="navbar-left app-search pull-left hidden-xs" _lpchecked="1">
-                        <input type="text" placeholder="Search..." class="form-control" id="global_search" name="global_search_2" autocomplete="off"><a id="global_search_button"><i class="fa fa-search"></i></a>
+                        <input type="text" placeholder="Search..." class="form-control ignoreSaveAlert" id="global_search" name="global_search_2" autocomplete="off"><a id="global_search_button"><i class="fa fa-search"></i></a>
                     </div>
                     <li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>
                     <?php

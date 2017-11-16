@@ -1,6 +1,8 @@
 <?php
 require '../includes/header_start.php';
 
+outputPHPErrs();
+
 $id = sanitizeInput($_REQUEST['room_id']);
 
 $info_qry = $dbconn->query("SELECT sales_order.*, rooms.* FROM rooms LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num WHERE rooms.id = '$id'");
@@ -9,9 +11,7 @@ $info = $info_qry->fetch_assoc();
 function translateVIN($segment, $key) {
     global $dbconn;
 
-    $segment_def = ($segment === 'finish_code') ? "segment = 'finish_code'" : $segment_def = $segment;
-
-    $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment_def' AND `key` = '$key'");
+    $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
     $vin = $vin_qry->fetch_assoc();
 
     return ($vin['value'] === '') ? "<span class='highlight'>_____________</span><br />" : $vin['value'];
@@ -223,11 +223,6 @@ function displayOrder($ordered_var, $human_name) {
             </tr>
             <tr>
                 <td colspan="3" class="b-ul">Door/Drawer Finish</td>
-            </tr>
-            <tr>
-                <td>Finish Type:</td>
-                <td><?php echo (trim($info['finish_type']) === '') ? "<span class='highlight'>__________________________________________</span><br />" : "{$info['finish_type']}<br />"; ?></td>
-                <td><?php echo translateVIN('finish_type', $info['finish_type']); ?></td>
             </tr>
             <tr>
                 <td>Finish Code:</td>

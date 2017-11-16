@@ -114,11 +114,11 @@ require '../includes/header_start.php';
 <script>
     function updateQueuedJobs() {
         queue = $('#viewing_queue').val();
-        queue_table.ajax.url("/ondemand/shopfloor/dashboard.php?action=display_job_queue&queue=" + queue).load(null,false);
+        queue_table.ajax.url("/ondemand/display_actions.php?action=display_ind_job_queue&queue=" + queue).load(null,false);
     }
 
     var op_queue_list = "<?php
-        echo "<select name='viewing_queue' id='viewing_queue'>";
+        echo "<select class='ignoreSaveAlert' name='viewing_queue' id='viewing_queue'>";
         echo "<option value='self'>{$_SESSION['shop_user']['name']}</option>";
 
         $deptartments = json_decode($_SESSION['shop_user']['department']);
@@ -140,7 +140,7 @@ require '../includes/header_start.php';
     if($_SESSION['userInfo']['account_type'] <= 4) {
     ?>
     var quote_table = $("#quote_global_table").DataTable({
-        "ajax": "/ondemand/shopfloor/dashboard.php?action=display_quotes",
+        "ajax": "/ondemand/display_actions.php?action=display_quotes",
         "createdRow": function (row, data, dataIndex) {
             $(row).addClass("cursor-hand view_so_info");
         },
@@ -152,7 +152,7 @@ require '../includes/header_start.php';
     });
 
     var order_table = $("#orders_global_table").DataTable({
-        "ajax": "/ondemand/shopfloor/dashboard.php?action=display_orders",
+        "ajax": "/ondemand/display_actions.php?action=display_orders",
         "createdRow": function (row, data, dataIndex) {
             $(row).addClass("cursor-hand view_so_info");
         },
@@ -167,7 +167,7 @@ require '../includes/header_start.php';
     ?>
 
     var active_table = $("#active_ops_global_table").DataTable({
-        "ajax": "/ondemand/shopfloor/dashboard.php?action=display_active_jobs",
+        "ajax": "/ondemand/display_actions.php?action=display_ind_active_jobs",
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand view_so_info");
         },
@@ -182,7 +182,7 @@ require '../includes/header_start.php';
     });
 
     var queue_table = $("#queue_ops_global_table").DataTable({
-        "ajax": "/ondemand/shopfloor/dashboard.php?action=display_job_queue&queue=" + queue,
+        "ajax": "/ondemand/display_actions.php?action=display_ind_job_queue&queue=" + queue,
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand view_so_info");
             $(row).attr('data-weight', data.weight);

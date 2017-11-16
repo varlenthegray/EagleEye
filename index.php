@@ -227,7 +227,7 @@ require 'includes/header_end.php';
             if($_SESSION['userInfo']['account_type'] > 4) {
             ?>
                 if(shop_logged_in) {
-                    $.post("/ondemand/shopfloor/login_actions.php?action=logout", function(data) {
+                    $.post("/ondemand/account_actions.php?action=logout", function(data) {
                         if (data === 'success') {
                             loadPage('employees');
                             shop_logged_in = false;
@@ -251,6 +251,9 @@ require 'includes/header_end.php';
         .on("click", "#nav_so_list", function() {
             unloadPage('so_list');
         })
+        .on("click", "#nav_sales_list", function() {
+            unloadPage('sales_list');
+        })
         // -- End Navigation --
 
         // -- Dashboard --
@@ -259,30 +262,6 @@ require 'includes/header_end.php';
         })
         .on("click", ".view_quote_info", function(e) {
             e.stopPropagation();
-
-            console.log($(this).closest('tr'));
-            /*quote_table.rows().eq(0).each(function (idx) {
-                var row2 = quote_table.row(idx);
-
-                if(row2.child.isShown()) {
-                    row2.child.close();
-                }
-            });
-
-            tr = $(this).closest('tr');
-            row = quote_table.row(tr);
-
-            if(row.child.isShown()) {
-                row.child.hide();
-                tr.removeClass('shown');
-            } else {
-                $.post("/ondemand/shopfloor/dashboard.php?action=quote_details", function(data) {
-                    shownData = data;
-
-                    row.child(shownData).show();
-                    tr.addClass('shown');
-                });
-            }*/
         })
         .on("click", ".view_so_info", function() {
             var id = $(this).attr("id");
@@ -296,7 +275,7 @@ require 'includes/header_end.php';
             op_id = $(this).attr("id");
 
             if(opFull === '000: Non-Billable' || opFull === '000: On The Fly') {
-                $.post("/ondemand/shopfloor/dashboard.php?action=get_start_info", {opID: op_id, op: opFull}, function(data) {
+                $.post("/ondemand/op_actions.php?action=get_start_info", {opID: op_id, op: opFull}, function(data) {
                     $("#modalStartJob").html(data);
                 }).done(function() {
                     $("#modalStartJob").modal();
@@ -304,13 +283,13 @@ require 'includes/header_end.php';
                     $("body").append(data); // echo an error and log it
                 });
             } else {
-                $.post("/ondemand/shopfloor/dashboard.php?action=start_operation", {operation: opFull, id: op_id}, function(data) {
+                $.post("/ondemand/op_actions.php?action=start_operation", {operation: opFull, id: op_id}, function(data) {
                     $('body').append(data);
 
                     updateQueuedJobs();
                     active_table.ajax.reload(null,false);
 
-                    $.post("/ondemand/shopfloor/view_notes.php", {queueID: op_id}, function(data) {
+                    $.post("/html/view_notes.php", {queueID: op_id}, function(data) {
                         $("#modalViewNotes").html(data).modal("show");
                     });
                 });
@@ -324,7 +303,7 @@ require 'includes/header_end.php';
 
             if($("#other_subtask").is(":checked")) { // if this is a subtask "other" section then we have to verify the notes
                 if (other_notes_field.length >= 3) { // and the length of notes is greater than 3
-                    $.post("/ondemand/shopfloor/dashboard.php?action=start_operation", {id: op_id, operation: opFull, subtask: "Other", notes: other_notes_field}, function (data) {
+                    $.post("/ondemand/op_actions.php?action=start_operation", {id: op_id, operation: opFull, subtask: "Other", notes: other_notes_field}, function (data) {
                         $("body").append(data);
 
                         active_table.ajax.reload(null,false);
@@ -343,7 +322,7 @@ require 'includes/header_end.php';
                 var otf_notes = $("#otf_notes").val();
                 var otf_iteration = $("#otf_iteration").val();
 
-                $.post("/ondemand/shopfloor/dashboard.php?action=start_operation", {id: op_id, operation: opFull, subtask: subtask,
+                $.post("/ondemand/op_actions.php?action=start_operation", {id: op_id, operation: opFull, subtask: subtask,
                     notes: notes_field, otf_so_num: otf_so_num, otf_room: otf_room, otf_op: otf_op, otf_notes: otf_notes, otf_iteration: otf_iteration}, function(data) {
                     active_table.ajax.reload(null,false);
                     updateQueuedJobs();
@@ -370,12 +349,12 @@ require 'includes/header_end.php';
 
             op_id = $(this).attr("id");
 
-            $.post("/ondemand/shopfloor/dashboard.php?action=get_pause_info", {opID: op_id}, function(data) {
+            $.post("/ondemand/op_actions.php?action=get_pause_info", {opID: op_id}, function(data) {
                 $("#modalUpdateJob").html(data).modal();
             });
         })
         .on("click", "#pause_op", function() {
-            $.post("/ondemand/shopfloor/dashboard.php?action=pause_operation", {opID: op_id, notes: $("#notes").val(), qty: $("#qtyCompleted").val()}, function(data) {
+            $.post("/ondemand/op_actions.php?action=pause_operation", {opID: op_id, notes: $("#notes").val(), qty: $("#qtyCompleted").val()}, function(data) {
                 active_table.ajax.reload(null,false);
                 updateQueuedJobs();
 
@@ -388,9 +367,8 @@ require 'includes/header_end.php';
             e.stopPropagation();
 
             op_id = $(this).attr("id");
-            opFull = $(this).closest('tr').find('td').eq(4).html();
 
-            $.post("/ondemand/shopfloor/dashboard.php?action=get_stop_info", {opID: op_id}, function(data) {
+            $.post("/ondemand/op_actions.php?action=get_stop_info", {opID: op_id}, function(data) {
                 $("#modalUpdateJob").html(data).modal();
             });
 
@@ -422,7 +400,7 @@ require 'includes/header_end.php';
             formData.append('attachment', $("input[type='file']")[0].files[0]);
 
             $.ajax({
-                url: "/ondemand/shopfloor/dashboard.php?action=complete_operation",
+                url: "/ondemand/op_actions.php?action=complete_operation",
                 //url: "/admin/test.php",
                 type: 'POST',
                 data: formData,
@@ -437,21 +415,13 @@ require 'includes/header_end.php';
                 }
             });
 
-//            $.post("/ondemand/shopfloor/dashboard.php?action=complete_operation", {opID: op_id, opnum: op_num, notes: notes, qty: qty_compl, rework_reqd: rework, rework_reason: rw_reason}, function(data) {
-//                $('body').append(data);
-//                $("#modalUpdateJob").modal('hide');
-//
-//                updateQueuedJobs();
-//                active_table.ajax.reload(null,false);
-//            });
-
             unsaved = false;
         })
 
         .on("click", ".op-notes", function(e) {
             e.stopPropagation();
 
-            $.post("/ondemand/shopfloor/view_notes.php", {queueID: $(this).attr("id")}, function(data) {
+            $.post("/html/view_notes.php", {queueID: $(this).attr("id")}, function(data) {
                 $("#modalViewNotes").html(data).modal("show");
             });
         })
@@ -478,7 +448,7 @@ require 'includes/header_end.php';
             } else {
             ?>
 
-            $.post("/ondemand/shopfloor/login_actions.php?action=login", {id: userID, pin: $("#loginPin").val()}, function(data) {
+            $.post("/ondemand/account_actions.php?action=login", {id: userID, pin: $("#loginPin").val()}, function(data) {
                 if (data === 'success') {
                     loadPage('dashboard');
                     shop_logged_in = true;
@@ -492,7 +462,7 @@ require 'includes/header_end.php';
             ?>
         })
         .on("click", "#clock_in", function() {
-            $.post("/ondemand/shopfloor/login_actions.php?action=login", {id: userID, pin: $("#loginPin").val()}, function(data) {
+            $.post("/ondemand/account_actions.php?action=login", {id: userID, pin: $("#loginPin").val()}, function(data) {
                 if (data === 'success') {
                     loadPage('dashboard');
                     $("#modalLogin").modal('hide');
@@ -520,7 +490,7 @@ require 'includes/header_end.php';
 
             e.stopPropagation();
 
-            $.post("/ondemand/shopfloor/login_actions.php?action=clock_out", {user_id: id}, function(data) {
+            $.post("/ondemand/account_actions.php?action=clock_out", {user_id: id}, function(data) {
                 $("body").append(data);
             });
         })
@@ -540,30 +510,14 @@ require 'includes/header_end.php';
             });
         })
 
-        /** Deprecated */
-        .on("click", ".create-vin", function() {
-            var room_id = $(this).attr("id");
-
-            calcVin(room_id);
-
-            var formInfo = $("#vin_contents_" + room_id).serialize();
-
-            $.post("/ondemand/shopfloor/gen_actions.php?action=update_VIN&" + formInfo + "&room_id=" + room_id, function(data) {
-                $('body').append(data);
-            });
-
-            unsaved = false;
-        })
-        /** End Deprecated */
-
         .on("click", ".print-sample", function() {
             var room_id = $(this).attr("id");
 
             calcVin(room_id);
 
-            var formInfo = $("#vin_contents_" + room_id).serialize();
+            var formInfo = $("#room_edit_" + room_id).serialize();
 
-            $.post("/ondemand/shopfloor/gen_actions.php?action=update_VIN&" + formInfo + "&room_id=" + room_id, function(data) {
+            $.post("/ondemand/room_actions.php?action=update_room&" + formInfo + "&roomid=" + room_id, function(data) {
                 $('body').append(data);
             }).done(function() {
                 setTimeout(function() {
@@ -622,6 +576,46 @@ require 'includes/header_end.php';
             });
         })
         // -- End Task Page --
+
+        // -- SO List Page --
+        .on("change", "#job_status_lost", function() {
+            if($(this).is(":checked")) {
+                $(".room_lost").show();
+            } else {
+                $(".room_lost").hide();
+            }
+        })
+        .on("change", "#job_status_quote", function() {
+            if($(this).is(":checked")) {
+                $(".room_quote").show();
+            } else {
+                $(".room_quote").hide();
+            }
+        })
+        .on("change", "#job_status_job", function() {
+            if($(this).is(":checked")) {
+                $(".room_job").show();
+            } else {
+                $(".room_job").hide();
+            }
+        })
+        .on("change", "#job_status_completed", function() {
+            if($(this).is(":checked")) {
+                $(".room_completed").show();
+            } else {
+                $(".room_completed").hide();
+            }
+        })
+        .on("change", ".hide_dealer", function() {
+            var dealer_id = $(this).data("dealer-id");
+
+            if($(this).is(":checked")) {
+                $(".dealer_" + dealer_id).show();
+            } else {
+                $(".dealer_" + dealer_id).hide();
+            }
+        })
+        // -- End SO List Page --
     ;
 
     var clockInterval = setInterval(function() {

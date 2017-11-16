@@ -1,5 +1,5 @@
 <?php
-require_once ("../../includes/header_start.php");
+require '../includes/header_start.php';
 
 function login($result, $id) {
     global $dbconn;
@@ -77,8 +77,5 @@ switch($_REQUEST['action']) {
             }
         }
 
-        break;
-    default:
-        die();
         break;
 }

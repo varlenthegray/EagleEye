@@ -619,26 +619,6 @@ switch ($search) {
 
                             <div class="col-md-3">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <textarea class="form-control" name="inquiry" id="inquiry" placeholder="New Inquiry/Note" style="width:100%;height:350px;"></textarea>
-                                        <input type="text" name="inquiry_followup_date" id="inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
-                                        <label for="inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
-                                        <select name="inquiry_requested_of" id="inquiry_requested_of" class="form-control" style="width:50%;float:left;">
-                                            <option value="null" selected disabled></option>
-                                            <?php
-                                            $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC");
-
-                                            while($user = $user_qry->fetch_assoc()) {
-                                                echo "<option value='{$user['id']}'>{$user['name']}</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-3">
-                                <div class="row">
                                     <div class="col-md-12" style="min-height:149px;overflow:auto;">
                                         <p style="font-weight:bold;">Inquiries/Notes:</p>
 
@@ -694,6 +674,26 @@ switch ($search) {
                                             }
                                             ?>
                                         </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <textarea class="form-control" name="inquiry" id="inquiry" placeholder="New Inquiry/Note" style="width:100%;height:350px;"></textarea>
+                                        <input type="text" name="inquiry_followup_date" id="inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
+                                        <label for="inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
+                                        <select name="inquiry_requested_of" id="inquiry_requested_of" class="form-control" style="width:50%;float:left;">
+                                            <option value="null" selected disabled></option>
+                                            <?php
+                                            $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC");
+
+                                            while($user = $user_qry->fetch_assoc()) {
+                                                echo "<option value='{$user['id']}'>{$user['name']}</option>";
+                                            }
+                                            ?>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -835,18 +835,35 @@ switch ($search) {
                                     <div class="col-md-12">
                                         <form id="room_edit_<?php echo $room['id']; ?>">
                                             <div class="row">
-
-                                                <div class="col-md-1">
+                                                <div class="col-md-1 sticky">
                                                     <a class="btn btn-primary btn-block waves-effect waves-light edit_room_save">Save</a>
-                                                    <a href='/print/sample.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Sample Request</a>
-                                                    <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print VIN Info</a>
+                                                    <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>&action=sample_req' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Sample Request</a>
+                                                    <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Coversheet</a>
+                                                    <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>&action=arh' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print ARH Coversheet</a>
+                                                    <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>&action=no_totals' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Shop Coversheet</a>
                                                     <a href='/print/sample_label.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Sample Label</a>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-3 col-md-offset-1">
                                                     <div class="row">
                                                         <div class="col-md-12">
-                                                            <table width="100%" class="table table-custom-nb">
+                                                            <input type="hidden" name="vin_so_num_<?php echo $room['id']; ?>" value="<?php echo $room['so_parent']; ?>" id="vin_so_num_<?php echo $room['id']; ?>" />
+                                                            <input type="hidden" name="vin_room_<?php echo $room['id']; ?>" value="<?php echo $room['room']; ?>" id="vin_room_<?php echo $room['id']; ?>" />
+                                                            <input type="hidden" name="vin_iteration_<?php echo $room['id']; ?>" value="<?php echo $room['iteration']; ?>" id="vin_iteration_<?php echo $room['id']; ?>" />
+                                                            <input type="hidden" name="vin_product_type_<?php echo $room['id']; ?>" value="<?php echo $room['product_type']; ?>" id="vin_product_type_<?php echo $room['id']; ?>" />
+                                                            <input type="hidden" name="vin_order_status_<?php echo $room['id']; ?>" value="<?php echo $room['order_status']; ?>" id="vin_order_status_<?php echo $room['id']; ?>" />
+                                                            <input type="hidden" name="vin_days_to_ship_<?php echo $room['id']; ?>" value="<?php echo $room['days_to_ship']; ?>" id="vin_days_to_ship_<?php echo $room['id']; ?>" />
+                                                            <input type="hidden" name="vin_dealer_code_<?php echo $room['id']; ?>" value="<?php echo $result['dealer_code']; ?>" id="vin_dealer_code_<?php echo $room['id']; ?>" />
+
+                                                            <input type="hidden" name="sonum" value="<?php echo $result['so_num']; ?>">
+                                                            <input type="hidden" name="room" value="<?php echo $room['room']; ?>">
+                                                            <input type="hidden" name="roomid" value="<?php echo $room['id']; ?>">
+
+                                                            <div class="table_outline">
+                                                                <table style="width:97%;margin:0 auto;" class="table">
+                                                                    <tr>
+                                                                        <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Globals</h5></td>
+                                                                    </tr>
                                                                     <tr>
                                                                         <td><label for="delivery_date">Delivery Date</label></td>
                                                                         <td>
@@ -917,7 +934,588 @@ switch ($search) {
                                                                         <td><label for="room_name">Room Name</label></td>
                                                                         <td><input type="text" class="form-control" id="edit_room_name_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
                                                                     </tr>
+                                                                    <tr style="height:10px;">
+                                                                        <td colspan="2"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2"><input tabindex="37" type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" value="<?php echo $room['vin_code']; ?>" /></td>
+                                                                    </tr>
+                                                                    <tr style="height:10px;">
+                                                                        <td colspan="2"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5><label>Door, Drawer & Hardwood</label></h5></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="species_grade_<?php echo $room['id']; ?>">Species</label></td>
+                                                                        <td>
+                                                                            <select tabindex="2" name="species_grade_<?php echo $room['id']; ?>" id="species_grade_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'species_grade' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['species_grade']) {
+                                                                                        $species_grade_selected = "selected";
+                                                                                    } else {
+                                                                                        $species_grade_selected = ($segment['key'] === '00' && empty($room['species_grade'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $species_grade_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="construction_method_<?php echo $room['id']; ?>">Construction Method</label></td>
+                                                                        <td>
+                                                                            <select tabindex="18" name="construction_method_<?php echo $room['id']; ?>" id="construction_method_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'construction_method' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['construction_method']) {
+                                                                                        $construction_method_selected = "selected";
+                                                                                    } else {
+                                                                                        $construction_method_selected = ($segment['key'] === '0' && empty($room['construction_method'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $construction_method_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="door_design_<?php echo $room['id']; ?>">Door Design</label></td>
+                                                                        <td>
+                                                                            <select tabindex="3" name="door_design_<?php echo $room['id']; ?>" id="door_design_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'door_design' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['door_design']) {
+                                                                                        $door_design_selected = "selected";
+                                                                                    } else {
+                                                                                        $door_design_selected = ($segment['key'] === "000" && empty($room['door_design'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $door_design_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr style="height:10px;">
+                                                                        <td colspan="2"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2"><label>Panel Raise</label></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="padding-left:20px;"><label for="panel_raise_door_<?php echo $room['id']; ?>">Door</label></td>
+                                                                        <td>
+                                                                            <select tabindex="4" name="panel_raise_door_<?php echo $room['id']; ?>" id="panel_raise_door_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['panel_raise_door']) {
+                                                                                        $panel_raise_door_selected = "selected";
+                                                                                    } else {
+                                                                                        $panel_raise_door_selected = ($segment['key'] === "0" && empty($room['panel_raise_door'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $panel_raise_door_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="padding-left:20px;"><label for="panel_raise_sd_<?php echo $room['id']; ?>">Short Drawer</label></td>
+                                                                        <td>
+                                                                            <select tabindex="5" name="panel_raise_sd_<?php echo $room['id']; ?>" id="panel_raise_sd_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['panel_raise_sd']) {
+                                                                                        $panel_raise_sd_selected = "selected";
+                                                                                    } else {
+                                                                                        $panel_raise_sd_selected = ($segment['key'] === "0" && empty($room['panel_raise_sd'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $panel_raise_sd_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="padding-left:20px;"><label for="panel_raise_td_<?php echo $room['id']; ?>">Tall Drawer</label></td>
+                                                                        <td>
+                                                                            <select tabindex="6" name="panel_raise_td_<?php echo $room['id']; ?>" id="panel_raise_td_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['panel_raise_td']) {
+                                                                                        $panel_raise_td_selected = "selected";
+                                                                                    } else {
+                                                                                        $panel_raise_td_selected = ($segment['key'] === "0" && empty($room['panel_raise_td'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $panel_raise_td_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="edge_profile_<?php echo $room['id']; ?>">Edge Profile</label></td>
+                                                                        <td>
+                                                                            <select tabindex="7" name="edge_profile_<?php echo $room['id']; ?>" id="edge_profile_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'edge_profile' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['edge_profile']) {
+                                                                                        $edge_profile_selected = "selected";
+                                                                                    } else {
+                                                                                        $edge_profile_selected = ($segment['key'] === "0" && empty($room['edge_profile'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $edge_profile_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="framing_bead_<?php echo $room['id']; ?>">Framing Bead</label></td>
+                                                                        <td>
+                                                                            <select tabindex="8" name="framing_bead_<?php echo $room['id']; ?>" id="framing_bead_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_bead' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['framing_bead']) {
+                                                                                        $framing_bead_selected = "selected";
+                                                                                    } else {
+                                                                                        $framing_bead_selected = ($segment['key'] === "0" && empty($room['framing_bead'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $framing_bead_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="framing_options_<?php echo $room['id']; ?>">Framing Options</label></td>
+                                                                        <td>
+                                                                            <select tabindex="9" name="framing_options_<?php echo $room['id']; ?>" id="framing_options_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_options' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['framing_options']) {
+                                                                                        $framing_options_selected = "selected";
+                                                                                    } else {
+                                                                                        $framing_options_selected = ($segment['key'] === "0" && empty($room['framing_options'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $framing_options_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="style_rail_width_<?php echo $room['id']; ?>">Style/Rail Width</label></td>
+                                                                        <td>
+                                                                            <select tabindex="4" name="style_rail_width_<?php echo $room['id']; ?>" id="style_rail_width_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'style_rail_width' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['style_rail_width']) {
+                                                                                        $style_rail_width_selected = "selected";
+                                                                                    } else {
+                                                                                        $style_rail_width_selected = ($segment['key'] === "0" && empty($room['style_rail_width'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $style_rail_width_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2">&nbsp;</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
+                                                                        <td>
+                                                                            <select tabindex="11" name="finish_code_<?php echo $room['id']; ?>" id="finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_code' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['finish_code']) {
+                                                                                        $finish_code_selected = "selected";
+                                                                                    } else {
+                                                                                        $finish_code_selected = ($segment['key'] === "1c0000" && empty($room['finish_code'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $finish_code_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="sheen_<?php echo $room['id']; ?>">Sheen</label></td>
+                                                                        <td>
+                                                                            <select tabindex="12" name="sheen_<?php echo $room['id']; ?>" id="sheen_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['sheen']) {
+                                                                                        $sheen_selected = "selected";
+                                                                                    } else {
+                                                                                        $sheen_selected = ($segment['key'] === "c" && empty($room['sheen'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $sheen_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="glaze_<?php echo $room['id']; ?>">Glaze Color</label></td>
+                                                                        <td>
+                                                                            <select tabindex="13" name="glaze_<?php echo $room['id']; ?>" id="glaze_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['glaze']) {
+                                                                                        $glaze_selected = "selected";
+                                                                                    } else {
+                                                                                        $glaze_selected = ($segment['key'] === "3g0000" && empty($room['glaze'])) ? "selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $glaze_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
+                                                                        <td>
+                                                                            <select tabindex="14" name="glaze_technique_<?php echo $room['id']; ?>" id="glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['glaze_technique']) {
+                                                                                        $glaze_technique_selected = "selected";
+                                                                                    } else {
+                                                                                        $glaze_technique_selected = ($segment['key'] === "T0" && empty($room['glaze_technique'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $glaze_technique_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="antiquing_<?php echo $room['id']; ?>">Antiquing</label></td>
+                                                                        <td>
+                                                                            <select tabindex="15" name="antiquing_<?php echo $room['id']; ?>" id="antiquing_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'antiquing' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['antiquing']) {
+                                                                                        $antiquing_selected = "selected";
+                                                                                    } else {
+                                                                                        $antiquing_selected = ($segment['key'] === "A0" && empty($room['antiquing'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $antiquing_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="worn_edges_<?php echo $room['id']; ?>">Worn Edges</label></td>
+                                                                        <td>
+                                                                            <select tabindex="16" name="worn_edges_<?php echo $room['id']; ?>" id="worn_edges_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'worn_edges' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['worn_edges']) {
+                                                                                        $worn_edges_selected = "selected";
+                                                                                    } else {
+                                                                                        $worn_edges_selected = ($segment['key'] === "W0" && empty($room['worn_edges'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $worn_edges_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="distress_level_<?php echo $room['id']; ?>">Distress Level</label></td>
+                                                                        <td>
+                                                                            <select tabindex="17" name="distress_level_<?php echo $room['id']; ?>" id="distress_level_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'distress_level' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['distress_level']) {
+                                                                                        $distress_level_selected = "selected";
+                                                                                    } else {
+                                                                                        $distress_level_selected = ($segment['key'] === "D0" && empty($room['distress_level'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $distress_level_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr style="height:10px;">
+                                                                        <td colspan="2"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Carcass Exterior Finish</h5></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="carcass_exterior_species_<?php echo $room['id']; ?>">Species</label></td>
+                                                                        <td>
+                                                                            <select tabindex="19" name="carcass_exterior_species_<?php echo $room['id']; ?>" id="carcass_exterior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_species' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['carcass_exterior_species']) {
+                                                                                        $carcass_exterior_species_selected = "selected";
+                                                                                    } else {
+                                                                                        $carcass_exterior_species_selected = ($segment['key'] === "0" && empty($room['carcass_exterior_species'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $carcass_exterior_species_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="carcass_exterior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
+                                                                        <td>
+                                                                            <select tabindex="21" name="carcass_exterior_finish_code_<?php echo $room['id']; ?>" id="carcass_exterior_finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_code' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['carcass_exterior_finish_code']) {
+                                                                                        $carcass_exterior_finish_code_selected = "selected";
+                                                                                    } else {
+                                                                                        $carcass_exterior_finish_code_selected = ($segment['key'] === "1c0000" && empty($room['carcass_exterior_finish_code'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $carcass_exterior_finish_code_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="carcass_exterior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
+                                                                        <td>
+                                                                            <select tabindex="22" name="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['carcass_exterior_glaze_color']) {
+                                                                                        $carcass_exterior_glaze_color_selected = "selected";
+                                                                                    } else {
+                                                                                        $carcass_exterior_glaze_color_selected = ($segment['key'] === "3g0000" && empty($room['carcass_exterior_glaze_color'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $carcass_exterior_glaze_color_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
+                                                                        <td>
+                                                                            <select tabindex="23" name="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['carcass_exterior_glaze_technique']) {
+                                                                                        $carcass_exterior_glaze_technique_selected = "selected";
+                                                                                    } else {
+                                                                                        $carcass_exterior_glaze_technique_selected = ($segment['key'] === "T0" && empty($room['carcass_exterior_glaze_technique'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $carcass_exterior_glaze_technique_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr style="height:10px;">
+                                                                        <td colspan="2"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Carcass Interior Finish</h5></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="carcass_interior_species_<?php echo $room['id']; ?>">Species</label></td>
+                                                                        <td>
+                                                                            <select tabindex="24" name="carcass_interior_species_<?php echo $room['id']; ?>" id="carcass_interior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_species' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['carcass_interior_species']) {
+                                                                                        $carcass_interior_species_selected = "selected";
+                                                                                    } else {
+                                                                                        $carcass_interior_species_selected = ($segment['key'] === '0' && empty($room['carcass_interior_species'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $carcass_interior_species_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="carcass_interior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
+                                                                        <td>
+                                                                            <select tabindex="26" name="carcass_interior_finish_code_<?php echo $room['id']; ?>" id="carcass_interior_finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_code' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['carcass_interior_finish_code']) {
+                                                                                        $carcass_interior_finish_code_selected = "selected";
+                                                                                    } else {
+                                                                                        $carcass_interior_finish_code_selected = ($segment['key'] === "1c0000" && empty($room['carcass_interior_finish_code'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $carcass_interior_finish_code_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="carcass_interior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
+                                                                        <td>
+                                                                            <select tabindex="27" name="carcass_interior_glaze_color_<?php echo $room['id']; ?>" id="carcass_interior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['carcass_interior_glaze_color']) {
+                                                                                        $glaze_selected = "selected";
+                                                                                    } else {
+                                                                                        $glaze_selected = ($segment['key'] === "3g0000" && empty($room['carcass_interior_glaze_color'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $glaze_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="carcass_interior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
+                                                                        <td>
+                                                                            <select tabindex="28" name="carcass_interior_glaze_technique_<?php echo $room['id']; ?>" id="carcass_interior_glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['carcass_interior_glaze_technique']) {
+                                                                                        $carcass_interior_glaze_technique_selected = "selected";
+                                                                                    } else {
+                                                                                        $carcass_interior_glaze_technique_selected = ($segment['key'] === "T0" && empty($room['carcass_interior_glaze_technique'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $carcass_interior_glaze_technique_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr style="height:10px;">
+                                                                        <td colspan="2"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Interior Conveniences</h5></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td><label for="drawer_boxes_<?php echo $room['id']; ?>">Drawer Boxes</label></td>
+                                                                        <td>
+                                                                            <select tabindex="29" name="drawer_boxes_<?php echo $room['id']; ?>" id="drawer_boxes_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
+                                                                                <?php
+                                                                                $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'drawer_boxes' ORDER BY `value` ASC");
+
+                                                                                while($segment = $segment_qry->fetch_assoc()) {
+                                                                                    if($segment['key'] === $room['drawer_boxes']) {
+                                                                                        $drawer_boxes_selected = "selected";
+                                                                                    } else {
+                                                                                        $drawer_boxes_selected = ($segment['key'] === "0" && empty($room['drawer_boxes'])) ?"selected" : null;
+                                                                                    }
+
+                                                                                    echo "<option value='{$segment['key']}' $drawer_boxes_selected>{$segment['value']} ({$segment['key']})</option>";
+                                                                                }
+                                                                                ?>
+                                                                            </select>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr style="height:10px;">
+                                                                        <td colspan="2"></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Sample Request</h5></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2"><input tabindex="30" type="text" class="form-control text-md-center pull-left" name="sample_block_<?php echo $room['id']; ?>" id="sample_block_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="0"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="sample_block_<?php echo $room['id']; ?>">Sample Block <small>(5 1/4" x 6 1/8")</small></label></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2"><input tabindex="31" type="text" class="form-control text-md-center pull-left" name="door_only_<?php echo $room['id']; ?>" id="door_only_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['door_only_ordered']; ?>"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="door_only_<?php echo $room['id']; ?>">Door Only <small>(12" x 15")</small></label></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2"><input tabindex="32" type="text" class="form-control text-md-center pull-left" name="door_drawer_<?php echo $room['id']; ?>" id="door_drawer_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['door_drawer_ordered']; ?>"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="door_drawer_<?php echo $room['id']; ?>">Door & Drawer <small>(15 1/2" x 23 1/2")</small></label></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2"><input tabindex="33" type="text" class="form-control text-md-center pull-left" name="inset_square_<?php echo $room['id']; ?>" id="inset_square_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['inset_square_ordered']; ?>"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="inset_square_<?php echo $room['id']; ?>">Inset Square <small>(15 1/2" x 23 1/2")</small></label></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td colspan="2"><input tabindex="34" type="text" class="form-control text-md-center pull-left" name="inset_beaded_<?php echo $room['id']; ?>" id="inset_beaded_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['inset_beaded_ordered']; ?>"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="inset_beaded_<?php echo $room['id']; ?>">Inset Beaded <small>(16 1/2" x 23 1/2")</small></label></td>
+                                                                    </tr>
                                                                 </table>
+                                                            </div>
                                                         </div>
                                                     </div>
 
@@ -925,7 +1523,7 @@ switch ($search) {
                                                         <div class="col-md-12">
                                                             <fieldset class="form-group">
                                                                 <label for="room_notes">Room Notes</label>
-                                                                <textarea class="form-control" id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" style="width:100%;height:200px;"><?php
+                                                                <textarea class="form-control" id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" style="width:100%;height:277px;"><?php
                                                                         $r_notes_qry = $dbconn->query("SELECT * FROM notes WHERE note_type = 'room_note' AND type_id = {$room['id']}");
 
                                                                         if($r_notes_qry->num_rows > 0) {
@@ -933,667 +1531,239 @@ switch ($search) {
                                                                                 echo $r_notes['note'] . "\r\n\r\n";
                                                                             }
                                                                         }
-                                                                    ?>
-                                                                </textarea>
+                                                                    ?></textarea>
                                                             </fieldset>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-8">
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <input type="hidden" name="vin_so_num_<?php echo $room['id']; ?>" value="<?php echo $room['so_parent']; ?>" id="vin_so_num_<?php echo $room['id']; ?>" />
-                                                            <input type="hidden" name="vin_room_<?php echo $room['id']; ?>" value="<?php echo $room['room']; ?>" id="vin_room_<?php echo $room['id']; ?>" />
-                                                            <input type="hidden" name="vin_iteration_<?php echo $room['id']; ?>" value="<?php echo $room['iteration']; ?>" id="vin_iteration_<?php echo $room['id']; ?>" />
-                                                            <input type="hidden" name="vin_product_type_<?php echo $room['id']; ?>" value="<?php echo $room['product_type']; ?>" id="vin_product_type_<?php echo $room['id']; ?>" />
-                                                            <input type="hidden" name="vin_order_status_<?php echo $room['id']; ?>" value="<?php echo $room['order_status']; ?>" id="vin_order_status_<?php echo $room['id']; ?>" />
-                                                            <input type="hidden" name="vin_days_to_ship_<?php echo $room['id']; ?>" value="<?php echo $room['days_to_ship']; ?>" id="vin_days_to_ship_<?php echo $room['id']; ?>" />
-                                                            <input type="hidden" name="vin_dealer_code_<?php echo $room['id']; ?>" value="<?php echo $result['dealer_code']; ?>" id="vin_dealer_code_<?php echo $room['id']; ?>" />
+                                                    <div class="row" style="display:none;">
+                                                        <div class="col-md-4">
+                                                            <p style="font-weight:bold;">SO Notes:</p>
 
-                                                            <table width="100%" class="table table-custom-nb label-right">
-                                                                <tr>
-                                                                    <td style="width:75px;"><label for="notes">VIN Notes:&nbsp;&nbsp;</label></td>
-                                                                    <td><input tabindex="1" type="text" name="notes_<?php echo $room['id']; ?>" id="notes_<?php echo $room['id']; ?>" placeholder="VIN Notes..." class="form-control" maxlength="300"value="<?php echo $room['vin_notes']; ?>"></td>
-                                                                </tr>
+                                                            <table class="table table-custom-nb table-v-top" width="100%">
+                                                                <?php
+                                                                $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE note_type = 'so_inquiry' AND notes.type_id = '{$result['id']}' ORDER BY notes.timestamp DESC;");
+
+                                                                while($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
+                                                                    $inquiry_replies = null;
+
+                                                                    $time = date(DATE_TIME_ABBRV, $so_inquiry['NTimestamp']);
+
+                                                                    if(!empty($so_inquiry['followup_time'])) {
+                                                                        $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$so_inquiry['user_to']}");
+                                                                        $followup_usr = $followup_usr_qry->fetch_assoc();
+
+                                                                        $followup_time = date(DATE_TIME_ABBRV, $so_inquiry['followup_time']);
+
+                                                                        $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
+                                                                    } else {
+                                                                        $followup = null;
+                                                                    }
+
+                                                                    $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$so_inquiry['nID']}' ORDER BY timestamp DESC");
+
+                                                                    if($inquiry_reply_qry->num_rows > 0) {
+                                                                        while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
+                                                                            $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
+
+                                                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$so_inquiry['name']} on $ireply_time</em></small></td></tr>";
+                                                                        }
+                                                                    } else {
+                                                                        $inquiry_replies = null;
+                                                                    }
+
+                                                                    $notes = str_replace(" ", "&nbsp;", $so_inquiry['note']);
+
+                                                                    echo "<tr>";
+                                                                    echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
+                                                                    echo "</tr>";
+
+                                                                    echo $inquiry_replies;
+
+                                                                    echo "<tr style='height:5px'><td></td></tr>";
+                                                                }
+                                                                ?>
                                                             </table>
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <p style="font-weight:bold;">Room Notes:</p>
+
+                                                            <table class="table table-custom-nb table-v-top" width="100%">
+                                                                <?php
+                                                                $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE note_type = 'room_note' AND notes.type_id = '{$room['id']}' ORDER BY notes.timestamp DESC;");
+
+                                                                while($room_inquiry = $room_inquiry_qry->fetch_assoc()) {
+                                                                    $inquiry_replies = null;
+
+                                                                    $time = date(DATE_TIME_ABBRV, $room_inquiry['NTimestamp']);
+
+                                                                    if(!empty($room_inquiry['followup_time'])) {
+                                                                        $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$room_inquiry['user_to']}");
+                                                                        $followup_usr = $followup_usr_qry->fetch_assoc();
+
+                                                                        $followup_time = date(DATE_TIME_ABBRV, $room_inquiry['followup_time']);
+
+                                                                        $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
+                                                                    } else {
+                                                                        $followup = null;
+                                                                    }
+
+                                                                    $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'room_inquiry_reply' AND type_id = '{$room_inquiry['nID']}' ORDER BY timestamp DESC");
+
+                                                                    if($inquiry_reply_qry->num_rows > 0) {
+                                                                        while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
+                                                                            $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
+
+                                                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$room_inquiry['name']} on $ireply_time</em></small></td></tr>";
+                                                                        }
+                                                                    } else {
+                                                                        $inquiry_replies = null;
+                                                                    }
+
+                                                                    $notes = str_replace(" ", "&nbsp;", $room_inquiry['note']);
+
+                                                                    echo "<tr>";
+                                                                    echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$room_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
+                                                                    echo "  <td>$notes -- <small><em>{$room_inquiry['name']} on $time $followup</em></small></td>";
+                                                                    echo "</tr>";
+
+                                                                    echo "<tr id='inquiry_reply_line_{$room_inquiry['nID']}' style='display:none;'>";
+                                                                    echo "  <td colspan='2'>
+                                                                <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
+                                                                <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$room_inquiry['nID']}'>Reply</button>
+                                                            </td>";
+                                                                    echo "</tr>";
+
+                                                                    echo $inquiry_replies;
+
+                                                                    echo "<tr style='height:5px'><td></td></tr>";
+                                                                }
+                                                                ?>
+                                                            </table>
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <textarea class="form-control" name="inquiry" id="inquiry" placeholder="New Inquiry/Note" style="width:100%;height:277px;"></textarea>
+                                                            <input type="text" name="inquiry_followup_date" id="inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
+                                                            <label for="inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
+                                                            <select name="inquiry_requested_of" id="inquiry_requested_of" class="form-control" style="width:50%;float:left;">
+                                                                <option value="null" selected disabled></option>
+                                                                <?php
+                                                                $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC");
+
+                                                                while($user = $user_qry->fetch_assoc()) {
+                                                                    echo "<option value='{$user['id']}'>{$user['name']}</option>";
+                                                                }
+                                                                ?>
+                                                            </select>
                                                         </div>
                                                     </div>
 
                                                     <div class="row">
                                                         <div class="col-md-12">
-                                                            <table width="100%" class="custom-table label-right">
+                                                            <table width="100%" class="bracket-adjustment-table">
                                                                 <tr>
-                                                                    <td colspan="2" class="text-md-center custom-border-1px-tlr"><h5>Door, Drawer & Hardwood</h5></td>
-                                                                    <td colspan="2" class="text-md-center custom-border-1px-tr"><h5>Finish</h5></td>
-                                                                    <td colspan="2" class="text-md-center custom-border-none"><h5>Carcass Exterior</h5></td>
-                                                                    <td class="custom-border-none"><label for="sample_block_<?php echo $room['id']; ?>" class="text-md-right">Sample Block (5 1/4" x 6 1/8")</label></td>
-                                                                    <td class="custom-border-none">
-                                                                        <input tabindex="30" type="text" class="form-control text-md-center" name="sample_block_<?php echo $room['id']; ?>" id="sample_block_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="0">
+                                                                    <td style="width: 49.8%;" class="bracket-border-top">
+                                                                        <div class="row bracket-header-custom">
+                                                                            <div class="col-md-8"><h5><label for="sales_bracket_adjustments_<?php echo $room['id']; ?>">Sales Bracket</label></h5></div>
+                                                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" value="1" id="sales_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sales_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="background-color:#eceeef;"></td>
+                                                                    <td style="width: 49.8%;" class="bracket-border-top">
+                                                                        <div class="row bracket-header-custom">
+                                                                            <div class="col-md-8"><h5><label for="sample_bracket_adjustments_<?php echo $room['id']; ?>">Sample Bracket</label></h5></div>
+                                                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" value="1" id="sample_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sample_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td class="custom-border-1px-left"><label for="species_grade_<?php echo $room['id']; ?>">Species</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="2" name="species_grade_<?php echo $room['id']; ?>" id="species_grade_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'species_grade' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['species_grade']) {
-                                                                                    $species_grade_selected = "selected";
-                                                                                } else {
-                                                                                    $species_grade_selected = ($segment['key'] === '00' && empty($room['species_grade'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $species_grade_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
+                                                                    <td class="bracket-border-bottom">
+                                                                        <?php displayBracketOpsMgmt('Sales', $room, $individual_bracket); ?>
                                                                     </td>
-                                                                    <td class="custom-border-none"><label for="finish_code_<?php echo $room['id']; ?>">Code</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="11" name="finish_code_<?php echo $room['id']; ?>" id="finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_code' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['finish_code']) {
-                                                                                    $finish_code_selected = "selected";
-                                                                                } else {
-                                                                                    $finish_code_selected = ($segment['key'] === "1c0000" && empty($room['finish_code'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $finish_code_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="carcass_exterior_species_<?php echo $room['id']; ?>">Species</label></td>
-                                                                    <td class="custom-border-none">
-                                                                        <select tabindex="19" name="carcass_exterior_species_<?php echo $room['id']; ?>" id="carcass_exterior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_species' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['carcass_exterior_species']) {
-                                                                                    $carcass_exterior_species_selected = "selected";
-                                                                                } else {
-                                                                                    $carcass_exterior_species_selected = ($segment['key'] === "0" && empty($room['carcass_exterior_species'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $carcass_exterior_species_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="door_only_<?php echo $room['id']; ?>" class="text-md-right">Door Only (12" x 15")</label></td>
-                                                                    <td class="custom-border-none"><input tabindex="31" type="text" class="form-control text-md-center" name="door_only_<?php echo $room['id']; ?>" id="door_only_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['door_only_ordered']; ?>"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="custom-border-1px-left"><label for="construction_method_<?php echo $room['id']; ?>">Construction Method</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="18" name="construction_method_<?php echo $room['id']; ?>" id="construction_method_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'construction_method' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['construction_method']) {
-                                                                                    $construction_method_selected = "selected";
-                                                                                } else {
-                                                                                    $construction_method_selected = ($segment['key'] === '0' && empty($room['construction_method'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $construction_method_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="sheen_<?php echo $room['id']; ?>">Sheen</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="12" name="sheen_<?php echo $room['id']; ?>" id="sheen_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['sheen']) {
-                                                                                    $sheen_selected = "selected";
-                                                                                } else {
-                                                                                    $sheen_selected = ($segment['key'] === "c" && empty($room['sheen'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $sheen_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="carcass_exterior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                                                                    <td class="custom-border-none">
-                                                                        <select tabindex="21" name="carcass_exterior_finish_code_<?php echo $room['id']; ?>" id="carcass_exterior_finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_code' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['carcass_exterior_finish_code']) {
-                                                                                    $carcass_exterior_finish_code_selected = "selected";
-                                                                                } else {
-                                                                                    $carcass_exterior_finish_code_selected = ($segment['key'] === "1c0000" && empty($room['carcass_exterior_finish_code'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $carcass_exterior_finish_code_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="door_drawer_<?php echo $room['id']; ?>" class="text-md-right">Door & Drawer (15 1/2" x 23 1/2")</label></td>
-                                                                    <td class="custom-border-none"><input tabindex="32" type="text" class="form-control text-md-center" name="door_drawer_<?php echo $room['id']; ?>" id="door_drawer_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['door_drawer_ordered']; ?>"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="custom-border-1px-left"><label for="door_design_<?php echo $room['id']; ?>">Door Design</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="3" name="door_design_<?php echo $room['id']; ?>" id="door_design_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'door_design' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['door_design']) {
-                                                                                    $door_design_selected = "selected";
-                                                                                } else {
-                                                                                    $door_design_selected = ($segment['key'] === "000" && empty($room['door_design'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $door_design_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="glaze_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="13" name="glaze_<?php echo $room['id']; ?>" id="glaze_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['glaze']) {
-                                                                                    $glaze_selected = "selected";
-                                                                                } else {
-                                                                                    $glaze_selected = ($segment['key'] === "3g0000" && empty($room['glaze'])) ? "selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $glaze_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="carcass_exterior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                                                                    <td class="custom-border-none">
-                                                                        <select tabindex="22" name="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['carcass_exterior_glaze_color']) {
-                                                                                    $carcass_exterior_glaze_color_selected = "selected";
-                                                                                } else {
-                                                                                    $carcass_exterior_glaze_color_selected = ($segment['key'] === "3g0000" && empty($room['carcass_exterior_glaze_color'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $carcass_exterior_glaze_color_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="inset_square_<?php echo $room['id']; ?>" class="text-md-right">Inset Square (15 1/2" x 23 1/2")</label></td>
-                                                                    <td class="custom-border-none"><input tabindex="33" type="text" class="form-control text-md-center" name="inset_square_<?php echo $room['id']; ?>" id="inset_square_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['inset_square_ordered']; ?>"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td colspan="2" class="text-md-center custom-border-1px-tlr"><h5>Panel Raise</h5></td>
-
-                                                                    <td class="custom-border-none"><label for="glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="14" name="glaze_technique_<?php echo $room['id']; ?>" id="glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['glaze_technique']) {
-                                                                                    $glaze_technique_selected = "selected";
-                                                                                } else {
-                                                                                    $glaze_technique_selected = ($segment['key'] === "T0" && empty($room['glaze_technique'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $glaze_technique_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                                                                    <td class="custom-border-none">
-                                                                        <select tabindex="23" name="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['carcass_exterior_glaze_technique']) {
-                                                                                    $carcass_exterior_glaze_technique_selected = "selected";
-                                                                                } else {
-                                                                                    $carcass_exterior_glaze_technique_selected = ($segment['key'] === "T0" && empty($room['carcass_exterior_glaze_technique'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $carcass_exterior_glaze_technique_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td><td class="custom-border-none"><label for="inset_beaded_<?php echo $room['id']; ?>" class="text-md-right">Inset Beaded (16 1/2" x 23 1/2")</label></td>
-                                                                    <td class="custom-border-none"><input tabindex="34" type="text" class="form-control text-md-center" name="inset_beaded_<?php echo $room['id']; ?>" id="inset_beaded_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['inset_beaded_ordered']; ?>"></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="custom-border-1px-left"><label for="panel_raise_door_<?php echo $room['id']; ?>">Door</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="4" name="panel_raise_door_<?php echo $room['id']; ?>" id="panel_raise_door_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['panel_raise_door']) {
-                                                                                    $panel_raise_door_selected = "selected";
-                                                                                } else {
-                                                                                    $panel_raise_door_selected = ($segment['key'] === "0" && empty($room['panel_raise_door'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $panel_raise_door_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="antiquing_<?php echo $room['id']; ?>">Antiquing</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="15" name="antiquing_<?php echo $room['id']; ?>" id="antiquing_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'antiquing' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['antiquing']) {
-                                                                                    $antiquing_selected = "selected";
-                                                                                } else {
-                                                                                    $antiquing_selected = ($segment['key'] === "A0" && empty($room['antiquing'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $antiquing_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td colspan="2" class="text-md-center custom-border-none"><h5>Carcass Interior</h5></td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="custom-border-1px-left"><label for="panel_raise_sd_<?php echo $room['id']; ?>">Short Drawer</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="5" name="panel_raise_sd_<?php echo $room['id']; ?>" id="panel_raise_sd_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['panel_raise_sd']) {
-                                                                                    $panel_raise_sd_selected = "selected";
-                                                                                } else {
-                                                                                    $panel_raise_sd_selected = ($segment['key'] === "0" && empty($room['panel_raise_sd'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $panel_raise_sd_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="worn_edges_<?php echo $room['id']; ?>">Worn Edges</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="16" name="worn_edges_<?php echo $room['id']; ?>" id="worn_edges_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'worn_edges' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['worn_edges']) {
-                                                                                    $worn_edges_selected = "selected";
-                                                                                } else {
-                                                                                    $worn_edges_selected = ($segment['key'] === "W0" && empty($room['worn_edges'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $worn_edges_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="carcass_interior_species_<?php echo $room['id']; ?>">Species</label></td>
-                                                                    <td class="custom-border-none">
-                                                                        <select tabindex="24" name="carcass_interior_species_<?php echo $room['id']; ?>" id="carcass_interior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'carcass_species' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['carcass_interior_species']) {
-                                                                                    $carcass_interior_species_selected = "selected";
-                                                                                } else {
-                                                                                    $carcass_interior_species_selected = ($segment['key'] === '0' && empty($room['carcass_interior_species'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $carcass_interior_species_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none">&nbsp;</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="custom-border-1px-left"><label for="panel_raise_td_<?php echo $room['id']; ?>">Tall Drawer</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="6" name="panel_raise_td_<?php echo $room['id']; ?>" id="panel_raise_td_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'panel_raise' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['panel_raise_td']) {
-                                                                                    $panel_raise_td_selected = "selected";
-                                                                                } else {
-                                                                                    $panel_raise_td_selected = ($segment['key'] === "0" && empty($room['panel_raise_td'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $panel_raise_td_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-1px-bottom"><label for="distress_level_<?php echo $room['id']; ?>">Distress Level</label></td>
-                                                                    <td class="custom-border-1px-rb">
-                                                                        <select tabindex="17" name="distress_level_<?php echo $room['id']; ?>" id="distress_level_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'distress_level' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['distress_level']) {
-                                                                                    $distress_level_selected = "selected";
-                                                                                } else {
-                                                                                    $distress_level_selected = ($segment['key'] === "D0" && empty($room['distress_level'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $distress_level_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="carcass_interior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                                                                    <td class="custom-border-none">
-                                                                        <select tabindex="26" name="carcass_interior_finish_code_<?php echo $room['id']; ?>" id="carcass_interior_finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'finish_code' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['carcass_interior_finish_code']) {
-                                                                                    $carcass_interior_finish_code_selected = "selected";
-                                                                                } else {
-                                                                                    $carcass_interior_finish_code_selected = ($segment['key'] === "1c0000" && empty($room['carcass_interior_finish_code'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $carcass_interior_finish_code_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none" colspan="3">&nbsp;</td>
-
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="custom-border-1px-left"><label for="edge_profile_<?php echo $room['id']; ?>">Edge Profile</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="7" name="edge_profile_<?php echo $room['id']; ?>" id="edge_profile_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'edge_profile' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['edge_profile']) {
-                                                                                    $edge_profile_selected = "selected";
-                                                                                } else {
-                                                                                    $edge_profile_selected = ($segment['key'] === "0" && empty($room['edge_profile'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $edge_profile_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-
-                                                                    <td colspan="2" class="text-md-center custom-border-none"><h5>Drawer Boxes</h5></td>
-
-                                                                    <td class="custom-border-none"><label for="carcass_interior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                                                                    <td class="custom-border-none">
-                                                                        <select tabindex="27" name="carcass_interior_glaze_color_<?php echo $room['id']; ?>" id="carcass_interior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['carcass_interior_glaze_color']) {
-                                                                                    $glaze_selected = "selected";
-                                                                                } else {
-                                                                                    $glaze_selected = ($segment['key'] === "3g0000" && empty($room['carcass_interior_glaze_color'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $glaze_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"></td>
-                                                                    <td class="custom-border-none" colspan="3">&nbsp;</td>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td class="custom-border-1px-left"><label for="framing_bead_<?php echo $room['id']; ?>">Framing Bead</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="8" name="framing_bead_<?php echo $room['id']; ?>" id="framing_bead_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_bead' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['framing_bead']) {
-                                                                                    $framing_bead_selected = "selected";
-                                                                                } else {
-                                                                                    $framing_bead_selected = ($segment['key'] === "0" && empty($room['framing_bead'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $framing_bead_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td class="custom-border-none"><label for="drawer_boxes_<?php echo $room['id']; ?>">Drawer Boxes</label></td>
-                                                                    <td class="custom-border-none">
-                                                                        <select tabindex="29" name="drawer_boxes_<?php echo $room['id']; ?>" id="drawer_boxes_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'drawer_boxes' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['drawer_boxes']) {
-                                                                                    $drawer_boxes_selected = "selected";
-                                                                                } else {
-                                                                                    $drawer_boxes_selected = ($segment['key'] === "0" && empty($room['drawer_boxes'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $drawer_boxes_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
-                                                                    </td>
-
-                                                                    <td class="custom-border-none"><label for="carcass_interior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                                                                    <td class="custom-border-none">
-                                                                        <select tabindex="28" name="carcass_interior_glaze_technique_<?php echo $room['id']; ?>" id="carcass_interior_glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'glaze_technique' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['carcass_interior_glaze_technique']) {
-                                                                                    $carcass_interior_glaze_technique_selected = "selected";
-                                                                                } else {
-                                                                                    $carcass_interior_glaze_technique_selected = ($segment['key'] === "T0" && empty($room['carcass_interior_glaze_technique'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $carcass_interior_glaze_technique_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
+                                                                    <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                    <td class="bracket-border-bottom">
+                                                                        <?php displayBracketOpsMgmt('Sample', $room, $individual_bracket); ?>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td class="custom-border-1px-left"><label for="framing_options_<?php echo $room['id']; ?>">Framing Options</label></td>
-                                                                    <td class="custom-border-1px-right">
-                                                                        <select tabindex="9" name="framing_options_<?php echo $room['id']; ?>" id="framing_options_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'framing_options' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['framing_options']) {
-                                                                                    $framing_options_selected = "selected";
-                                                                                } else {
-                                                                                    $framing_options_selected = ($segment['key'] === "0" && empty($room['framing_options'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $framing_options_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
+                                                                    <td class="bracket-border-top">
+                                                                        <div class="row bracket-header-custom">
+                                                                            <div class="col-md-8"><h5><label for="pre_prod_bracket_adjustments_<?php echo $room['id']; ?>">Pre-production Bracket</label></h5></div>
+                                                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="preprod_published" value="1" id="pre_prod_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['preproduction_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                        </div>
                                                                     </td>
-                                                                    <td colspan="6" class="custom-border-none"><input tabindex="37" type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" value="<?php echo $room['vin_code']; ?>" /></td>
-
+                                                                    <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                    <td class="bracket-border-top">
+                                                                        <div class="row bracket-header-custom">
+                                                                            <div class="col-md-8"><h5><label for="door_drawer_bracket_adjustments_<?php echo $room['id']; ?>">Door/Drawer Bracket</label></h5></div>
+                                                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="doordrawer_published" value="1" id="doordrawer_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['doordrawer_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                        </div>
+                                                                    </td>
                                                                 </tr>
                                                                 <tr>
-
-                                                                    <td class="custom-border-1px-lb"><label for="style_rail_width_<?php echo $room['id']; ?>">Style/Rail Width</label></td>
-                                                                    <td class="custom-border-1px-rb">
-                                                                        <select tabindex="4" name="style_rail_width_<?php echo $room['id']; ?>" id="style_rail_width_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                                                            <?php
-                                                                            $segment_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'style_rail_width' ORDER BY `value` ASC");
-
-                                                                            while($segment = $segment_qry->fetch_assoc()) {
-                                                                                if($segment['key'] === $room['style_rail_width']) {
-                                                                                    $style_rail_width_selected = "selected";
-                                                                                } else {
-                                                                                    $style_rail_width_selected = ($segment['key'] === "0" && empty($room['style_rail_width'])) ?"selected" : null;
-                                                                                }
-
-                                                                                echo "<option value='{$segment['key']}' $style_rail_width_selected>{$segment['value']} ({$segment['key']})</option>";
-                                                                            }
-                                                                            ?>
-                                                                        </select>
+                                                                    <td class="bracket-border-bottom">
+                                                                        <?php displayBracketOpsMgmt('Pre-Production', $room, $individual_bracket); ?>
+                                                                    </td>
+                                                                    <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                    <td class="bracket-border-bottom">
+                                                                        <?php displayBracketOpsMgmt('Drawer & Doors', $room, $individual_bracket); ?>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="bracket-border-top">
+                                                                        <div class="row bracket-header-custom">
+                                                                            <div class="col-md-8"><h5><label for="main_bracket_adjustments_<?php echo $room['id']; ?>">Main Bracket</label></h5></div>
+                                                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="main_published" value="1" id="main_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['main_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                    <td class="bracket-border-top">
+                                                                        <div class="row bracket-header-custom">
+                                                                            <div class="col-md-8"><h5><label for="custom_bracket_adjustments_<?php echo $room['id']; ?>">Custom Bracket</label></h5></div>
+                                                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" value="1" id="custom_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['custom_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="bracket-border-bottom">
+                                                                        <?php displayBracketOpsMgmt('Main', $room, $individual_bracket); ?>
+                                                                    </td>
+                                                                    <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                    <td class="bracket-border-bottom">
+                                                                        <?php displayBracketOpsMgmt('Custom', $room, $individual_bracket); ?>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="bracket-border-top">
+                                                                        <div class="row bracket-header-custom">
+                                                                            <div class="col-md-8"><h5><label for="shipping_bracket_adjustments_<?php echo $room['id']; ?>">Shipping Bracket</label></h5></div>
+                                                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shipping_published" value="1" id="shipping_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['shipping_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                    <td class="bracket-border-top">
+                                                                        <div class="row bracket-header-custom">
+                                                                            <div class="col-md-8"><h5><label for="install_bracket_adjustments_<?php echo $room['id']; ?>">Install Bracket</label></h5></div>
+                                                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published" value="1" id="install_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['install_bracket_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="bracket-border-bottom">
+                                                                        <?php displayBracketOpsMgmt('Shipping', $room, $individual_bracket); ?>
+                                                                    </td>
+                                                                    <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                    <td class="bracket-border-bottom">
+                                                                        <?php displayBracketOpsMgmt('Installation', $room, $individual_bracket); ?>
                                                                     </td>
                                                                 </tr>
                                                             </table>
                                                         </div>
                                                     </div>
-                                                </div>
-
-                                                <input type="hidden" name="sonum" value="<?php echo $result['so_num']; ?>">
-                                                <input type="hidden" name="room" value="<?php echo $room['room']; ?>">
-                                                <input type="hidden" name="roomid" value="<?php echo $room['id']; ?>">
-                                            </div>
-
-                                            <div class="row">
-                                                <div class="col-md-7 col-md-offset-1">
-                                                    <table width="100%" class="bracket-adjustment-table">
-                                                            <tr>
-                                                                <td style="width: 49.8%;" class="bracket-border-top">
-                                                                    <div class="row bracket-header-custom">
-                                                                        <div class="col-md-8"><h5><label for="sales_bracket_adjustments_<?php echo $room['id']; ?>">Sales Bracket</label></h5></div>
-                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" value="1" id="sales_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sales_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td style="background-color:#eceeef;"></td>
-                                                                <td style="width: 49.8%;" class="bracket-border-top">
-                                                                    <div class="row bracket-header-custom">
-                                                                        <div class="col-md-8"><h5><label for="sample_bracket_adjustments_<?php echo $room['id']; ?>">Sample Bracket</label></h5></div>
-                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" value="1" id="sample_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sample_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="bracket-border-bottom">
-                                                                    <?php displayBracketOpsMgmt('Sales', $room, $individual_bracket); ?>
-                                                                </td>
-                                                                <td style="background-color: #eceeef;">&nbsp;</td>
-                                                                <td class="bracket-border-bottom">
-                                                                    <?php displayBracketOpsMgmt('Sample', $room, $individual_bracket); ?>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="bracket-border-top">
-                                                                    <div class="row bracket-header-custom">
-                                                                        <div class="col-md-8"><h5><label for="pre_prod_bracket_adjustments_<?php echo $room['id']; ?>">Pre-production Bracket</label></h5></div>
-                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="preprod_published" value="1" id="pre_prod_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['preproduction_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td style="background-color: #eceeef;">&nbsp;</td>
-                                                                <td class="bracket-border-top">
-                                                                    <div class="row bracket-header-custom">
-                                                                        <div class="col-md-8"><h5><label for="door_drawer_bracket_adjustments_<?php echo $room['id']; ?>">Door/Drawer Bracket</label></h5></div>
-                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="doordrawer_published" value="1" id="doordrawer_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['doordrawer_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="bracket-border-bottom">
-                                                                    <?php displayBracketOpsMgmt('Pre-Production', $room, $individual_bracket); ?>
-                                                                </td>
-                                                                <td style="background-color: #eceeef;">&nbsp;</td>
-                                                                <td class="bracket-border-bottom">
-                                                                    <?php displayBracketOpsMgmt('Drawer & Doors', $room, $individual_bracket); ?>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="bracket-border-top">
-                                                                    <div class="row bracket-header-custom">
-                                                                        <div class="col-md-8"><h5><label for="main_bracket_adjustments_<?php echo $room['id']; ?>">Main Bracket</label></h5></div>
-                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="main_published" value="1" id="main_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['main_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td style="background-color: #eceeef;">&nbsp;</td>
-                                                                <td class="bracket-border-top">
-                                                                    <div class="row bracket-header-custom">
-                                                                        <div class="col-md-8"><h5><label for="custom_bracket_adjustments_<?php echo $room['id']; ?>">Custom Bracket</label></h5></div>
-                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" value="1" id="custom_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['custom_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="bracket-border-bottom">
-                                                                    <?php displayBracketOpsMgmt('Main', $room, $individual_bracket); ?>
-                                                                </td>
-                                                                <td style="background-color: #eceeef;">&nbsp;</td>
-                                                                <td class="bracket-border-bottom">
-                                                                    <?php displayBracketOpsMgmt('Custom', $room, $individual_bracket); ?>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="bracket-border-top">
-                                                                    <div class="row bracket-header-custom">
-                                                                        <div class="col-md-8"><h5><label for="shipping_bracket_adjustments_<?php echo $room['id']; ?>">Shipping Bracket</label></h5></div>
-                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shipping_published" value="1" id="shipping_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['shipping_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td style="background-color: #eceeef;">&nbsp;</td>
-                                                                <td class="bracket-border-top">
-                                                                    <div class="row bracket-header-custom">
-                                                                        <div class="col-md-8"><h5><label for="install_bracket_adjustments_<?php echo $room['id']; ?>">Install Bracket</label></h5></div>
-                                                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published" value="1" id="install_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['install_bracket_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td class="bracket-border-bottom">
-                                                                    <?php displayBracketOpsMgmt('Shipping', $room, $individual_bracket); ?>
-                                                                </td>
-                                                                <td style="background-color: #eceeef;">&nbsp;</td>
-                                                                <td class="bracket-border-bottom">
-                                                                    <?php displayBracketOpsMgmt('Installation', $room, $individual_bracket); ?>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
                                                 </div>
                                             </div>
                                         </form>

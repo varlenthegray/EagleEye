@@ -23491,6 +23491,17 @@ body {
   color: #FFFFFF;
   font-weight: bold; }
 
+.highlight_so {
+  background-color: #F9F9F9; }
+
+.table_outline table {
+  border: 1px solid #000;
+  border-collapse: separate;
+  border-radius: 5px; }
+.table_outline td, .table_outline th {
+  border: none;
+  border-collapse: collapse; }
+
 .cust-table {
   display: table;
   width: 100%;

@@ -1,6 +1,6 @@
 $("body")
     .on("click", "#nav_add_so", function() {
-        $.post('/ondemand/shopfloor/new_customer.php', function(data) {
+        $.post('/html/new_customer.php', function(data) {
             $("#modalAddCustomer").html(data).modal('show');
         });
     })
@@ -33,7 +33,7 @@ $("body")
 
         cuData = $("#add_retail_customer").serialize();
 
-        $.post("/ondemand/shopfloor/job_actions.php?action=add_customer&" + cuData, {so_num: $("#so_num").val()}, function(data) {
+        $.post("/ondemand/so_actions.php?action=add_customer&" + cuData, {so_num: $("#so_num").val()}, function(data) {
             $("body").append(data);
 
             $("#modalAddCustomer").modal('hide');

@@ -28,7 +28,7 @@ require '../includes/header_start.php';
 
 <script>
     $("#so_global_list").DataTable({
-        "ajax": "/ondemand/shopfloor/gen_actions.php?action=get_so_list",
+        "ajax": "/ondemand/so_actions.php?action=get_so_list",
         "createdRow": function(row,data,dataIndex) {
             $(row).addClass("cursor-hand view_so_info");
         },

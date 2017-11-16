@@ -109,7 +109,7 @@ function translateVIN($segment, $key) {
                             <td>
                                 <input type="text" style="width:100px;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
                                 <input type="text" style="width:100px;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
-                                <input type="text" style="width:60px;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:30px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+                                <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:30px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
                             </td>
                         </tr>
                     </table>
@@ -125,17 +125,20 @@ function translateVIN($segment, $key) {
                     <th width="10%"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></th>
                     <th class="text-md-right"><?php echo "{$info['dealer_code']} - {$dealer_info['dealer_name']}"; ?>&nbsp;</th>
                 </tr>
-                <tr class="border_thin_bottom">
+                <tr class="border_thin_bottom" id="delivery_notes">
                     <td class="gray_bg">Delivery Notes:</td>
                     <td><textarea name="delivery_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"></textarea></td>
                 </tr>
-                <tr class="border_thin_bottom">
+                <tr class="border_thin_bottom" id="global_notes">
                     <td class="gray_bg">Global Notes:</td>
                     <td><textarea name="global_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $info['vin_notes']; ?></textarea></td>
                 </tr>
-                <tr>
-                    <td class="gray_bg">Layout Notes:</td>
-                    <td><textarea name="layout_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"></textarea></td>
+                <tr id="layout_notes">
+                    <td class="gray_bg" id="layout_notes_title">Layout Notes:</td>
+                    <td>
+                        <textarea name="layout_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php
+                            ?></textarea>
+                    </td>
                 </tr>
             </table>
 
@@ -174,7 +177,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Door Design:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('door_design', $info['door_design']); ?> <span class="pull-right arh_highlight">(<input type="text" class="arh_highlight" name="dd_custom_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('door_design', $info['door_design']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="dd_design_pct" value="0.00" maxlength="4">%</td>
@@ -264,7 +267,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" class="arh_highlight" name="finish_code_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
@@ -323,7 +326,7 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td class="border_thin_bottom"><input type="checkbox" id="distressing" style="margin-left:20px;" <?php echo ($info['distress_level'] !== 'T0') ? "checked" : null; ?> disabled> Distressing</td>
+                    <td class="border_thin_bottom"><input type="checkbox" id="distressing" style="margin-left:20px;" <?php echo ($info['distress_level'] !== 'D0') ? "checked" : null; ?> disabled> Distressing</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('distress_level', $info['distress_level']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -344,7 +347,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Exterior Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" class="arh_highlight" name="e_finish_code_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -384,7 +387,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Interior Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" class="arh_highlight" name="i_finish_code_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -627,13 +630,43 @@ function translateVIN($segment, $key) {
         </div>
 
         <div id="closing_statement">Thank you! Our Commitment is to Quality in Both our Cabinetry & Our Customer Service!</div>
-    </form>
-</div>
 
-<div class="no-print" id="save_button">
-    <!--<input type="button" value="Save" id="save" name="save" />--><br /><br />
-    <input type="checkbox" id="arh_enabled" name="arh_enabled" /> <label for="arh_enabled">ARH</label><br/><br/>
-    <input type="checkbox" id="hide_markup" name="hide_markup" /> <label for="hide_markup">Hide $</label>
+        <div id="sample_qty" style="display:none;">
+            <table width="100%">
+                <tr>
+                    <th class="b-ul">Order</th>
+                    <th class="b-ul text-md-center" width="75px">On Order</th>
+                    <th class="b-ul text-md-center" width="75px">Received</th>
+                </tr>
+                <tr style="height:10px;"></tr>
+                <tr>
+                    <td>Sample Block (5 1/4" x 6 1/8")</td>
+                    <td class="text-md-center"><?php echo ($info['sample_block_ordered'] > 0) ? $info['sample_block_ordered'] : '_________'; ?></td>
+                    <td class="text-md-center">_________</td>
+                </tr>
+                <tr>
+                    <td>Door Only (12" x 15")</td>
+                    <td class="text-md-center"><?php echo ($info['door_only_ordered'] > 0) ? $info['door_only_ordered'] : '_________'; ?></td>
+                    <td class="text-md-center">_________</td>
+                </tr>
+                <tr>
+                    <td>Door & Drawer (15 1/2" x 23 1/2")</td>
+                    <td class="text-md-center"><?php echo ($info['door_drawer_ordered'] > 0) ? $info['door_drawer_ordered'] : '_________'; ?></td>
+                    <td class="text-md-center">_________</td>
+                </tr>
+                <tr>
+                    <td>Inset Square (15 1/2" x 23 1/2")</td>
+                    <td class="text-md-center"><?php echo ($info['inset_square_ordered'] > 0) ? $info['inset_square_ordered'] : '_________'; ?></td>
+                    <td class="text-md-center">_________</td>
+                </tr>
+                <tr>
+                    <td>Inset Beaded (16 1/2" x 23 1/2")</td>
+                    <td class="text-md-center"><?php echo ($info['inset_beaded_ordered'] > 0) ? $info['inset_beaded_ordered'] : '_________'; ?></td>
+                    <td class="text-md-center">_________</td>
+                </tr>
+            </table>
+        </div>
+    </form>
 </div>
 
 <script src="/assets/js/jquery.min.js"></script>
@@ -799,37 +832,82 @@ function translateVIN($segment, $key) {
     var frame_opt_qty = $("input[name='frame_opt_qty']").val();
     /** End Qty Fields */
 
-    function printMe() {
-        window.print();
+    function getUrlParams(prop) {
+        var params = {};
+        var search = decodeURIComponent( window.location.href.slice( window.location.href.indexOf('?') + 1));
+        var definitions = search.split('&');
 
-        setTimeout(function() {
-            window.close();
-        }, 100);
+        definitions.forEach(function(val, key) {
+            var parts = val.split('=', 2);
+            params[parts[0]] = parts[1];
+        } );
+
+        return (prop && prop in params) ? params[prop] : params;
     }
+
+    $(function() {
+        if(getUrlParams('action') === 'arh') {
+            $("#charge_summary_std").hide();
+            $("#charge_summary_arh").show();
+            $(".pct_value").hide();
+            $(".subtotal").hide();
+            $(".toggle_gray").toggle();
+
+            $(".arh_highlight").show().toggleClass('highlight_input');
+        } else if(getUrlParams('action') === 'no_totals') {
+            $("#charge_summary_std").hide();
+            $("#charge_summary_arh").hide();
+            $(".pct_value").hide();
+            $(".subtotal").hide();
+            $(".toggle_gray").toggle();
+            $("#terms_box").hide();
+            $("#signature").hide();
+            $("#closing_statement").hide();
+        } else if(getUrlParams('action') === 'sample_req') {
+            $("#charge_summary_std").hide();
+            $("#charge_summary_arh").hide();
+            $(".pct_value").hide();
+            $(".subtotal").hide();
+            $(".toggle_gray").toggle();
+            $("#terms_box").hide();
+            $("#signature").hide();
+            $("#closing_statement").hide();
+
+            $("#page_type_header").html("SAMPLE REQUEST");
+            $("#sample_qty").show();
+
+            $("#delivery_notes").hide();
+            $("#layout_notes_title").html("Sample Notes:");
+        }
+
+        if(getUrlParams('action') !== null){
+            setTimeout(function() {
+                window.print();
+            }, 150);
+        }
+    });
 
     $('body')
         .on("focus", "input[type='text']", function() {
             $(this).select();
         })
         .on("keyup", "input[type='text']", function() {
-            if($(this).val().length > 4) {
-                if($(this).attr("class") !== 'static_width') {
-                    if((event.keyCode === 8 || event.keyCode === 46) && $(this).width() > 18) {
-                        if($(this).val() <= 4) {
+            if(!$(this).hasClass("static_width")) {
+                if($(this).val().length > 4) {
+                    if ((event.keyCode === 8 || event.keyCode === 46) && $(this).width() > 18) {
+                        if ($(this).val() <= 4) {
                             $(this).width(18);
                         } else {
                             $(this).width($(this).width() - 8);
                         }
-                    } else if(((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 96 && event.keyCode <= 105) || event.keyCode === 190)) {
-                        if($(this).val() <= 4) {
+                    } else if (((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 96 && event.keyCode <= 105) || event.keyCode === 190) && $(this).val().length < 10) {
+                        if ($(this).val() <= 4) {
                             $(this).width(18);
                         } else {
                             $(this).width($(this).width() + 8);
                         }
                     }
-                }
-            } else {
-                if($(this).attr("class") !== 'static_width') {
+                } else {
                     $(this).width(18);
                 }
             }
@@ -1045,49 +1123,6 @@ function translateVIN($segment, $key) {
         })
         .on("keyup", "#final_ship_zone", function() {
             $(this).val($(this).val().toUpperCase());
-        })
-        .on("click", "#save", function() {
-            var e_coversheet = $("#e_coversheet_total").serialize();
-
-            $.post("/ondemand/print/e_coversheet.php?action=save_sheet&" + e_coversheet, function(data) {
-
-            });
-        })
-        .on("change", "#arh_enabled", function() {
-            $("#charge_summary_std").toggle(150);
-            $("#charge_summary_arh").toggle(150);
-            $(".pct_value").toggle(150);
-            $(".subtotal").toggle(150);
-            $(".toggle_gray").toggle(150);
-
-            $(".arh_highlight").toggle(150).toggleClass('highlight_input');
-        })
-        .on("change", "#hide_markup", function() {
-            if($(this).is(":checked")) {
-                $("#charge_summary_std").hide(150);
-                $("#charge_summary_arh").hide(150);
-                $(".pct_value").hide(150);
-                $(".subtotal").hide(150);
-                $(".toggle_gray").toggle(150);
-                $("#terms_box").hide(150);
-                $("#signature").hide(150);
-                $("#closing_statement").hide(150);
-            } else {
-                if($("#arh_enabled").is(":checked")) {
-                    $("#charge_summary_std").hide(150);
-                    $("#charge_summary_arh").show(150);
-                } else {
-                    $("#charge_summary_std").show(150);
-                    $("#charge_summary_arh").hide(150);
-                }
-
-                $(".pct_value").show(150);
-                $(".subtotal").show(150);
-                $(".toggle_gray").toggle(150);
-                $("#terms_box").show(150);
-                $("#signature").show(150);
-                $("#closing_statement").show(150);
-            }
         })
         .on("change", "input[name='arh_multiplier_opts']", function() {
             if($("#arh_landed").is(":checked")) {

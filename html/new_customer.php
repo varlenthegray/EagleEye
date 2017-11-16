@@ -1,5 +1,5 @@
 <?php
-require ("../../includes/header_start.php");
+require("../includes/header_start.php");
 
 $qry = $dbconn->query("SELECT DISTINCT so_num FROM sales_order ORDER BY so_num DESC LIMIT 0,1");
 
@@ -43,7 +43,9 @@ if($qry->num_rows > 0) {
                                         $dealer_qry = $dbconn->query("SELECT * FROM dealers ORDER BY dealer_id ASC;");
 
                                         while($dealer = $dealer_qry->fetch_assoc()) {
-                                            echo "<option value='{$dealer['dealer_id']}'>{$dealer['dealer_id']} ({$dealer['contact']})</option>";
+                                            $indent = (strlen($dealer['dealer_id']) > 3) ? "---" : null;
+
+                                            echo "<option value='{$dealer['dealer_id']}'>$indent {$dealer['dealer_id']} ({$dealer['contact']})</option>";
                                         }
                                         ?>
                                     </select>

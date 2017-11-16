@@ -46,7 +46,7 @@ require '../includes/header_start.php';
                         <div class="col-md-4 hidden-print">
                             <div class="form-group">
                                 <label for="date_range">Date Range</label>
-                                <input class="form-control input-daterange-datepicker" type="text" name="date_range" id="date_range">
+                                <input class="form-control input-daterange-datepicker ignoreSaveAlert" type="text" name="date_range" id="date_range">
                             </div>
                         </div>
 
