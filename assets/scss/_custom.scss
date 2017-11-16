@@ -588,3 +588,24 @@ body {
 .table-v-top td {
   vertical-align: top !important;
 }
+
+.sticky {
+  position: fixed;
+  top: 26vh;
+  z-index:10;
+
+  .btn-primary-outline {
+    background-color: #FFFFFF !important;
+
+    &:hover {
+      color: #AAAAAA;
+    }
+  }
+}
+
+.sales_list_dealer {
+  height: 1.25em;
+  background-color: rgba(55,89,215,1);
+  color: #FFFFFF;
+  font-weight: bold;
+}

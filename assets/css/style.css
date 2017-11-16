@@ -23476,6 +23476,21 @@ body {
 .table-v-top td {
   vertical-align: top !important; }
 
+.sticky {
+  position: fixed;
+  top: 26vh;
+  z-index: 10; }
+  .sticky .btn-primary-outline {
+    background-color: #FFFFFF !important; }
+    .sticky .btn-primary-outline:hover {
+      color: #AAAAAA; }
+
+.sales_list_dealer {
+  height: 1.25em;
+  background-color: #3759d7;
+  color: #FFFFFF;
+  font-weight: bold; }
+
 .cust-table {
   display: table;
   width: 100%;
