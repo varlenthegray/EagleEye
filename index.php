@@ -98,6 +98,8 @@ require 'includes/header_end.php';
     var main_body = 'employees';
     var shop_logged_in;
 
+    var userID;
+
     // -- Dashboard --
     <?php
     if(isset($_SESSION['userInfo']['default_queue']) || !empty($_SESSION['userInfo']['default_queue'])) {
@@ -463,6 +465,8 @@ require 'includes/header_end.php';
         })
         .on("click", "#clock_in", function() {
             $.post("/ondemand/account_actions.php?action=login", {id: userID, pin: $("#loginPin").val()}, function(data) {
+                console.log(data);
+
                 if (data === 'success') {
                     loadPage('dashboard');
                     $("#modalLogin").modal('hide');
