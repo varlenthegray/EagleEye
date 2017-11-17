@@ -331,6 +331,8 @@ $("body")
             $("body").append(data);
             $("#inquiry_reply_line_" + reply_id).val("").hide(100);
         });
+
+        unsaved = false;
     })
 
     .on("click", ".iteration_save", function(e) {

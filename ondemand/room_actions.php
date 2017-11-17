@@ -96,8 +96,11 @@ switch($_REQUEST['action']) {
         $order_status = sanitizeInput(html_entity_decode($_REQUEST['order_status']));
         $days_to_ship = sanitizeInput($_REQUEST['days_to_ship']);
         $room_name = sanitizeInput($_REQUEST['room_name']);
-        $notes = sanitizeInput($_REQUEST['room_notes']);
+        $notes = sanitizeInput($_REQUEST['room_inquiry']);
         $room_id = sanitizeInput($_REQUEST['roomid']);
+        $followup_date = sanitizeInput($_REQUEST['room_inquiry_followup_date']);
+        $followup_individual = sanitizeInput($_REQUEST['room_inquiry_requested_of']);
+        $inquiry_id = null;
 
         if(empty($delivery_date)) {
             $delivery_date = null;
@@ -109,6 +112,8 @@ switch($_REQUEST['action']) {
             if(!empty($notes)) {
                 if($dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')")) {
                     echo displayToast("success", "Successfully updated the room.", "Room Updated");
+
+                    $inquiry_id = $dbconn->insert_id;
                 } else {
                     dbLogSQLErr($dbconn);
                 }
@@ -117,6 +122,12 @@ switch($_REQUEST['action']) {
             }
         } else {
             dbLogSQLErr($dbconn);
+        }
+
+        if(!empty($followup_date)) {
+            $followup = strtotime($followup_date);
+
+            $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('room_inquiry_reply', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'SO# $so_num, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $inquiry_id)");
         }
 
         $so_num = sanitizeInput($_REQUEST['vin_so_num_' . $room_id]);

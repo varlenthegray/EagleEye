@@ -648,7 +648,7 @@ switch ($search) {
                                                     while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
                                                         $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
 
-                                                        $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$so_inquiry['name']} on $ireply_time</em></small></td></tr>";
+                                                        $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
                                                     }
                                                 } else {
                                                     $inquiry_replies = null;
@@ -670,7 +670,7 @@ switch ($search) {
 
                                                 echo $inquiry_replies;
 
-                                                echo "<tr style='height:5px'><td></td></tr>";
+                                                echo "<tr style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
                                             }
                                             ?>
                                         </table>
@@ -1518,31 +1518,16 @@ switch ($search) {
                                                             </div>
                                                         </div>
                                                     </div>
-
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <fieldset class="form-group">
-                                                                <label for="room_notes">Room Notes</label>
-                                                                <textarea class="form-control" id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" style="width:100%;height:277px;"><?php
-                                                                        $r_notes_qry = $dbconn->query("SELECT * FROM notes WHERE note_type = 'room_note' AND type_id = {$room['id']}");
-
-                                                                        if($r_notes_qry->num_rows > 0) {
-                                                                            while($r_notes = $r_notes_qry->fetch_assoc()) {
-                                                                                echo $r_notes['note'] . "\r\n\r\n";
-                                                                            }
-                                                                        }
-                                                                    ?></textarea>
-                                                            </fieldset>
-                                                        </div>
-                                                    </div>
                                                 </div>
 
                                                 <div class="col-md-8">
-                                                    <div class="row" style="display:none;">
+                                                    <div class="row">
                                                         <div class="col-md-4">
-                                                            <p style="font-weight:bold;">SO Notes:</p>
-
-                                                            <table class="table table-custom-nb table-v-top" width="100%">
+                                                            <table class="table_outline" width="100%">
+                                                                <tr>
+                                                                    <td class="bracket-border-top" style="padding: 2px 7px;"><h5>SO Notes</h5></td>
+                                                                </tr>
+                                                                <tr style="height:5px;"><td colspan="2"></td></tr>
                                                                 <?php
                                                                 $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE note_type = 'so_inquiry' AND notes.type_id = '{$result['id']}' ORDER BY notes.timestamp DESC;");
 
@@ -1568,7 +1553,7 @@ switch ($search) {
                                                                         while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
                                                                             $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
 
-                                                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$so_inquiry['name']} on $ireply_time</em></small></td></tr>";
+                                                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
                                                                         }
                                                                     } else {
                                                                         $inquiry_replies = null;
@@ -1582,16 +1567,19 @@ switch ($search) {
 
                                                                     echo $inquiry_replies;
 
-                                                                    echo "<tr style='height:5px'><td></td></tr>";
+                                                                    echo "<tr style='height:2px;'><td style='background-color:#000;padding:0;'></td></tr>";
                                                                 }
                                                                 ?>
+                                                                <tr style="height:5px;"><td colspan="2"></td></tr>
                                                             </table>
                                                         </div>
 
                                                         <div class="col-md-4">
-                                                            <p style="font-weight:bold;">Room Notes:</p>
-
                                                             <table class="table table-custom-nb table-v-top" width="100%">
+                                                                <tr>
+                                                                    <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Room Notes</h5></td>
+                                                                </tr>
+                                                                <tr style="height:5px;"><td colspan="2"></td></tr>
                                                                 <?php
                                                                 $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE note_type = 'room_note' AND notes.type_id = '{$room['id']}' ORDER BY notes.timestamp DESC;");
 
@@ -1611,19 +1599,21 @@ switch ($search) {
                                                                         $followup = null;
                                                                     }
 
-                                                                    $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'room_inquiry_reply' AND type_id = '{$room_inquiry['nID']}' ORDER BY timestamp DESC");
+                                                                    $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$room_inquiry['nID']}' ORDER BY timestamp DESC");
 
                                                                     if($inquiry_reply_qry->num_rows > 0) {
                                                                         while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
                                                                             $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
 
-                                                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$room_inquiry['name']} on $ireply_time</em></small></td></tr>";
+                                                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
                                                                         }
                                                                     } else {
                                                                         $inquiry_replies = null;
                                                                     }
 
                                                                     $notes = str_replace(" ", "&nbsp;", $room_inquiry['note']);
+
+                                                                    echo "<tr style='height:5px;'><td colspan='2'></td></tr>";
 
                                                                     echo "<tr>";
                                                                     echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$room_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
@@ -1632,24 +1622,25 @@ switch ($search) {
 
                                                                     echo "<tr id='inquiry_reply_line_{$room_inquiry['nID']}' style='display:none;'>";
                                                                     echo "  <td colspan='2'>
-                                                                <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
-                                                                <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$room_inquiry['nID']}'>Reply</button>
-                                                            </td>";
+                                                                                <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
+                                                                                <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$room_inquiry['nID']}'>Reply</button>
+                                                                            </td>";
                                                                     echo "</tr>";
 
                                                                     echo $inquiry_replies;
 
-                                                                    echo "<tr style='height:5px'><td></td></tr>";
+                                                                    echo "<tr style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
                                                                 }
                                                                 ?>
+                                                                <tr style="height:5px;"><td colspan="2"></td></tr>
                                                             </table>
                                                         </div>
 
                                                         <div class="col-md-4">
-                                                            <textarea class="form-control" name="inquiry" id="inquiry" placeholder="New Inquiry/Note" style="width:100%;height:277px;"></textarea>
-                                                            <input type="text" name="inquiry_followup_date" id="inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
-                                                            <label for="inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
-                                                            <select name="inquiry_requested_of" id="inquiry_requested_of" class="form-control" style="width:50%;float:left;">
+                                                            <textarea class="form-control" name="room_inquiry" id="room_inquiry" placeholder="Room Inquiry/Note" style="width:100%;height:277px;"></textarea>
+                                                            <input type="text" name="room_inquiry_followup_date" id="room_inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
+                                                            <label for="room_inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
+                                                            <select name="room_inquiry_requested_of" id="room_inquiry_requested_of" class="form-control" style="width:50%;float:left;">
                                                                 <option value="null" selected disabled></option>
                                                                 <?php
                                                                 $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC");
@@ -1772,158 +1763,158 @@ switch ($search) {
                                     <?php echo "</div></td>";
                                     echo "</tr>";
 
-                                        /** BEGIN DISPLAY OF ADD ITERATION */
-                                        echo "<tr id='tr_iteration_{$room['id']}' style='display: none;'>";
-                                        echo "  <td colspan='10'><div id='div_iteration_{$room['id']}' style='display: none;'>";
+                                    /** BEGIN DISPLAY OF ADD ITERATION */
+                                    echo "<tr id='tr_iteration_{$room['id']}' style='display: none;'>";
+                                    echo "  <td colspan='10'><div id='div_iteration_{$room['id']}' style='display: none;'>";
 
-                                        $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%' ORDER BY dealer_id ASC");
-                                        $dealer = $dealer_qry->fetch_assoc();
-                                        ?>
+                                    $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%' ORDER BY dealer_id ASC");
+                                    $dealer = $dealer_qry->fetch_assoc();
+                                    ?>
 
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <form id="room_add_iteration_<?php echo $room['id']; ?>">
-                                                    <div class="col-md-12">
-                                                        <h4>Adding Iteration...</h4>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <form id="room_add_iteration_<?php echo $room['id']; ?>">
+                                                <div class="col-md-12">
+                                                    <h4>Adding Iteration...</h4>
 
-                                                        <div class="col-md-3">
-                                                            <form>
-                                                                <table width="100%" class="table table-custom-nb">
-                                                                    <tr>
-                                                                        <?php
-                                                                        if(!empty($room['delivery_date'])) {
-                                                                            switch ($room['days_to_ship']) {
-                                                                                case 'G':
-                                                                                    $status_color = "job-color-green";
+                                                    <div class="col-md-3">
+                                                        <form>
+                                                            <table width="100%" class="table table-custom-nb">
+                                                                <tr>
+                                                                    <?php
+                                                                    if(!empty($room['delivery_date'])) {
+                                                                        switch ($room['days_to_ship']) {
+                                                                            case 'G':
+                                                                                $status_color = "job-color-green";
 
-                                                                                    break;
-                                                                                case 'Y':
-                                                                                    $status_color = "job-color-yellow";
+                                                                                break;
+                                                                            case 'Y':
+                                                                                $status_color = "job-color-yellow";
 
-                                                                                    break;
-                                                                                case 'N':
-                                                                                    $status_color = "job-color-orange";
+                                                                                break;
+                                                                            case 'N':
+                                                                                $status_color = "job-color-orange";
 
-                                                                                    break;
-                                                                                case 'R':
-                                                                                    $status_color = "job-color-red";
+                                                                                break;
+                                                                            case 'R':
+                                                                                $status_color = "job-color-red";
 
-                                                                                    break;
-                                                                                default:
-                                                                                    $status_color = "job-color-green";
+                                                                                break;
+                                                                            default:
+                                                                                $status_color = "job-color-green";
 
-                                                                                    break;
-                                                                            }
-                                                                        } else {
-                                                                            $status_color = null;
+                                                                                break;
                                                                         }
-                                                                        ?>
-                                                                        <td><label for="delivery_date">Delivery Date</label></td>
-                                                                        <td>
-                                                                            <div class="input-group">
-                                                                                <input type="text" class="form-control delivery_date <?php echo $status_color; ?>" id="iteration_del_date_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="delivery_date" placeholder="Delivery Date" value="<?php echo (!empty($room['delivery_date'])) ? date("m/d/Y", $room['delivery_date']) : ""; ?>">
-                                                                                <span class="input-group-addon bg-custom b-0"><i class="icon-calender"></i></span>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><label for="room">Room</label></td>
-                                                                        <td><input type="text" class="form-control" id="edit_room_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room" placeholder="Room" value="<?php echo $room['room']; ?>" readonly></td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><label for="product_type">Product Type</label></td>
-                                                                        <td>
-                                                                            <select class="form-control" id="edit_product_type_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="product_type" value="<?php echo $room['product_type']; ?>">
-                                                                                <?php
-                                                                                $pt_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type'");
+                                                                    } else {
+                                                                        $status_color = null;
+                                                                    }
+                                                                    ?>
+                                                                    <td><label for="delivery_date">Delivery Date</label></td>
+                                                                    <td>
+                                                                        <div class="input-group">
+                                                                            <input type="text" class="form-control delivery_date <?php echo $status_color; ?>" id="iteration_del_date_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="delivery_date" placeholder="Delivery Date" value="<?php echo (!empty($room['delivery_date'])) ? date("m/d/Y", $room['delivery_date']) : ""; ?>">
+                                                                            <span class="input-group-addon bg-custom b-0"><i class="icon-calender"></i></span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="room">Room</label></td>
+                                                                    <td><input type="text" class="form-control" id="edit_room_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room" placeholder="Room" value="<?php echo $room['room']; ?>" readonly></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="product_type">Product Type</label></td>
+                                                                    <td>
+                                                                        <select class="form-control" id="edit_product_type_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="product_type" value="<?php echo $room['product_type']; ?>">
+                                                                            <?php
+                                                                            $pt_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type'");
 
-                                                                                while($pt = $pt_qry->fetch_assoc()) {
-                                                                                    echo "<option value='{$pt['key']}'>{$pt['value']}</option>";
-                                                                                }
-                                                                                ?>
-                                                                            </select>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><label for="iteration">Iteration</label></td>
-                                                                        <td>
-                                                                            <div class="input-group">
-                                                                                <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-addto="sequence" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional sequence"> <span class="zmdi zmdi-plus-1"></span> </span>
-                                                                                <input type="text" class="form-control" id="next_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly>
-                                                                                <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-addto="iteration" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
-                                                                            </div>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><label for="order_status">Order Status</label></td>
-                                                                        <td>
-                                                                            <select class="form-control" id="edit_order_status_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="order_status">
-                                                                                <option value=")" <?php echo ($room['order_status'] === ')') ? "selected" : null; ?>>Lost</option>
-                                                                                <option value="#" <?php echo ($room['order_status'] === '#') ? "selected" : null; ?>>Quote (No Deposit)</option>
-                                                                                <option value="$" <?php echo ($room['order_status'] === '$') ? "selected" : null; ?>>Job (Deposit Recieved)</option>
-                                                                                <option value="(" <?php echo ($room['order_status'] === '(') ? "selected" : null; ?>>Completed</option>
-                                                                            </select>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><label for="days_to_ship">Days to Ship</label></td>
-                                                                        <td>
-                                                                            <select class="form-control days-to-ship" id="edit_days_to_ship_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="days_to_ship" data-type="iteration" data-room="<?php echo $room['room']; ?>">
-                                                                                <option value="G" <?php echo ($room['days_to_ship'] === 'G') ? "selected" : null; ?>>Green (34)</option>
-                                                                                <option value="Y" <?php echo ($room['days_to_ship'] === 'Y') ? "selected" : null; ?>>Yellow (14)</option>
-                                                                                <option value="N" <?php echo ($room['days_to_ship'] === 'N') ? "selected" : null; ?>>Orange (10)</option>
-                                                                                <option value="R" <?php echo ($room['days_to_ship'] === 'R') ? "selected" : null; ?>>Red (5)</option>
-                                                                            </select>
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td><label for="room_name">Room Name</label></td>
-                                                                        <td><input type="text" class="form-control" id="edit_room_name_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
-                                                                    </tr>
-                                                                </table>
-                                                            </form>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <fieldset class="form-group">
-                                                                <label for="room_notes">Room Notes</label>
-                                                                <textarea class="form-control"  id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3"></textarea>
-                                                            </fieldset>
-                                                        </div>
-
-                                                        <input type="hidden" name="sonum" value="<?php echo $result['so_num']; ?>">
-                                                        <input type="hidden" name="room" value="<?php echo $room['room']; ?>">
-                                                        <input type="hidden" name="roomid" value="<?php echo $room['id']; ?>">
-
-                                                        <div class="col-md-12" style="margin: 10px 0;">
-                                                            <button type="button" class="btn btn-primary waves-effect waves-light w-xs iteration_save">Save</button>
-                                                        </div>
+                                                                            while($pt = $pt_qry->fetch_assoc()) {
+                                                                                echo "<option value='{$pt['key']}'>{$pt['value']}</option>";
+                                                                            }
+                                                                            ?>
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="iteration">Iteration</label></td>
+                                                                    <td>
+                                                                        <div class="input-group">
+                                                                            <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-addto="sequence" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional sequence"> <span class="zmdi zmdi-plus-1"></span> </span>
+                                                                            <input type="text" class="form-control" id="next_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly>
+                                                                            <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-addto="iteration" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="order_status">Order Status</label></td>
+                                                                    <td>
+                                                                        <select class="form-control" id="edit_order_status_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="order_status">
+                                                                            <option value=")" <?php echo ($room['order_status'] === ')') ? "selected" : null; ?>>Lost</option>
+                                                                            <option value="#" <?php echo ($room['order_status'] === '#') ? "selected" : null; ?>>Quote (No Deposit)</option>
+                                                                            <option value="$" <?php echo ($room['order_status'] === '$') ? "selected" : null; ?>>Job (Deposit Recieved)</option>
+                                                                            <option value="(" <?php echo ($room['order_status'] === '(') ? "selected" : null; ?>>Completed</option>
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="days_to_ship">Days to Ship</label></td>
+                                                                    <td>
+                                                                        <select class="form-control days-to-ship" id="edit_days_to_ship_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="days_to_ship" data-type="iteration" data-room="<?php echo $room['room']; ?>">
+                                                                            <option value="G" <?php echo ($room['days_to_ship'] === 'G') ? "selected" : null; ?>>Green (34)</option>
+                                                                            <option value="Y" <?php echo ($room['days_to_ship'] === 'Y') ? "selected" : null; ?>>Yellow (14)</option>
+                                                                            <option value="N" <?php echo ($room['days_to_ship'] === 'N') ? "selected" : null; ?>>Orange (10)</option>
+                                                                            <option value="R" <?php echo ($room['days_to_ship'] === 'R') ? "selected" : null; ?>>Red (5)</option>
+                                                                        </select>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td><label for="room_name">Room Name</label></td>
+                                                                    <td><input type="text" class="form-control" id="edit_room_name_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
+                                                                </tr>
+                                                            </table>
+                                                        </form>
                                                     </div>
-                                                </form>
-                                            </div>
+                                                    <div class="col-md-3">
+                                                        <fieldset class="form-group">
+                                                            <label for="room_notes">Room Notes</label>
+                                                            <textarea class="form-control"  id="edit_room_notes_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_notes" maxlength="65530" placeholder="Room Notes" rows="3"></textarea>
+                                                        </fieldset>
+                                                    </div>
+
+                                                    <input type="hidden" name="sonum" value="<?php echo $result['so_num']; ?>">
+                                                    <input type="hidden" name="room" value="<?php echo $room['room']; ?>">
+                                                    <input type="hidden" name="roomid" value="<?php echo $room['id']; ?>">
+
+                                                    <div class="col-md-12" style="margin: 10px 0;">
+                                                        <button type="button" class="btn btn-primary waves-effect waves-light w-xs iteration_save">Save</button>
+                                                    </div>
+                                                </div>
+                                            </form>
                                         </div>
+                                    </div>
 
-                                        <?php echo "</div></td>";
-                                        echo "</tr>";
-                                        /** END DISPLAY OF ADD ITERATION */
+                                    <?php echo "</div></td>";
+                                    echo "</tr>";
+                                    /** END DISPLAY OF ADD ITERATION */
 
-                                        /** BEGIN DISPLAY OF ATTACHMENTS */
-                                        echo "<tr id='tr_attachments_{$room['id']}' style='display: none;'>";
-                                        echo "  <td colspan='10'><div id='div_attachments_{$room['id']}' style='display: none;'>";
+                                    /** BEGIN DISPLAY OF ATTACHMENTS */
+                                    echo "<tr id='tr_attachments_{$room['id']}' style='display: none;'>";
+                                    echo "  <td colspan='10'><div id='div_attachments_{$room['id']}' style='display: none;'>";
+                                    ?>
+
+                                    <div class="col-md-12">
+                                        <?php
+                                        $scanned_directory = array_diff(scandir($attachment_dir), array('..', '.'));
+
+                                        foreach($scanned_directory as $file) {
+                                            echo "<a href='{$http_base}$file' target='_blank'>$file</a><br />";
+                                        }
                                         ?>
+                                    </div>
 
-                                        <div class="col-md-12">
-                                            <?php
-                                            $scanned_directory = array_diff(scandir($attachment_dir), array('..', '.'));
-
-                                            foreach($scanned_directory as $file) {
-                                                echo "<a href='{$http_base}$file' target='_blank'>$file</a><br />";
-                                            }
-                                            ?>
-                                        </div>
-
-                                        <?php echo "</div></td>";
-                                        echo "</tr>";
-                                        /** END DISPLAY OF ATTACHMENTS */
+                                    <?php echo "</div></td>";
+                                    echo "</tr>";
+                                    /** END DISPLAY OF ATTACHMENTS */
                                     /** END SINGLE ROOM DISPLAY */
                                 }
                             }
