@@ -1,5 +1,10 @@
 <?php
 require '../includes/header_start.php';
+require '../includes/classes/mail_handler.php';
+
+//outputPHPErrs();
+
+$mail = new \MailHandler\mail_handler();
 
 function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
     global $dbconn;
@@ -34,6 +39,31 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
             $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
         }
     }
+}
+
+function whatChanged($new, $old, $title, $date = false, $bool = false) {
+    if($date) {
+        /** @var string $c_del_date Converts the delivery date to a string */
+        $updated = date(DATE_TIME_ABBRV, strtotime($new));
+        $new = strtotime($new);
+
+        $new = (int)$new;
+        $old = (int)$old;
+    } else {
+        $updated = $new;
+    }
+
+    if($bool) {
+        $updated = ($new === 0) ? 'Unpublished' : 'Published';
+
+        $str = "$updated";
+        $old = (bool)$old;
+        $new = (bool)$new;
+    } else {
+        $str = "Updated to $updated";
+    }
+
+    return ($old !== $new) ? "$title $str" : null;
 }
 
 switch($_REQUEST['action']) {
@@ -80,6 +110,8 @@ switch($_REQUEST['action']) {
               individual_bracket_buildout, order_status, shipping_bracket, shipping_bracket_priority, install_bracket, install_bracket_priority, delivery_date) 
               VALUES ('$sonum','$room','$room_name','$product_type','0','$notes','1','4','85','4','83','4','38','4','45','4','50','4','$ind_bracket','$order_status','66',
               '4','15','4','$delivery_date')")) {
+
+                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Room Created', 'room_note_log', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, {$dbconn->insert_id});");
                 echo displayToast("success", "Addeded room successfully.", "Room Added");
             } else {
                 var_dump(http_response_code(400));
@@ -101,6 +133,17 @@ switch($_REQUEST['action']) {
         $followup_date = sanitizeInput($_REQUEST['room_inquiry_followup_date']);
         $followup_individual = sanitizeInput($_REQUEST['room_inquiry_requested_of']);
         $inquiry_id = null;
+
+        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
+        $room_info = $room_qry->fetch_assoc();
+
+        $changed[] = whatChanged($delivery_date, $room_info['delivery_date'], 'Delivery Date', true);
+        $changed[] = whatChanged($product_type, $room_info['product_type'], 'Product Type');
+        $changed[] = whatChanged($iteration, $room_info['iteration'], 'Iteration');
+        $changed[] = whatChanged($order_status, $room_info['order_status'], 'Order Status');
+        $changed[] = whatChanged($days_to_ship, $room_info['days_to_ship'], 'Days to Ship');
+        $changed[] = whatChanged($room_name, $room_info['room_name'], 'Room Name');
+        $changed[] = (!empty($notes)) ? "Notes added" : null;
 
         if(empty($delivery_date)) {
             $delivery_date = null;
@@ -128,6 +171,33 @@ switch($_REQUEST['action']) {
             $followup = strtotime($followup_date);
 
             $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('room_inquiry_reply', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'SO# $so_num, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $inquiry_id)");
+        }
+
+        $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = $followup_individual");
+
+        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
+        $room = $room_qry->fetch_assoc();
+
+        if(!empty($followup_individual)) {
+            $followup_time = date(DATE_TIME_ABBRV, $followup);
+
+            if($usr = $usr_qry->fetch_assoc()) {
+                $msg_notes = nl2br($notes);
+                $msg_notes = str_replace(" ", "&nbsp;", $msg_notes);
+
+                $message = <<<HEREDOC
+A new inquiry has been sent in for this room and requires your feedback.<br />
+<br />
+<h5>Followup Time: $followup_time</h5>
+
+<h3>Inquiry:</h3>
+
+$msg_notes -- {$_SESSION['userInfo']['name']}
+HEREDOC;
+
+
+                $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$room['so_parent']}{$room['room']}{$room['iteration']}", $message);
+            }
         }
 
         $so_num = sanitizeInput($_REQUEST['vin_so_num_' . $room_id]);
@@ -161,7 +231,6 @@ switch($_REQUEST['action']) {
         $carcass_interior_glaze_technique = sanitizeInput($_REQUEST['carcass_interior_glaze_technique_' . $room_id]);
         $drawer_boxes = sanitizeInput($_REQUEST['drawer_boxes_' . $room_id]);
 
-        $notes = sanitizeInput($_REQUEST['notes_' . $room_id]);
         $vin_final = sanitizeInput($_REQUEST['vin_code_' . $room_id]);
 
         $sample_block_ordered = sanitizeInput($_REQUEST['sample_block_' . $room_id]);
@@ -169,6 +238,39 @@ switch($_REQUEST['action']) {
         $door_drawer_ordered = sanitizeInput($_REQUEST['door_drawer_' . $room_id]);
         $inset_square_ordered = sanitizeInput($_REQUEST['inset_square_' . $room_id]);
         $inset_beaded_ordered = sanitizeInput($_REQUEST['inset_beaded_' . $room_id]);
+
+        $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
+        $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
+        $changed[] = whatChanged($door_design, $room_info['door_design'], 'Door Design');
+        $changed[] = whatChanged($panel_raise_door, $room_info['panel_raise_door'], 'Panel Raise (Door)');
+        $changed[] = whatChanged($panel_raise_sd, $room_info['panel_raise_sd'], 'Panel Raise Shoot Drawer');
+        $changed[] = whatChanged($panel_raise_td, $room_info['panel_raise_td'], 'Panel Raise Tall Drawer');
+        $changed[] = whatChanged($edge_profile, $room_info['edge_profile'], 'Edge Profile');
+        $changed[] = whatChanged($framing_bead, $room_info['framing_bead'], 'Framing Bead');
+        $changed[] = whatChanged($framing_options, $room_info['framing_options'], 'Framing Options');
+        $changed[] = whatChanged($style_rail_width, $room_info['style_rail_width'], 'Style/Rail Width');
+        $changed[] = whatChanged($finish_code, $room_info['finish_code'], 'Finish Code');
+        $changed[] = whatChanged($sheen, $room_info['sheen'], 'Sheen');
+        $changed[] = whatChanged($glaze, $room_info['glaze'], 'Glaze');
+        $changed[] = whatChanged($glaze_technique, $room_info['glaze_technique'], 'Glaze Technique');
+        $changed[] = whatChanged($antiquing, $room_info['antiquing'], 'Antiquing');
+        $changed[] = whatChanged($worn_edges, $room_info['worn_edges'], 'Worn Edges');
+        $changed[] = whatChanged($distress_level, $room_info['distress_level'], 'Distress Level');
+        $changed[] = whatChanged($carcass_exterior_species, $room_info['carcass_exterior_species'], 'Carcass Exterior Species');
+        $changed[] = whatChanged($carcass_exterior_finish_code, $room_info['carcass_exterior_finish_code'], 'Carcass Exterior Finish Code');
+        $changed[] = whatChanged($carcass_exterior_glaze_color, $room_info['carcass_exterior_glaze_color'], 'Carcass Exterior Glaze Color');
+        $changed[] = whatChanged($carcass_exterior_glaze_technique, $room_info['carcass_exterior_glaze_technique'], 'Carcass Exterior Glaze Technique');
+        $changed[] = whatChanged($carcass_interior_species, $room_info['carcass_interior_species'], 'Carcass Interior Species');
+        $changed[] = whatChanged($carcass_interior_finish_code, $room_info['carcass_interior_finish_code'], 'Carcass Interior Finish Code');
+        $changed[] = whatChanged($carcass_interior_glaze_color, $room_info['carcass_interior_glaze_color'], 'Carcass Interior Glaze Color');
+        $changed[] = whatChanged($carcass_interior_glaze_technique, $room_info['carcass_interior_glaze_technique'], 'Carcass Interior Glaze Technique');
+        $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
+
+        $changed[] = whatChanged($sample_block_ordered, $room_info['sample_block_ordered'], 'Sample Block Ordered');
+        $changed[] = whatChanged($door_only_ordered, $room_info['door_only_ordered'], 'Door Only Ordered');
+        $changed[] = whatChanged($door_drawer_ordered, $room_info['door_drawer_ordered'], 'Door/Drawer Ordered');
+        $changed[] = whatChanged($inset_square_ordered, $room_info['inset_square_ordered'], 'Inset Square Ordered');
+        $changed[] = whatChanged($inset_beaded_ordered, $room_info['inset_beaded_ordered'], 'Inset Beaded Ordered');
 
         if(!empty($sample_block_ordered) || !empty($door_only_ordered) || !empty($door_drawer_ordered) || !empty($inset_square_ordered) || !empty($inset_beaded_ordered)) {
             $now = time();
@@ -206,6 +308,15 @@ switch($_REQUEST['action']) {
         $shipping_op = sanitizeInput($_REQUEST['shipping_bracket']);
         $install_op = sanitizeInput($_REQUEST['install_bracket']);
 
+        $changed[] = whatChanged($sales_op, $room_info['sales_bracket'], 'Sales Bracket');
+        $changed[] = whatChanged($sample_op, $room_info['sample_bracket'], 'Sample Bracket');
+        $changed[] = whatChanged($preprod_op, $room_info['preproduction_bracket'], 'Pre-Production Bracket');
+        $changed[] = whatChanged($doordrawer_op, $room_info['doordrawer_bracket'], 'Door/Drawer Bracket');
+        $changed[] = whatChanged($main_op, $room_info['main_bracket'], 'Main Bracket');
+        $changed[] = whatChanged($custom_op, $room_info['custom_bracket'], 'Custom Bracket');
+        $changed[] = whatChanged($shipping_op, $room_info['shipping_bracket'], 'Shipping Bracket');
+        $changed[] = whatChanged($install_op, $room_info['install_bracket'], 'Install Bracket');
+
         $sales_pub = (!empty($_REQUEST['sales_published'])) ? sanitizeInput($_REQUEST['sales_published']) : 0;
         $sample_pub = (!empty($_REQUEST['sample_published'])) ? sanitizeInput($_REQUEST['sample_published']) : 0;
         $preprod_pub = (!empty($_REQUEST['preprod_published'])) ? sanitizeInput($_REQUEST['preprod_published']) : 0;
@@ -214,6 +325,15 @@ switch($_REQUEST['action']) {
         $custom_pub = (!empty($_REQUEST['custom_published'])) ? sanitizeInput($_REQUEST['custom_published']) : 0;
         $shipping_pub = (!empty($_REQUEST['shipping_published'])) ? sanitizeInput($_REQUEST['shipping_published']) : 0;
         $install_pub = (!empty($_REQUEST['install_published'])) ? sanitizeInput($_REQUEST['install_published']) : 0;
+
+        $changed[] = whatChanged($sales_pub, $room_info['sales_published'], 'Sales Bracket', false, true);
+        $changed[] = whatChanged($sample_pub, $room_info['sample_published'], 'Sample Bracket', false, true);
+        $changed[] = whatChanged($preprod_pub, $room_info['preproduction_published'], 'Pre-Production Bracket', false, true);
+        $changed[] = whatChanged($doordrawer_pub, $room_info['doordrawer_published'], 'Door/Drawer Bracket', false, true);
+        $changed[] = whatChanged($main_pub, $room_info['main_published'], 'Main Bracket', false, true);
+        $changed[] = whatChanged($custom_pub, $room_info['custom_published'], 'Custom Bracket', false, true);
+        $changed[] = whatChanged($shipping_pub, $room_info['shipping_published'], 'Shipping Bracket', false, true);
+        $changed[] = whatChanged($install_pub, $room_info['install_bracket_published'], 'Install Bracket', false, true);
 
         if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
             $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op',
@@ -233,6 +353,18 @@ switch($_REQUEST['action']) {
             echo displayToast("success", "All operations have been refreshed and the bracket has been updated.", "Updated & Refreshed");
         } else {
             dbLogSQLErr($dbconn);
+        }
+
+        if(!empty(array_values(array_filter($changed)))) {
+            $c_note = "<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+            $c_note .= implode(", ", array_values(array_filter($changed)));
+
+            $stmt = $dbconn->prepare("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES (?, 'room_note_log', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, ?);");
+            $stmt->bind_param("si", $c_note, $room_id);
+            $stmt->execute();
+            $stmt->close();
+
+            echo "<script>console.log(\"$c_note\")</script>";
         }
 
         break;
@@ -280,9 +412,9 @@ switch($_REQUEST['action']) {
          preproduction_bracket_priority, sample_bracket, sample_bracket_priority, doordrawer_bracket, doordrawer_bracket_priority, custom_bracket, custom_bracket_priority, main_bracket, 
           main_bracket_priority, individual_bracket_buildout, order_status, shipping_bracket, shipping_bracket_priority, install_bracket, install_bracket_priority, delivery_date, iteration, days_to_ship) VALUES 
            ('$sonum', '$room', '$room_name', '$product_type', 1, 4, 85, 4, 83, 4, 38, 4, 45, 4, 50, 4, '$ind_bracket_final', '$order_status', 66, 4, 15, 4, '$delivery_date', $iteration, '$days_to_ship');")) {
-            if(!empty($notes)) {
-                $inserted_id = $dbconn->insert_id;
+            $inserted_id = $dbconn->insert_id;
 
+            if(!empty($notes)) {
                 if($dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$inserted_id')")) {
                     echo displayToast("success", "Successfully added iteration.", "Iteration Created");
                 } else {
@@ -291,6 +423,8 @@ switch($_REQUEST['action']) {
             } else {
                 echo displayToast("success", "Successfully added iteration.", "Iteration Created");
             }
+
+            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Iteration Created', 'room_note_log', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$inserted_id')");
         } else {
             dbLogSQLErr($dbconn);
         }

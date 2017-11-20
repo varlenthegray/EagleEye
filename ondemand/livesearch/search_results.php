@@ -1522,7 +1522,7 @@ switch ($search) {
 
                                                 <div class="col-md-8">
                                                     <div class="row">
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-4" style="height:304px;overflow-y:auto;">
                                                             <table class="table_outline" width="100%">
                                                                 <tr>
                                                                     <td class="bracket-border-top" style="padding: 2px 7px;"><h5>SO Notes</h5></td>
@@ -1560,6 +1560,7 @@ switch ($search) {
                                                                     }
 
                                                                     $notes = str_replace(" ", "&nbsp;", $so_inquiry['note']);
+                                                                    $notes = nl2br($notes);
 
                                                                     echo "<tr>";
                                                                     echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
@@ -1574,14 +1575,14 @@ switch ($search) {
                                                             </table>
                                                         </div>
 
-                                                        <div class="col-md-4">
+                                                        <div class="col-md-4" style="height:304px;overflow-y:auto;">
                                                             <table class="table table-custom-nb table-v-top" width="100%">
                                                                 <tr>
-                                                                    <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Room Notes</h5></td>
+                                                                    <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Room Notes</h5> <div class="pull-right"><input type="checkbox" class="ignoreSaveAlert" id="display_log" checked /> <label for="display_log">Show Audit Log</label></div></td>
                                                                 </tr>
                                                                 <tr style="height:5px;"><td colspan="2"></td></tr>
                                                                 <?php
-                                                                $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE note_type = 'room_note' AND notes.type_id = '{$room['id']}' ORDER BY notes.timestamp DESC;");
+                                                                $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'room_note' OR note_type = 'room_note_log') AND notes.type_id = '{$room['id']}' ORDER BY notes.timestamp DESC;");
 
                                                                 while($room_inquiry = $room_inquiry_qry->fetch_assoc()) {
                                                                     $inquiry_replies = null;
@@ -1612,10 +1613,13 @@ switch ($search) {
                                                                     }
 
                                                                     $notes = str_replace(" ", "&nbsp;", $room_inquiry['note']);
+                                                                    $notes = nl2br($notes);
 
                                                                     echo "<tr style='height:5px;'><td colspan='2'></td></tr>";
 
-                                                                    echo "<tr>";
+                                                                    $room_note_log = ($room_inquiry['note_type'] === 'room_note_log') ? 'room_note_log' : null;
+
+                                                                    echo "<tr class='$room_note_log'>";
                                                                     echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$room_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
                                                                     echo "  <td>$notes -- <small><em>{$room_inquiry['name']} on $time $followup</em></small></td>";
                                                                     echo "</tr>";
@@ -1629,7 +1633,7 @@ switch ($search) {
 
                                                                     echo $inquiry_replies;
 
-                                                                    echo "<tr style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
+                                                                    echo "<tr class='$room_note_log' style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
                                                                 }
                                                                 ?>
                                                                 <tr style="height:5px;"><td colspan="2"></td></tr>

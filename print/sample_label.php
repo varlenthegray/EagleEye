@@ -72,7 +72,6 @@ function translateVIN($segment, $key) {
             Framing Bead:<br />
             Frame Option:<br />
             Styles/Rails:<br />
-            Finish Type:<br />
             Finish Code:<br />
             Sheen:<br />
             Glaze Color:<br />
@@ -93,7 +92,6 @@ function translateVIN($segment, $key) {
             <?php echo translateVIN("framing_bead", $room['framing_bead']); ?><br />
             <?php echo translateVIN("framing_options", $room['framing_options']); ?><br />
             <?php echo translateVIN("style_rail_width", $room['style_rail_width']); ?><br />
-            <?php echo translateVIN("finish_type", $room['finish_type']); ?><br />
             <?php echo translateVIN("finish_code", $room['finish_code']); ?><br />
             <?php echo translateVIN("sheen", $room['sheen']); ?><br />
             <?php echo translateVIN("glaze", $room['glaze']); ?><br />
@@ -136,7 +134,6 @@ function translateVIN($segment, $key) {
             Framing Bead:<br />
             Frame Option:<br />
             Styles/Rails:<br />
-            Finish Type:<br />
             Finish Code:<br />
             Sheen:<br />
             Glaze Color:<br />
@@ -157,7 +154,6 @@ function translateVIN($segment, $key) {
             <?php echo translateVIN("framing_bead", $room['framing_bead']); ?><br />
             <?php echo translateVIN("framing_options", $room['framing_options']); ?><br />
             <?php echo translateVIN("style_rail_width", $room['style_rail_width']); ?><br />
-            <?php echo translateVIN("finish_type", $room['finish_type']); ?><br />
             <?php echo translateVIN("finish_code", $room['finish_code']); ?><br />
             <?php echo translateVIN("sheen", $room['sheen']); ?><br />
             <?php echo translateVIN("glaze", $room['glaze']); ?><br />
@@ -178,5 +174,10 @@ function translateVIN($segment, $key) {
     <div class="exp_date">Expires<br /> Jan 2019</div>
 </div>
 
+<script>
+    setTimeout(function() {
+        window.print();
+    }, 150);
+</script>
 </body>
 </html>

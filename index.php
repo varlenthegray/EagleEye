@@ -581,6 +581,16 @@ require 'includes/header_end.php';
         })
         // -- End Task Page --
 
+        // -- Room Page --
+        .on("change", "#display_log", function() {
+            if($(this).is(":checked")) {
+                $(".room_note_log").show();
+            } else {
+                $(".room_note_log").hide();
+            }
+        })
+        // -- End Room Page --
+
         // -- SO List Page --
         .on("change", "#job_status_lost", function() {
             if($(this).is(":checked")) {
