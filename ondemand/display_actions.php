@@ -161,7 +161,8 @@ switch($_REQUEST['action']) {
         $i = 0;
 
         $self_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
-            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority, op_queue.subtask, operations.responsible_dept, op_queue.start_time, op_queue.room_id FROM op_queue
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority, op_queue.subtask, operations.responsible_dept, op_queue.start_time, op_queue.room_id, rooms.order_status
+             FROM op_queue
               LEFT JOIN operations ON op_queue.operation_id = operations.id
                 LEFT JOIN rooms ON op_queue.room_id = rooms.id
                   WHERE active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%' AND active = TRUE;");
@@ -194,7 +195,22 @@ switch($_REQUEST['action']) {
                     $room = "---------";
                 } else {
                     $so = "{$self['so_parent']}{$self['room']}-{$self['iteration']}";
-                    $room = $self['room_name'];
+
+                    switch($self['order_status']) {
+                        case 'A':
+                            $status = '<strong>Add-on</strong>';
+                            break;
+
+                        case 'W':
+                            $status = '<strong>Warranty</strong>';
+                            break;
+
+                        default:
+                            $status = null;
+                            break;
+                    }
+
+                    $room = "{$self['room_name']}<span class='pull-right'>$status</span>";
                 }
 
                 $time = Carbon::createFromTimestamp($self['start_time']); // grab the carbon timestamp
@@ -257,14 +273,13 @@ switch($_REQUEST['action']) {
                 $output['data'][$i][] = $release_date;
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "&nbsp;";
 
                 $i += 1;
             }
         }
 
         $op_queue_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
-            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority, rooms.product_type, rooms.days_to_ship FROM op_queue
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority, rooms.product_type, rooms.days_to_ship, rooms.order_status FROM op_queue
               JOIN operations ON op_queue.operation_id = operations.id
                 JOIN rooms ON op_queue.room_id = rooms.id
                   WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
@@ -313,14 +328,27 @@ switch($_REQUEST['action']) {
                     $priority = $op_queue['priority'];
                 }
 
+                switch($op_queue['order_status']) {
+                    case 'A':
+                        $status = '<strong>Add-on</strong>';
+                        break;
+
+                    case 'W':
+                        $status = '<strong>Warranty</strong>';
+                        break;
+
+                    default:
+                        $status = null;
+                        break;
+                }
+
                 $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['id']}'><i class='zmdi zmdi-play'></i></button>";
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
-                $output['data'][$i][] = $op_queue['room_name'];
+                $output['data'][$i][] = "{$op_queue['room_name']}<span class='pull-right'>$status</span>";
                 $output['data'][$i][] = "{$op_queue['op_id']}: {$op_queue['job_title']} $rework";
                 $output['data'][$i][] = $release_date;
                 $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = $assignee;
                 $output['data'][$i][] = $priority;
                 $output['data'][$i]['DT_RowId'] = $op_queue['so_parent'];
                 $output['data'][$i]['weight'] = $priority;
@@ -330,7 +358,7 @@ switch($_REQUEST['action']) {
         }
 
         $assigned_ops_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
-            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority FROM op_queue
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority, rooms.order_status FROM op_queue
               JOIN operations ON op_queue.operation_id = operations.id
                 JOIN rooms ON op_queue.room_id = rooms.id
                   WHERE completed = FALSE AND published = TRUE AND assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%' ORDER BY op_queue.priority ASC;");
@@ -360,12 +388,11 @@ switch($_REQUEST['action']) {
                 $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$assigned_ops['id']}'><i class='zmdi zmdi-play'></i></button>";
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "{$assigned_ops['so_parent']}{$assigned_ops['room']}-{$vin['key']}{$assigned_ops['iteration']}";
-                $output['data'][$i][] = $room['room_name'];
+                $output['data'][$i][] = "{$room['room_name']}";
                 $output['data'][$i][] = "{$assigned_ops['op_id']}: {$assigned_ops['job_title']}";
                 $output['data'][$i][] = $release_date;
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = $assignee;
                 $output['data'][$i]['DT_RowId'] = $assigned_ops['so_parent'];
 
                 $i += 1;
@@ -388,7 +415,6 @@ switch($_REQUEST['action']) {
                 $output['data'][$i][] = "---------";
                 $output['data'][$i][] = $operation;
                 $output['data'][$i][] = "Now";
-                $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "&nbsp;";
                 $output['data'][$i][] = "&nbsp;";
 

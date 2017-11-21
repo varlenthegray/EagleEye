@@ -802,12 +802,20 @@ switch ($search) {
                                             $order_status = '<strong>Quote</strong>';
                                             break;
 
-                                        case '(':
+                                        case '+':
                                             $order_status = '<strong>Completed</strong>';
                                             break;
 
-                                        case ')':
+                                        case '-':
                                             $order_status = '<strong>Lost</strong>';
+                                            break;
+
+                                        case 'A':
+                                            $order_status = '<strong>Add-on</strong>';
+                                            break;
+
+                                        case 'W':
+                                            $order_status = '<strong>Warranty</strong>';
                                             break;
                                     }
 
@@ -912,10 +920,15 @@ switch ($search) {
                                                                         <td><label for="order_status">Order Status</label></td>
                                                                         <td>
                                                                             <select class="form-control" id="edit_order_status_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="order_status">
-                                                                                <option value=")" <?php echo ($room['order_status'] === ')') ? "selected" : null; ?>>Lost</option>
-                                                                                <option value="#" <?php echo ($room['order_status'] === '#') ? "selected" : null; ?>>Quote (No Deposit)</option>
-                                                                                <option value="$" <?php echo ($room['order_status'] === '$') ? "selected" : null; ?>>Job (Deposit Received)</option>
-                                                                                <option value="(" <?php echo ($room['order_status'] === '(') ? "selected" : null; ?>>Completed</option>
+                                                                                <?php
+                                                                                    $ostatus_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'order_status' ORDER BY FIELD(`key`,'(', '#', '$', 'W', 'A', ')');");
+
+                                                                                    while($ostatus = $ostatus_qry->fetch_assoc()) {
+                                                                                        $selected = ($ostatus['key'] === $room['order_status']) ? 'selected' : null;
+
+                                                                                        echo "<option value='{$ostatus['key']}' $selected>{$ostatus['value']}</option>";
+                                                                                    }
+                                                                                ?>
                                                                             </select>
                                                                         </td>
                                                                     </tr>
@@ -1853,10 +1866,15 @@ switch ($search) {
                                                                     <td><label for="order_status">Order Status</label></td>
                                                                     <td>
                                                                         <select class="form-control" id="edit_order_status_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="order_status">
-                                                                            <option value=")" <?php echo ($room['order_status'] === ')') ? "selected" : null; ?>>Lost</option>
-                                                                            <option value="#" <?php echo ($room['order_status'] === '#') ? "selected" : null; ?>>Quote (No Deposit)</option>
-                                                                            <option value="$" <?php echo ($room['order_status'] === '$') ? "selected" : null; ?>>Job (Deposit Recieved)</option>
-                                                                            <option value="(" <?php echo ($room['order_status'] === '(') ? "selected" : null; ?>>Completed</option>
+                                                                            <?php
+                                                                            $ostatus_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'order_status' ORDER BY FIELD(`key`,'(', '#', '$', 'W', 'A', ')');");
+
+                                                                            while($ostatus = $ostatus_qry->fetch_assoc()) {
+                                                                                $selected = ($ostatus['key'] === $room['order_status']) ? 'selected' : null;
+
+                                                                                echo "<option value='{$ostatus['key']}' $selected>{$ostatus['value']}</option>";
+                                                                            }
+                                                                            ?>
                                                                         </select>
                                                                     </td>
                                                                 </tr>
@@ -2005,10 +2023,13 @@ switch ($search) {
                                                         <td><label for="order_status">Order Status</label></td>
                                                         <td>
                                                             <select class="form-control" name="order_status">
-                                                                <option value=")">Lost</option>
-                                                                <option value="#" selected>Quote (No Deposit)</option>
-                                                                <option value="$">Job (Deposit Received)</option>
-                                                                <option value="(">Completed</option>
+                                                                <?php
+                                                                $ostatus_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'order_status' ORDER BY FIELD(`key`,'(', '#', '$', 'W', 'A', ')');");
+
+                                                                while($ostatus = $ostatus_qry->fetch_assoc()) {
+                                                                    echo "<option value='{$ostatus['key']}' $selected>{$ostatus['value']}</option>";
+                                                                }
+                                                                ?>
                                                             </select>
                                                         </td>
                                                     </tr>

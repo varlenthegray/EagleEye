@@ -81,11 +81,10 @@ require '../includes/header_start.php';
                                 <th width="23px" class="nowrap">&nbsp;</th>
                                 <th width="8px">#</th>
                                 <th width="50px">SO#</th>
-                                <th width="140px">Room</th>
+                                <th width="220px">Room</th>
                                 <th width="215px">Operation</th>
                                 <th width="80px">Release Date</th>
                                 <th width="100px">Operation Time</th>
-                                <th width="80px">Assignee</th>
                             </tr>
                             </thead>
                             <tbody id="queue_ops_table"></tbody>
@@ -193,9 +192,9 @@ require '../includes/header_start.php';
         "dom": '<"#queue_header.dt-custom-header">tipr',
         "columnDefs": [
             {"targets": [0], "orderable": false},
-            {"targets": [8], "visible": false, "searchable": false, "type": "num-html"}
+            {"targets": [7], "visible": false, "searchable": false, "type": "num-html"}
         ],
-        "order": [[8, "desc"]],
+        "order": [[7, "desc"]],
         "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
             // this displays the numbering of priorities, we already sort based on weight which is an arbitrary number
             var index = iDisplayIndexFull + 1;
