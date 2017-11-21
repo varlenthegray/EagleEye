@@ -42,6 +42,8 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
 }
 
 function whatChanged($new, $old, $title, $date = false, $bool = false) {
+    global $dbconn;
+
     if($date) {
         /** @var string $c_del_date Converts the delivery date to a string */
         $updated = date(DATE_TIME_ABBRV, strtotime($new));
@@ -50,7 +52,18 @@ function whatChanged($new, $old, $title, $date = false, $bool = false) {
         $new = (int)$new;
         $old = (int)$old;
     } else {
-        $updated = $new;
+        if($title === 'Sales Bracket' || $title === 'Sample Bracket' || $title === 'Pre-Production Bracket' || $title === 'Door/Drawer Bracket' || $title === 'Main Bracket' ||
+            $title === 'Custom Bracket' || $title === 'Shipping Bracket' || $title === 'Install Bracket') {
+
+            $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = $new");
+            $op = $op_qry->fetch_assoc();
+
+            $updated = $op['job_title'];
+        } elseif($title === 'Active Bracket Operations') {
+            $updated = null;
+        } else {
+            $updated = "to $new";
+        }
     }
 
     if($bool) {
@@ -60,7 +73,7 @@ function whatChanged($new, $old, $title, $date = false, $bool = false) {
         $old = (bool)$old;
         $new = (bool)$new;
     } else {
-        $str = "Updated to $updated";
+        $str = "Updated $updated";
     }
 
     return ($old !== $new) ? "$title $str" : null;
@@ -239,38 +252,46 @@ HEREDOC;
         $inset_square_ordered = sanitizeInput($_REQUEST['inset_square_' . $room_id]);
         $inset_beaded_ordered = sanitizeInput($_REQUEST['inset_beaded_' . $room_id]);
 
-        $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
-        $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
-        $changed[] = whatChanged($door_design, $room_info['door_design'], 'Door Design');
-        $changed[] = whatChanged($panel_raise_door, $room_info['panel_raise_door'], 'Panel Raise (Door)');
-        $changed[] = whatChanged($panel_raise_sd, $room_info['panel_raise_sd'], 'Panel Raise Shoot Drawer');
-        $changed[] = whatChanged($panel_raise_td, $room_info['panel_raise_td'], 'Panel Raise Tall Drawer');
-        $changed[] = whatChanged($edge_profile, $room_info['edge_profile'], 'Edge Profile');
-        $changed[] = whatChanged($framing_bead, $room_info['framing_bead'], 'Framing Bead');
-        $changed[] = whatChanged($framing_options, $room_info['framing_options'], 'Framing Options');
-        $changed[] = whatChanged($style_rail_width, $room_info['style_rail_width'], 'Style/Rail Width');
-        $changed[] = whatChanged($finish_code, $room_info['finish_code'], 'Finish Code');
-        $changed[] = whatChanged($sheen, $room_info['sheen'], 'Sheen');
-        $changed[] = whatChanged($glaze, $room_info['glaze'], 'Glaze');
-        $changed[] = whatChanged($glaze_technique, $room_info['glaze_technique'], 'Glaze Technique');
-        $changed[] = whatChanged($antiquing, $room_info['antiquing'], 'Antiquing');
-        $changed[] = whatChanged($worn_edges, $room_info['worn_edges'], 'Worn Edges');
-        $changed[] = whatChanged($distress_level, $room_info['distress_level'], 'Distress Level');
-        $changed[] = whatChanged($carcass_exterior_species, $room_info['carcass_exterior_species'], 'Carcass Exterior Species');
-        $changed[] = whatChanged($carcass_exterior_finish_code, $room_info['carcass_exterior_finish_code'], 'Carcass Exterior Finish Code');
-        $changed[] = whatChanged($carcass_exterior_glaze_color, $room_info['carcass_exterior_glaze_color'], 'Carcass Exterior Glaze Color');
-        $changed[] = whatChanged($carcass_exterior_glaze_technique, $room_info['carcass_exterior_glaze_technique'], 'Carcass Exterior Glaze Technique');
-        $changed[] = whatChanged($carcass_interior_species, $room_info['carcass_interior_species'], 'Carcass Interior Species');
-        $changed[] = whatChanged($carcass_interior_finish_code, $room_info['carcass_interior_finish_code'], 'Carcass Interior Finish Code');
-        $changed[] = whatChanged($carcass_interior_glaze_color, $room_info['carcass_interior_glaze_color'], 'Carcass Interior Glaze Color');
-        $changed[] = whatChanged($carcass_interior_glaze_technique, $room_info['carcass_interior_glaze_technique'], 'Carcass Interior Glaze Technique');
-        $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
+        if(!empty($room_info['vin_code'])) {
+            $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
+            $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
+            $changed[] = whatChanged($door_design, $room_info['door_design'], 'Door Design');
+            $changed[] = whatChanged($panel_raise_door, $room_info['panel_raise_door'], 'Panel Raise (Door)');
+            $changed[] = whatChanged($panel_raise_sd, $room_info['panel_raise_sd'], 'Panel Raise Shoot Drawer');
+            $changed[] = whatChanged($panel_raise_td, $room_info['panel_raise_td'], 'Panel Raise Tall Drawer');
+            $changed[] = whatChanged($edge_profile, $room_info['edge_profile'], 'Edge Profile');
+            $changed[] = whatChanged($framing_bead, $room_info['framing_bead'], 'Framing Bead');
+            $changed[] = whatChanged($framing_options, $room_info['framing_options'], 'Framing Options');
+            $changed[] = whatChanged($style_rail_width, $room_info['style_rail_width'], 'Style/Rail Width');
+            $changed[] = whatChanged($finish_code, $room_info['finish_code'], 'Finish Code');
+            $changed[] = whatChanged($sheen, $room_info['sheen'], 'Sheen');
+            $changed[] = whatChanged($glaze, $room_info['glaze'], 'Glaze');
+            $changed[] = whatChanged($glaze_technique, $room_info['glaze_technique'], 'Glaze Technique');
+            $changed[] = whatChanged($antiquing, $room_info['antiquing'], 'Antiquing');
+            $changed[] = whatChanged($worn_edges, $room_info['worn_edges'], 'Worn Edges');
+            $changed[] = whatChanged($distress_level, $room_info['distress_level'], 'Distress Level');
+            $changed[] = whatChanged($carcass_exterior_species, $room_info['carcass_exterior_species'], 'Carcass Exterior Species');
+            $changed[] = whatChanged($carcass_exterior_finish_code, $room_info['carcass_exterior_finish_code'], 'Carcass Exterior Finish Code');
+            $changed[] = whatChanged($carcass_exterior_glaze_color, $room_info['carcass_exterior_glaze_color'], 'Carcass Exterior Glaze Color');
+            $changed[] = whatChanged($carcass_exterior_glaze_technique, $room_info['carcass_exterior_glaze_technique'], 'Carcass Exterior Glaze Technique');
+            $changed[] = whatChanged($carcass_interior_species, $room_info['carcass_interior_species'], 'Carcass Interior Species');
+            $changed[] = whatChanged($carcass_interior_finish_code, $room_info['carcass_interior_finish_code'], 'Carcass Interior Finish Code');
+            $changed[] = whatChanged($carcass_interior_glaze_color, $room_info['carcass_interior_glaze_color'], 'Carcass Interior Glaze Color');
+            $changed[] = whatChanged($carcass_interior_glaze_technique, $room_info['carcass_interior_glaze_technique'], 'Carcass Interior Glaze Technique');
+            $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
 
-        $changed[] = whatChanged($sample_block_ordered, $room_info['sample_block_ordered'], 'Sample Block Ordered');
-        $changed[] = whatChanged($door_only_ordered, $room_info['door_only_ordered'], 'Door Only Ordered');
-        $changed[] = whatChanged($door_drawer_ordered, $room_info['door_drawer_ordered'], 'Door/Drawer Ordered');
-        $changed[] = whatChanged($inset_square_ordered, $room_info['inset_square_ordered'], 'Inset Square Ordered');
-        $changed[] = whatChanged($inset_beaded_ordered, $room_info['inset_beaded_ordered'], 'Inset Beaded Ordered');
+            $changed[] = whatChanged($sample_block_ordered, $room_info['sample_block_ordered'], 'Sample Block Ordered');
+            $changed[] = whatChanged($door_only_ordered, $room_info['door_only_ordered'], 'Door Only Ordered');
+            $changed[] = whatChanged($door_drawer_ordered, $room_info['door_drawer_ordered'], 'Door/Drawer Ordered');
+            $changed[] = whatChanged($inset_square_ordered, $room_info['inset_square_ordered'], 'Inset Square Ordered');
+            $changed[] = whatChanged($inset_beaded_ordered, $room_info['inset_beaded_ordered'], 'Inset Beaded Ordered');
+        } else {
+            if(!empty($vin_final)) {
+                if($vin_final !== $room_info['vin_code']) {
+                    $changed[] = "Established VIN values";
+                }
+            }
+        }
 
         if(!empty($sample_block_ordered) || !empty($door_only_ordered) || !empty($door_drawer_ordered) || !empty($inset_square_ordered) || !empty($inset_beaded_ordered)) {
             $now = time();
@@ -334,6 +355,7 @@ HEREDOC;
         $changed[] = whatChanged($custom_pub, $room_info['custom_published'], 'Custom Bracket', false, true);
         $changed[] = whatChanged($shipping_pub, $room_info['shipping_published'], 'Shipping Bracket', false, true);
         $changed[] = whatChanged($install_pub, $room_info['install_bracket_published'], 'Install Bracket', false, true);
+        $changed[] = whatChanged($ops, $room_info['individual_bracket_buildout'], 'Active Bracket Operations');
 
         if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
             $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op',

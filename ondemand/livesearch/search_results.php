@@ -1625,8 +1625,8 @@ switch ($search) {
                                                                         $inquiry_replies = null;
                                                                     }
 
-                                                                    //$notes = str_replace(" ", "&nbsp;", $room_inquiry['note']);
-                                                                    $notes = $room_inquiry['note'];
+                                                                    $notes = str_replace("  ", "&nbsp;&nbsp;", $room_inquiry['note']);
+                                                                    //$notes = $room_inquiry['note'];
                                                                     $notes = nl2br($notes);
 
                                                                     echo "<tr style='height:5px;'><td colspan='2'></td></tr>";
