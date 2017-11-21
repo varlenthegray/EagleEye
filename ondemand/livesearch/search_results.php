@@ -1589,7 +1589,7 @@ switch ($search) {
                                                         </div>
 
                                                         <div class="col-md-4" style="height:304px;overflow-y:auto;">
-                                                            <table class="table table-custom-nb table-v-top" width="100%">
+                                                            <table class="table table-custom-nb table-v-top">
                                                                 <tr>
                                                                     <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Room Notes</h5> <div class="pull-right"><input type="checkbox" class="ignoreSaveAlert" id="display_log" checked /> <label for="display_log">Show Audit Log</label></div></td>
                                                                 </tr>
@@ -1625,7 +1625,8 @@ switch ($search) {
                                                                         $inquiry_replies = null;
                                                                     }
 
-                                                                    $notes = str_replace(" ", "&nbsp;", $room_inquiry['note']);
+                                                                    //$notes = str_replace(" ", "&nbsp;", $room_inquiry['note']);
+                                                                    $notes = $room_inquiry['note'];
                                                                     $notes = nl2br($notes);
 
                                                                     echo "<tr style='height:5px;'><td colspan='2'></td></tr>";
