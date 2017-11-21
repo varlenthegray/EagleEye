@@ -591,7 +591,7 @@ require 'includes/header_end.php';
         })
         // -- End Room Page --
 
-        // -- SO List Page --
+        // -- Sales List Page --
         .on("change", "#job_status_lost", function() {
             if($(this).is(":checked")) {
                 $(".room_lost").show();
@@ -629,7 +629,20 @@ require 'includes/header_end.php';
                 $(".dealer_" + dealer_id).hide();
             }
         })
-        // -- End SO List Page --
+        .on("click", ".sales_list_visible", function() {
+            var hide = $(this).data("identifier");
+
+            $("." + hide).hide();
+
+            $.post("/ondemand/display_actions.php?action=hide_sales_list_id&id=" + hide);
+        })
+        .on("click", ".sales_list_hidden", function() {
+            var show = $(this).data("identifier");
+            $(this).removeClass('btn-primary-outline sales_list_hidden').addClass('btn-primary sales_list_visible').children('i').removeClass('zmdi-eye').addClass('zmdi-eye-off');
+
+            $.post("/ondemand/display_actions.php?action=show_sales_list_id&id=" + show);
+        })
+        // -- End Sales List Page --
     ;
 
     var clockInterval = setInterval(function() {

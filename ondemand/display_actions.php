@@ -446,4 +446,65 @@ switch($_REQUEST['action']) {
         echo json_encode($active);
 
         break;
+
+    /** Sales List */
+    case 'hide_sales_list_id':
+        $id = sanitizeInput($_REQUEST['id']);
+
+        $hidden_qry = $dbconn->query("SELECT hide_sales_list_values FROM user WHERE id = {$_SESSION['userInfo']['id']}");
+
+        if($hidden_qry->num_rows > 0) {
+            $hidden = $hidden_qry->fetch_assoc();
+            $hidden = $hidden['hide_sales_list_values'];
+
+            if (!empty($hidden)) {
+                // there's an existing hidden array
+                $hidden_values = json_decode($hidden);
+
+                if(!in_array($id, $hidden_values)) {
+                    $hidden_values[] = $id;
+                }
+
+                $hidden_values = json_encode($hidden_values);
+
+                $dbconn->query("UPDATE user SET hide_sales_list_values = '$hidden_values' WHERE id = {$_SESSION['userInfo']['id']}");
+            } else {
+                // there are no existing hidden array values
+                $id_array[] = $id;
+
+                $hidden_values = json_encode($id_array);
+
+                $dbconn->query("UPDATE user SET hide_sales_list_values = '$hidden_values' WHERE id = {$_SESSION['userInfo']['id']}");
+            }
+        }
+
+        break;
+    case 'show_sales_list_id':
+        $id = sanitizeInput($_REQUEST['id']);
+
+        $hidden_qry = $dbconn->query("SELECT hide_sales_list_values FROM user WHERE id = {$_SESSION['userInfo']['id']}");
+
+        if($hidden_qry->num_rows > 0) {
+            $hidden = $hidden_qry->fetch_assoc();
+            $hidden = $hidden['hide_sales_list_values'];
+
+            if(!empty($hidden)) {
+                // there's an existing hidden array
+                $hidden_values = json_decode($hidden);
+
+                if(in_array($id, $hidden_values)) {
+                    $loc = array_search($id, $hidden_values);
+
+                    unset($hidden_values[$loc]);
+
+                    $hidden_values = array_values($hidden_values);
+                }
+
+                $hidden_values = json_encode($hidden_values);
+
+                $dbconn->query("UPDATE user SET hide_sales_list_values = '$hidden_values' WHERE id = {$_SESSION['userInfo']['id']}");
+            }
+        }
+
+        break;
 }

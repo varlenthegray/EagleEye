@@ -23061,10 +23061,6 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
 
 .cursor-hand {
   cursor: pointer; }
-  .cursor-hand:hover {
-    background-color: rgba(204, 204, 204, 0.5) !important;
-    color: #132882;
-    border-radius: 6px; }
 
 .card-block {
   padding: 5px; }
@@ -23072,8 +23068,6 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
 .card-box {
   padding: 5px;
   overflow: auto; }
-  .card-box:hover {
-    background-color: #F2F2F2; }
 
 .bg-lightgray {
   background-color: rgba(228, 228, 228, 0.8); }

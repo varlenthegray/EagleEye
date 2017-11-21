@@ -5,7 +5,7 @@ require '../includes/header_start.php';
 <div class="row">
     <div class="col-md-12">
         <div class="card-box">
-            <div class="col-md-2 no-print" style="position:fixed;top:10vh;overflow:auto;height:87vh;">
+            <div class="col-md-2 no-print" style="position:fixed;top:10vh;overflow:auto;height:87vh;display:none;">
                 <a class="btn btn-primary btn-block waves-effect waves-light sales_list_print">Print</a><br /><br />
 
                 <table width="100%" style="background-color:#FFFFFF;">
@@ -36,15 +36,19 @@ require '../includes/header_start.php';
                 </table>
             </div>
 
-            <div class="col-md-4 col-md-offset-3">
+            <div class="col-md-4">
+                <div class="checkbox checkbox-custom text-md-center"><input id="show_hidden_sales_list" class="ignoreSaveAlert" type="checkbox"><label for="show_hidden_sales_list">Show Hidden</label></div>
+
                 <table class="table table-bordered tablesorter" id="so_global_list">
                     <thead>
                     <tr>
+                        <th width="23px">&nbsp;</th>
                         <th>SO#</th>
                         <th>PROJECT/ROOM</th>
                         <th>CONTACT</th>
                         <th>STATUS</th>
                         <th>DEALER CODE</th>
+                        <th>IDENTIFIER</th>
                     </tr>
                     </thead>
                     <tbody id="so_global_list_breakdown">
@@ -59,16 +63,16 @@ require '../includes/header_start.php';
 </div>
 
 <script>
-    $("#so_global_list").DataTable({
+    var so_list = $("#so_global_list").DataTable({
         "ajax": "/ondemand/so_actions.php?action=get_sales_list",
         "columnDefs": [
-            {"visible": false, "targets": [2, 4]},
-            {"orderable": false, "targets": [0, 1, 3]}
+            {"visible": false, "targets": [3, 5, 6]},
+            {"orderable": false, "targets": [0, 1, 2, 4, 6]}
         ],
         "createdRow": function(row,data,dataIndex) {
-            $(row).addClass("cursor-hand view_so_info ignoreSaveAlert dealer_" + data[4]);
+            $(row).addClass("cursor-hand view_so_info ignoreSaveAlert dealer_" + data[5] + " " + data[6]);
 
-            switch(data[3]) {
+            switch(data[4]) {
                 case 'Lost':
                     $(row).addClass("room_lost");
                     break;
@@ -90,7 +94,7 @@ require '../includes/header_start.php';
                     break;
             }
         },
-        "order": [2,'asc'],
+        "order": [3,'asc'],
         "dom": 'rti',
         "paging": false,
         "drawCallback": function(settings) {
@@ -98,10 +102,10 @@ require '../includes/header_start.php';
             var rows = api.rows({page: 'current'}).nodes();
             var last = null;
 
-            api.column(2, {page: 'current'}).data().each(function (group, i) {
+            api.column(3, {page: 'current'}).data().each(function (group, i) {
                 if (last !== group) {
 
-                    $(rows).eq(i).before('<tr class="sales_list_dealer ignoreSaveAlert"><td colspan="3" style="padding-left:15px">' + group + '</td></tr>');
+                    $(rows).eq(i).before('<tr class="sales_list_dealer ignoreSaveAlert"><td colspan="4" style="padding-left:15px">' + group + '</td></tr>');
 
                     last = group;
                 }
@@ -109,7 +113,19 @@ require '../includes/header_start.php';
         }
     });
 
-    $("body")
+    $("body").on("change", '#show_hidden_sales_list', function() {
+        if($(this).is(":checked")) {
+            $(".js_loading").show();
 
-    ;
+            so_list.ajax.url('/ondemand/so_actions.php?action=get_sales_list&hidden=true').load(function() {
+                $(".js_loading").hide();
+            });
+        } else {
+            $(".js_loading").show();
+
+            so_list.ajax.url('/ondemand/so_actions.php?action=get_sales_list').load(function() {
+                $(".js_loading").hide();
+            });
+        }
+    });
 </script>

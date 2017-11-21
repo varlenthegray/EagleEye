@@ -245,80 +245,128 @@ switch($_REQUEST['action']) {
         $output = array();
         $i = 0;
 
+        $hidden_enabled = (bool)$_REQUEST['hidden'];
+
         $prev_so = null;
         $prev_room = null;
+        $prev_seq = null;
 
-        $so_qry = $dbconn->query("SELECT sales_order.*, rooms.*, dealers.* FROM sales_order 
+        $so_qry = $dbconn->query("SELECT sales_order.id AS sID, sales_order.*, rooms.id AS rID, rooms.*, dealers.* FROM sales_order 
           LEFT JOIN rooms ON sales_order.so_num = rooms.so_parent LEFT JOIN dealers ON sales_order.dealer_code = dealers.dealer_id 
             ORDER BY so_num ASC, room ASC, iteration ASC;");
 
+        $usr_qry = $dbconn->query("SELECT hide_sales_list_values FROM user WHERE id = {$_SESSION['userInfo']['id']};");
+        $usr = $usr_qry->fetch_assoc();
+        $hidden = json_decode($usr['hide_sales_list_values']);
+
         if($so_qry->num_rows > 0) {
             while($so = $so_qry->fetch_assoc()) {
-                $contact = (!empty($so['contact'])) ? "{$so['dealer_id']}: {$so['contact']} ({$so['dealer_name']})" : "<span style='color: #FF0000 !important;'>A00: None Assigned</span>";
-
-                switch($so['order_status']) {
-                    case ')':
-                        $order_status = "Lost";
-                        break;
-
-                    case '#':
-                        $order_status = "Quote";
-                        break;
-
-                    case '$':
-                        $order_status = "Job";
-                        break;
-
-                    case '(':
-                        $order_status = "Completed";
-                        break;
-
-                    default:
-                        $order_status = "<span style='color: #FF0000 !important;'>None</span>";
-                        break;
+                if(in_array($so['rID'], $hidden)) {
+                    // if it's hidden, tell the system it's showing the hidden button
+                    $btn_classes = 'btn-primary-outline sales_list_hidden';
+                    $btn_icon = 'zmdi-eye';
+                } else {
+                    $btn_classes = 'btn-primary sales_list_visible';
+                    $btn_icon = 'zmdi-eye-off';
                 }
 
-                if($prev_so !== $so['so_num']) {
-                    $output['data'][$i][] = "<strong>{$so['so_num']}</strong>";
-                    $output['data'][$i][] = "<strong>{$so['project_name']}</strong>";
-                    $output['data'][$i][] = $contact;
-                    $output['data'][$i][] = "&nbsp;";
-                    $output['data'][$i][] = "{$so['dealer_id']}";
-                    $output['data'][$i]['DT_RowId'] = $so['so_num'];
+                if(!in_array($so['rID'], $hidden) || $hidden_enabled) {
+                    $contact = (!empty($so['contact'])) ? "{$so['dealer_id']}: {$so['contact']} ({$so['dealer_name']})" : "<span style='color: #FF0000 !important;'>A00: None Assigned</span>";
 
-                    $i++;
+                    switch($so['order_status']) {
+                        case '-':
+                            $order_status = "Lost";
+                            break;
 
-                    $room_iteration = (!empty($so['room']) && !empty($so['iteration'])) ? "{$so['room']}{$so['iteration']}" : "<span style='color: #FF0000 !important;'>None</span>";
-                    $room_name = (!empty($so['room_name'])) ? "{$so['room_name']}" : "<span style='color: #FF0000 !important;'>None</span>";
+                        case '#':
+                            $order_status = "Quote";
+                            break;
 
-                    $output['data'][$i][] = "<span style='padding-left:10px;'>$room_iteration</span>";
-                    $output['data'][$i][] = "<span style='padding-left:20px;'>$room_name</span>";
-                    $output['data'][$i][] = $contact;
-                    $output['data'][$i][] = $order_status;
-                    $output['data'][$i][] = "{$so['dealer_id']}";
-                    $output['data'][$i]['DT_RowId'] = $so['so_num'];
+                        case '$':
+                            $order_status = "Job";
+                            break;
 
-                    $prev_room = $so['room'];
-                    $prev_so = $so['so_num'];
-                } else {
-                    if($prev_room !== $so['room']) {
-                        $prev_room = $so['room'];
-                        $room_def = "{$so['room']}{$so['iteration']}";
-                    } else {
-                        $room_def = "<span style='padding-left:9px;'>{$so['iteration']}</span>";
+                        case '+':
+                            $order_status = "Completed";
+                            break;
+
+
+                        case 'A':
+                            $order_status = "Add-on";
+                            break;
+
+                        case 'W':
+                            $order_status = "Warranty";
+                            break;
+
+                        default:
+                            $order_status = "<span style='color: #FF0000 !important;'>None</span>";
+                            break;
                     }
 
-                    $output['data'][$i][] = "<span style='padding-left:10px;'>$room_def</span>";
-                    $output['data'][$i][] = "<span style='padding-left:20px;'>{$so['room_name']}</span>";
-                    $output['data'][$i][] = $contact;
-                    $output['data'][$i][] = $order_status;
-                    $output['data'][$i][] = "{$so['dealer_id']}";
-                    $output['data'][$i]['DT_RowId'] = $so['so_num'];
-                }
+                    if($prev_so !== $so['so_num']) {
+                        $output['data'][$i][] = "";
+                        $output['data'][$i][] = "<strong>{$so['so_num']}</strong>";
+                        $output['data'][$i][] = "<strong>{$so['project_name']}</strong>";
+                        $output['data'][$i][] = $contact;
+                        $output['data'][$i][] = "&nbsp;";
+                        $output['data'][$i][] = "{$so['dealer_id']}";
+                        $output['data'][$i][] = "{$so['sID']}";
+                        $output['data'][$i]['DT_RowId'] = $so['id'];
 
-                $i++;
+                        $i++;
+
+                        $room_iteration = (!empty($so['room']) && !empty($so['iteration'])) ? "{$so['room']}{$so['iteration']}" : "<span style='color: #FF0000 !important;'>None</span>";
+                        $room_name = (!empty($so['room_name'])) ? "{$so['room_name']}" : "<span style='color: #FF0000 !important;'>None</span>";
+
+                        $iteration = explode(".", $so['iteration']);
+                        $prev_seq = $iteration[0];
+
+                        $output['data'][$i][] = "<button class='btn waves-effect $btn_classes' data-identifier='{$so['rID']}'><i class='zmdi $btn_icon'></i></button>";
+                        $output['data'][$i][] = "<span style='padding-left:20px;'>$room_iteration</span>";
+                        $output['data'][$i][] = "<span style='padding-left:20px;'>$room_name</span>";
+                        $output['data'][$i][] = $contact;
+                        $output['data'][$i][] = $order_status;
+                        $output['data'][$i][] = "{$so['dealer_id']}";
+                        $output['data'][$i][] = "{$so['rID']}";
+                        $output['data'][$i]['DT_RowId'] = $so['id'];
+
+                        $prev_room = $so['room'];
+                        $prev_so = $so['so_num'];
+                    } else {
+                        $iteration = explode(".", $so['iteration']);
+
+                        if($prev_room !== $so['room']) {
+                            $prev_room = $so['room'];
+                            $room_def = "{$so['room']}{$so['iteration']}";
+                        } else {
+                            if($iteration[0] !== $prev_seq) {
+                                $prev_seq = $iteration[0];
+                                $final_iteration = $so['iteration'];
+                                $final_padding = '8';
+                            } else {
+                                $final_iteration = ".{$iteration[1]}";
+                                $final_padding = '15';
+                            }
+
+                            $room_def = "<span style='padding-left:{$final_padding}px;'>$final_iteration</span>";
+                        }
+
+                        $output['data'][$i][] = "<button class='btn waves-effect $btn_classes' data-identifier='{$so['rID']}'><i class='zmdi $btn_icon'></i></button>";
+                        $output['data'][$i][] = "<span style='padding-left:20px;'>$room_def</span>";
+                        $output['data'][$i][] = "<span style='padding-left:20px;'>{$so['room_name']}</span>";
+                        $output['data'][$i][] = $contact;
+                        $output['data'][$i][] = $order_status;
+                        $output['data'][$i][] = "{$so['dealer_id']}";
+                        $output['data'][$i][] = "{$so['rID']}";
+                        $output['data'][$i]['DT_RowId'] = $so['id'];
+                    }
+
+                    $i++;
+                }
             }
         } else {
+            $output['data'][$i][] = "&nbsp;";
             $output['data'][$i][] = "&nbsp;";
             $output['data'][$i][] = "No SO's to list";
             $output['data'][$i][] = "&nbsp;";
