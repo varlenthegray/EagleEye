@@ -247,6 +247,7 @@ switch($_REQUEST['action']) {
 
         $prev_so = null;
         $prev_room = null;
+        $prev_sequence = null;
 
         $so_qry = $dbconn->query("SELECT sales_order.*, rooms.*, dealers.* FROM sales_order 
           LEFT JOIN rooms ON sales_order.so_num = rooms.so_parent LEFT JOIN dealers ON sales_order.dealer_code = dealers.dealer_id 
@@ -301,12 +302,16 @@ switch($_REQUEST['action']) {
                     $prev_room = $so['room'];
                     $prev_so = $so['so_num'];
                 } else {
-                    if($prev_room !== $so['room']) {
-                        $prev_room = $so['room'];
-                        $room_def = "{$so['room']}{$so['iteration']}";
+                    $cur_sequence = substr($so['iteration'], 0, 1);
+
+                    if($cur_sequence !== $prev_sequence) {
+                        $iteration = $so['iteration'];
+                        $prev_sequence = $cur_sequence;
                     } else {
-                        $room_def = "<span style='padding-left:9px;'>{$so['iteration']}</span>";
+                        $iteration = substr($so['iteration'], -1, 3);
                     }
+
+                    $room_def = "<span style='padding-left:9px;'>$iteration</span>";
 
                     $output['data'][$i][] = "<span style='padding-left:10px;'>$room_def</span>";
                     $output['data'][$i][] = "<span style='padding-left:20px;'>{$so['room_name']}</span>";

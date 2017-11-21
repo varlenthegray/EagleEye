@@ -69,9 +69,6 @@
     <!-- Moment.js for Timekeeping -->
     <script src="/assets/plugins/moment/moment.js"></script>
 
-    <!-- TinyMCE -->
-    <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=fvfswk9jnlay8xjc33vr5gumhy1svc01qw8zjzvykc1v816n"></script>
-
     <!-- Intro (for tutorials) -->
     <script src="/assets/plugins/intro/intro.min.js"></script>
     <link href="/assets/plugins/intro/introjs.min.css" rel="stylesheet" type="text/css"/>
