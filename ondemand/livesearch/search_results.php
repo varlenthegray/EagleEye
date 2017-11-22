@@ -740,7 +740,9 @@ switch ($search) {
 
                                     $iteration = explode(".", number_format($room['iteration'], 2));
 
-                                    $prev_seq = $iteration[0];
+                                    if(empty($prev_seq)) {
+                                        $prev_seq = $iteration[0];
+                                    }
 
                                     if($room['room'] === $prev_room) {
                                         if($iteration[0] === $prev_seq) {
