@@ -731,11 +731,31 @@ switch ($search) {
                             <?php
                             $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '{$result['so_num']}' ORDER BY room, iteration ASC");
 
+                            $prev_room = null;
+                            $prev_seq = null;
+
                             if($room_qry->num_rows > 0) {
                                 while($room = $room_qry->fetch_assoc()) {
                                     $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
-                                    $room_name = "{$room['room']}{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}: {$room['room_name']}";
+                                    $iteration = explode(".", number_format($room['iteration'], 2));
+
+                                    $prev_seq = $iteration[0];
+
+                                    if($room['room'] === $prev_room) {
+                                        if($iteration[0] === $prev_seq) {
+                                            $room_name = ".{$iteration[1]}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}: {$room['room_name']}";
+                                            $tab = "<div class='pull-left' style='width:15px;'>&nbsp</div>";
+                                        } else {
+                                            $room_name = "{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}: {$room['room_name']}";
+                                            $prev_seq = $iteration[0];
+                                            $tab = "<div class='pull-left' style='width:8px;'>&nbsp</div>";
+                                        }
+                                    } else {
+                                        $room_name = "{$room['room']}{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}: {$room['room_name']}";
+                                        $prev_room = $room['room'];
+                                        $tab = null;
+                                    }
 
                                     $salesPriority = determinePriority($room['sales_bracket_priority']);
                                     $preprodPriority = determinePriority($room['preproduction_bracket_priority']);
@@ -772,16 +792,14 @@ switch ($search) {
 
                                     $roomid = $room['id'];
 
-                                    $tab = ($room['iteration'] > 1.01) ? "<div class='pull-left' style='width:15px;'>&nbsp</div>" : null;
-
-                                    $sales_published_display = (checkPublished('sales')) ? "<td class='$salesPriority' style='width:9.7%'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $salesBracketName</td>" : "<td style='width:9.7%'>---</td>";
-                                    $sample_published_display = (checkPublished('sample')) ? "<td class='$samplePriority' style='width:9.7%'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $sampleBracketName</td>" : "<td style='width:9.7%'>---</td>";
-                                    $preprod_published_display = (checkPublished('preproduction')) ? "<td class='$preprodPriority' style='width:9.7%'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $preprodBracketName</td>" : "<td style='width:9.7%'>---</td>";
-                                    $door_published_display = (checkPublished('doordrawer')) ? "<td class='$doorPriority' style='width:9.7%'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $doorBrackettName</td>" : "<td style='width:9.7%'>---</td>";
-                                    $main_published_display = (checkPublished('main')) ? "<td class='$mainPriority' style='width:9.7%'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $mainBracketName</td>" : "<td style='width:9.7%'>---</td>";
-                                    $customs_published_display = (checkPublished('custom')) ? "<td class='$customsPriority' style='width:9.7%'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $customsBracketName</td>" : "<td style='width:9.7%'>---</td>";
-                                    $shipping_published_display = (checkPublished('shipping')) ? "<td class='$shippingPriority' style='width:9.7%'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $shippingBracketName</td>" : "<td style='width:9.7%'>---</td>";
-                                    $install_published_display = (checkPublished('install_bracket')) ? "<td class='$installPriority' style='width:9.7%'><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button> $installBracketName</td>" : "<td style='width:9.7%'>---</td>";
+                                    $sales_published_display = (checkPublished('sales')) ? "<td class='$salesPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$salesBracketName</td></tr></table></td>" : "<td style='width:9.7%'>---</td>";
+                                    $sample_published_display = (checkPublished('sample')) ? "<td class='$samplePriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$sampleBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
+                                    $preprod_published_display = (checkPublished('preproduction')) ? "<td class='$preprodPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$preprodBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
+                                    $door_published_display = (checkPublished('doordrawer')) ? "<td class='$doorPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$doorBrackettName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
+                                    $main_published_display = (checkPublished('main')) ? "<td class='$mainPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$mainBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
+                                    $customs_published_display = (checkPublished('custom')) ? "<td class='$customsPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$customsBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
+                                    $shipping_published_display = (checkPublished('shipping')) ? "<td class='$shippingPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$shippingBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
+                                    $install_published_display = (checkPublished('install_bracket')) ? "<td class='$installPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$installBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
 
                                     $target_dir = SITE_ROOT . "/attachments/";
                                     $attachment_dir = "{$target_dir}{$room['so_parent']}/{$room['room']}/{$room['iteration']}";

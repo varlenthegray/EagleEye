@@ -319,7 +319,7 @@ switch($_REQUEST['action']) {
                         $room_iteration = (!empty($so['room']) && !empty($so['iteration'])) ? "{$so['room']}{$so['iteration']}" : "<span style='color: #FF0000 !important;'>None</span>";
                         $room_name = (!empty($so['room_name'])) ? "{$so['room_name']}" : "<span style='color: #FF0000 !important;'>None</span>";
 
-                        $iteration = explode(".", $so['iteration']);
+                        $iteration = explode(".", number_format($so['iteration'], 2));
                         $prev_seq = $iteration[0];
 
                         $output['data'][$i][] = "<button class='btn waves-effect $btn_classes' data-identifier='{$so['rID']}'><i class='zmdi $btn_icon'></i></button>";
@@ -334,7 +334,7 @@ switch($_REQUEST['action']) {
                         $prev_room = $so['room'];
                         $prev_so = $so['so_num'];
                     } else {
-                        $iteration = explode(".", $so['iteration']);
+                        $iteration = explode(".", number_format($so['iteration'], 2));
 
                         if($prev_room !== $so['room']) {
                             $prev_room = $so['room'];
