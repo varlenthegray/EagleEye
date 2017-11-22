@@ -23095,6 +23095,9 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.down .hopscotch-bubble-ar
 .job-color-red {
   background-color: rgba(255, 105, 105, 0.8); }
 
+.job-color-gray {
+  background-color: rgba(64, 64, 64, 0.2); }
+
 /* Override section
  * This is where all of the overrides take place
  */

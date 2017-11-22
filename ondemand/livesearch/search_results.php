@@ -9,38 +9,25 @@ $search = sanitizeInput($_REQUEST['search'], $dbconn);
 
 $sClass = new \Search\search();
 
-function determinePriority($priority) {
-    switch($priority) {
-        case 1:
-            return "job-color-red";
-            break;
-
-        case 2:
-            return "job-color-orange";
-            break;
-
-        case 3:
-            return "job-color-yellow";
-            break;
-
-        case 4:
-            return "job-color-green";
-            break;
-
-        default:
-            return "job-color-green";
-            break;
+function determineColor($room, $bracket) {
+    if($room['order_status'] === '+' || $room['order_status'] === '-') {
+        return 'job-color-gray';
+    } else {
+        if((bool)$room[$bracket . '_published']) {
+            return 'job-color-green';
+        }
     }
 }
 
-function checkPublished($bracket) {
+function getBracketInfo($bracket, $opID, $room) {
     global $dbconn;
-    global $roomid;
 
-    $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$roomid'");
-    $room = $room_qry->fetch_assoc();
+    $bracket_info = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = $opID")->fetch_assoc();
+    $op_name = $bracket_info['op_id'] . "-" . $bracket_info['job_title'];
 
-    return ((bool)$room[$bracket . "_published"]) ? TRUE : FALSE;
+    if((bool)$room[$bracket . "_published"]) {
+        return "<table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$op_name</td></tr></table>";
+    }
 }
 
 function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
@@ -193,24 +180,6 @@ switch ($search) {
                 /** BEGIN EDIT SO DISPLAY */
                 echo "<tr id='tr_edit_so_{$result['so_num']}' style='display: none;'>";
                 echo "  <td colspan='9'><div id='div_edit_so_{$result['so_num']}' style='display: none;'>";
-
-                switch($dealer['account_type']) {
-                    case 'R':
-                        $atype = "Retail";
-                        break;
-
-                    case 'W':
-                        $atype = "Wholesale";
-                        break;
-
-                    case "D":
-                        $atype = "Distribution";
-                        break;
-
-                    default:
-                        $atype = "Retail";
-                        break;
-                }
                 ?>
 
                 <div class="col-md-12">
@@ -759,49 +728,23 @@ switch ($search) {
                                         $tab = null;
                                     }
 
-                                    $salesPriority = determinePriority($room['sales_bracket_priority']);
-                                    $preprodPriority = determinePriority($room['preproduction_bracket_priority']);
-                                    $samplePriority = determinePriority($room['sample_bracket_priority']);
-                                    $doorPriority = determinePriority($room['doordrawer_bracket_priority']);
-                                    $customsPriority = determinePriority($room['custom_bracket_priority']);
-                                    $mainPriority = determinePriority($room['main_bracket_priority']);
-                                    $shippingPriority = determinePriority($room['shipping_bracket_priority']);
-                                    $installPriority = determinePriority($room['install_bracket_priority']);
+                                    $salesColor = determineColor($room, 'sales');
+                                    $preprodColor = determineColor($room, 'preproduction');
+                                    $sampleColor = determineColor($room, 'sample');
+                                    $doorColor = determineColor($room, 'doordrawer');
+                                    $customsColor = determineColor($room, 'custom');
+                                    $mainColor = determineColor($room, 'main');
+                                    $shippingColor = determineColor($room, 'shipping');
+                                    $installColor = determineColor($room, 'install_bracket');
 
-                                    $salesBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$room['sales_bracket']}")->fetch_assoc();
-                                    $salesBracketName = $salesBracket['op_id'] . "-" . $salesBracket['job_title'];
-
-                                    $preprodBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$room['preproduction_bracket']}")->fetch_assoc();
-                                    $preprodBracketName = $preprodBracket['op_id'] . "-" . $preprodBracket['job_title'];
-
-                                    $sampleBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$room['sample_bracket']}")->fetch_assoc();
-                                    $sampleBracketName = $sampleBracket['op_id'] . "-" . $sampleBracket['job_title'];
-
-                                    $doorBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$room['doordrawer_bracket']}")->fetch_assoc();
-                                    $doorBrackettName = $doorBracket['op_id'] . "-" . $doorBracket['job_title'];
-
-                                    $customsBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$room['custom_bracket']}")->fetch_assoc();
-                                    $customsBracketName = $customsBracket['op_id'] . "-" . $customsBracket['job_title'];
-
-                                    $mainBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$room['main_bracket']}")->fetch_assoc();
-                                    $mainBracketName = $mainBracket['op_id'] . "-" . $mainBracket['job_title'];
-
-                                    $shippingBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$room['shipping_bracket']}")->fetch_assoc();
-                                    $shippingBracketName = $shippingBracket['op_id'] . "-" . $shippingBracket['job_title'];
-
-                                    $installBracket = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = {$room['install_bracket']}")->fetch_assoc();
-                                    $installBracketName = $installBracket['op_id'] . "-" . $installBracket['job_title'];
-
-                                    $roomid = $room['id'];
-
-                                    $sales_published_display = (checkPublished('sales')) ? "<td class='$salesPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$salesBracketName</td></tr></table></td>" : "<td style='width:9.7%'>---</td>";
-                                    $sample_published_display = (checkPublished('sample')) ? "<td class='$samplePriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$sampleBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
-                                    $preprod_published_display = (checkPublished('preproduction')) ? "<td class='$preprodPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$preprodBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
-                                    $door_published_display = (checkPublished('doordrawer')) ? "<td class='$doorPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$doorBrackettName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
-                                    $main_published_display = (checkPublished('main')) ? "<td class='$mainPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$mainBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
-                                    $customs_published_display = (checkPublished('custom')) ? "<td class='$customsPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$customsBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
-                                    $shipping_published_display = (checkPublished('shipping')) ? "<td class='$shippingPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$shippingBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
-                                    $install_published_display = (checkPublished('install_bracket')) ? "<td class='$installPriority' style='width:9.7%'><table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$installBracketName</td></tr></table>" : "<td style='width:9.7%'>---</td>";
+                                    $sales_published_display = getBracketInfo('sales', $room['sales_bracket'], $room);
+                                    $sample_published_display = getBracketInfo('sample', $room['sample_bracket'], $room);
+                                    $preprod_published_display = getBracketInfo('preproduction', $room['preproduction_bracket'], $room);
+                                    $door_published_display = getBracketInfo('doordrawer', $room['doordrawer_bracket'], $room);
+                                    $main_published_display = getBracketInfo('main', $room['main_bracket'], $room);
+                                    $customs_published_display = getBracketInfo('custom', $room['custom_bracket'], $room);
+                                    $shipping_published_display = getBracketInfo('shipping', $room['shipping_bracket'], $room);
+                                    $install_published_display = getBracketInfo('install_bracket', $room['install_bracket'], $room);
 
                                     $target_dir = SITE_ROOT . "/attachments/";
                                     $attachment_dir = "{$target_dir}{$room['so_parent']}/{$room['room']}/{$room['iteration']}";
@@ -842,22 +785,19 @@ switch ($search) {
                                     echo "<tr class='cursor-hand' id='manage_bracket_{$room['id']}'>";
                                     echo "  <td class='nowrap' width='50px'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button></td>";
                                     echo "  <td>{$tab}{$room_name} <span class='pull-right' style='margin-right:5px;'>$order_status</span></td>";
-                                    echo "  $sales_published_display";
-                                    echo "  $sample_published_display";
-                                    echo "  $preprod_published_display";
-                                    echo "  $door_published_display";
-                                    echo "  $main_published_display";
-                                    echo "  $customs_published_display";
-                                    echo "  $shipping_published_display";
-                                    echo "  $install_published_display";
+                                    echo "  <td class='$salesColor' style='width:9.7%'>$sales_published_display</td>";
+                                    echo "  <td class='$sampleColor' style='width:9.7%'>$sample_published_display</td>";
+                                    echo "  <td class='$preprodColor' style='width:9.7%'>$preprod_published_display</td>";
+                                    echo "  <td class='$doorColor' style='width:9.7%'>$door_published_display</td>";
+                                    echo "  <td class='$mainColor' style='width:9.7%'>$main_published_display</td>";
+                                    echo "  <td class='$customsColor' style='width:9.7%'>$customs_published_display</td>";
+                                    echo "  <td class='$shippingColor' style='width:9.7%'>$shipping_published_display</td>";
+                                    echo "  <td class='$installColor' style='width:9.7%'>$install_published_display</td>";
                                     echo "</tr>";
 
                                     /** BEGIN SINGLE ROOM DISPLAY */
                                     echo "<tr id='tr_single_room_{$room['id']}' style='display: none;'>";
                                     echo "  <td colspan='10'><div id='div_single_room_{$room['id']}' style='display: none;'>";
-
-                                    $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%' ORDER BY dealer_id ASC");
-                                    $dealer = $dealer_qry->fetch_assoc();
                                     ?>
 
                                     <div class="col-md-12">
@@ -1804,9 +1744,6 @@ switch ($search) {
                                     /** BEGIN DISPLAY OF ADD ITERATION */
                                     echo "<tr id='tr_iteration_{$room['id']}' style='display: none;'>";
                                     echo "  <td colspan='10'><div id='div_iteration_{$room['id']}' style='display: none;'>";
-
-                                    $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%' ORDER BY dealer_id ASC");
-                                    $dealer = $dealer_qry->fetch_assoc();
                                     ?>
 
                                     <div class="col-md-12">
