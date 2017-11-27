@@ -25,7 +25,15 @@ function getBracketInfo($bracket, $opID, $room) {
     $bracket_info = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = $opID")->fetch_assoc();
 
     if((bool)$room[$bracket . "_published"]) {
-        return "<table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>({$bracket_info['op_id']}) </td><td style='padding-left:2px;line-height:1em;'>{$bracket_info['job_title']}</td></tr></table>";
+        if(stristr($bracket_info['job_title'], 'Bracket Completed') === FALSE) {
+            $opacity = null;
+            $outline = "btn-primary";
+        } else {
+            $opacity = "style='color:rgba(80,80,80,.6);'";
+            $outline = "btn-primary-outline";
+        }
+
+        return "<table class='table-custom-nb' $opacity><tr><td><button class='btn waves-effect $outline' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>({$bracket_info['op_id']}) </td><td style='padding-left:2px;line-height:1em;'>{$bracket_info['job_title']}</td></tr></table>";
     }
 }
 
