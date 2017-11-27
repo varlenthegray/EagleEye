@@ -6,26 +6,26 @@ var active_so_num;
 var active_room_id;
 var thisClick;
 
-function toggleDisplay() {
+function toggleDisplay(roomid) {
     $("[id^=manage_bracket_]").removeClass("active_room_line");
     $("#manage_bracket_" + active_room_id).addClass("active_room_line");
 
-    $("[id^=tr_room_bracket_]").hide(250);
-    $("[id^=div_room_bracket_]").hide(100);
-    $("[id^=tr_iteration_]").hide(250);
-    $("[id^=div_iteration_]").hide(100);
+    $("[id^=tr_iteration_]").not("#tr_iteration_" + roomid).hide(250);
+    $("[id^=div_iteration_]").not("#div_iteration_" + roomid).hide(100);
     $("[id^=tr_single_room_]").hide(250);
     $("[id^=div_single_room_]").hide(100);
     $("[id^=tr_add_single_room_info_]").hide(250);
     $("[id^=div_add_single_room_info_]").hide(100);
-    $("[id^=tr_vin_]").finish().hide(250);
-    $("[id^=div_vin_]").finish().hide(100);
     $("[id^=tr_attachments_]").finish().hide(250);
     $("[id^=div_attachments_]").finish().hide(100);
     $("[id^=tr_edit_so_]").finish().hide(250);
     $("[id^=div_edit_so_]").finish().hide(100);
-    $("[id^=tr_print_]").finish().hide(250);
-    $("[id^=div_print_]").finish().hide(100);
+}
+
+function scrollLocation(container) {
+    setTimeout(function() {
+        $(window).scrollTo($(container), 800, {offset: -125});
+    }, 300);
 }
 
 $("body")
@@ -118,6 +118,8 @@ $("body")
             $("#tr_edit_so_" + active_so_num).show();
             $("#div_edit_so_" + active_so_num).slideDown(250);
         });
+
+        scrollLocation("#show_room_" + active_so_num);
     })
     .on("click", "[id^=show_room_]", function() {
         thisClick = this;
@@ -144,28 +146,7 @@ $("body")
             $("#tr_single_room_" + active_room_id).show();
             $("#div_single_room_" + active_room_id).slideDown(250);
 
-            setTimeout(function() {
-                $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -125});
-            }, 300);
-        });
-    })
-
-    .on("click", "[id^=manage_bracket_]", function(e) {
-        thisClick = this;
-
-        e.stopPropagation();
-
-        checkTransition(function() {
-            active_room_id = $(thisClick).attr("id").replace('manage_bracket_', '');
-
-            toggleDisplay();
-
-            $("#tr_room_bracket_" + active_room_id).show();
-            $("#div_room_bracket_" + active_room_id).slideDown(250);
-
-            setTimeout(function() {
-                $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -100});
-            }, 300);
+            scrollLocation("#show_single_room_" + active_room_id);
         });
     })
     .on("click", ".activate_op", function() {
@@ -211,8 +192,10 @@ $("body")
         $(this).parent().remove();
     })
 
-    .on("click", ".add_room_trigger", function() {
+    .on("click", ".add_room_trigger", function(e) {
         thisClick = this;
+
+        e.stopPropagation();
 
         checkTransition(function() {
             active_so_num = $(thisClick).data('sonum');
@@ -222,6 +205,8 @@ $("body")
             $("#tr_add_single_room_info_" + active_so_num).show();
             $("#div_add_single_room_info_" + active_so_num).slideDown(250);
         });
+
+        scrollLocation("#tr_add_single_room_info_" + active_so_num);
     })
     .on("click", "[id^=add_room_save_]", function() {
         var save_info = $("#form_add_room_" + active_so_num).serialize();
@@ -281,28 +266,43 @@ $("body")
     })
     .on("click", ".add_iteration", function(e) {
         thisClick = this;
+        var next_iteration;
 
         e.stopPropagation();
 
         checkTransition(function() {
             active_room_id = $(thisClick).data('roomid');
-            var iteration = $(thisClick).data("iteration");
+            var seqAjax;
+            var iterationAjax;
+            var header;
 
             if($(thisClick).data('addto') === 'sequence') {
-                iteration = iteration + 1;
-                iteration.toFixed(2);
+                seqAjax = $.post("/ondemand/play_fetch.php?action=get_next_iteration&output=sequence&roomid=" + active_room_id, function(data) {
+                    next_iteration = data;
+                });
+
+                header = "Adding Sequence";
             } else {
-                iteration = iteration + 0.01;
-                iteration.toFixed(2);
+                iterationAjax = $.post("/ondemand/play_fetch.php?action=get_next_iteration&output=iteration&roomid=" + active_room_id, function(data) {
+                    next_iteration = data;
+                });
+
+                header = "Adding Iteration";
             }
 
-            toggleDisplay();
+            $.when(seqAjax, iterationAjax).done(function() {
+                toggleDisplay(active_room_id);
 
-            $("#tr_iteration_" + active_room_id).show();
-            $("#div_iteration_" + active_room_id).slideDown(250);
+                $("#add_iteration_header_" + active_room_id).html(header);
 
-            $("#next_iteration_" + active_room_id).val(iteration.toFixed(2));
+                $("#tr_iteration_" + active_room_id).show();
+                $("#div_iteration_" + active_room_id).show(250);
+
+                $("#next_iteration_" + active_room_id).val(next_iteration);
+            });
         });
+
+        scrollLocation("#tr_iteration_" + active_room_id);
     })
 
     .on("click", ".save_so", function() {

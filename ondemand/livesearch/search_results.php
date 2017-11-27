@@ -23,10 +23,9 @@ function getBracketInfo($bracket, $opID, $room) {
     global $dbconn;
 
     $bracket_info = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = $opID")->fetch_assoc();
-    $op_name = $bracket_info['op_id'] . "-" . $bracket_info['job_title'];
 
     if((bool)$room[$bracket . "_published"]) {
-        return "<table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>$op_name</td></tr></table>";
+        return "<table class='table-custom-nb'><tr><td><button class='btn waves-effect btn-primary' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>({$bracket_info['op_id']}) </td><td style='padding-left:2px;'>{$bracket_info['job_title']}</td></tr></table>";
     }
 }
 
@@ -170,7 +169,7 @@ switch ($search) {
 
                 /** BEGIN LISTING OF SO'S */
                 echo "  <tr class='cursor-hand' id='show_room_{$result['so_num']}'>";
-                echo "    <td width='26px'><button class='btn waves-effect btn-primary pull-right' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button></td>";
+                echo "    <td class='nowrap' style='width:50px;'><button class='btn waves-effect btn-primary' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button> <button class='btn btn-primary-outline waves-effect add_room_trigger' data-sonum='{$result['so_num']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional room' style='font-size:10px;width:23px;height:22px;margin-top:1px;padding:0;'> +X</button></td>";
                 echo "    <td>{$result['so_num']}</td>";
                 echo "    <td>{$result['project_name']}</td>";
                 echo "    <td>{$dealer['contact']}</td>";
@@ -179,7 +178,7 @@ switch ($search) {
 
                 /** BEGIN EDIT SO DISPLAY */
                 echo "<tr id='tr_edit_so_{$result['so_num']}' style='display: none;'>";
-                echo "  <td colspan='9'><div id='div_edit_so_{$result['so_num']}' style='display: none;'>";
+                echo "  <td colspan='8'><div id='div_edit_so_{$result['so_num']}' style='display: none;'>";
                 ?>
 
                 <div class="col-md-12">
@@ -593,7 +592,7 @@ switch ($search) {
 
                                         <table class="table table-custom-nb table-v-top" width="100%">
                                             <?php
-                                            $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE note_type = 'so_inquiry' AND notes.type_id = '{$result['id']}' ORDER BY notes.timestamp DESC;");
+                                            $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$result['id']}' ORDER BY notes.timestamp DESC;");
 
                                             while($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
                                                 $inquiry_replies = null;
@@ -705,6 +704,9 @@ switch ($search) {
 
                             if($room_qry->num_rows > 0) {
                                 while($room = $room_qry->fetch_assoc()) {
+                                    $add_iteration_btn = null;
+                                    $add_seq_btn = null;
+
                                     $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
                                     $iteration = explode(".", number_format($room['iteration'], 2));
@@ -717,14 +719,20 @@ switch ($search) {
                                         if($iteration[0] === $prev_seq) {
                                             $room_name = ".{$iteration[1]}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}: {$room['room_name']}";
                                             $tab = "<div class='pull-left' style='width:15px;'>&nbsp</div>";
+                                            $add_iteration_btn = null;
                                         } else {
                                             $room_name = "{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}: {$room['room_name']}";
                                             $prev_seq = $iteration[0];
+                                            $add_iteration_btn = "<button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-addto='iteration' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional iteration' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;'> I +.01</button>";
                                             $tab = "<div class='pull-left' style='width:8px;'>&nbsp</div>";
                                         }
+
+                                        $add_seq_btn = null;
                                     } else {
                                         $room_name = "{$room['room']}{$room['iteration']}-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}: {$room['room_name']}";
                                         $prev_room = $room['room'];
+                                        $add_iteration_btn = "<button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-addto='iteration' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional iteration' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;'> I +.01</button>";
+                                        $add_seq_btn = "<button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-addto='sequence' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional sequence' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;'> S +1</button>";
                                         $tab = null;
                                     }
 
@@ -783,7 +791,7 @@ switch ($search) {
                                     }
 
                                     echo "<tr class='cursor-hand' id='manage_bracket_{$room['id']}'>";
-                                    echo "  <td class='nowrap' width='50px'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button></td>";
+                                    echo "  <td class='nowrap'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button> $add_seq_btn $add_iteration_btn</td>";
                                     echo "  <td>{$tab}{$room_name} <span class='pull-right' style='margin-right:5px;'>$order_status</span></td>";
                                     echo "  <td class='$salesColor' style='width:9.7%'>$sales_published_display</td>";
                                     echo "  <td class='$sampleColor' style='width:9.7%'>$sample_published_display</td>";
@@ -868,13 +876,7 @@ switch ($search) {
                                                                     </tr>
                                                                     <tr>
                                                                         <td><label for="iteration">Iteration</label></td>
-                                                                        <td>
-                                                                            <div class="input-group">
-                                                                                <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['id']; ?>" data-addto="sequence" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional sequence" style="font-size:10px;"> +1 </span>
-                                                                                <input type="text" class="form-control" id="edit_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly>
-                                                                                <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['id']; ?>" data-addto="iteration" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration" style="font-size:10px;"> +.01 </span>
-                                                                            </div>
-                                                                        </td>
+                                                                        <td><input type="text" class="form-control" id="edit_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly></td>
                                                                     </tr>
                                                                     <tr>
                                                                         <td><label for="order_status">Order Status</label></td>
@@ -1750,7 +1752,7 @@ switch ($search) {
                                         <div class="row">
                                             <form id="room_add_iteration_<?php echo $room['id']; ?>">
                                                 <div class="col-md-12">
-                                                    <h4>Adding Iteration...</h4>
+                                                    <h4 id="add_iteration_header_<?php echo $room['id']; ?>">Adding Iteration...</h4>
 
                                                     <div class="col-md-3">
                                                         <form>
@@ -1812,13 +1814,7 @@ switch ($search) {
                                                                 </tr>
                                                                 <tr>
                                                                     <td><label for="iteration">Iteration</label></td>
-                                                                    <td>
-                                                                        <div class="input-group">
-                                                                            <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-addto="sequence" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional sequence"> <span class="zmdi zmdi-plus-1"></span> </span>
-                                                                            <input type="text" class="form-control" id="next_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly>
-                                                                            <span class="input-group-addon cursor-hand add_iteration" data-roomid="<?php echo $room['name']; ?>" data-addto="iteration" data-iteration="<?php echo $room['iteration']; ?>" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration"> <span class="zmdi zmdi-plus-1"></span> </span>
-                                                                        </div>
-                                                                    </td>
+                                                                    <td><input type="text" class="form-control" id="next_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly></td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td><label for="order_status">Order Status</label></td>
@@ -1898,12 +1894,6 @@ switch ($search) {
                                     /** END SINGLE ROOM DISPLAY */
                                 }
                             }
-
-                            /** BEGIN DISPLAY OF ADD SINGLE ROOM */
-                            echo "<tr class='cursor-hand add_room_trigger' data-sonum='{$result['so_num']}'>";
-                            echo "  <td style='width: 26px;'><span class='btn btn-primary faux_button'><i class='zmdi zmdi-plus-1'></i></span></td>";
-                            echo "  <td colspan='9' style='font-weight:bold;'>Add room</td>";
-                            echo "</tr>";
 
                             /** BEGIN ADD SINGLE ROOM INFORMATION */
                             echo "<tr id='tr_add_single_room_info_{$result['so_num']}' style='display: none;'>";

@@ -1,6 +1,44 @@
 <?php
 require '../includes/header_start.php';
 
+function whatChanged($new, $old, $title, $date = false, $bool = false) {
+    global $dbconn;
+
+    if($date) {
+        /** @var string $c_del_date Converts the delivery date to a string */
+        $updated = date(DATE_TIME_ABBRV, strtotime($new));
+        $new = strtotime($new);
+
+        $new = (int)$new;
+        $old = (int)$old;
+    } else {
+        if($title === 'Sales Bracket' || $title === 'Sample Bracket' || $title === 'Pre-Production Bracket' || $title === 'Door/Drawer Bracket' || $title === 'Main Bracket' ||
+            $title === 'Custom Bracket' || $title === 'Shipping Bracket' || $title === 'Install Bracket') {
+
+            $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = $new");
+            $op = $op_qry->fetch_assoc();
+
+            $updated = $op['job_title'];
+        } elseif($title === 'Active Bracket Operations') {
+            $updated = null;
+        } else {
+            $updated = "to $new";
+        }
+    }
+
+    if($bool) {
+        $updated = ($new === 0) ? 'Unpublished' : 'Published';
+
+        $str = "$updated";
+        $old = (bool)$old;
+        $new = (bool)$new;
+    } else {
+        $str = "Updated $updated";
+    }
+
+    return ($old !== $new) ? "$title $str" : null;
+}
+
 switch($_REQUEST['action']) {
     case 'add_customer':
         /** Global information */
@@ -166,6 +204,52 @@ switch($_REQUEST['action']) {
         $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$so_num'");
         $so = $so_qry->fetch_assoc();
 
+        $changed[] = whatChanged($so_num, $so['so_num'], 'SO Number');
+        $changed[] = whatChanged($dealer_code, $so['dealer_code'], 'Dealer Code');
+        $changed[] = whatChanged($project_name, $so['project_name'], 'Project Name');
+        $changed[] = whatChanged($project_addr, $so['project_addr'], 'Project Address');
+        $changed[] = whatChanged($project_city, $so['project_city'], 'Project City');
+        $changed[] = whatChanged($project_state, $so['project_state'], 'Project State');
+        $changed[] = whatChanged($project_zip, $so['project_zip'], 'Project Zip');
+        $changed[] = whatChanged($project_landline, $so['project_landline'], 'Project Landline');
+        $changed[] = whatChanged($name_1, $so['name_1'], 'Name 1');
+        $changed[] = whatChanged($cell_1, $so['cell_1'], 'Cell 1');
+        $changed[] = whatChanged($business_1, $so['business_1'], 'Secondary Phone 1');
+        $changed[] = whatChanged($email_1, $so['email_1'], 'Email 1');
+        $changed[] = whatChanged($name_2, $so['name_2'], 'Name 2');
+        $changed[] = whatChanged($cell_2, $so['cell_2'], 'Cell 2');
+        $changed[] = whatChanged($business_2, $so['business_2'], 'Secondary Phone 2');
+        $changed[] = whatChanged($email_2, $so['email_2'], 'Email 2');
+        $changed[] = whatChanged($secondary_addr, $so['secondary_addr'], 'Secondary Address');
+        $changed[] = whatChanged($secondary_landline, $so['secondary_landline'], 'Secondary Landline');
+        $changed[] = whatChanged($secondary_city, $so['secondary_city'], 'Secondary City');
+        $changed[] = whatChanged($secondary_state, $so['secondary_state'], 'Secondary State');
+        $changed[] = whatChanged($secondary_zip, $so['secondary_zip'], 'Secondary Zip');
+        $changed[] = whatChanged($contractor_name, $so['contractor_name'], 'Contractor Name');
+        $changed[] = whatChanged($contractor_business, $so['contractor_business'], 'Contractor Business');
+        $changed[] = whatChanged($contractor_cell, $so['contractor_cell'], 'Contractor Cell');
+        $changed[] = whatChanged($contractor_addr, $so['contractor_addr'], 'Contractor Address');
+        $changed[] = whatChanged($contractor_city, $so['contractor_city'], 'Contractor City');
+        $changed[] = whatChanged($contractor_state, $so['contractor_state'], 'Contractor State');
+        $changed[] = whatChanged($contractor_zip, $so['contractor_zip'], 'Contractor Zip');
+        $changed[] = whatChanged($contractor_email, $so['contractor_email'], 'Contractor Email');
+        $changed[] = whatChanged($project_mgr, $so['project_mgr'], 'Project Manager');
+        $changed[] = whatChanged($project_mgr_cell, $so['project_mgr_cell'], 'Project Manager Cell');
+        $changed[] = whatChanged($project_mgr_email, $so['project_mgr_email'], 'Project Manager Email');
+        $changed[] = whatChanged($bill_to, $so['bill_to'], 'Bill To');
+        $changed[] = whatChanged($billing_contact, $so['billing_contact'], 'Billing Contact');
+        $changed[] = whatChanged($billing_landline, $so['billing_landline'], 'Billing Landline');
+        $changed[] = whatChanged($billing_cell, $so['billing_cell'], 'Billing Cell');
+        $changed[] = whatChanged($billing_addr, $so['billing_addr'], 'Billing Address');
+        $changed[] = whatChanged($billing_city, $so['billing_city'], 'Billing City');
+        $changed[] = whatChanged($billing_state, $so['billing_state'], 'Billing State');
+        $changed[] = whatChanged($billing_zip, $so['billing_zip'], 'Billing Zip');
+        $changed[] = whatChanged($billing_account, $so['billing_account'], 'Billing Account');
+        $changed[] = whatChanged($billing_routing, $so['billing_routing'], 'Billing Routing');
+        $changed[] = whatChanged($billing_cc_num, $so['billing_cc_num'], 'Billing CC Number');
+        $changed[] = whatChanged($billing_cc_exp, $so['billing_cc_exp'], 'Billing CC Expiration');
+        $changed[] = whatChanged($billing_cc_ccv, $so['billing_cc_ccv'], 'Billing CC CCV');
+
         $followup_date = sanitizeInput($_REQUEST['inquiry_followup_date']);
         $followup_individual = sanitizeInput($_REQUEST['inquiry_requested_of']);
 
@@ -189,6 +273,16 @@ switch($_REQUEST['action']) {
                     billing_contact = '$billing_contact', billing_landline = '$billing_landline', billing_cell = '$billing_cell', billing_addr = '$billing_addr', billing_city = '$billing_city',
                       billing_state = '$billing_state', billing_zip = '$billing_zip', billing_account = '$billing_account', billing_routing = '$billing_routing', billing_cc_num = '$billing_cc_num',
                         billing_cc_exp = '$billing_cc_exp', billing_cc_ccv = '$billing_cc_ccv' WHERE so_num = '$so_num'")) {
+            if(!empty(array_values(array_filter($changed)))) {
+                $c_note = "<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                $c_note .= implode(", ", array_values(array_filter($changed)));
+
+                $stmt = $dbconn->prepare("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES (?, 'so_note_log', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, ?);");
+                $stmt->bind_param("si", $c_note, $so['id']);
+                $stmt->execute();
+                $stmt->close();
+            }
+
             echo displayToast("success", "Successfully updated Sales Order information for $so_num.", "Updated Information");
         } else {
             dbLogSQLErr($dbconn);

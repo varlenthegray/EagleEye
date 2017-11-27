@@ -14,4 +14,35 @@ switch($_REQUEST['action']) {
         }
 
         break;
+    case 'get_next_iteration':
+        $room_id = sanitizeInput($_REQUEST['roomid']);
+
+        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
+
+        if($room_qry->num_rows > 0) {
+            $room = $room_qry->fetch_assoc();
+
+            if($_REQUEST['output'] === 'sequence') {
+                $highest_seq_qry = $dbconn->query("SELECT MAX(iteration) as iteration FROM rooms WHERE so_parent = '{$room['so_parent']}' AND room = '{$room['room']}'");
+                $highest_seq = $highest_seq_qry->fetch_assoc();
+                $seq_iteration = $highest_seq['iteration'];
+
+                $next_seq = (double)$seq_iteration + 1.00;
+
+                $sequence = explode(".", $next_seq);
+
+                echo $sequence[0] . ".01";
+            } else {
+                $cur_seq = explode(".", $room['iteration']);
+
+                $highest_it_qry = $dbconn->query("SELECT MAX(iteration) as iteration FROM rooms WHERE so_parent = '{$room['so_parent']}' AND room = '{$room['room']}' AND iteration LIKE '{$cur_seq[0]}%'");
+                $highest_it = $highest_it_qry->fetch_assoc();
+
+                $iteration = $highest_it['iteration'];
+
+                echo (double)$iteration + 0.01;
+            }
+        }
+
+        break;
 }

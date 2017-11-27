@@ -385,8 +385,6 @@ HEREDOC;
             $stmt->bind_param("si", $c_note, $room_id);
             $stmt->execute();
             $stmt->close();
-
-            echo "<script>console.log(\"$c_note\")</script>";
         }
 
         break;
@@ -414,41 +412,47 @@ HEREDOC;
         $room = sanitizeInput($_REQUEST['room']);
         $roomid = sanitizeInput($_REQUEST['roomid']);
 
-        if(empty($delivery_date)) {
-            $delivery_date = '';
-        } elseif(!empty($delivery_date)) {
-            $delivery_date = strtotime($delivery_date);
-        }
+        $iteration_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$sonum' AND room = '$room' AND iteration = '$iteration'");
 
-        $ind_bracket_buildout = array();
+        if($iteration_qry->num_rows === 0) {
+            if(empty($delivery_date)) {
+                $delivery_date = '';
+            } elseif(!empty($delivery_date)) {
+                $delivery_date = strtotime($delivery_date);
+            }
 
-        $ind_bracket_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = FALSE ORDER BY op_id ASC");
+            $ind_bracket_buildout = array();
 
-        while($ind_bracket = $ind_bracket_qry->fetch_assoc()) {
-            $ind_bracket_buildout[] = $ind_bracket['id'];
-        }
+            $ind_bracket_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = FALSE ORDER BY op_id ASC");
 
-        $ind_bracket_final = json_encode($ind_bracket_buildout);
+            while($ind_bracket = $ind_bracket_qry->fetch_assoc()) {
+                $ind_bracket_buildout[] = $ind_bracket['id'];
+            }
 
-        if($dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, sales_bracket, sales_bracket_priority, preproduction_bracket, 
+            $ind_bracket_final = json_encode($ind_bracket_buildout);
+
+            if($dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, sales_bracket, sales_bracket_priority, preproduction_bracket, 
          preproduction_bracket_priority, sample_bracket, sample_bracket_priority, doordrawer_bracket, doordrawer_bracket_priority, custom_bracket, custom_bracket_priority, main_bracket, 
           main_bracket_priority, individual_bracket_buildout, order_status, shipping_bracket, shipping_bracket_priority, install_bracket, install_bracket_priority, delivery_date, iteration, days_to_ship) VALUES 
            ('$sonum', '$room', '$room_name', '$product_type', 1, 4, 85, 4, 83, 4, 38, 4, 45, 4, 50, 4, '$ind_bracket_final', '$order_status', 66, 4, 15, 4, '$delivery_date', $iteration, '$days_to_ship');")) {
-            $inserted_id = $dbconn->insert_id;
+                $inserted_id = $dbconn->insert_id;
 
-            if(!empty($notes)) {
-                if($dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$inserted_id')")) {
-                    echo displayToast("success", "Successfully added iteration.", "Iteration Created");
+                if(!empty($notes)) {
+                    if($dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$inserted_id')")) {
+                        echo displayToast("success", "Successfully added iteration.", "Iteration Created");
+                    } else {
+                        dbLogSQLErr($dbconn);
+                    }
                 } else {
-                    dbLogSQLErr($dbconn);
+                    echo displayToast("success", "Successfully added iteration.", "Iteration Created");
                 }
-            } else {
-                echo displayToast("success", "Successfully added iteration.", "Iteration Created");
-            }
 
-            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Iteration Created', 'room_note_log', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$inserted_id')");
+                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Iteration Created', 'room_note_log', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$inserted_id')");
+            } else {
+                dbLogSQLErr($dbconn);
+            }
         } else {
-            dbLogSQLErr($dbconn);
+            echo displayToast("warning", "Iteration already exists.", "Iteration Exists");
         }
 
         break;
