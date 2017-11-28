@@ -147,12 +147,12 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td></td>
                     <td class="border_thin_bottom total_text">Modifications & Accessories:</td>
-                    <td class="text-md-right border_thin_bottom total_text">$0.00</td>
+                    <td class="text-md-right border_thin_bottom total_text">$<input type="text" name="mods_accessories" value="0.00" maxlength="10"></td>
                 </tr>
                 <tr>
                     <td></td>
                     <td class="total_text">Cabinet List Price:</td>
-                    <td class="text-md-right total_text">$0.00</td>
+                    <td class="text-md-right total_text">$<input type="text" name="list_price" value="0.00" maxlength="10"></td>
                 </tr>
             </table>
 
