@@ -1,10 +1,13 @@
 <?php
 require '../includes/header_start.php';
 require ("../assets/php/composer/vendor/autoload.php"); // require carbon for date formatting, http://carbon.nesbot.com/
+require ("../includes/classes/queue.php");
 
 //outputPHPErrs();
 
 use Carbon\Carbon; // prep carbon
+
+$queue = new \Queue\queue();
 
 switch($_REQUEST['action']) {
     /** Dashboard */
