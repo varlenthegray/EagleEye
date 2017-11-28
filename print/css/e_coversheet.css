@@ -129,6 +129,10 @@ th, .header {
     text-align: left;
 }
 
+.total_text {
+    font-size: 1.1em;
+}
+
 .border_top {
     border: solid #000;
     border-width: 2px 0 0 0;
@@ -151,14 +155,19 @@ input[type=checkbox] {
     border-width: 0 0 3px 0;
 }
 
-#terms_box {
-    width: 50%;
+#sample_confirmation {
+    margin-left: 10%;
+    width: 35%;
     float: left;
 }
 
-#charge_summary {
-    width: 50%;
+#charge_summary_std, #terms_acceptance, #charge_summary_arh {
+    width: 45%;
     float: right;
+}
+
+#terms_acceptance {
+    clear: both;
 }
 
 .em_box {
@@ -179,7 +188,11 @@ input[type=checkbox] {
 }
 
 .gray_bg {
-    background-color: #CCCCCC;
+    background-color: rgb(216,216,216);
+}
+
+.dark_gray_bg {
+    background-color: rgb(108,108,108);
 }
 
 #save_button {
@@ -215,6 +228,10 @@ input[type=text], textarea {
 
 .align_left {
     text-align: left !important;
+}
+
+.clearfix {
+    clear: both;
 }
 
 @media print {

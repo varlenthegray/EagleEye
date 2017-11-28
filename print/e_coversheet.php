@@ -115,15 +115,12 @@ function translateVIN($segment, $key) {
                     </table>
                 </div>
             </div>
-
-            <div id="vin">VIN: <span><?php echo $info['vin_code']; ?></span></div>
         </div>
 
         <div id="main_section">
             <table>
                 <tr>
-                    <th width="10%"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></th>
-                    <th class="text-md-right"><?php echo "{$info['dealer_code']} - {$dealer_info['dealer_name']}"; ?>&nbsp;</th>
+                    <th colspan="2"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['dealer_name']}"; ?></span></th>
                 </tr>
                 <tr class="border_thin_bottom" id="delivery_notes">
                     <td class="gray_bg">Delivery Notes:</td>
@@ -144,14 +141,31 @@ function translateVIN($segment, $key) {
 
             <table>
                 <tr>
-                    <th width="10%">Attributes:</th>
-                    <th width="12%">&nbsp;</th>
-                    <th>&nbsp;</th>
-                    <th>&nbsp;</th>
-                    <th>QTY</th>
-                    <th>Amount</th>
-                    <th class="text-md-center pct_value">%</th>
-                    <th class="text-md-right subtotal">Sub-Total&nbsp;</th>
+                    <th width="65.2%"></th>
+                    <th colspan="2">Summary of Charges</th>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="border_thin_bottom total_text">Modifications & Accessories:</td>
+                    <td class="text-md-right border_thin_bottom total_text">$0.00</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="total_text">Cabinet List Price:</td>
+                    <td class="text-md-right total_text">$0.00</td>
+                </tr>
+            </table>
+
+            <table style="width:80%;margin:0 auto;">
+                <tr>
+                    <th class="dark_gray_bg" width="7%">Attributes:</th>
+                    <th class="dark_gray_bg" width="15%">&nbsp;</th>
+                    <th class="dark_gray_bg" width="18%">&nbsp;</th>
+                    <th class="dark_gray_bg">&nbsp;</th>
+                    <th class="dark_gray_bg">QTY</th>
+                    <th class="dark_gray_bg">Amount</th>
+                    <th class="dark_gray_bg text-md-center pct_value">%</th>
+                    <th class="dark_gray_bg text-md-right subtotal">Upcharges&nbsp;</th>
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
@@ -333,6 +347,9 @@ function translateVIN($segment, $key) {
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="distressing_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_distressing_subtotal"></span></td>
                 </tr>
+                <?php
+                    if($info['construction_method'] !== 'L') {
+                ?>
                 <tr class="border_top">
                     <td>&nbsp;</td>
                     <td class="gray_bg">Carcass:</td>
@@ -347,7 +364,8 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Exterior Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width"
+                                                                                                                                                                                    name="e_finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -387,7 +405,8 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Interior Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width"
+                                                                                                                                                                                    name="i_finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -413,6 +432,9 @@ function translateVIN($segment, $key) {
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="int_glaze_technique_subtotal"></span></td>
                 </tr>
+                <?php
+                    }
+                ?>
                 <tr class="border_double_bottom">
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
@@ -426,11 +448,167 @@ function translateVIN($segment, $key) {
             </table>
         </div>
 
-        <div id="terms_box">
+        <div id="sample_confirmation">
+            <table>
+                <tr>
+                    <td><span class="text-underline">Finish/Sample</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Check only one)</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="checkbox" id="door_approved"> <label for="door_approved">I have seen the Door style w/ Finish and it is APPROVED</label></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="checkbox" id="approved_no_sample"> <label for="approved_no_sample">I APPROVE the Finish & Door style without seeing a sample</label></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="checkbox" id="requested_sample"> <label for="requested_sample">I request a Sample for approval &nbsp;&nbsp;&nbsp; (Overall Size)</label></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <table style="margin-left: 20px;">
+                            <tr>
+                                <td width="100px"><input type="checkbox" id="sample_block"> <label for="sample_block">Sample Block</label></td>
+                                <td class="text-md-center" width="100px">5 1/4" x 6 1/8"</td>
+                                <td class="text-md-right">$<span id="sample_block_price"></span></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="door_only"> <label for="door_only">Door Only</label></td>
+                                <td class="text-md-center">12" x 15"</td>
+                                <td class="text-md-right">$<span id="door_only_price"></span></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="door_drawer"> <label for="door_drawer">Door & Drawer</label></td>
+                                <td class="text-md-center">15 1/2" x 23 1/2"</td>
+                                <td class="text-md-right">$<span id="door_drawer_price"></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="padding-left:16px;">(Door & Drawer Front attached)</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="inset_square"> <label for="inset_square">Inset Square</label></td>
+                                <td class="text-md-center">15 1/2" x 23 1/2"</td>
+                                <td class="text-md-right">$<span id="inset_square_price"></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="padding-left:16px;">(Door, Drawer Front & Frame)</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" id="inset_beaded"> <label for="inset_beaded">Inset Beaded</label></td>
+                                <td class="text-md-center">16 1/2" x 23 1/2"</td>
+                                <td class="text-md-right">$<span id="inset_beaded_price"></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="padding-left:16px;">(Door, Drawer Front & Frame)</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="charge_summary_std">
+            <table align="right" width="100%">
+                <tr class="border_thin_bottom">
+                    <td width="65%" class="total_text">Upcharges:</td>
+                    <td width="80px" class="gray_bg total_text">&nbsp;</td>
+                    <td class="text-md-right gray_bg total_text">$<span id="final_upcharges"></span></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="total_text">Lead Time: <span class="em_box" style="margin-left: 50px;">Standard</span></td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text">$<span id="final_leadtime"></span></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="total_text">Sub Total:</td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text">$<span id="final_subtotal"></span></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="total_text">Multiplier:</td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text"><input type="text" name="multiplier" value="0.407" maxlength="5" class="static_width" style="width:23px;"></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="total_text">Net:</td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text">$<span id="final_net"></span></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="total_text">Shipping Zone: <span class="em_box" style="margin-left: 20px;"><input type="text" name="final_ship_zone" id="final_ship_zone" value="" maxlength="1" class="static_width" style="width:10px;text-align:center;"></span> <span id="final_ship_zone_miles"></span></td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text">$<span id="final_shipping"></span></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="total_text"><input type="checkbox" id="final_freight_check" class="no-print"> Min. Freight: (Under 6 Cabinets)</td>
+                    <td class="total_text">$<span id="min_freight_price"></span></td>
+                    <td class="text-md-right total_text">$<span id="final_freight"></span></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="total_text"><input type="checkbox" id="final_jobsite_check" class="no-print"> Jobsite Delivery:</td>
+                    <td class="total_text">$<span id="jobsite_del_price"></span></td>
+                    <td class="text-md-right total_text">$<span id="final_jobsite"></span></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="total_text"><input type="checkbox" id="final_cc_check" class="no-print"> Credit Card: +3.5%</td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text">$<span id="final_cc"></span></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="total_text">Samples</td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text">$<span id="final_samples"></span></td>
+                </tr>
+                <tr class="em_box">
+                    <td class="total_text">Sub Total:</td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text">$<span id="final_last_subtotal"></span></td>
+                </tr>
+                <tr class="header em_box">
+                    <td class="total_text">Total Amount</td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text">$<span id="final_total"></span></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
+                    <td class="text-md-right em_box">$<span id="final_deposit"></span></td>
+                </tr>
+            </table>
+
+            <div class="clearfix"></div>
+        </div>
+
+        <div id="charge_summary_arh" style="display: none;">
+            <table align="right" width="100%">
+                <tr class="em_box">
+                    <td class="total_text">Products Sub Total:</td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text">$<input type="text" name="product_subtotal" value="0.00" maxlength="10"></td>
+                </tr>
+                <tr class="border_thin_bottom">
+                    <td class="total_text">
+                        Multiplier: <input type="radio" name="arh_multiplier_opts" id="arh_landed" value="arh_landed" checked><label for="arh_landed">Landed</label><input type="radio" name="arh_multiplier_opts" id="arh_pickup" value="arh_pickup"><label for="arh_pickup">Pickup</label>
+                    </td>
+                    <td class="text-md-right total_text"><input type="text" id="arh_multiplier" name="arh_multiplier" value=".335" maxlength="5"></td>
+                    <td class="text-md-right total_text">$<input type="text" id="arh_multiplier_total" name="arh_multiplier_total" value="0.00" maxlength="10"></td>
+                </tr>
+                <tr class="header em_box">
+                    <td class="total_text">Total Amount:</td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text">$<input type="text" name="final_total" value="0.00" maxlength="10" style="background-color:#000;color:#FFF;font-weight:bold;"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
+                    <td class="text-md-right em_box">$<input type="text" name="final_deposit" value="0.00" maxlength="10"></td>
+                </tr>
+            </table>
+
+            <div class="clearfix"></div>
+        </div>
+
+        <div id="terms_acceptance">
             <table>
                 <tr>
                     <td class="text-underline">Please check box to accept terms</td>
-                    <td>(Must be checked to validate acceptance)</td>
+                    <td class="text-md-right">(Must be checked to validate acceptance)</td>
                 </tr>
                 <tr>
                     <td colspan="2"><input type="checkbox" id="lead_start"> Lead time starts once quote has been signed below & deposit has been received</td>
@@ -451,185 +629,19 @@ function translateVIN($segment, $key) {
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input type="checkbox" id="final_payment"> Final payment due upon delivery & will be charged to ACH account prior to offloading<br/><span style="margin-left:25px;">(Exceptions to made prior to delivery)</span></td>
+                    <td colspan="2"><input type="checkbox" id="final_payment"> Final payment due upon delivery & will be charged to ACH account prior to offloading (Exceptions to made prior to delivery)</td>
                 </tr>
                 <tr>
-                    <td colspan="2" style="height: 5px;"></td>
-                </tr>
-                <tr>
-                    <td><span class="text-underline">Finish/Sample</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Check only one)</td>
-                </tr>
-                <tr>
-                    <td colspan="2"><input type="checkbox" id="door_approved"> I have seen the Door style w/ Finish and it is APPROVED</td>
-                </tr>
-                <tr>
-                    <td colspan="2"><input type="checkbox" id="door_approved"> I APPROVE the Finish & Door style without seeing a sample</td>
-                </tr>
-                <tr>
-                    <td colspan="2"><input type="checkbox" id="door_approved"> I request a Sample for approval &nbsp;&nbsp;&nbsp; (Overall Size)</td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <table style="margin-left: 20px;">
-                            <tr>
-                                <td width="100px"><input type="checkbox" id="sample_block"> Sample Block</td>
-                                <td class="text-md-right">$<span id="sample_block_price"></span></td>
-                                <td class="text-md-center" width="100px">5 1/4" x 6 1/8"</td>
-                                <td>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" id="door_only"> Door Only</td>
-                                <td class="text-md-right">$<span id="door_only_price"></span></td>
-                                <td class="text-md-center">12" x 15"</td>
-                                <td>&nbsp;</td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" id="door_drawer"> Door & Drawer</td>
-                                <td class="text-md-right">$<span id="door_drawer_price"></span></td>
-                                <td class="text-md-center">15 1/2" x 23 1/2"</td>
-                                <td>(Door & Drawer Front attached)</td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" id="inset_square"> Inset Square</td>
-                                <td class="text-md-right">$<span id="inset_square_price"></span></td>
-                                <td class="text-md-center">15 1/2" x 23 1/2"</td>
-                                <td>(Door, Drawer Front & Frame)</td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" id="inset_beaded"> Inset Beaded</td>
-                                <td class="text-md-right">$<span id="inset_beaded_price"></span></td>
-                                <td class="text-md-center">16 1/2" x 23 1/2"</td>
-                                <td>(Door, Drawer Front & Frame)</td>
-                            </tr>
-                        </table>
+                    <td colspan="2" id="signature">
+                        Signature: <div style="border-bottom: 1px solid #000;width:88%;float:right;">&nbsp;</div>
+                        <div style="clear:both;font-size:.8em;">(Signature confirms acceptance and acknowledges that the deposit will be auto-drafted within 24 hours)</div>
                     </td>
+                </tr>
+                <tr>
+                    <td colspan="2" id="closing_statement">Thank you! Our Commitment is to Quality in Both our Cabinetry & Our Customer Service!</td>
                 </tr>
             </table>
         </div>
-
-        <div id="charge_summary_std">
-            <table align="right">
-                <tr>
-                    <td colspan="2">
-                        <table>
-                            <tr class="border_thin_bottom">
-                                <td width="230px">Upcharges:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<span id="final_upcharges"></span></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Cabinet List Price:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="list_price" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Modifications & Accessories:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="mods_accessories" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Lead Time: <span class="em_box" style="margin-left: 50px;">Standard</span></td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<span id="final_leadtime"></span></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Sub Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<span id="final_subtotal"></span></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Multiplier:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right"><input type="text" name="multiplier" value="0.407" maxlength="5" class="static_width" style="width:23px;"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Net:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<span id="final_net"></span></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Shipping Zone: <span class="em_box" style="margin-left: 20px;"><input type="text" name="final_ship_zone" id="final_ship_zone" value="" maxlength="1" class="static_width" style="width:10px;text-align:center;"></span> <span id="final_ship_zone_miles"></span></td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<span id="final_shipping"></span></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td><input type="checkbox" id="final_freight_check" class="no-print"> Min. Freight: (Under 6 Cabinets)</td>
-                                <td>$<span id="min_freight_price"></span></td>
-                                <td class="text-md-right">$<span id="final_freight"></span></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td><input type="checkbox" id="final_jobsite_check" class="no-print"> Jobsite Delivery:</td>
-                                <td>$<span id="jobsite_del_price"></span></td>
-                                <td class="text-md-right">$<span id="final_jobsite"></span></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td><input type="checkbox" id="final_cc_check" class="no-print"> Credit Card: +3.5%</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<span id="final_cc"></span></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>Samples</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<span id="final_samples"></span></td>
-                            </tr>
-                            <tr class="em_box">
-                                <td>Sub Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<span id="final_last_subtotal"></span></td>
-                            </tr>
-                            <tr class="header em_box">
-                                <td>Total Amount</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<span id="final_total"></span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
-                                <td class="text-md-right em_box">$<span id="final_deposit"></span></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div id="charge_summary_arh" style="display: none;">
-            <table align="right">
-                <tr>
-                    <td colspan="2">
-                        <table>
-                            <tr class="em_box">
-                                <td>Products Sub Total:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="product_subtotal" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="border_thin_bottom">
-                                <td>
-                                    Multiplier: <input type="radio" name="arh_multiplier_opts" id="arh_landed" value="arh_landed" checked><label for="arh_landed">Landed</label><input type="radio" name="arh_multiplier_opts" id="arh_pickup" value="arh_pickup"><label for="arh_pickup">Pickup</label>
-                                </td>
-                                <td class="text-md-right"><input type="text" id="arh_multiplier" name="arh_multiplier" value=".335" maxlength="5"></td>
-                                <td class="text-md-right">$<input type="text" id="arh_multiplier_total" name="arh_multiplier_total" value="0.00" maxlength="10"></td>
-                            </tr>
-                            <tr class="header em_box">
-                                <td>Total Amount:</td>
-                                <td>&nbsp;</td>
-                                <td class="text-md-right">$<input type="text" name="final_total" value="0.00" maxlength="10" style="background-color:#000;color:#FFF;font-weight:bold;"></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
-                                <td class="text-md-right em_box">$<input type="text" name="final_deposit" value="0.00" maxlength="10"></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div id="signature">
-            Signature: ______________________________________________________________________________<br/>
-            (Signature confirms acceptance and acknowledges that the deposit will be auto-drafted within 24 hours)
-        </div>
-
-        <div id="closing_statement">Thank you! Our Commitment is to Quality in Both our Cabinetry & Our Customer Service!</div>
 
         <div id="sample_qty" style="display:none;">
             <table width="100%">
@@ -880,11 +892,11 @@ function translateVIN($segment, $key) {
             $("#layout_notes_title").html("Sample Notes:");
         }
 
-        if(getUrlParams('action') !== null){
-            setTimeout(function() {
-                window.print();
-            }, 150);
-        }
+//        if(getUrlParams('action') !== null){
+//            setTimeout(function() {
+//                window.print();
+//            }, 150);
+//        }
     });
 
     $('body')
