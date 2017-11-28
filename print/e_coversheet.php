@@ -47,7 +47,7 @@ function translateVIN($segment, $key) {
                         </tr>
                         <tr>
                             <td class="definition">Dealer PO#:</td>
-                            <td class="value"><?php echo $info['project_name']; ?></td>
+                            <td class="value"><?php echo "{$info['project_name']} - {$info['room_name']}"; ?></td>
                         </tr>
                         <tr>
                             <td class="definition">Room:</td>
@@ -123,7 +123,7 @@ function translateVIN($segment, $key) {
                     <th colspan="2"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['dealer_name']}"; ?></span></th>
                 </tr>
                 <tr class="border_thin_bottom" id="delivery_notes">
-                    <td class="gray_bg">Delivery Notes:</td>
+                    <td class="gray_bg" width="10%">Delivery Notes:</td>
                     <td><textarea name="delivery_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"></textarea></td>
                 </tr>
                 <tr class="border_thin_bottom" id="global_notes">
@@ -151,8 +151,8 @@ function translateVIN($segment, $key) {
                 </tr>
                 <tr>
                     <td></td>
-                    <td class="total_text">Cabinet List Price:</td>
-                    <td class="text-md-right total_text">$<input type="text" name="list_price" value="0.00" maxlength="10"></td>
+                    <td class="total_text border_thin_bottom">Cabinet List Price:</td>
+                    <td class="text-md-right border_thin_bottom total_text">$<input type="text" name="list_price" value="0.00" maxlength="10"></td>
                 </tr>
             </table>
 
@@ -169,7 +169,7 @@ function translateVIN($segment, $key) {
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
-                    <td class="gray_bg">Door/Drawer Head:</td>
+                    <?php echo ($info['construction_method'] !== 'L') ? "<td class='gray_bg'>Door/Drawer Head:</td>" : "<td></td>"; ?>
                     <td class="border_thin_bottom">Species/Grade:</td>
                     <td class="border_thin_bottom"><?php echo translateVIN('species_grade', $info['species_grade']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -214,8 +214,8 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_sd']); ?></td>
                     <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
                     <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
-                    <td class="border_thin_bottom toggle_gray"><input type="text" name="sd_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                    <td class="border_thin_bottom toggle_gray">$<span id="short_drawer_raise_price"></span></td>
+                    <td class="border_thin_bottom toggle_gray print_gray"><input type="text" name="sd_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width print_gray">x</td>
+                    <td class="border_thin_bottom toggle_gray print_gray">$<span id="short_drawer_raise_price"></span></td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_sd_raise_subtotal"></span></td>
                 </tr>
@@ -226,8 +226,8 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_td']); ?></td>
                     <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
                     <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
-                    <td class="border_thin_bottom toggle_gray"><input type="text" name="td_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                    <td class="border_thin_bottom toggle_gray">$<span id="tall_drawer_raise_price"></span></td>
+                    <td class="border_thin_bottom toggle_gray print_gray"><input type="text" name="td_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width print_gray">x</td>
+                    <td class="border_thin_bottom toggle_gray print_gray">$<span id="tall_drawer_raise_price"></span></td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_td_raise_subtotal"></span></td>
                 </tr>
@@ -238,8 +238,8 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('edge_profile', $info['edge_profile']); ?></td>
                     <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
                     <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
-                    <td class="border_thin_bottom toggle_gray"><input type="text" name="edge_profile_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                    <td class="border_thin_bottom toggle_gray">$<span id="edge_profile_price"></span></td>
+                    <td class="border_thin_bottom toggle_gray print_gray"><input type="text" name="edge_profile_qty" value="0" maxlength="2" style="width:10px;" class="static_width print_gray">x</td>
+                    <td class="border_thin_bottom toggle_gray print_gray">$<span id="edge_profile_price"></span></td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_edge_profile_subtotal"></span></td>
                 </tr>
@@ -260,8 +260,8 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('framing_options', $info['framing_options']); ?></td>
                     <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
                     <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
-                    <td class="border_thin_bottom toggle_gray"><input type="text" name="frame_opt_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                    <td class="border_thin_bottom toggle_gray">$<span id="frame_option_price"></span></td>
+                    <td class="border_thin_bottom toggle_gray print_gray"><input type="text" name="frame_opt_qty" value="0" maxlength="2" style="width:10px;" class="static_width print_gray">x</td>
+                    <td class="border_thin_bottom toggle_gray print_gray">$<span id="frame_option_price"></span></td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_frame_option_subtotal"></span></td>
                 </tr>
@@ -272,8 +272,8 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('style_rail_width', $info['style_rail_width']); ?></td>
                     <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
                     <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
-                    <td class="border_thin_bottom toggle_gray"><input type="text" name="style_rail_qty" value="0" maxlength="2" style="width:10px;" class="static_width">x</td>
-                    <td class="border_thin_bottom toggle_gray">$<span id="styles_rails_price"></span></td>
+                    <td class="border_thin_bottom toggle_gray print_gray"><input type="text" name="style_rail_qty" value="0" maxlength="2" style="width:10px;" class="static_width print_gray">x</td>
+                    <td class="border_thin_bottom toggle_gray print_gray">$<span id="styles_rails_price"></span></td>
                     <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_style_rail_subtotal"></span></td>
                 </tr>
@@ -320,7 +320,7 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td class="border_thin_bottom"><input type="checkbox" id="antiquing" style="margin-left:20px;" <?php echo ($info['antiquing'] !== 'A0') ? "checked" : null; ?> disabled> Antiquing</td>
+                    <td class="border_thin_bottom"><input type="checkbox" id="antiquing" style="margin-left:20px;" <?php echo ($info['antiquing'] !== 'A0') ? "checked" : null; ?> disabled> <label for="antiquing">Antiquing</label></td>
                     <td class="border_thin_bottom"><?php echo translateVIN('antiquing', $info['antiquing']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -330,7 +330,7 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td class="border_thin_bottom"><input type="checkbox" id="worn_edges" style="margin-left:20px;" <?php echo ($info['worn_edges'] !== 'W0') ? "checked" : null; ?> disabled> Worn Edges</td>
+                    <td class="border_thin_bottom"><input type="checkbox" id="worn_edges" style="margin-left:20px;" <?php echo ($info['worn_edges'] !== 'W0') ? "checked" : null; ?> disabled> <label for="worn_edges">Worn Edges</label></td>
                     <td class="border_thin_bottom"><?php echo translateVIN('worn_edges', $info['worn_edges']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -340,7 +340,7 @@ function translateVIN($segment, $key) {
                 <tr>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
-                    <td class="border_thin_bottom"><input type="checkbox" id="distressing" style="margin-left:20px;" <?php echo ($info['distress_level'] !== 'D0') ? "checked" : null; ?> disabled> Distressing</td>
+                    <td class="border_thin_bottom"><input type="checkbox" id="distressing" style="margin-left:20px;" <?php echo ($info['distress_level'] !== 'D0') ? "checked" : null; ?> disabled> <label for="distressing">Distressing</label></td>
                     <td class="border_thin_bottom"><?php echo translateVIN('distress_level', $info['distress_level']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -364,8 +364,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Exterior Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width"
-                                                                                                                                                                                    name="e_finish_code_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -405,8 +404,7 @@ function translateVIN($segment, $key) {
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Interior Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width"
-                                                                                                                                                                                    name="i_finish_code_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -467,34 +465,49 @@ function translateVIN($segment, $key) {
                         <table style="margin-left: 20px;">
                             <tr>
                                 <td width="100px"><input type="checkbox" id="sample_block"> <label for="sample_block">Sample Block</label></td>
-                                <td class="text-md-center" width="100px">5 1/4" x 6 1/8"</td>
+                                <td class="text-md-center" width="100px"></td>
                                 <td class="text-md-right">$<span id="sample_block_price"></span></td>
                             </tr>
                             <tr>
+                                <td colspan="3" style="padding-left:16px;">5 1/4" x 6 1/8"</td>
+                            </tr>
+                            <tr>
                                 <td><input type="checkbox" id="door_only"> <label for="door_only">Door Only</label></td>
-                                <td class="text-md-center">12" x 15"</td>
+                                <td class="text-md-center"></td>
                                 <td class="text-md-right">$<span id="door_only_price"></span></td>
                             </tr>
                             <tr>
+                                <td colspan="3" style="padding-left:16px;">12" x 15"</td>
+                            </tr>
+                            <tr>
                                 <td><input type="checkbox" id="door_drawer"> <label for="door_drawer">Door & Drawer</label></td>
-                                <td class="text-md-center">15 1/2" x 23 1/2"</td>
+                                <td class="text-md-center"></td>
                                 <td class="text-md-right">$<span id="door_drawer_price"></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="padding-left:16px;">15 1/2" x 23 1/2"</td>
                             </tr>
                             <tr>
                                 <td colspan="3" style="padding-left:16px;">(Door & Drawer Front attached)</td>
                             </tr>
                             <tr>
                                 <td><input type="checkbox" id="inset_square"> <label for="inset_square">Inset Square</label></td>
-                                <td class="text-md-center">15 1/2" x 23 1/2"</td>
+                                <td class="text-md-center"></td>
                                 <td class="text-md-right">$<span id="inset_square_price"></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="padding-left:16px;">15 1/2" x 23 1/2"</td>
                             </tr>
                             <tr>
                                 <td colspan="3" style="padding-left:16px;">(Door, Drawer Front & Frame)</td>
                             </tr>
                             <tr>
                                 <td><input type="checkbox" id="inset_beaded"> <label for="inset_beaded">Inset Beaded</label></td>
-                                <td class="text-md-center">16 1/2" x 23 1/2"</td>
+                                <td class="text-md-center"></td>
                                 <td class="text-md-right">$<span id="inset_beaded_price"></span></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="padding-left:16px;">16 1/2" x 23 1/2"</td>
                             </tr>
                             <tr>
                                 <td colspan="3" style="padding-left:16px;">(Door, Drawer Front & Frame)</td>
@@ -518,7 +531,7 @@ function translateVIN($segment, $key) {
                     <td class="text-md-right total_text">$<span id="final_leadtime"></span></td>
                 </tr>
                 <tr class="border_thin_bottom">
-                    <td class="total_text">Sub Total:</td>
+                    <td class="total_text">Total List Price:</td>
                     <td class="total_text">&nbsp;</td>
                     <td class="text-md-right total_text">$<span id="final_subtotal"></span></td>
                 </tr>
@@ -528,9 +541,14 @@ function translateVIN($segment, $key) {
                     <td class="text-md-right total_text"><input type="text" name="multiplier" value="0.407" maxlength="5" class="static_width" style="width:23px;"></td>
                 </tr>
                 <tr class="border_thin_bottom">
-                    <td class="total_text">Net:</td>
+                    <td class="total_text">Net Price:</td>
                     <td class="total_text">&nbsp;</td>
                     <td class="text-md-right total_text">$<span id="final_net"></span></td>
+                </tr>
+                <tr>
+                    <td class="total_text">Net Charges:</td>
+                    <td class="total_text">&nbsp;</td>
+                    <td class="text-md-right total_text"></td>
                 </tr>
                 <tr class="border_thin_bottom">
                     <td class="total_text">Shipping Zone: <span class="em_box" style="margin-left: 20px;"><input type="text" name="final_ship_zone" id="final_ship_zone" value="" maxlength="1" class="static_width" style="width:10px;text-align:center;"></span> <span id="final_ship_zone_miles"></span></td>
@@ -538,17 +556,17 @@ function translateVIN($segment, $key) {
                     <td class="text-md-right total_text">$<span id="final_shipping"></span></td>
                 </tr>
                 <tr class="border_thin_bottom">
-                    <td class="total_text"><input type="checkbox" id="final_freight_check" class="no-print"> Min. Freight: (Under 6 Cabinets)</td>
-                    <td class="total_text">$<span id="min_freight_price"></span></td>
+                    <td class="total_text"><input type="checkbox" id="final_freight_check" class="no-print"> <label for="final_freight_check">Min. Freight: (Under 6 Cabinets)</label></td>
+                    <td class="total_text">&nbsp;</td>
                     <td class="text-md-right total_text">$<span id="final_freight"></span></td>
                 </tr>
                 <tr class="border_thin_bottom">
-                    <td class="total_text"><input type="checkbox" id="final_jobsite_check" class="no-print"> Jobsite Delivery:</td>
-                    <td class="total_text">$<span id="jobsite_del_price"></span></td>
+                    <td class="total_text"><input type="checkbox" id="final_jobsite_check" class="no-print"> <label for="final_jobsite_check">Jobsite Delivery:</label></td>
+                    <td class="total_text">&nbsp;</td>
                     <td class="text-md-right total_text">$<span id="final_jobsite"></span></td>
                 </tr>
                 <tr class="border_thin_bottom">
-                    <td class="total_text"><input type="checkbox" id="final_cc_check" class="no-print"> Credit Card: +3.5%</td>
+                    <td class="total_text"><input type="checkbox" id="final_cc_check" class="no-print"> <label for="final_cc_check">Credit Card: +3.5%</label></td>
                     <td class="total_text">&nbsp;</td>
                     <td class="text-md-right total_text">$<span id="final_cc"></span></td>
                 </tr>
@@ -607,41 +625,42 @@ function translateVIN($segment, $key) {
         <div id="terms_acceptance">
             <table>
                 <tr>
-                    <td class="text-underline">Please check box to accept terms</td>
-                    <td class="text-md-right">(Must be checked to validate acceptance)</td>
+                    <td colspan="2"><span class="text-underline">Please check box to accept terms</span> (Must be checked to validate acceptance)</td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input type="checkbox" id="lead_start"> Lead time starts once quote has been signed below & deposit has been received</td>
+                    <td colspan="2"><input type="checkbox" id="lead_start"> <label for="lead_start">Lead time starts once quote has been signed below & deposit has been received</label></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input type="checkbox" id="50_deposit"> I approve 50% deposit to be charged:</td>
+                    <td colspan="2"><input type="checkbox" id="50_deposit"> <label for="50_deposit">I approve 50% deposit to be charged:</label></td>
                 </tr>
                 <tr>
                     <td colspan="2">
                         <table>
                             <tr>
                                 <td width="20px">&nbsp;</td>
-                                <td><input type="checkbox" id="deposit_ACH"> ACH</td>
-                                <td><input type="checkbox" id="deposit_check"> Attached photocopy of check</td>
-                                <td><input type="checkbox" id="deposit_credit"> Credit Card (<span id="credit_card_pct"></span>%)</td>
+                                <td><input type="checkbox" id="deposit_ACH"> <label for="deposit_ACH">ACH</label></td>
+                                <td><input type="checkbox" id="deposit_check"> <label for="deposit_check">Attached photocopy of check</label></td>
+                                <td><input type="checkbox" id="deposit_credit"> <label for="deposit_credit">Credit Card (<span id="credit_card_pct"></span>%)</label></td>
                             </tr>
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2"><input type="checkbox" id="final_payment"> Final payment due upon delivery & will be charged to ACH account prior to offloading (Exceptions to made prior to delivery)</td>
+                    <td colspan="2"><input type="checkbox" id="final_payment"> <label for="final_payment">Final payment due upon delivery & will be charged to ACH account prior to offloading</label><div style="margin-left:15px;">(Exceptions to made prior to delivery)</div></td>
                 </tr>
                 <tr>
                     <td colspan="2" id="signature">
                         Signature: <div style="border-bottom: 1px solid #000;width:88%;float:right;">&nbsp;</div>
-                        <div style="clear:both;font-size:.8em;">(Signature confirms acceptance and acknowledges that the deposit will be auto-drafted within 24 hours)</div>
+                        <div style="clear:both;">(Signature confirms acceptance and acknowledges that<br /> the deposit will be auto-drafted within 24 hours)</div>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2" id="closing_statement">Thank you! Our Commitment is to Quality in Both our Cabinetry & Our Customer Service!</td>
+                    <td colspan="2"></td>
                 </tr>
             </table>
         </div>
+
+        <div id="closing_statement">Thank you! Our Commitment is to Quality in our Cabinetry & Our Customer Service!</div>
 
         <div id="sample_qty" style="display:none;">
             <table width="100%">
@@ -742,11 +761,8 @@ function translateVIN($segment, $key) {
     var final_ship_zone = 'A';
     var final_ship_zone_miles = '(0-100 Miles)';
     var final_shipping = 0.00;
-    var final_freight_check = $("#final_freight_check").is(':checked');
     var final_freight = 0.00;
-    var final_jobsite_check = $("#final_jobsite_check").is(':checked');
     var final_jobsite = 0.00;
-    var final_cc_check = $("#final_cc_check").is(':checked');
     var final_cc = 0.00;
     var final_samples = 0.00;
     var final_last_subtotal = 0.00;
@@ -828,7 +844,6 @@ function translateVIN($segment, $key) {
     var interior_glaze_color_pct = $("#interior_glaze_color_pct").val();
     var interior_glaze_technique_pct = $("#interior_glaze_technique_pct").val();
     var dd_species_pct = $("#dd_species_pct").val();
-    var dd_grade_pct = $("#dd_grade_pct").val();
     var dd_design_pct = $("#dd_design_pct").val();
     var antiquing_pct = $("#antiquing_pct").val();
     var distressing_pct = $("#distressing_pct").val();
@@ -899,6 +914,30 @@ function translateVIN($segment, $key) {
 //        }
     });
 
+    function emptyOrZero(data) {
+        var count = 0;
+
+        if(typeof(data) == 'number' || typeof(data) == 'boolean') {
+            return false;
+        }
+
+        if(typeof(data) == 'undefined' || data === null || data === 0 || data === '0') {
+            return true;
+        }
+
+        if(typeof(data.length) != 'undefined') {
+            return data.length == 0;
+        }
+
+        for(var i in data) {
+            if(data.hasOwnProperty(i)) {
+                count ++;
+            }
+        }
+
+        return count == 0;
+    }
+
     $('body')
         .on("focus", "input[type='text']", function() {
             $(this).select();
@@ -952,26 +991,26 @@ function translateVIN($segment, $key) {
             /** End Qty Fields */
 
             /** Attribute Subtotals */
-            construction_subtotal = (construction_pct / 100) * cabinet_list_price;
-            ext_species_subtotal = (exterior_species_pct / 100) * cabinet_list_price;
-            ext_finish_code_subtotal = (exterior_finish_code_pct / 100) * cabinet_list_price;
-            ext_glaze_color_subtotal = (exterior_glaze_color_pct / 100) * cabinet_list_price;
-            ext_glaze_technique_subtotal = (exterior_glaze_technique_pct / 100) * cabinet_list_price;
-            int_species_subtotal = (interior_species_pct / 100) * cabinet_list_price;
-            int_finish_code_subtotal = (interior_finish_code_pct / 100) * cabinet_list_price;
-            int_glaze_color_subtotal = (interior_glaze_color_pct / 100) * cabinet_list_price;
-            int_glaze_technique_subtotal = (interior_glaze_technique_pct / 100) * cabinet_list_price;
-            dd_species_subtotal = (dd_species_pct / 100) * cabinet_list_price;
-            dd_deign_subtotal = (dd_design_pct / 100) * cabinet_list_price;
-            dd_style_rail_subtotal = style_rail_qty * styles_rails_price;
-            dd_sd_raise_subtotal = sd_raise_qty * short_drawer_raise_price;
-            dd_td_raise_subtotal = td_raise_qty * tall_drawer_raise_price;
-            dd_edge_profile_subtotal = edge_profile_qty * edge_profile_price;
-            dd_frame_option_subtotal = frame_opt_qty * frame_option_price;
-            dd_antiquing_subtotal = (antiquing_pct / 100) * cabinet_list_price;
-            dd_distressing_subtotal = (distressing_pct / 100) * cabinet_list_price;
-            dd_worn_edges_subtotal = (worn_edges_pct / 100) * cabinet_list_price;
-            dd_drawer_box_subtotal = (drawer_boxes_pct / 100) * cabinet_list_price;
+            construction_subtotal = (!emptyOrZero(construction_pct)) ? (construction_pct / 100) * cabinet_list_price : 0;
+            ext_species_subtotal = (!emptyOrZero(exterior_species_pct)) ? (exterior_species_pct / 100) * cabinet_list_price : 0;
+            ext_finish_code_subtotal = (!emptyOrZero(exterior_finish_code_pct)) ? (exterior_finish_code_pct / 100) * cabinet_list_price : 0;
+            ext_glaze_color_subtotal = (!emptyOrZero(exterior_glaze_color_pct)) ? (exterior_glaze_color_pct / 100) * cabinet_list_price : 0;
+            ext_glaze_technique_subtotal = (!emptyOrZero(exterior_glaze_technique_pct)) ? (exterior_glaze_technique_pct / 100) * cabinet_list_price : 0;
+            int_species_subtotal = (!emptyOrZero(interior_species_pct)) ? (interior_species_pct / 100) * cabinet_list_price : 0;
+            int_finish_code_subtotal = (!emptyOrZero(interior_finish_code_pct)) ? (interior_finish_code_pct / 100) * cabinet_list_price : 0;
+            int_glaze_color_subtotal = (!emptyOrZero(interior_glaze_color_pct)) ? (interior_glaze_color_pct / 100) * cabinet_list_price : 0;
+            int_glaze_technique_subtotal = (!emptyOrZero(interior_glaze_technique_pct)) ? (interior_glaze_technique_pct / 100) * cabinet_list_price : 0;
+            dd_species_subtotal = (!emptyOrZero(dd_species_pct)) ? (dd_species_pct / 100) * cabinet_list_price : 0;
+            dd_deign_subtotal = (!emptyOrZero(dd_design_pct)) ? (dd_design_pct / 100) * cabinet_list_price : 0;
+            dd_style_rail_subtotal = (!emptyOrZero(style_rail_qty)) ? style_rail_qty * styles_rails_price : 0;
+            dd_sd_raise_subtotal = (!emptyOrZero(sd_raise_qty)) ? sd_raise_qty * short_drawer_raise_price : 0;
+            dd_td_raise_subtotal = (!emptyOrZero(td_raise_qty)) ? td_raise_qty * tall_drawer_raise_price : 0;
+            dd_edge_profile_subtotal = (!emptyOrZero(edge_profile_qty)) ? edge_profile_qty * edge_profile_price : 0;
+            dd_frame_option_subtotal = (!emptyOrZero(frame_opt_qty)) ? frame_opt_qty * frame_option_price : 0;
+            dd_antiquing_subtotal = (!emptyOrZero(antiquing_pct)) ? (antiquing_pct / 100) * cabinet_list_price : 0;
+            dd_distressing_subtotal = (!emptyOrZero(distressing_pct)) ? (distressing_pct / 100) * cabinet_list_price : 0;
+            dd_worn_edges_subtotal = (!emptyOrZero(worn_edges_pct)) ? (worn_edges_pct / 100) * cabinet_list_price : 0;
+            dd_drawer_box_subtotal = (!emptyOrZero(drawer_boxes_pct)) ? (drawer_boxes_pct / 100) * cabinet_list_price : 0;
 
             $("#construction_subtotal").html(construction_subtotal.toFixed(2));
             $("#ext_species_subtotal").html(ext_species_subtotal.toFixed(2));
@@ -997,8 +1036,8 @@ function translateVIN($segment, $key) {
 
             /** Charge Summary */
             final_upcharges = construction_subtotal + ext_species_subtotal + ext_finish_code_subtotal + ext_glaze_color_subtotal + ext_glaze_technique_subtotal +
-                int_species_subtotal + int_finish_code_subtotal + int_glaze_color_subtotal + int_glaze_technique_subtotal + dd_species_subtotal +
-                dd_deign_subtotal + dd_style_rail_subtotal + dd_sd_raise_subtotal + dd_td_raise_subtotal + dd_edge_profile_subtotal + dd_frame_option_subtotal + dd_antiquing_subtotal + dd_distressing_subtotal +
+                int_species_subtotal + int_finish_code_subtotal + int_glaze_technique_subtotal + dd_species_subtotal + dd_deign_subtotal + dd_style_rail_subtotal +
+                dd_sd_raise_subtotal + dd_td_raise_subtotal + dd_edge_profile_subtotal + dd_frame_option_subtotal + dd_antiquing_subtotal + dd_distressing_subtotal +
                 dd_worn_edges_subtotal + dd_drawer_box_subtotal;
             cabinet_list_price = $("input[name='list_price']").val();
             mods_accessories = $("input[name='mods_accessories']").val();
@@ -1141,6 +1180,17 @@ function translateVIN($segment, $key) {
                 $("#arh_multiplier").val(".335");
             } else {
                 $("#arh_multiplier").val(".322");
+            }
+        })
+        .on("change", "input[name$='_raise_qty']", function() {
+            if($(this).val() !== '' && $(this).val() !== 0 && $(this).val() !== '0') {
+                $(this).removeClass('print_gray');
+                $(this).parent().removeClass('print_gray');
+                $(this).parent().next('td').removeClass('print_gray');
+            } else {
+                $(this).addClass('print_gray');
+                $(this).parent().addClass('print_gray');
+                $(this).parent().next('td').addClass('print_gray');
             }
         })
     ;
