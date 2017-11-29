@@ -9,6 +9,54 @@
 namespace Queue;
 
 class queue {
+    function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
+        global $dbconn;
+
+        $op_queue_qry = $dbconn->query("SELECT op_queue.id AS QID, op_queue.*, operations.* FROM op_queue LEFT JOIN operations ON op_queue.operation_id = operations.id WHERE room_id = '$roomid' AND published = TRUE AND bracket = '$bracket'");
+
+        // if the bracket is published
+        if((bool)$bracket_pub) {
+            if($op_queue_qry->num_rows > 0) {
+                while($op_queue = $op_queue_qry->fetch_assoc()) {
+                    if($op_queue['operation_id'] === $operation && (bool)$op_queue['active']) {
+                        // the exact operation is currently active and we cannot take any further action
+                        echo displayToast("error", "Operation is active presently inside of $bracket.", "Active Operation");
+                        return;
+                    } else {
+                        // deactivate operations
+                        $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
+                    }
+                }
+            }
+
+            // now that we've cleaned up the operations; it's time to get that operation flowing
+            $dbconn->query("INSERT INTO op_queue (room_id, operation_id, start_time, end_time, active, completed, rework, notes, resumed_time, partially_completed, created) 
+              VALUES ('$roomid', '$operation', NULL, NULL, FALSE, FALSE, FALSE, NULL, NULL, NULL, UNIX_TIMESTAMP())");
+        } else {
+            while($op_queue = $op_queue_qry->fetch_assoc()) {
+                $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
+            }
+        }
+    }
+
+    function autoRelease($room_qry, $op_bracket, $room_bracket, $room_id) {
+        global $dbconn;
+
+        // if the bracket is NOT published
+        if(!(bool)$room_qry[$room_bracket . '_published']) {
+            // we're going to publish the sample bracket
+            $dbconn->query("UPDATE rooms SET {$room_bracket}_published = TRUE WHERE id = $room_id");
+
+            // next, lets make sure there's an operation available in op_queue
+            $this->createOpQueue(true, $op_bracket, $room_qry[$room_bracket . '_bracket'], $room_id);
+
+            // now lets alert the user that we've released the next bracket
+            echo displayToast("info", "$room_bracket bracket has been released!", "$room_bracket Bracket Released");
+        } else {
+            echo displayToast("warning", "Unable to release $room_bracket Bracket as it's currently published!", "$room_bracket Bracket Not Released");
+        }
+    }
+
     function wc_jobsInQueue() {
         global $dbconn;
 
@@ -522,6 +570,55 @@ class queue {
         // now, we find out what the next op is that we're progressing to
         $next_op_pos = ($rw_reqd === 'true') ? array_search($op_queue['operation_id'], $full_bracket) - 1 : array_search($op_queue['operation_id'], $full_bracket) + 1;
         $next_op = $full_bracket[$next_op_pos]; // grab the next op in the "bracket"
+
+        //echo "Next Operation: " . $next_op . "<br />";
+
+        // time to auto-release brackets!
+        switch($op_queue['operation_id']) {
+            case 1: // 110: Initial Meeting > 205: Sample Door Request
+                /*// if the bracket is NOT published
+                if(!(bool)$room['sample_published']) {
+                    // we're going to publish the sample bracket
+                    $dbconn->query("UPDATE rooms SET sample_published = TRUE WHERE id = {$op_queue['room_id']}");
+
+                    // next, lets make sure there's an operation available in op_queue
+                    $this->createOpQueue(true, 'Sample', $room['sample_bracket'], $room_id);
+
+                    // now lets alert the user that we've released the next bracket
+                    echo displayToast("info", "Sample bracket has been released!", "Sample Bracket Released");
+                } else {
+                    echo displayToast("warning", "Unable to release Sample Bracket as it's currently published!", "Sample Bracket Not Released");
+                }*/
+
+                $this->autoRelease($room, 'Sample', 'sample', $room_id);
+
+                break;
+
+            case 109: // 300: SA Review Request for Quote > 205: Sample Door Request
+                $this->autoRelease($room, 'Sample', 'sample', $room_id);
+
+                break;
+
+            case 28: // 355: Place Orders > 505: Pick List for Box, 605: Pick List for Custom, 410: Door Quote
+                $this->autoRelease($room, 'Main', 'main', $room_id);
+                $this->autoRelease($room, 'Custom', 'custom', $room_id);
+                $this->autoRelease($room, 'Drawer & Doors', 'doordrawer', $room_id);
+
+                break;
+
+            case 58: // 540: Finishing > 805: Assembly
+                $this->autoRelease($room, 'Shipping', 'shipping', $room_id);
+
+                break;
+
+            case 67: // 830: Load Inspection > 705: Manage Install
+                $this->autoRelease($room, 'Installation', 'install_bracket', $room_id);
+
+                break;
+
+
+        }
+        // end of auto-release brackets!
 
         // get the individual op info
         $next_op_info_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$next_op'");

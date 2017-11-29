@@ -22,18 +22,20 @@ function determineColor($room, $bracket) {
 function getBracketInfo($bracket, $opID, $room) {
     global $dbconn;
 
-    $bracket_info = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = $opID")->fetch_assoc();
+    if(!empty($opID)) {
+        $bracket_info = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = $opID")->fetch_assoc();
 
-    if((bool)$room[$bracket . "_published"]) {
-        if(stristr($bracket_info['job_title'], 'Bracket Completed') === FALSE) {
-            $opacity = null;
-            $outline = "btn-primary";
-        } else {
-            $opacity = "style='color:rgba(80,80,80,.6);'";
-            $outline = "btn-primary-outline";
+        if((bool)$room[$bracket . "_published"]) {
+            if(stristr($bracket_info['job_title'], 'Bracket Completed') === FALSE) {
+                $opacity = null;
+                $outline = "btn-primary";
+            } else {
+                $opacity = "style='color:rgba(80,80,80,.6);'";
+                $outline = "btn-primary-outline";
+            }
+
+            return "<table class='table-custom-nb' $opacity><tr><td><button class='btn waves-effect $outline' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>({$bracket_info['op_id']}) </td><td style='padding-left:2px;line-height:1em;'>{$bracket_info['job_title']}</td></tr></table>";
         }
-
-        return "<table class='table-custom-nb' $opacity><tr><td><button class='btn waves-effect $outline' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>({$bracket_info['op_id']}) </td><td style='padding-left:2px;line-height:1em;'>{$bracket_info['job_title']}</td></tr></table>";
     }
 }
 
@@ -73,6 +75,10 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
 
         case 'Installation':
             $bracket_def = 'install_bracket';
+            break;
+
+        case 'Pick & Materials':
+            $bracket_def = 'pick_materials_bracket';
             break;
 
         default:
@@ -701,6 +707,7 @@ switch ($search) {
                                 <th>CUSTOM</th>
                                 <th>SHIPPING</th>
                                 <th>INSTALLATION</th>
+                                <th>PICK/MATERIALS</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -752,6 +759,7 @@ switch ($search) {
                                     $mainColor = determineColor($room, 'main');
                                     $shippingColor = determineColor($room, 'shipping');
                                     $installColor = determineColor($room, 'install_bracket');
+                                    $pickmatColor = determineColor($room, 'pick_materials');
 
                                     $sales_published_display = getBracketInfo('sales', $room['sales_bracket'], $room);
                                     $sample_published_display = getBracketInfo('sample', $room['sample_bracket'], $room);
@@ -761,6 +769,7 @@ switch ($search) {
                                     $customs_published_display = getBracketInfo('custom', $room['custom_bracket'], $room);
                                     $shipping_published_display = getBracketInfo('shipping', $room['shipping_bracket'], $room);
                                     $install_published_display = getBracketInfo('install_bracket', $room['install_bracket'], $room);
+                                    $pickmat_published_display = getBracketInfo('pick_materials', $room['pick_materials_bracket'], $room);
 
                                     $target_dir = SITE_ROOT . "/attachments/";
                                     $attachment_dir = "{$target_dir}{$room['so_parent']}/{$room['room']}/{$room['iteration']}";
@@ -799,21 +808,25 @@ switch ($search) {
                                     }
 
                                     echo "<tr class='cursor-hand' id='manage_bracket_{$room['id']}'>";
-                                    echo "  <td class='nowrap'><button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button> $add_seq_btn $add_iteration_btn</td>";
-                                    echo "  <td>{$tab}{$room_name} <span class='pull-right' style='margin-right:5px;'>$order_status</span></td>";
-                                    echo "  <td class='$salesColor' style='width:9.7%'>$sales_published_display</td>";
-                                    echo "  <td class='$sampleColor' style='width:9.7%'>$sample_published_display</td>";
-                                    echo "  <td class='$preprodColor' style='width:9.7%'>$preprod_published_display</td>";
-                                    echo "  <td class='$doorColor' style='width:9.7%'>$door_published_display</td>";
-                                    echo "  <td class='$mainColor' style='width:9.7%'>$main_published_display</td>";
-                                    echo "  <td class='$customsColor' style='width:9.7%'>$customs_published_display</td>";
-                                    echo "  <td class='$shippingColor' style='width:9.7%'>$shipping_published_display</td>";
-                                    echo "  <td class='$installColor' style='width:9.7%'>$install_published_display</td>";
+                                    echo "  <td class='nowrap'>
+                                                <button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button> 
+                                                $add_seq_btn $add_iteration_btn
+                                            </td>";
+                                    echo "  <td class='nowrap'>{$tab}{$room_name} <span class='pull-right' style='margin-right:5px;'>$order_status</span></td>";
+                                    echo "  <td class='$salesColor' style='width:9.5%'>$sales_published_display</td>";
+                                    echo "  <td class='$sampleColor' style='width:9.5%'>$sample_published_display</td>";
+                                    echo "  <td class='$preprodColor' style='width:9.5%'>$preprod_published_display</td>";
+                                    echo "  <td class='$doorColor' style='width:9.5%'>$door_published_display</td>";
+                                    echo "  <td class='$mainColor' style='width:9.5%'>$main_published_display</td>";
+                                    echo "  <td class='$customsColor' style='width:9.5%'>$customs_published_display</td>";
+                                    echo "  <td class='$shippingColor' style='width:9.5%'>$shipping_published_display</td>";
+                                    echo "  <td class='$installColor' style='width:9.5%'>$install_published_display</td>";
+                                    echo "  <td class='$pickmatColor' style='width:9.5%'>$pickmat_published_display</td>";
                                     echo "</tr>";
 
                                     /** BEGIN SINGLE ROOM DISPLAY */
                                     echo "<tr id='tr_single_room_{$room['id']}' style='display: none;'>";
-                                    echo "  <td colspan='10'><div id='div_single_room_{$room['id']}' style='display: none;'>";
+                                    echo "  <td colspan='11'><div id='div_single_room_{$room['id']}' style='display: none;'>";
                                     ?>
 
                                     <div class="col-md-12">
@@ -1740,6 +1753,23 @@ switch ($search) {
                                                                         <?php displayBracketOpsMgmt('Installation', $room, $individual_bracket); ?>
                                                                     </td>
                                                                 </tr>
+                                                                <tr>
+                                                                    <td class="bracket-border-top">
+                                                                        <div class="row bracket-header-custom">
+                                                                            <div class="col-md-8"><h5><label for="pickmat_bracket_adjustments_<?php echo $room['id']; ?>">Pick & Materials Bracket</label></h5></div>
+                                                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pickmat_published" value="1" id="pickmat_bracket_adjustments_<?php echo $room['id']; ?>" <?php echo ((bool)$room['pick_materials_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                    <td class="bracket-border-top"></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td class="bracket-border-bottom">
+                                                                        <?php displayBracketOpsMgmt('Pick & Materials', $room, $individual_bracket); ?>
+                                                                    </td>
+                                                                    <td style="background-color: #eceeef;">&nbsp;</td>
+                                                                    <td class="bracket-border-bottom"></td>
+                                                                </tr>
                                                             </table>
                                                         </div>
                                                     </div>
@@ -1753,7 +1783,7 @@ switch ($search) {
 
                                     /** BEGIN DISPLAY OF ADD ITERATION */
                                     echo "<tr id='tr_iteration_{$room['id']}' style='display: none;'>";
-                                    echo "  <td colspan='10'><div id='div_iteration_{$room['id']}' style='display: none;'>";
+                                    echo "  <td colspan='11'><div id='div_iteration_{$room['id']}' style='display: none;'>";
                                     ?>
 
                                     <div class="col-md-12">
@@ -1883,7 +1913,7 @@ switch ($search) {
 
                                     /** BEGIN DISPLAY OF ATTACHMENTS */
                                     echo "<tr id='tr_attachments_{$room['id']}' style='display: none;'>";
-                                    echo "  <td colspan='10'><div id='div_attachments_{$room['id']}' style='display: none;'>";
+                                    echo "  <td colspan='11'><div id='div_attachments_{$room['id']}' style='display: none;'>";
                                     ?>
 
                                     <div class="col-md-12">

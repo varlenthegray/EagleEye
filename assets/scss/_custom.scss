@@ -1,4 +1,12 @@
 // This is the document that contains all custom written SCSS outside of the bounds of what's going on
+// because wtf?
+body {
+  height: 100vh;
+}
+
+html {
+  background-color: $brand-primary;
+}
 
 .cursor-hand {
   cursor: pointer;
@@ -440,11 +448,6 @@ table tbody td {
   background-color: $body-bg;
   box-shadow: 24px 0 0 0 rgba(0, 0, 0, 0.06), 0 1px 0 0 rgba(0, 0, 0, 0.02);
   z-index: 1000;
-}
-
-// because wtf?
-body {
-  height: 100vh;
 }
 
 // VIN input adjustment
