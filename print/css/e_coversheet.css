@@ -2,6 +2,29 @@
     margin: 5mm 6mm 5mm 15mm;
 }
 
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .highlight_input {
+        background-color: transparent;
+    }
+
+    .print_gray {
+        background-color: rgb(216,216,216);
+        color: transparent;
+    }
+
+    html {
+        margin: 0;
+    }
+
+    body {
+        margin: 5mm 6mm 5mm 15mm;
+    }
+}
+
 body {
     padding: 0;
     margin: 0;
@@ -11,6 +34,7 @@ body {
 html {
     font-family: 'Roboto', sans-serif;
     font-size: 7pt;
+    margin: 0;
 }
 
 table {
@@ -36,7 +60,6 @@ td {
 
 #header_left {
     width: 50%;
-    text-align: center;
     float: left;
 }
 
@@ -262,19 +285,4 @@ input[type=text], textarea {
 
 .clearfix {
     clear: both;
-}
-
-@media print {
-    .no-print {
-        display: none !important;
-    }
-
-    .highlight_input {
-        background-color: transparent;
-    }
-
-    .print_gray {
-        background-color: rgb(216,216,216);
-        color: transparent;
-    }
 }

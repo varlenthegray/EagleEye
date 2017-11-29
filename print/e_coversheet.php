@@ -26,8 +26,9 @@ function translateVIN($segment, $key) {
     return "{$key} = {$vin['value']}";
 }
 ?>
+<!DOCTYPE html>
 
-<html>
+<html moznomarginboxes="" mozdisallowselectionprint="">
 <head>
     <link href="css/e_coversheet.css?v=111320171016" type="text/css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
@@ -174,7 +175,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('species_grade', $info['species_grade']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="dd_species_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="dd_species_pct" id="dd_species_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_species_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -184,7 +185,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('construction_method', $info['construction_method']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="construction_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="construction_pct" id="construction_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="construction_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -194,7 +195,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('door_design', $info['door_design']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="dd_design_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="dd_design_pct" id="dd_design_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_deign_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -284,8 +285,8 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
-                    <td class="text-md-right border_thin_bottom gray_bg subtotal">&nbsp;</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="finish_code_pct" id="finish_code_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-right border_thin_bottom subtotal">$<span id="finish_code_subtotal"></span></td>
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
@@ -324,7 +325,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('antiquing', $info['antiquing']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="antiquing_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="antiquing_pct" id="antiquing_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_antiquing_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -334,7 +335,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('worn_edges', $info['worn_edges']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="worn_edges_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="worn_edges_pct" id="worn_edges_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_worn_edges_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -344,7 +345,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('distress_level', $info['distress_level']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="distressing_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="distressing_pct" id="distressing_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_distressing_subtotal"></span></td>
                 </tr>
                 <?php
@@ -357,7 +358,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('carcass_species', $info['carcass_exterior_species']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_species_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_species_pct" id="exterior_species_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="ext_species_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -367,7 +368,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_finish_code_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_finish_code_pct" id="exterior_finish_code_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="ext_finish_code_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -377,7 +378,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['carcass_exterior_glaze_color']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_glaze_color_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_glaze_color_pct" id="exterior_glaze_color_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="ext_glaze_color_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -387,7 +388,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('glaze_technique', $info['carcass_exterior_glaze_technique']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_glaze_technique_pct" id="exterior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="ext_glaze_technique_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -397,7 +398,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('carcass_species', $info['carcass_interior_species']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_species_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_species_pct" id="interior_species_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="int_species_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -407,7 +408,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_finish_code_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_finish_code_pct" id="interior_finish_code_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="int_finish_code_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -417,7 +418,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['carcass_interior_glaze_color']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_glaze_color_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_glaze_color_pct" id="interior_glaze_color_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="int_glaze_color_subtotal"></span></td>
                 </tr>
                 <tr>
@@ -427,7 +428,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('glaze_technique', $info['carcass_interior_glaze_technique']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_glaze_technique_pct" id="interior_glaze_technique_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="int_glaze_technique_subtotal"></span></td>
                 </tr>
                 <?php
@@ -440,7 +441,7 @@ function translateVIN($segment, $key) {
                     <td class="border_thin_bottom"><?php echo translateVIN('drawer_boxes', $info['drawer_boxes']); ?></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
-                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="drawer_boxes_pct" value="0.00" maxlength="4">%</td>
+                    <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="drawer_boxes_pct" id="drawer_boxes_pct" value="0.00" maxlength="4">%</td>
                     <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_drawer_box_subtotal"></span></td>
                 </tr>
             </table>
@@ -809,6 +810,7 @@ function translateVIN($segment, $key) {
     var dd_distressing_subtotal = 0.00;
     var dd_worn_edges_subtotal = 0.00;
     var dd_drawer_box_subtotal = 0.00;
+    var finish_code_subtotal = 0.00;
 
     $("#construction_subtotal").html(construction_subtotal.toFixed(2));
     $("#ext_species_subtotal").html(ext_species_subtotal.toFixed(2));
@@ -831,6 +833,7 @@ function translateVIN($segment, $key) {
     $("#dd_distressing_subtotal").html(dd_distressing_subtotal.toFixed(2));
     $("#dd_worn_edges_subtotal").html(dd_worn_edges_subtotal.toFixed(2));
     $("#dd_drawer_box_subtotal").html(dd_drawer_box_subtotal.toFixed(2));
+    $("#finish_code_subtotal").html(finish_code_subtotal.toFixed(2));
     /** End Attribute Subtotals */
 
     /** Percent Fields */
@@ -849,6 +852,7 @@ function translateVIN($segment, $key) {
     var distressing_pct = $("#distressing_pct").val();
     var worn_edges_pct = $("#worn_edges_pct").val();
     var drawer_boxes_pct = $("#drawer_boxes_pct").val();
+    var finish_code_pct = $("#finish_code_pct").val()
     /** End Percent Fields */
 
     /** Qty Fields */
@@ -963,7 +967,7 @@ function translateVIN($segment, $key) {
                 }
             }
         })
-        .on("change", "input", function() {
+        .on("keyup", "input", function() {
             /** Percent Fields */
             construction_pct = $("input[name='construction_pct'").val();
             exterior_species_pct = $("input[name='exterior_species_pct'").val();
@@ -980,6 +984,7 @@ function translateVIN($segment, $key) {
             distressing_pct = $("input[name='distressing_pct'").val();
             worn_edges_pct = $("input[name='worn_edges_pct'").val();
             drawer_boxes_pct = $("input[name='drawer_boxes_pct'").val();
+            finish_code_pct = $("input[name='finish_code_pct'").val();
             /** End Percent Fields */
 
             /** Qty Fields */
@@ -1011,6 +1016,7 @@ function translateVIN($segment, $key) {
             dd_distressing_subtotal = (!emptyOrZero(distressing_pct)) ? (distressing_pct / 100) * cabinet_list_price : 0;
             dd_worn_edges_subtotal = (!emptyOrZero(worn_edges_pct)) ? (worn_edges_pct / 100) * cabinet_list_price : 0;
             dd_drawer_box_subtotal = (!emptyOrZero(drawer_boxes_pct)) ? (drawer_boxes_pct / 100) * cabinet_list_price : 0;
+            finish_code_subtotal = (!emptyOrZero(finish_code_pct)) ? (finish_code_pct / 100) * cabinet_list_price : 0;
 
             $("#construction_subtotal").html(construction_subtotal.toFixed(2));
             $("#ext_species_subtotal").html(ext_species_subtotal.toFixed(2));
@@ -1032,13 +1038,14 @@ function translateVIN($segment, $key) {
             $("#dd_distressing_subtotal").html(dd_distressing_subtotal.toFixed(2));
             $("#dd_worn_edges_subtotal").html(dd_worn_edges_subtotal.toFixed(2));
             $("#dd_drawer_box_subtotal").html(dd_drawer_box_subtotal.toFixed(2));
+            $("#finish_code_subtotal").html(finish_code_subtotal.toFixed(2));
             /** End Attribute Subtotals */
 
             /** Charge Summary */
             final_upcharges = construction_subtotal + ext_species_subtotal + ext_finish_code_subtotal + ext_glaze_color_subtotal + ext_glaze_technique_subtotal +
                 int_species_subtotal + int_finish_code_subtotal + int_glaze_technique_subtotal + dd_species_subtotal + dd_deign_subtotal + dd_style_rail_subtotal +
                 dd_sd_raise_subtotal + dd_td_raise_subtotal + dd_edge_profile_subtotal + dd_frame_option_subtotal + dd_antiquing_subtotal + dd_distressing_subtotal +
-                dd_worn_edges_subtotal + dd_drawer_box_subtotal;
+                dd_worn_edges_subtotal + dd_drawer_box_subtotal + finish_code_subtotal;
             cabinet_list_price = $("input[name='list_price']").val();
             mods_accessories = $("input[name='mods_accessories']").val();
 
