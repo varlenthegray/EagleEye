@@ -6,9 +6,6 @@
  * Time: 10:13 PM
  */
 // initial MySQL configuration
-/*************************************************************
- * FILE IS EXCLUDED FROM AUTO-UPLOAD IN PHPSTORM TO PROD SERVER!
- *************************************************************/
 $server = explode(".", $_SERVER['HTTP_HOST']);
 
 // determination for type of server we're on and what connection to throw

@@ -812,16 +812,16 @@ switch ($search) {
                                                 <button class='btn waves-effect btn-primary' id='show_single_room_{$room['id']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button> 
                                                 $add_seq_btn $add_iteration_btn
                                             </td>";
-                                    echo "  <td class='nowrap'>{$tab}{$room_name} <span class='pull-right' style='margin-right:5px;'>$order_status</span></td>";
-                                    echo "  <td class='$salesColor' style='width:9.5%'>$sales_published_display</td>";
-                                    echo "  <td class='$sampleColor' style='width:9.5%'>$sample_published_display</td>";
-                                    echo "  <td class='$preprodColor' style='width:9.5%'>$preprod_published_display</td>";
-                                    echo "  <td class='$doorColor' style='width:9.5%'>$door_published_display</td>";
-                                    echo "  <td class='$mainColor' style='width:9.5%'>$main_published_display</td>";
-                                    echo "  <td class='$customsColor' style='width:9.5%'>$customs_published_display</td>";
-                                    echo "  <td class='$shippingColor' style='width:9.5%'>$shipping_published_display</td>";
-                                    echo "  <td class='$installColor' style='width:9.5%'>$install_published_display</td>";
-                                    echo "  <td class='$pickmatColor' style='width:9.5%'>$pickmat_published_display</td>";
+                                    echo "  <td class='nowrap'><span class='pull-left'>{$tab}{$room_name}</span> <span class='pull-right' style='margin-right:5px;'>$order_status</span></td>";
+                                    echo "  <td class='$salesColor' style='width:9%'>$sales_published_display</td>";
+                                    echo "  <td class='$sampleColor' style='width:9%'>$sample_published_display</td>";
+                                    echo "  <td class='$preprodColor' style='width:9%'>$preprod_published_display</td>";
+                                    echo "  <td class='$doorColor' style='width:9%'>$door_published_display</td>";
+                                    echo "  <td class='$mainColor' style='width:9%'>$main_published_display</td>";
+                                    echo "  <td class='$customsColor' style='width:9%'>$customs_published_display</td>";
+                                    echo "  <td class='$shippingColor' style='width:9%'>$shipping_published_display</td>";
+                                    echo "  <td class='$installColor' style='width:9%'>$install_published_display</td>";
+                                    echo "  <td class='$pickmatColor' style='width:9%'>$pickmat_published_display</td>";
                                     echo "</tr>";
 
                                     /** BEGIN SINGLE ROOM DISPLAY */

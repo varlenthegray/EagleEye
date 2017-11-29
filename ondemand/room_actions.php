@@ -53,12 +53,14 @@ function whatChanged($new, $old, $title, $date = false, $bool = false) {
         $old = (int)$old;
     } else {
         if($title === 'Sales Bracket' || $title === 'Sample Bracket' || $title === 'Pre-Production Bracket' || $title === 'Door/Drawer Bracket' || $title === 'Main Bracket' ||
-            $title === 'Custom Bracket' || $title === 'Shipping Bracket' || $title === 'Install Bracket') {
+            $title === 'Custom Bracket' || $title === 'Shipping Bracket' || $title === 'Install Bracket' || $title === 'Pick & Materials Bracket') {
 
             $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = $new");
-            $op = $op_qry->fetch_assoc();
+            if($op_qry->num_rows > 0) {
+                $op = $op_qry->fetch_assoc();
 
-            $updated = $op['job_title'];
+                $updated = $op['job_title'];
+            }
         } elseif($title === 'Active Bracket Operations') {
             $updated = null;
         } else {
