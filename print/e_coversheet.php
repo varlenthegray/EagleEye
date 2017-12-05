@@ -103,14 +103,14 @@ function translateVIN($segment, $key) {
                         </tr>
                         <tr>
                             <td><strong>Ship VIA:</strong></td>
-                            <td><input type="text" style="width:100px;" class="static_width align_left border_thin_bottom" name="ship_via" value="<?php echo $info['vin_ship_via']; ?>"></td>
+                            <td><input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_via" value="<?php echo $info['vin_ship_via']; ?>"></td>
                         </tr>
                         <tr>
                             <td><strong>Ship To:</strong></td>
                             <td>
-                                <input type="text" style="width:100px;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
-                                <input type="text" style="width:100px;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
-                                <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:30px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+                                <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
+                                <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
+                                <input type="text" style="width:76px;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:30px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
                             </td>
                         </tr>
                     </table>
@@ -950,13 +950,13 @@ function translateVIN($segment, $key) {
             if(!$(this).hasClass("static_width")) {
                 if($(this).val().length > 4) {
                     if ((event.keyCode === 8 || event.keyCode === 46) && $(this).width() > 18) {
-                        if ($(this).val() <= 4) {
+                        if ($(this).val().length <= 4) {
                             $(this).width(18);
                         } else {
                             $(this).width($(this).width() - 8);
                         }
-                    } else if (((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 96 && event.keyCode <= 105) || event.keyCode === 190) && $(this).val().length < 10) {
-                        if ($(this).val() <= 4) {
+                    } else if (((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 65 && event.keyCode <= 90) || (event.keyCode >= 96 && event.keyCode <= 111) || (event.keyCode >= 188 && event.keyCode <= 190)) && $(this).val().length < 10) {
+                        if ($(this).val().length <= 4) {
                             $(this).width(18);
                         } else {
                             $(this).width($(this).width() + 8);
@@ -967,7 +967,7 @@ function translateVIN($segment, $key) {
                 }
             }
         })
-        .on("keyup", "input", function() {
+        .on("change", "input", function() {
             /** Percent Fields */
             construction_pct = $("input[name='construction_pct'").val();
             exterior_species_pct = $("input[name='exterior_species_pct'").val();
