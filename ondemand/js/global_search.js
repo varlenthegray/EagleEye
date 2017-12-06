@@ -20,6 +20,9 @@ function toggleDisplay(roomid) {
     $("[id^=div_attachments_]").finish().hide(100);
     $("[id^=tr_edit_so_]").finish().hide(250);
     $("[id^=div_edit_so_]").finish().hide(100);
+
+    $(".tr_room_actions").hide(300).find('div').slideUp(150).html('');
+    $(".add_room").hide(300).find('div').slideUp(150).html('');
 }
 
 function scrollLocation(container) {
@@ -133,20 +136,21 @@ $("body")
             $("#div_room_" + active_so_num).slideDown(250);
         });
     })
-    .on("click", "[id^=show_single_room_]", function(e) {
+    .on("click", ".edit_room", function(e) {
         thisClick = this;
 
         e.stopPropagation();
 
         checkTransition(function() {
-            active_room_id = $(thisClick).attr("id").replace('show_single_room_', '');
+            active_room_id = $(thisClick).attr("id");
 
             toggleDisplay();
 
-            $("#tr_single_room_" + active_room_id).show();
-            $("#div_single_room_" + active_room_id).slideDown(250);
+            $.post("/html/search/room_edit.php?room_id=" + active_room_id, function(data) {
+                $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
+            });
 
-            scrollLocation("#show_single_room_" + active_room_id);
+            scrollLocation("#" + active_room_id + ".tr_room_actions");
         });
     })
     .on("click", ".activate_op", function() {
@@ -195,6 +199,7 @@ $("body")
     .on("click", ".add_room_trigger", function(e) {
         thisClick = this;
 
+
         e.stopPropagation();
 
         checkTransition(function() {
@@ -202,11 +207,12 @@ $("body")
 
             toggleDisplay();
 
-            $("#tr_add_single_room_info_" + active_so_num).show();
-            $("#div_add_single_room_info_" + active_so_num).slideDown(250);
+            $.post("/html/search/room_add.php?so_num=" + active_so_num, function(data) {
+                $("#" + active_so_num + ".add_room").show().find('div').html(data).slideDown(150);
+            });
         });
 
-        scrollLocation("#tr_add_single_room_info_" + active_so_num);
+        scrollLocation("#" + active_so_num + ".add_room");
     })
     .on("click", "[id^=add_room_save_]", function() {
         var save_info = $("#form_add_room_" + active_so_num).serialize();
@@ -218,18 +224,33 @@ $("body")
         unsaved = false;
     })
     .on("change click", ".days-to-ship", function() {
-        var dts = $(this).val();
-        var type = $(this).data('type');
-        var room_letter = $(this).data('room');
+        var dts = $(this).find(":selected").val();
+        var classColor;
+
+        switch(dts) {
+            case 'G':
+                classColor = 'green';
+                break;
+
+            case 'Y':
+                classColor = 'yellow';
+                break;
+
+            case 'N':
+                classColor = 'orange';
+                break;
+
+            case 'R':
+                classColor = 'red';
+                break;
+
+            default:
+                classColor = 'gray';
+                break;
+        }
 
         $.post("/ondemand/room_actions.php?action=calc_del_date", {days_to_ship: dts}, function(data) {
-            if(type === 'add') {
-                $("#delivery_date_add_" + active_so_num).val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + dts.toLowerCase()).data("datepicker").setDate(data);
-            } else if(type === 'iteration') {
-                $("#iteration_del_date_" + room_letter + "_so_" + active_so_num).val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + dts.toLowerCase()).data("datepicker").setDate(data);
-            } else {
-                $("#edit_del_date_" + room_letter + "_so_" + active_so_num).val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + dts.toLowerCase()).data("datepicker").setDate(data);
-            }
+            $(".delivery_date").val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + classColor).data("datepicker").setDate(data);
         });
     })
     .on("change", ".dealer_code", function() {
@@ -291,18 +312,40 @@ $("body")
             }
 
             $.when(seqAjax, iterationAjax).done(function() {
-                toggleDisplay(active_room_id);
+                toggleDisplay();
 
-                $("#add_iteration_header_" + active_room_id).html(header);
+                $.post("/html/search/room_add_section.php?room_id=" + active_room_id, function(data) {
+                    $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
 
-                $("#tr_iteration_" + active_room_id).show();
-                $("#div_iteration_" + active_room_id).show(250);
-
-                $("#next_iteration_" + active_room_id).val(next_iteration);
+                    $("#add_iteration_header_" + active_room_id).html(header);
+                    $("#edit_iteration_" + active_room_id).val(next_iteration);
+                    $("#vin_iteration_" + active_room_id).val(next_iteration);
+                });
             });
         });
 
-        scrollLocation("#tr_iteration_" + active_room_id);
+        scrollLocation("#" + active_room_id + ".tr_room_actions");
+    })
+    .on("click", ".iteration_save", function(e) {
+        e.stopPropagation();
+
+        if($("input[name='room_name']").val() === '') {
+            $.alert({
+                title: "Unable to Save",
+                content: "Cannot save with no room name!"
+            });
+        } else {
+            var edit_info = $("#add_iteration").serialize();
+            var active_ops = $(".active_ops").map(function() { return $(this).data("opid"); }).get();
+
+            active_ops = JSON.stringify(active_ops);
+
+            $.post("/ondemand/room_actions.php?action=create_room&" + edit_info, {active_ops: active_ops}, function(data) {
+                $('body').append(data);
+            });
+
+            unsaved = false;
+        }
     })
 
     .on("click", ".save_so", function() {
@@ -330,18 +373,6 @@ $("body")
         $.post("/ondemand/so_actions.php?action=reply_inquiry", {reply: reply_text, id: reply_id}, function(data) {
             $("body").append(data);
             $("#inquiry_reply_line_" + reply_id).val("").hide(100);
-        });
-
-        unsaved = false;
-    })
-
-    .on("click", ".iteration_save", function(e) {
-        e.stopPropagation();
-
-        var iteration_info = $("#room_add_iteration_" + active_room_id).serialize();
-
-        $.post("/ondemand/room_actions.php?action=add_iteration&" + iteration_info, function(data) {
-            $('body').append(data);
         });
 
         unsaved = false;

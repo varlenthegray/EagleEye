@@ -406,7 +406,7 @@ switch($_REQUEST['action']) {
                         $output['data'][$i][] = "&nbsp;";
                         $output['data'][$i][] = "{$so['dealer_id']}";
                         $output['data'][$i][] = "{$so['sID']}";
-                        $output['data'][$i]['DT_RowId'] = $so['id'];
+                        $output['data'][$i]['DT_RowId'] = $so['so_num'];
 
                         $i++;
 
@@ -423,7 +423,7 @@ switch($_REQUEST['action']) {
                         $output['data'][$i][] = $order_status;
                         $output['data'][$i][] = "{$so['dealer_id']}";
                         $output['data'][$i][] = "{$so['rID']}";
-                        $output['data'][$i]['DT_RowId'] = $so['id'];
+                        $output['data'][$i]['DT_RowId'] = $so['so_num'];
 
                         $prev_room = $so['room'];
                         $prev_so = $so['so_num'];
@@ -453,7 +453,7 @@ switch($_REQUEST['action']) {
                         $output['data'][$i][] = $order_status;
                         $output['data'][$i][] = "{$so['dealer_id']}";
                         $output['data'][$i][] = "{$so['rID']}";
-                        $output['data'][$i]['DT_RowId'] = $so['id'];
+                        $output['data'][$i]['DT_RowId'] = $so['so_num'];
                     }
 
                     $i++;

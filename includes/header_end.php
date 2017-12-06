@@ -105,7 +105,8 @@
             title: "Leaving without saving!",
             content: "You have unsaved changes, do you wish to proceed?",
             type: 'orange',
-            typeAnimated: true
+            typeAnimated: true,
+            theme: 'supervan'
         };
 
         //var socket = io.connect({secure: true});

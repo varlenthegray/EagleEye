@@ -57,24 +57,24 @@ function calcDelDate($days_to_ship) {
     global $dbconn;
 
     switch($days_to_ship) {
-        case 'Green':
-            $target_date = strtotime('+34 weekdays');
+        case 'G':
+            $target_date = strtotime('+26 weekdays');
 
             break;
-        case 'Yellow':
-            $target_date = strtotime('+14 weekdays');
+        case 'Y':
+            $target_date = strtotime('+19 weekdays');
 
             break;
-        case 'Orange':
-            $target_date = strtotime('+10 weekdays');
+        case 'N':
+            $target_date = strtotime('+13 weekdays');
 
             break;
-        case 'Red':
-            $target_date = strtotime('+5 weekdays');
+        case 'R':
+            $target_date = strtotime('+6 weekdays');
 
             break;
         default:
-            $target_date = strtotime('+34 weekdays');
+            $target_date = strtotime('+26 weekdays');
 
             break;
     }

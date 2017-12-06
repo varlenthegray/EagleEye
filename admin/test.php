@@ -5,12 +5,34 @@ require ("../includes/classes/queue.php");
 
 //outputPHPErrs();
 
-$queue = new \Queue\queue();
+//$excluded_ops = '43,44,';
+//
+//$rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE individual_bracket_buildout LIKE '%$excluded_ops%'");
+//
+//if($rooms_qry->num_rows > 0) {
+//    while($rooms = $rooms_qry->fetch_assoc()) {
+//        $first_slice = explode($excluded_ops, $rooms['individual_bracket_buildout']);
+//
+//        //$middle_slice = "110,111,112,113,114,115,19";
+//
+//        $final_slice = $first_slice[0] . $first_slice[1];
+//
+//        $dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$final_slice' WHERE id = '{$rooms['id']}'");
+//
+//        echo "{$rooms['id']} has been updated to $final_slice.<br />";
+//    }
+//}
+//
+//echo "<h4>Update completed.</h4>";
 
-$id = 8855;
-$notes = "Test Close";
-$rw_reqd = false;
-$rw_reason = null;
-$opnum = 150;
+$room_id = 27;
 
-$queue->stopOp($id, $notes, $rw_reqd, $rw_reason, $opnum);
+$stmt = $dbconn->prepare("SELECT * FROM rooms WHERE id = ?");
+$stmt->bind_param('i', $room_id);
+$stmt->execute();
+$stmt->bind_result($room);
+$stmt->fetch();
+
+print_f($room);
+
+$stmt->close();

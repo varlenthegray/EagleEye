@@ -134,13 +134,20 @@ require 'includes/header_end.php';
     }
 
     function calcVin(room_id) {
-        var so_num = $("#vin_so_num_" + room_id).val();
-        var room = $("#vin_room_" + room_id).val();
-        var iteration = $("#vin_iteration_" + room_id).val();
-        var product_type = $("#vin_product_type_" + room_id).val();
-        var order_status = $("#vin_order_status_" + room_id).val();
-        var days_to_ship = $("#vin_days_to_ship_" + room_id).val();
+        var room;
+
+        if($("select[name='room']").val() === undefined) {
+            room = $("input[name='room']").val();
+        } else {
+            room = $("select[name='room']").val();
+        }
+
+        var iteration = $("input[name='iteration']").val();
+        var product_type = $("select[name='product_type']").val();
+        var order_status = $("select[name='order_status']").val();
+        var days_to_ship = $("select[name='days_to_ship']").val();
         var dealer_code = $("#vin_dealer_code_" + room_id).val();
+
         var species_grade = $("#species_grade_" + room_id).find(":selected").val();
         var construction_method = $("#construction_method_" + room_id).find(":selected").val();
         var door_design = $("#door_design_" + room_id).find(":selected").val();
@@ -168,7 +175,7 @@ require 'includes/header_end.php';
         var carcass_interior_glaze_technique = $("#carcass_interior_glaze_technique_" + room_id).find(":selected").val();
         var drawer_boxes = $("#drawer_boxes_" + room_id).find(":selected").val();
 
-        $("#vin_code_" + room_id).val(so_num + room + "-" + iteration + "-" + product_type + order_status + days_to_ship + "_" + dealer_code + "_" + species_grade + construction_method + door_design + "-" + panel_raise_door + panel_raise_sd + panel_raise_td + "-" + edge_profile +
+        $("#vin_code_" + room_id).val(active_so_num + room + "-" + iteration + "-" + product_type + order_status + days_to_ship + "_" + dealer_code + "_" + species_grade + construction_method + door_design + "-" + panel_raise_door + panel_raise_sd + panel_raise_td + "-" + edge_profile +
             framing_bead + framing_options + style_rail_width + "_" + finish_code + sheen + "-" + glaze + glaze_technique + antiquing + worn_edges + distress_level + "_" + carcass_exterior_species + carcass_exterior_finish_code +
             carcass_exterior_glaze_color + carcass_exterior_glaze_technique + "-" + carcass_interior_species + carcass_interior_finish_code + carcass_interior_glaze_color + carcass_interior_glaze_technique + "_" + drawer_boxes);
     }
@@ -531,6 +538,9 @@ require 'includes/header_end.php';
 
             unsaved = false;
         })
+        .on("change keydown", ".vin_code_calc", function() {
+            calcVin(active_room_id);
+        })
         // -- End VIN Page --
 
         // -- Task Page --
@@ -629,14 +639,18 @@ require 'includes/header_end.php';
                 $(".dealer_" + dealer_id).hide();
             }
         })
-        .on("click", ".sales_list_visible", function() {
+        .on("click", ".sales_list_visible", function(e) {
+            e.stopPropagation();
+
             var hide = $(this).data("identifier");
 
             $("." + hide).hide();
 
             $.post("/ondemand/display_actions.php?action=hide_sales_list_id&id=" + hide);
         })
-        .on("click", ".sales_list_hidden", function() {
+        .on("click", ".sales_list_hidden", function(e) {
+            e.stopPropagation();
+
             var show = $(this).data("identifier");
             $(this).removeClass('btn-primary-outline sales_list_hidden').addClass('btn-primary sales_list_visible').children('i').removeClass('zmdi-eye').addClass('zmdi-eye-off');
 
