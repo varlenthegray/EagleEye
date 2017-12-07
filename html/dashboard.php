@@ -4,7 +4,7 @@ require '../includes/header_start.php';
 
 <div class="row">
     <?php
-    if($_SESSION['userInfo']['account_type'] <= 4) {
+    if($_SESSION['userInfo']['perm_full_dashboard']) {
     ?>
     <div class="col-md-6">
         <div class="col-md-12">
@@ -136,7 +136,7 @@ require '../includes/header_start.php';
         ?>";
 
     <?php
-    if($_SESSION['userInfo']['account_type'] <= 4) {
+    if($_SESSION['userInfo']['perm_full_dashboard']) {
     ?>
     var quote_table = $("#quote_global_table").DataTable({
         "ajax": "/ondemand/display_actions.php?action=display_quotes",
@@ -201,14 +201,9 @@ require '../includes/header_start.php';
             $('td:eq(1)', nRow).html(index);
             return nRow;
         }
-//        ,rowReorder: {
-//            enable: false,
-//            selector: "tr",
-//            dataSrc: 8
-//        }
     });
 
-    $("#queue_header").html("<h4 class='pull-left'>Operations for " + op_queue_list + "</h4><!--<span class='pull-right'><button class='btn btn-dark waves-effect waves-light' id='#edit_priorities'> <i class='fa fa-pencil-square m-r-5'></i> <span>Edit Priorities</span> </button></span>-->");
+    $("#queue_header").html("<h4 class='pull-left'>Operations for " + op_queue_list + "</h4>");
     $("#quote_header").html("<h4>Quotes</h4>");
     $("#order_header").html("<h4>Orders</h4>");
     $("#active_header").html("<h4>Operations (Active) for <?php echo $_SESSION['shop_user']['name']; ?></h4>");

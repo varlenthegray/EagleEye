@@ -4,7 +4,7 @@ session_start();
 require 'includes/header_account.php'; // initial header for the page
 
 if($_REQUEST['action'] === 'login') { // if we're trying to log in
-    $username = trim($dbconn->real_escape_string($_REQUEST['username'])); // get username
+    $username = strtolower(trim($dbconn->real_escape_string($_REQUEST['username']))); // get username
 
     $user = $dbconn->query("SELECT * FROM user WHERE username = '$username' AND account_status = TRUE"); // fetch the username from the database
 
