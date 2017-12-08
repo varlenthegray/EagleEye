@@ -143,6 +143,7 @@ $("body")
 
         checkTransition(function() {
             active_room_id = $(thisClick).attr("id");
+            active_so_num = $(thisClick).data("sonum");
 
             toggleDisplay();
 
@@ -330,9 +331,12 @@ $("body")
         e.stopPropagation();
 
         if($("input[name='room_name']").val() === '') {
-            $.alert({
+            $.confirm({
                 title: "Unable to Save",
-                content: "Cannot save with no room name!"
+                content: "Cannot save with no room name!",
+                buttons: {
+                    ok: function() {}
+                }
             });
         } else {
             var edit_info = $("#add_iteration").serialize();
@@ -428,5 +432,30 @@ $("body")
                 $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -100});
             }, 300);
         });
+    })
+
+    .on("click", "#copy_vin", function() {
+        var copy_to_title = $("#copy_vin_target").find(":selected").text();
+        var thisClick = $(this);
+
+        $.confirm({
+            title: "Are you sure you want to copy this VIN?",
+            content: "You are overwriting <strong>ALL</strong> VIN information located at " + copy_to_title + " - please confirm you wish to proceed.",
+            buttons: {
+                confirm: function() {
+                    var copy_from = $(thisClick).data("roomid");
+                    var copy_to = $("#copy_vin_target").find(":selected").val();
+
+                    console.log("Copy From: " + copy_from + ", Copy To: " + copy_to);
+
+                    $.post("/ondemand/room_actions.php?action=copy_vin", {copy_from: copy_from, copy_to: copy_to}, function(data) {
+                        $('body').append(data);
+                    });
+                },
+                cancel: function() {}
+            }
+        });
+
+
     })
 ;

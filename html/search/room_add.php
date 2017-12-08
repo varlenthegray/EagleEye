@@ -163,6 +163,7 @@ echo "<script>
                     <div class="col-md-12">
                         <input type="hidden" name="sonum" value="<?php echo $room['so_parent']; ?>">
                         <input type="hidden" name="room" value="<?php echo $room['room']; ?>">
+                        <input type="hidden" name="roomid" value="<?php echo $room['id']; ?>">
 
                         <input type="hidden" name="vin_dealer_code_<?php echo $room['id']; ?>" value="<?php echo $result['dealer_code']; ?>" id="vin_dealer_code_<?php echo $room['id']; ?>" />
 

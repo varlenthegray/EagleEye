@@ -158,6 +158,52 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>&action=arh' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print ARH Coversheet</a>
                 <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>&action=no_totals' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Shop Coversheet</a>
                 <a href='/print/sample_label.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Sample Label</a>
+
+                <?php
+                    $other_rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so'");
+
+                    if($other_rooms_qry->num_rows > 1) {
+                        ?>
+                        <div class="vin_copy text-md-center" style="margin-top:10px;">
+                            <h5>Copy VIN</h5>
+                            <label for="copy_vin_target">To Where?</label>
+                            <select class="form-control ignoreSaveAlert" id="copy_vin_target" name="copy_vin_target">
+                                <?php
+                                $all_rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so' ORDER BY room, iteration ASC");
+
+                                $all_rooms_prev_room = null;
+                                $all_rooms_prev_seq = null;
+
+                                while ($all_rooms = $all_rooms_qry->fetch_assoc()) {
+                                    if ($all_rooms['id'] !== $room['id']) {
+                                        $seq_it = explode(".", $all_rooms['iteration']);
+
+                                        if ($all_rooms_prev_room === $all_rooms['room']) {
+                                            if ($all_rooms_prev_seq === $seq_it[0]) {
+                                                $title = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.{$seq_it[1]}";
+                                            } else {
+                                                $title = "&nbsp;&nbsp;&nbsp;{$all_rooms['iteration']}";
+                                            }
+
+                                            $all_rooms_prev_seq = $seq_it[0];
+                                        } else {
+                                            $title = "{$all_rooms['room']}{$all_rooms['iteration']}";
+                                            $all_rooms_prev_seq = $seq_it[0];
+                                        }
+
+                                        echo "<option value='{$all_rooms['id']}'>$title</option>";
+
+                                        $all_rooms_prev_room = $all_rooms['room'];
+                                    }
+                                }
+                                ?>
+                            </select>
+                            <br/>
+                            <a id='copy_vin' data-roomid="<?php echo $room['id']; ?>" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Copy VIN</a>
+                        </div>
+                        <?php
+                    }
+                ?>
             </div>
 
             <div class="col-md-3 col-md-offset-1">

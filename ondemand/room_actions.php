@@ -85,6 +85,7 @@ switch($_REQUEST['action']) {
     case 'create_room':
         $so_num = sanitizeInput($_REQUEST['sonum']);
         $room = sanitizeInput($_REQUEST['room']);
+        $room_id = sanitizeInput($_REQUEST['roomid']);
 
         $delivery_date = sanitizeInput($_REQUEST['delivery_date']);
         $product_type = sanitizeInput($_REQUEST['product_type']);
@@ -524,5 +525,27 @@ HEREDOC;
         $days_to_ship = sanitizeInput($_REQUEST['days_to_ship']);
 
         echo calcDelDate($days_to_ship);
+        break;
+    case 'copy_vin':
+        $from_room = sanitizeInput($_REQUEST['copy_from']);
+        $to_room = sanitizeInput($_REQUEST['copy_to']);
+
+        $from_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$from_room'");
+        $from = $from_qry->fetch_assoc();
+
+        $to_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$to_room'");
+        $to = $to_qry->fetch_assoc();
+
+        $dbconn->query("UPDATE rooms SET species_grade = '{$from['species_grade']}', construction_method = '{$from['construction_method']}', door_design = '{$from['door_design']}',
+        panel_raise_door = '{$from['panel_raise_door']}', panel_raise_sd = '{$from['panel_raise_sd']}', panel_raise_td = '{$from['panel_raise_td']}', edge_profile = '{$from['edge_profile']}',
+        framing_bead = '{$from['framing_bead']}', framing_options = '{$from['framing_options']}', style_rail_width = '{$from['style_rail_width']}', finish_type = '{$from['finish_type']}',
+        finish_code = '{$from['finish_code']}', sheen = '{$from['sheen']}', glaze = '{$from['glaze']}', glaze_technique = '{$from['glaze_technique']}', antiquing = '{$from['antiquing']}',
+        worn_edges = '{$from['worn_edges']}', distress_level = '{$from['distress_level']}', carcass_exterior_species = '{$from['carcass_exterior_species']}', carcass_exterior_finish_type = '{$from['carcass_exterior_finish_type']}',
+        carcass_exterior_finish_code = '{$from['carcass_exterior_finish_code']}', carcass_exterior_glaze_color = '{$from['carcass_exterior_glaze_color']}', carcass_exterior_glaze_technique = '{$from['carcass_exterior_glaze_technique']}',
+        carcass_interior_species = '{$from['carcass_interior_species']}', carcass_interior_finish_type = '{$from['carcass_interior_finish_type']}', carcass_interior_finish_code = '{$from['carcass_interior_finish_code']}',
+        carcass_interior_glaze_color = '{$from['carcass_interior_glaze_color']}', carcass_interior_glaze_technique = '{$from['carcass_interior_glaze_technique']}', drawer_boxes = '{$from['drawer_boxes']}' WHERE id = '$to_room'");
+
+        echo displayToast("success", "VIN Data copied from {$from['room']}{$from['iteration']} to {$to['room']}{$to['iteration']}", "Copied VIN");
+
         break;
 }
