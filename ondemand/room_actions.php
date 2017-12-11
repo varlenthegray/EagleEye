@@ -264,7 +264,11 @@ HEREDOC;
         $order_status = sanitizeInput(html_entity_decode($_REQUEST['order_status']));
         $days_to_ship = sanitizeInput($_REQUEST['days_to_ship']);
         $room_name = sanitizeInput($_REQUEST['room_name']);
-        $notes = sanitizeInput($_REQUEST['room_inquiry']);
+
+        $notes = sanitizeInput($_REQUEST['room_notes']);
+        $note_type = sanitizeInput($_REQUEST['note_type']);
+        $note_id = sanitizeInput($_REQUEST['note_id']);
+
         $room_id = sanitizeInput($_REQUEST['roomid']);
         $followup_date = sanitizeInput($_REQUEST['room_inquiry_followup_date']);
         $followup_individual = sanitizeInput($_REQUEST['room_inquiry_requested_of']);
@@ -289,13 +293,60 @@ HEREDOC;
 
         if($dbconn->query("UPDATE rooms SET product_type = '$product_type', order_status = '$order_status', days_to_ship = '$days_to_ship', room_name = '$room_name' $delivery_date  WHERE id = $room_id")) {
             if(!empty($notes)) {
-                if($dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')")) {
-                    echo displayToast("success", "Successfully updated the room.", "Room Updated");
+                switch($note_type) {
+                    case 'room_note':
+                        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
-                    $inquiry_id = $dbconn->insert_id;
-                } else {
-                    dbLogSQLErr($dbconn);
+                        break;
+
+                    case 'delivery_note':
+                        if(!empty($note_id)) {
+                            $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
+                        } else {
+                            if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_delivery'")->num_rows === 0) {
+                                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_delivery', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+                            } else {
+                                echo displayToast("warning", "Delivery Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
+                            }
+                        }
+
+                        break;
+
+                    case 'global_note':
+                        if(!empty($note_id)) {
+                            $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
+                        } else {
+                            if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_global'")->num_rows === 0) {
+                                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_global', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+                            } else {
+                                echo displayToast("warning", "Global Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
+                            }
+                        }
+
+                        break;
+
+                    case 'fin_sample_note':
+                        if(!empty($note_id)) {
+                            $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
+                        } else {
+                            if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
+                                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+                            } else {
+                                echo displayToast("warning", "Finishing/Sample Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
+                            }
+                        }
+
+                        break;
+
+                    default:
+                        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+
+                        break;
                 }
+
+                $inquiry_id = $dbconn->insert_id;
+
+                echo displayToast("success", "Successfully updated the room with the notes attached.", "Room Updated with Notes");
             } else {
                 echo displayToast("success", "Successfully updated the room.", "Room Updated");
             }
@@ -303,18 +354,11 @@ HEREDOC;
             dbLogSQLErr($dbconn);
         }
 
-        if(!empty($followup_date)) {
+        if(!empty($followup_date) && !empty($followup_individual)) {
             $followup = strtotime($followup_date);
 
             $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('room_inquiry_reply', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'SO# $so_num, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $inquiry_id)");
-        }
 
-        $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = $followup_individual");
-
-        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
-        $room = $room_qry->fetch_assoc();
-
-        if(!empty($followup_individual)) {
             $followup_time = date(DATE_TIME_ABBRV, $followup);
 
             if($usr = $usr_qry->fetch_assoc()) {
@@ -331,10 +375,16 @@ A new inquiry has been sent in for this room and requires your feedback.<br />
 $msg_notes -- {$_SESSION['userInfo']['name']}
 HEREDOC;
 
-
                 $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$room['so_parent']}{$room['room']}{$room['iteration']}", $message);
             }
+        } elseif((empty($followup_date) && !empty($followup_individual)) || (!empty($followup_date) && empty($followup_individual))) {
+            echo displayToast("warning", "Unable to set a followup as there is a missing individual or date.", "No Followup Set");
         }
+
+        $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = $followup_individual");
+
+        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
+        $room = $room_qry->fetch_assoc();
 
         $so_num = sanitizeInput($_REQUEST['vin_so_num_' . $room_id]);
         $room = sanitizeInput($_REQUEST['vin_room_' . $room_id]);

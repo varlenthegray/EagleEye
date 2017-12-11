@@ -458,4 +458,68 @@ $("body")
 
 
     })
+
+    .on("change", "input[name='note_type']", function() {
+        var room_notes = $("#room_notes");
+        var note_id = $("#note_id");
+
+        switch($(this).val()) {
+            case 'room_note':
+                room_notes.val('').focus();
+                note_id.val('');
+
+                break;
+
+            case 'delivery_note':
+                $.post("/ondemand/play_fetch.php?action=get_note&room_id=" + active_room_id + "&note_type=" + 'room_note_delivery', function(data) {
+                    if(data !== '') {
+                        var room_info = JSON.parse(data);
+
+                        note_id.val(room_info.id);
+                        room_notes.val(room_info.note).focus();
+                    } else {
+                        room_notes.val('').focus();
+                        note_id.val('');
+                    }
+                });
+
+                break;
+
+            case 'global_note':
+                $.post("/ondemand/play_fetch.php?action=get_note&room_id=" + active_room_id + "&note_type=" + 'room_note_global', function(data) {
+                    if(data !== '') {
+                        var room_info = JSON.parse(data);
+
+                        note_id.val(room_info.id);
+                        room_notes.val(room_info.note).focus();
+                    } else {
+                        room_notes.val('').focus();
+                        note_id.val('');
+                    }
+                });
+
+                break;
+
+            case 'fin_sample_note':
+                $.post("/ondemand/play_fetch.php?action=get_note&room_id=" + active_room_id + "&note_type=" + 'room_note_fin_sample', function(data) {
+                    if(data !== '') {
+                        var room_info = JSON.parse(data);
+
+                        note_id.val(room_info.id);
+                        room_notes.val(room_info.note).focus();
+                    } else {
+                        room_notes.val('').focus();
+                        note_id.val('');
+                    }
+                });
+
+                break;
+
+            default:
+                room_notes.val('').focus();
+                note_id.val('');
+
+                break;
+        }
+    })
 ;

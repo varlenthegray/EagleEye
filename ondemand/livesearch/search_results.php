@@ -18,7 +18,7 @@ function determineColor($room, $bracket) {
         $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room[$bracket . "_bracket"]}'");
         $op = $op_qry->fetch_assoc();
 
-        if($op['job_title'] === 'Bracket Completed') {
+        if($op['job_title'] === 'Bracket Completed' || $op['job_title'] === 'N/A') {
             return 'job-color-gray';
         } elseif((bool)$room[$bracket . '_published']) {
             return 'job-color-green';

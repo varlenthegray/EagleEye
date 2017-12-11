@@ -745,7 +745,16 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                     </div>
 
                     <div class="col-md-4">
-                        <textarea class="form-control" name="room_inquiry" id="room_inquiry" placeholder="Room Inquiry/Note" style="width:100%;height:277px;"></textarea>
+                        <div class="row">
+                            <div class="col-md-4"><input type="radio" name="note_type" id="note_room" class="ignoreSaveAlert" value="room_note"> <label for="note_room">Room Note</label></div>
+                            <div class="col-md-4"><input type="radio" name="note_type" id="note_delivery" class="ignoreSaveAlert" value="delivery_note"> <label for="note_delivery">Delivery Note</label></div>
+                            <div class="col-md-4"><input type="radio" name="note_type" id="note_global" class="ignoreSaveAlert" value="global_note"> <label for="note_global">Global Note</label></div>
+                            <div class="col-md-4"><input type="radio" name="note_type" id="note_fin_sample" class="ignoreSaveAlert" value="fin_sample_note"> <label for="note_fin_sample">Finish/Sample Note</label></div>
+                        </div>
+
+                        <input type="hidden" name="note_id" id="note_id" value="">
+
+                        <textarea class="form-control" name="room_notes" id="room_notes" placeholder="Notes" style="width:100%;height:277px;"></textarea>
                         <input type="text" name="room_inquiry_followup_date" id="room_inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
                         <label for="room_inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
                         <select name="room_inquiry_requested_of" id="room_inquiry_requested_of" class="form-control" style="width:50%;float:left;">

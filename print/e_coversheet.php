@@ -25,6 +25,16 @@ function translateVIN($segment, $key) {
 
     return "{$key} = {$vin['value']}";
 }
+
+$note_arr = array();
+
+$notes_qry = $dbconn->query("SELECT * FROM notes WHERE (note_type = 'room_note_delivery' OR note_type = 'room_note_global' OR note_type = 'room_note_fin_sample') AND type_id = '$room_id'");
+
+if($notes_qry->num_rows > 0) {
+    while($notes = $notes_qry->fetch_assoc()) {
+        $note_arr[$notes['note_type']] = $notes['note'];
+    }
+}
 ?>
 <!DOCTYPE html>
 
@@ -124,19 +134,16 @@ function translateVIN($segment, $key) {
                     <th colspan="2"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['dealer_name']}"; ?></span></th>
                 </tr>
                 <tr class="border_thin_bottom" id="delivery_notes">
-                    <td class="gray_bg" width="10%">Delivery Notes:</td>
-                    <td><textarea name="delivery_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"></textarea></td>
+                    <td class="gray_bg" width="13%">Delivery Notes:</td>
+                    <td><textarea name="delivery_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
                 </tr>
                 <tr class="border_thin_bottom" id="global_notes">
                     <td class="gray_bg">Global Notes:</td>
-                    <td><textarea name="global_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $info['vin_notes']; ?></textarea></td>
+                    <td><textarea name="global_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $note_arr['room_note_global']; ?></textarea></td>
                 </tr>
                 <tr id="layout_notes">
-                    <td class="gray_bg" id="layout_notes_title">Layout Notes:</td>
-                    <td>
-                        <textarea name="layout_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php
-                            ?></textarea>
-                    </td>
+                    <td class="gray_bg" id="layout_notes_title">Finishing/Sample Notes:</td>
+                    <td><textarea name="layout_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
                 </tr>
             </table>
 
@@ -911,11 +918,11 @@ function translateVIN($segment, $key) {
             $("#layout_notes_title").html("Sample Notes:");
         }
 
-//        if(getUrlParams('action') !== null){
-//            setTimeout(function() {
-//                window.print();
-//            }, 150);
-//        }
+       if(getUrlParams('action') !== null){
+           setTimeout(function() {
+               window.print();
+           }, 150);
+       }
     });
 
     function emptyOrZero(data) {

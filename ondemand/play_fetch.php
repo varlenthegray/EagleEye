@@ -45,4 +45,17 @@ switch($_REQUEST['action']) {
         }
 
         break;
+    case 'get_note':
+        $room_id = sanitizeInput($_REQUEST['room_id']);
+        $note_type = sanitizeInput($_REQUEST['note_type']);
+
+        $note_qry = $dbconn->query("SELECT * FROM notes WHERE note_type = '$note_type' AND type_id = '$room_id'");
+
+        if($note_qry->num_rows > 0) {
+            $note = $note_qry->fetch_assoc();
+
+            echo json_encode($note, true);
+        }
+
+        break;
 }

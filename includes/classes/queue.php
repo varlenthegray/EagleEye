@@ -604,6 +604,11 @@ class queue {
                     $this->autoRelease($room, 'Installation', 'install_bracket', $room_id);
 
                     break;
+
+                case 177: // 192: Payment of Deposit > 300: SA Review & Quote Prep
+                    $this->autoRelease($room, 'Pre-Production', 'preproduction_bracket', $room_id);
+
+                    break;
             }
             // end of auto-release brackets!
 
