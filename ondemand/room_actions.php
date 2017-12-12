@@ -41,7 +41,7 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
     }
 }
 
-function whatChanged($new, $old, $title, $date = false, $bool = false) {
+function whatChanged($new, $old, $title, $date = false, $bool = false, $bracket_chng = false) {
     global $dbconn;
 
     if($date) {
@@ -52,14 +52,13 @@ function whatChanged($new, $old, $title, $date = false, $bool = false) {
         $new = (int)$new;
         $old = (int)$old;
     } else {
-        if($title === 'Sales Bracket' || $title === 'Sample Bracket' || $title === 'Pre-Production Bracket' || $title === 'Door/Drawer Bracket' || $title === 'Main Bracket' ||
-            $title === 'Custom Bracket' || $title === 'Shipping Bracket' || $title === 'Install Bracket' || $title === 'Pick & Materials Bracket') {
-
+        if($bracket_chng) {
             $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = $new");
+
             if($op_qry->num_rows > 0) {
                 $op = $op_qry->fetch_assoc();
 
-                $updated = $op['job_title'];
+                $updated = "to {$op['job_title']}";
             }
         } elseif($title === 'Active Bracket Operations') {
             $updated = null;
@@ -78,7 +77,9 @@ function whatChanged($new, $old, $title, $date = false, $bool = false) {
         $str = "Updated $updated";
     }
 
-    return ($old !== $new) ? "$title $str" : null;
+    if(!empty($new)) {
+        return ($old !== $new) ? "$title $str" : null;
+    }
 }
 
 switch($_REQUEST['action']) {
@@ -503,15 +504,15 @@ HEREDOC;
         $install_op = sanitizeInput($_REQUEST['install_bracket']);
         $pickmat_op = sanitizeInput($_REQUEST['pick_materials_bracket']);
 
-        $changed[] = whatChanged($sales_op, $room_info['sales_bracket'], 'Sales Bracket');
-        $changed[] = whatChanged($sample_op, $room_info['sample_bracket'], 'Sample Bracket');
-        $changed[] = whatChanged($preprod_op, $room_info['preproduction_bracket'], 'Pre-Production Bracket');
-        $changed[] = whatChanged($doordrawer_op, $room_info['doordrawer_bracket'], 'Door/Drawer Bracket');
-        $changed[] = whatChanged($main_op, $room_info['main_bracket'], 'Main Bracket');
-        $changed[] = whatChanged($custom_op, $room_info['custom_bracket'], 'Custom Bracket');
-        $changed[] = whatChanged($shipping_op, $room_info['shipping_bracket'], 'Shipping Bracket');
-        $changed[] = whatChanged($install_op, $room_info['install_bracket'], 'Install Bracket');
-        $changed[] = whatChanged($pickmat_op, $room_info['pick_materials_bracket'], 'Pick & Materials Bracket');
+        $changed[] = whatChanged($sales_op, $room_info['sales_bracket'], 'Sales Bracket', false, false, true);
+        $changed[] = whatChanged($sample_op, $room_info['sample_bracket'], 'Sample Bracket', false, false, true);
+        $changed[] = whatChanged($preprod_op, $room_info['preproduction_bracket'], 'Pre-Production Bracket', false, false, true);
+        $changed[] = whatChanged($doordrawer_op, $room_info['doordrawer_bracket'], 'Door/Drawer Bracket', false, false, true);
+        $changed[] = whatChanged($main_op, $room_info['main_bracket'], 'Main Bracket', false, false, true);
+        $changed[] = whatChanged($custom_op, $room_info['custom_bracket'], 'Custom Bracket', false, false, true);
+        $changed[] = whatChanged($shipping_op, $room_info['shipping_bracket'], 'Shipping Bracket', false, false, true);
+        $changed[] = whatChanged($install_op, $room_info['install_bracket'], 'Install Bracket', false, false, true);
+        $changed[] = whatChanged($pickmat_op, $room_info['pick_materials_bracket'], 'Pick & Materials Bracket', false, false, true);
 
         $sales_pub = (!empty($_REQUEST['sales_published'])) ? sanitizeInput($_REQUEST['sales_published']) : 0;
         $sample_pub = (!empty($_REQUEST['sample_published'])) ? sanitizeInput($_REQUEST['sample_published']) : 0;
@@ -521,7 +522,7 @@ HEREDOC;
         $custom_pub = (!empty($_REQUEST['custom_published'])) ? sanitizeInput($_REQUEST['custom_published']) : 0;
         $shipping_pub = (!empty($_REQUEST['shipping_published'])) ? sanitizeInput($_REQUEST['shipping_published']) : 0;
         $install_pub = (!empty($_REQUEST['install_published'])) ? sanitizeInput($_REQUEST['install_published']) : 0;
-        $pickmat_pub = (!empty($_REQUEST['pickmat_published'])) ? sanitizeInput($_REQUEST['pickmat_published']) : 0;
+        $pickmat_pub = (!empty($_REQUEST['pick_materials_published'])) ? sanitizeInput($_REQUEST['pickmat_published']) : 0;
 
 
         $changed[] = whatChanged($sales_pub, $room_info['sales_published'], 'Sales Bracket', false, true);
@@ -532,7 +533,7 @@ HEREDOC;
         $changed[] = whatChanged($custom_pub, $room_info['custom_published'], 'Custom Bracket', false, true);
         $changed[] = whatChanged($shipping_pub, $room_info['shipping_published'], 'Shipping Bracke', false, true);
         $changed[] = whatChanged($install_pub, $room_info['install_bracket_published'], 'Install Bracket', false, true);
-        $changed[] = whatChanged($pickmat_pub, $room_info['pickmat_published'], 'Pick & Materials Bracket', false, true);
+        $changed[] = whatChanged($pickmat_pub, $room_info['pick_materials_published'], 'Pick & Materials Bracket', false, true);
         $changed[] = whatChanged($ops, $room_info['individual_bracket_buildout'], 'Active Bracket Operations');
 
         if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {

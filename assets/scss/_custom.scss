@@ -623,3 +623,11 @@ table tbody td {
     border-collapse: collapse;
   }
 }
+
+.checkbox label {
+  line-height: 22px;
+}
+
+.checkbox label::after {
+  top: -1px;
+}

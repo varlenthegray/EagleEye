@@ -35,11 +35,22 @@ if($notes_qry->num_rows > 0) {
         $note_arr[$notes['note_type']] = $notes['note'];
     }
 }
+
+if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') {
+    $hide .= "$('#sample_confirmation').hide();";
+    $hide .= "$('#terms_acceptance').hide();";
+    $hide .= "$('#sample_qty').css('margin-top', '30px');";
+}
 ?>
 <!DOCTYPE html>
 
 <html moznomarginboxes="" mozdisallowselectionprint="">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A fully functional ERP designed to manage cabinetry and automation.">
+    <meta name="author" content="Stone Mountain Cabinetry & Millwork">
+
     <link href="css/e_coversheet.css?v=111320171016" type="text/css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
@@ -137,27 +148,27 @@ if($notes_qry->num_rows > 0) {
                     <td class="gray_bg" width="13%">Delivery Notes:</td>
                     <td><textarea name="delivery_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
                 </tr>
-                <tr class="border_thin_bottom" id="global_notes">
+                <tr class="border_thin_bottom" width="13%" id="global_notes">
                     <td class="gray_bg">Global Notes:</td>
                     <td><textarea name="global_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $note_arr['room_note_global']; ?></textarea></td>
                 </tr>
                 <tr id="layout_notes">
-                    <td class="gray_bg" id="layout_notes_title">Finishing/Sample Notes:</td>
+                    <td class="gray_bg" width="13%" id="layout_notes_title">Finishing/Sample Notes:</td>
                     <td><textarea name="layout_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
                 </tr>
             </table>
 
             <table>
                 <tr>
-                    <th width="65.2%"></th>
-                    <th colspan="2">Summary of Charges</th>
+                    <th width="65.2%" style="height:15px;"></th>
+                    <th colspan="2" style="height:15px;"><span class="subtotal">Summary of Charges</span></th>
                 </tr>
-                <tr>
+                <tr class="subtotal">
                     <td></td>
                     <td class="border_thin_bottom total_text">Modifications & Accessories:</td>
                     <td class="text-md-right border_thin_bottom total_text">$<input type="text" name="mods_accessories" value="0.00" maxlength="10"></td>
                 </tr>
-                <tr>
+                <tr class="subtotal">
                     <td></td>
                     <td class="total_text border_thin_bottom">Cabinet List Price:</td>
                     <td class="text-md-right border_thin_bottom total_text">$<input type="text" name="list_price" value="0.00" maxlength="10"></td>
@@ -671,39 +682,53 @@ if($notes_qry->num_rows > 0) {
         <div id="closing_statement">Thank you! Our Commitment is to Quality in our Cabinetry & Our Customer Service!</div>
 
         <div id="sample_qty" style="display:none;">
-            <table width="100%">
-                <tr>
-                    <th class="b-ul">Order</th>
-                    <th class="b-ul text-md-center" width="75px">On Order</th>
-                    <th class="b-ul text-md-center" width="75px">Received</th>
-                </tr>
-                <tr style="height:10px;"></tr>
-                <tr>
-                    <td>Sample Block (5 1/4" x 6 1/8")</td>
-                    <td class="text-md-center"><?php echo ($info['sample_block_ordered'] > 0) ? $info['sample_block_ordered'] : '_________'; ?></td>
-                    <td class="text-md-center">_________</td>
-                </tr>
-                <tr>
-                    <td>Door Only (12" x 15")</td>
-                    <td class="text-md-center"><?php echo ($info['door_only_ordered'] > 0) ? $info['door_only_ordered'] : '_________'; ?></td>
-                    <td class="text-md-center">_________</td>
-                </tr>
-                <tr>
-                    <td>Door & Drawer (15 1/2" x 23 1/2")</td>
-                    <td class="text-md-center"><?php echo ($info['door_drawer_ordered'] > 0) ? $info['door_drawer_ordered'] : '_________'; ?></td>
-                    <td class="text-md-center">_________</td>
-                </tr>
-                <tr>
-                    <td>Inset Square (15 1/2" x 23 1/2")</td>
-                    <td class="text-md-center"><?php echo ($info['inset_square_ordered'] > 0) ? $info['inset_square_ordered'] : '_________'; ?></td>
-                    <td class="text-md-center">_________</td>
-                </tr>
-                <tr>
-                    <td>Inset Beaded (16 1/2" x 23 1/2")</td>
-                    <td class="text-md-center"><?php echo ($info['inset_beaded_ordered'] > 0) ? $info['inset_beaded_ordered'] : '_________'; ?></td>
-                    <td class="text-md-center">_________</td>
-                </tr>
-            </table>
+            <?php
+            if($info['sample_block_ordered'] > 0 || $info['door_only_ordered'] > 0 || $info['door_drawer_ordered'] > 0 || $info['inset_square_ordered'] > 0 || $info['inset_beaded_ordered'] > 0) {
+                ?>
+                <table width="80%" style="margin:0 auto;">
+                    <tr>
+                        <th class="b-ul">Order</th>
+                        <th class="b-ul text-md-center" width="75px">On Order</th>
+                        <th class="b-ul text-md-center" width="75px">Received</th>
+                    </tr>
+                    <tr style="height:10px;"></tr>
+                    
+                    <?php
+                    function displaySampleStatus($title, $sample_object) {
+                        global $info;
+                        $output = ($info[$sample_object] > 0) ? $info[$sample_object] : '_________';
+
+                        echo "<tr>";
+                        echo "<td class='middle-border'>$title</td>";
+                        echo "<td class='text-md-center'>$output</td>";
+                        echo "<td class='text-md-center'>_________</td>";
+                        echo "</tr>";
+                    }
+
+                    if($info['sample_block_ordered'] > 0) {
+                        displaySampleStatus('Sample Block (5 1/4" x 6 1/8")', 'sample_block_ordered');
+                    }
+
+                    if($info['door_only_ordered'] > 0) {
+                        displaySampleStatus('Door Only (12" x 15")', 'door_only_ordered');
+                    }
+
+                    if($info['door_drawer_ordered'] > 0) {
+                        displaySampleStatus('Door & Drawer (15 1/2" x 23 1/2")', 'door_drawer_ordered');
+                    }
+
+                    if($info['inset_square_ordered'] > 0) {
+                        displaySampleStatus('Inset Square (15 1/2" x 23 1/2")', 'inset_square_ordered');
+                    }
+
+                    if($info['inset_beaded_ordered'] > 0) {
+                        displaySampleStatus('Inset Beaded (16 1/2" x 23 1/2")', 'inset_beaded_ordered');
+                    }
+                    ?>
+                </table>
+                <?php
+            }
+            ?>
         </div>
     </form>
 </div>
@@ -727,6 +752,8 @@ if($notes_qry->num_rows > 0) {
         } else {
             echo "var frame_option_price = 0.00;";
         }
+
+        echo $hide;
     ?>
 
     var credit_card_pct = 3.5;

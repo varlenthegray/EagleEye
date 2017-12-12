@@ -243,6 +243,7 @@ switch ($search) {
                                                 ?>
                                             </select>
                                         </td>
+                                        <td style="padding-left:5px;"><div class="checkbox"><input id="hide_empty_fields" class="ignoreSaveAlert" type="checkbox"><label for="hide_empty_fields"> Show Empty Fields</label></div></td>
                                     </tr>
                                     <tr style="height: 5px;">
                                         <td colspan="3"></td>
@@ -339,10 +340,10 @@ switch ($search) {
                                         <td><input type="text" value="<?php echo $result['email_2']; ?>" name="email_2" class="form-control" placeholder="Email Address" id="email_2"></td>
                                         <td colspan="2">&nbsp;</td>
                                     </tr>
-                                    <tr>
+                                    <tr class="s_addr_empty">
                                         <td colspan="3"><div style="width:100%;height:3px;border:2px solid #132882;margin:5px 0;border-radius:5px;"></div></td>
                                     </tr>
-                                    <tr>
+                                    <tr class="s_addr_empty">
                                         <td colspan="3">
                                             <?php
                                                 if(!empty($result['secondary_addr']) || !empty($result['secondary_city']) || !empty($result['secondary_zip']) || !empty($result['secondary_landline'])) {
@@ -421,10 +422,10 @@ switch ($search) {
                                         </td>
                                         <td>&nbsp;</td>
                                     </tr>
-                                    <tr>
+                                    <tr class="con_empty">
                                         <td colspan="3"><div style="width:100%;height:3px;border:2px solid #132882;margin:5px 0;border-radius:5px;"></div></td>
                                     </tr>
-                                    <tr>
+                                    <tr class="con_empty">
                                         <td colspan="3">
                                             <?php
                                             if(!empty($result['contractor_name']) || !empty($result['contractor_business']) || !empty($result['contractor_cell']) || !empty($result['contractor_email']) || !empty($result['contractor_zip']) ||
@@ -515,10 +516,10 @@ switch ($search) {
                                         <td><input type="text" value="<?php echo $result['project_mgr_cell']; ?>" name="project_mgr_cell" class="form-control" placeholder="Project Manager Cell" id="project_mgr_cell"></td>
                                         <td><input type="text" value="<?php echo $result['project_mgr_email']; ?>" name="project_mgr_email" class="form-control" placeholder="Project Manager Email" id="project_mgr_email"></td>
                                     </tr>
-                                    <tr>
+                                    <tr class="billing_empty">
                                         <td colspan="3"><div style="width:100%;height:3px;border:2px solid #132882;margin:5px 0;border-radius:5px;"></div></td>
                                     </tr>
-                                    <tr>
+                                    <tr class="billing_empty">
                                         <td>
                                             <?php
                                                 if(!empty($result['bill_to']) || !empty($result['billing_contact']) || !empty($result['billing_landline']) || !empty($result['billing_cell']) || !empty($result['billing_addr']) ||
@@ -692,7 +693,7 @@ switch ($search) {
                             <div class="col-md-3">
                                 <div class="row">
                                     <div class="col-md-12">
-                                        <textarea class="form-control" name="inquiry" id="inquiry" placeholder="New Inquiry/Note" style="width:100%;height:350px;"></textarea>
+                                        <textarea class="form-control" name="inquiry" id="inquiry" placeholder="New Inquiry/Note" style="width:100%;height:215px;"></textarea>
                                         <input type="text" name="inquiry_followup_date" id="inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
                                         <label for="inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
                                         <select name="inquiry_requested_of" id="inquiry_requested_of" class="form-control" style="width:50%;float:left;">
@@ -712,6 +713,22 @@ switch ($search) {
 
                         <div class="row"><div class="col-md-12"><button type="button" class="btn btn-primary waves-effect waves-light w-xs save_so" data-sonum="<?php echo $result['so_num']; ?>">Save</button></div></div>
                     </form>
+
+                    <script>
+                        $("input[value='']").hide();
+
+                        if(!$("#secondary_addr_chk").is(":checked")) {
+                            $(".s_addr_empty").hide();
+                        }
+
+                        if(!$("#contractor_chk").is(":checked")) {
+                            $(".con_empty").hide();
+                        }
+
+                        if(!$("#billing_addr_chk").is(":checked")) {
+                            $(".billing_empty").hide();
+                        }
+                    </script>
                 </div>
 
                 <?php echo "</div></td>";

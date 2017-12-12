@@ -23502,6 +23502,12 @@ table tbody td {
   border: none;
   border-collapse: collapse; }
 
+.checkbox label {
+  line-height: 22px; }
+
+.checkbox label::after {
+  top: -1px; }
+
 .cust-table {
   display: table;
   width: 100%;

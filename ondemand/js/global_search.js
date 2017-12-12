@@ -275,6 +275,10 @@ $("body")
     .on("click", ".edit_room_save", function(e) {
         e.stopPropagation();
 
+        var thisClick = this;
+
+        $(thisClick).removeClass('edit_room_save');
+
         var edit_info = $("#room_edit_" + active_room_id).serialize();
         var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
 
@@ -282,6 +286,9 @@ $("body")
 
         $.post("/ondemand/room_actions.php?action=update_room&" + edit_info, {active_ops: active_ops}, function(data) {
             $('body').append(data);
+        }).done(function() {
+            $(thisClick).addClass('edit_room_save');
+            $("#room_notes").val('');
         });
 
         unsaved = false;
@@ -520,6 +527,29 @@ $("body")
                 note_id.val('');
 
                 break;
+        }
+    })
+
+    .on("change", "#hide_empty_fields", function() {
+        if($(this).is(":checked")) {
+            $("input[value='']").show();
+            $(".s_addr_empty").show();
+            $(".con_empty").show();
+            $(".billing_empty").show();
+        } else {
+            $("input[value='']").hide();
+
+            if(!$("#secondary_addr_chk").is(":checked")) {
+                $(".s_addr_empty").hide();
+            }
+
+            if(!$("#contractor_chk").is(":checked")) {
+                $(".con_empty").hide();
+            }
+
+            if(!$("#billing_addr_chk").is(":checked")) {
+                $(".billing_empty").hide();
+            }
         }
     })
 ;

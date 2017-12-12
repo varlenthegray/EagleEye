@@ -286,3 +286,12 @@ input[type=text], textarea {
 .clearfix {
     clear: both;
 }
+
+.middle-border:before {
+    content: '';
+    position: absolute;
+    border-bottom: 1px dashed #000;
+    height: 11px;
+    width: 325px;
+    transform: translateY(-50%) translateX(50%);
+}
