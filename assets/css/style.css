@@ -23072,8 +23072,7 @@ html {
   padding: 5px; }
 
 .card-box {
-  padding: 5px;
-  overflow: auto; }
+  padding: 5px; }
 
 .bg-lightgray {
   background-color: rgba(228, 228, 228, 0.8); }
@@ -23477,9 +23476,8 @@ table tbody td {
   vertical-align: top !important; }
 
 .sticky {
-  position: fixed;
-  top: 26vh;
-  z-index: 10; }
+  position: sticky;
+  top: 100px; }
   .sticky .btn-primary-outline {
     background-color: #FFFFFF !important; }
     .sticky .btn-primary-outline:hover {

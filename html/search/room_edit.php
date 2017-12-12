@@ -206,7 +206,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 ?>
             </div>
 
-            <div class="col-md-3 col-md-offset-1">
+            <div class="col-md-3">
                 <div class="row">
                     <div class="col-md-12">
                         <input type="hidden" name="vin_dealer_code_<?php echo $room['id']; ?>" value="<?php echo $result['dealer_code']; ?>" id="vin_dealer_code_<?php echo $room['id']; ?>" />
@@ -219,6 +219,19 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                             <table style="width:97%;margin:0 auto;" class="table">
                                 <tr>
                                     <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Globals</h5></td>
+                                </tr>
+
+
+
+
+
+
+                                <tr>
+                                    <td><label for="room">Room</label></td>
+                                    <td>
+                                        <input type="text" class="form-control" id="edit_room_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room" placeholder="Room" value="<?php echo $room['room']; ?>" style="float:left;width:10%;" readonly>
+                                        <input type="text" class="form-control" id="edit_room_name_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>" style="float:left;width:88%;margin-left:5px;">
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td><label for="delivery_date">Delivery Date</label></td>
@@ -251,12 +264,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                             <input type="text" class="form-control delivery_date <?php echo $dd_class; ?>" name="delivery_date" placeholder="Delivery Date" value="<?php echo (!empty($room['delivery_date'])) ? date("m/d/Y", $room['delivery_date']) : ""; ?>">
                                             <span class="input-group-addon bg-custom b-0"><i class="icon-calender"></i></span>
                                         </div>
-
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="room">Room</label></td>
-                                    <td><input type="text" class="form-control" id="edit_room_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room" placeholder="Room" value="<?php echo $room['room']; ?>" readonly></td>
                                 </tr>
                                 <tr>
                                     <td><label for="product_type">Product Type</label></td>
@@ -292,10 +300,6 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                             <option value="R" <?php echo ($room['days_to_ship'] === 'R') ? "selected" : null; ?>>Red (6)</option>
                                         </select>
                                     </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="room_name">Room Name</label></td>
-                                    <td><input type="text" class="form-control" id="edit_room_name_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
                                 </tr>
                                 <tr style="height:10px;">
                                     <td colspan="2"></td>

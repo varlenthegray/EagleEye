@@ -183,21 +183,6 @@ switch ($search) {
             while($result = $qry->fetch_assoc()) {
                 $soColor = "job-color-green";
 
-                if($qry2->num_rows > 0) {
-                    $bracketPri['sample'] = 4;
-                    $bracketPri['main'] = 4;
-                    $bracketPri['door'] = 4;
-                    $bracketPri['customs'] = 4;
-
-                    if(in_array("1", $bracketPri, true)) {
-                        $soColor = "job-color-red";
-                    } elseif(in_array("2", $bracketPri, true)) {
-                        $soColor = "job-color-orange";
-                    } elseif(in_array("3", $bracketPri, true)) {
-                        $soColor = "job-color-yellow";
-                    }
-                }
-
                 $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%'");
                 $dealer = $dealer_qry->fetch_assoc();
 

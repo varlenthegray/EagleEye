@@ -25,14 +25,192 @@ require ("../includes/classes/queue.php");
 //
 //echo "<h4>Update completed.</h4>";
 
-$room_id = 27;
+?>
 
-$stmt = $dbconn->prepare("SELECT * FROM rooms WHERE id = ?");
-$stmt->bind_param('i', $room_id);
-$stmt->execute();
-$stmt->bind_result($room);
-$stmt->fetch();
+<html>
+<head>
+    <style>
+        dt {
+            position: sticky;
+            top: -1px;
+        }
+    </style>
+</head>
 
-print_f($room);
-
-$stmt->close();
+<body>
+<div>
+    <dl>
+        <dt>A</dt>
+        <dd>Andrew W.K.</dd>
+        <dd>Apparat</dd>
+        <dd>Arcade Fire</dd>
+        <dd>At The Drive-In</dd>
+        <dd>Aziz Ansari</dd>
+    </dl>
+    <dl>
+        <dt>C</dt>
+        <dd>Chromeo</dd>
+        <dd>Common</dd>
+        <dd>Converge</dd>
+        <dd>Crystal Castles</dd>
+        <dd>Cursive</dd>
+    </dl>
+    <dl>
+        <dt>E</dt>
+        <dd>Explosions In The Sky</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+    <dl>
+        <dt>T</dt>
+        <dd>Ted Leo & The Pharmacists</dd>
+        <dd>T-Pain</dd>
+        <dd>Thrice</dd>
+        <dd>TV On The Radio</dd>
+        <dd>Two Gallants</dd>
+    </dl>
+</div>
+</body>
+</html>

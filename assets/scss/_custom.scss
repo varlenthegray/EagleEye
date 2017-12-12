@@ -19,7 +19,6 @@ html {
 
 .card-box {
   padding: 5px;
-  overflow: auto;
 }
 
 // allow custom background colors
@@ -587,9 +586,8 @@ table tbody td {
 }
 
 .sticky {
-  position: fixed;
-  top: 26vh;
-  z-index:10;
+  position: sticky;
+  top: 100px;
 
   .btn-primary-outline {
     background-color: #FFFFFF !important;

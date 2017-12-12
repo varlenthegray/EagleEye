@@ -42,6 +42,8 @@ require 'includes/header_end.php';
                     </tbody>
                 </table>
             </div>
+
+            <div class="clearfix"></div>
         </div>
     </div>
 </div>
