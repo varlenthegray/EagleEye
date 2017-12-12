@@ -181,8 +181,6 @@ switch ($search) {
 
         if($qry->num_rows > 0) {
             while($result = $qry->fetch_assoc()) {
-                $qry2 = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '{$result['so_num']}'");
-
                 $soColor = "job-color-green";
 
                 if($qry2->num_rows > 0) {
@@ -190,13 +188,6 @@ switch ($search) {
                     $bracketPri['main'] = 4;
                     $bracketPri['door'] = 4;
                     $bracketPri['customs'] = 4;
-
-                    while($result2 = $qry2->fetch_assoc()) {
-                        $bracketPri['sample'] = ($result2['sample_bracket_priority'] < $bracketPri['sample']) ? $result2['sample_bracket_priority'] : $bracketPri['sample'];
-                        $bracketPri['main'] = ($result2['main_bracket_priority'] < $bracketPri['main']) ? $result2['main_bracket_priority'] : $bracketPri['main'];
-                        $bracketPri['door'] = ($result2['doordrawer_bracket_priority'] < $bracketPri['door']) ? $result2['doordrawer_bracket_priority'] : $bracketPri['door'];
-                        $bracketPri['customs'] = ($result2['custom_bracket_priority'] < $bracketPri['customs']) ? $result2['custom_bracket_priority'] : $bracketPri['customs'];
-                    }
 
                     if(in_array("1", $bracketPri, true)) {
                         $soColor = "job-color-red";

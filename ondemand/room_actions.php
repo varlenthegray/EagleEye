@@ -197,7 +197,7 @@ switch($_REQUEST['action']) {
                     carcass_exterior_finish_code = '$carcass_exterior_finish_code', carcass_exterior_glaze_color = '$carcass_exterior_glaze_color', 
                     carcass_exterior_glaze_technique = '$carcass_exterior_glaze_technique', carcass_interior_species = '$carcass_interior_species',
                     carcass_interior_finish_code = '$carcass_interior_finish_code', carcass_interior_glaze_color = '$carcass_interior_glaze_color', 
-                    carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', vin_notes = '$notes',
+                    carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes',
                     vin_code = '$vin_final', sample_block_ordered = '$sample_block_ordered', door_only_ordered = '$door_only_ordered', door_drawer_ordered = '$door_drawer_ordered',
                     inset_square_ordered = '$inset_square_ordered', inset_beaded_ordered = '$inset_beaded_ordered' $sample_ordered_date WHERE id = '$new_room_id'");
                 }
@@ -480,12 +480,11 @@ HEREDOC;
           framing_bead = '$framing_bead', framing_options = '$framing_options', style_rail_width = '$style_rail_width',
            finish_code = '$finish_code', sheen = '$sheen', glaze = '$glaze', glaze_technique = '$glaze_technique', antiquing = '$antiquing', 
             worn_edges = '$worn_edges', distress_level = '$distress_level', carcass_exterior_species = '$carcass_exterior_species', 
-             carcass_exterior_finish_code = '$carcass_exterior_finish_code', 
-              carcass_exterior_glaze_color = '$carcass_exterior_glaze_color', carcass_exterior_glaze_technique = '$carcass_exterior_glaze_technique', 
-               carcass_interior_species = '$carcass_interior_species',
+             carcass_exterior_finish_code = '$carcass_exterior_finish_code', carcass_exterior_glaze_color = '$carcass_exterior_glaze_color', 
+              carcass_exterior_glaze_technique = '$carcass_exterior_glaze_technique', carcass_interior_species = '$carcass_interior_species',
                 carcass_interior_finish_code = '$carcass_interior_finish_code', carcass_interior_glaze_color = '$carcass_interior_glaze_color', 
-                 carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', vin_notes = '$notes',
-                  vin_code = '$vin_final', sample_block_ordered = '$sample_block_ordered', door_only_ordered = '$door_only_ordered', door_drawer_ordered = '$door_drawer_ordered',
+                 carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', vin_code = '$vin_final', 
+                  sample_block_ordered = '$sample_block_ordered', door_only_ordered = '$door_only_ordered', door_drawer_ordered = '$door_drawer_ordered',
                    inset_square_ordered = '$inset_square_ordered', inset_beaded_ordered = '$inset_beaded_ordered' $sample_ordered_date WHERE id = '$room_id'")) {
             echo displayToast("success", "VIN has been updated for SO $so_num room $room iteration $iteration.", "VIN Updated");
         } else {
@@ -589,11 +588,11 @@ HEREDOC;
 
         $dbconn->query("UPDATE rooms SET species_grade = '{$from['species_grade']}', construction_method = '{$from['construction_method']}', door_design = '{$from['door_design']}',
         panel_raise_door = '{$from['panel_raise_door']}', panel_raise_sd = '{$from['panel_raise_sd']}', panel_raise_td = '{$from['panel_raise_td']}', edge_profile = '{$from['edge_profile']}',
-        framing_bead = '{$from['framing_bead']}', framing_options = '{$from['framing_options']}', style_rail_width = '{$from['style_rail_width']}', finish_type = '{$from['finish_type']}',
-        finish_code = '{$from['finish_code']}', sheen = '{$from['sheen']}', glaze = '{$from['glaze']}', glaze_technique = '{$from['glaze_technique']}', antiquing = '{$from['antiquing']}',
-        worn_edges = '{$from['worn_edges']}', distress_level = '{$from['distress_level']}', carcass_exterior_species = '{$from['carcass_exterior_species']}', carcass_exterior_finish_type = '{$from['carcass_exterior_finish_type']}',
-        carcass_exterior_finish_code = '{$from['carcass_exterior_finish_code']}', carcass_exterior_glaze_color = '{$from['carcass_exterior_glaze_color']}', carcass_exterior_glaze_technique = '{$from['carcass_exterior_glaze_technique']}',
-        carcass_interior_species = '{$from['carcass_interior_species']}', carcass_interior_finish_type = '{$from['carcass_interior_finish_type']}', carcass_interior_finish_code = '{$from['carcass_interior_finish_code']}',
+        framing_bead = '{$from['framing_bead']}', framing_options = '{$from['framing_options']}', style_rail_width = '{$from['style_rail_width']}', finish_code = '{$from['finish_code']}', 
+        sheen = '{$from['sheen']}', glaze = '{$from['glaze']}', glaze_technique = '{$from['glaze_technique']}', antiquing = '{$from['antiquing']}', worn_edges = '{$from['worn_edges']}', 
+        distress_level = '{$from['distress_level']}', carcass_exterior_species = '{$from['carcass_exterior_species']}', carcass_exterior_finish_code = '{$from['carcass_exterior_finish_code']}', 
+        carcass_exterior_glaze_color = '{$from['carcass_exterior_glaze_color']}', carcass_exterior_glaze_technique = '{$from['carcass_exterior_glaze_technique']}', 
+        carcass_interior_species = '{$from['carcass_interior_species']}', carcass_interior_finish_code = '{$from['carcass_interior_finish_code']}',
         carcass_interior_glaze_color = '{$from['carcass_interior_glaze_color']}', carcass_interior_glaze_technique = '{$from['carcass_interior_glaze_technique']}', drawer_boxes = '{$from['drawer_boxes']}' WHERE id = '$to_room'");
 
         echo displayToast("success", "VIN Data copied from {$from['room']}{$from['iteration']} to {$to['room']}{$to['iteration']}", "Copied VIN");

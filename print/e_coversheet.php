@@ -210,7 +210,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Door Design:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('door_design', $info['door_design']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('door_design', $info['door_design']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="dd_design_pct" id="dd_design_pct" value="0.00" maxlength="4">%</td>
@@ -300,7 +300,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="finish_code_pct" id="finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -383,7 +383,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Exterior Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_finish_code_pct" id="exterior_finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -423,7 +423,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                     <td class="border_thin_bottom">Interior Finish Code:</td>
-                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
+                    <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="border_thin_bottom gray_bg">&nbsp;</td>
                     <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_finish_code_pct" id="interior_finish_code_pct" value="0.00" maxlength="4">%</td>
@@ -945,11 +945,9 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             $("#layout_notes_title").html("Sample Notes:");
         }
 
-       if(getUrlParams('action') !== null){
-           setTimeout(function() {
-               window.print();
-           }, 150);
-       }
+        setTimeout(function() {
+            window.print();
+        }, 150);
     });
 
     function emptyOrZero(data) {

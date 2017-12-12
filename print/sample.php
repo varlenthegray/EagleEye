@@ -157,7 +157,7 @@ function displayOrder($ordered_var, $human_name) {
             <table>
                 <tr>
                     <td><strong>Notes:</strong></td>
-                    <td><?php echo (trim($info['vin_notes']) === '') ? "_________________________________________________________________________________________________________________________________________<br />" : "{$info['vin_notes']}"; ?></td>
+                    <td><span style="color: #FF0000;">INTENTIONALLY LEFT BLANK, FIX ME!</span></td>
                 </tr>
             </table>
         </div>
