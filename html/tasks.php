@@ -5,26 +5,28 @@ require '../includes/header_start.php';
 <div class="row">
     <div class="col-md-12">
         <div class="card-box">
-            <div class="col-md-12">
-                <table class="table table-bordered tablesorter" id="tasks_global_table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>ASSIGNED TO</th>
-                        <th>CREATED</th>
-                        <th>SHORT DESC</th>
-                        <th>PRIORITY</th>
-                        <th>ETA</th>
-                        <th>% COMPLETED</th>
-                        <th>LAST UPDATED</th>
-                    </tr>
-                    </thead>
-                    <tbody id="tasks_information_table">
-                    <tr>
-                        <td colspan="9">No tasks to display.</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-bordered tablesorter" id="tasks_global_table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ASSIGNED TO</th>
+                            <th>CREATED</th>
+                            <th>SHORT DESC</th>
+                            <th>PRIORITY</th>
+                            <th>ETA</th>
+                            <th>% COMPLETED</th>
+                            <th>LAST UPDATED</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tasks_information_table">
+                        <tr>
+                            <td colspan="9">No tasks to display.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

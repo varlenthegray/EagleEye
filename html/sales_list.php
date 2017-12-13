@@ -5,58 +5,60 @@ require '../includes/header_start.php';
 <div class="row">
     <div class="col-md-12">
         <div class="card-box">
-            <div class="col-md-2 no-print" style="position:fixed;top:10vh;overflow:auto;height:87vh;display:none;">
-                <a class="btn btn-primary btn-block waves-effect waves-light sales_list_print">Print</a><br /><br />
+            <div class="row">
+                <div class="col-md-2 no-print" style="position:fixed;top:10vh;overflow:auto;height:87vh;display:none;">
+                    <a class="btn btn-primary btn-block waves-effect waves-light sales_list_print">Print</a><br /><br />
 
-                <table width="100%" style="background-color:#FFFFFF;">
-                    <tr>
-                        <td><div class="checkbox checkbox-primary"><input id="job_status_lost" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_lost">Lost</label></div></td>
-                    </tr>
-                    <tr>
-                        <td><div class="checkbox checkbox-primary"><input id="job_status_quote" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_quote">Quote</label></div></td>
-                    </tr>
-                    <tr>
-                        <td><div class="checkbox checkbox-primary"><input id="job_status_job" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_job">Job</label></div></td>
-                    </tr>
-                    <tr>
-                        <td><div class="checkbox checkbox-primary"><input id="job_status_completed" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_completed">Completed</label></div></td>
-                    </tr>
-                    <tr>
-                        <td>&nbsp;</td>
-                    </tr>
-                    <?php
-                    $dealer_qry = $dbconn->query("SELECT * FROM dealers ORDER BY dealer_id ASC;");
+                    <table width="100%" style="background-color:#FFFFFF;">
+                        <tr>
+                            <td><div class="checkbox checkbox-primary"><input id="job_status_lost" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_lost">Lost</label></div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="checkbox checkbox-primary"><input id="job_status_quote" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_quote">Quote</label></div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="checkbox checkbox-primary"><input id="job_status_job" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_job">Job</label></div></td>
+                        </tr>
+                        <tr>
+                            <td><div class="checkbox checkbox-primary"><input id="job_status_completed" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_completed">Completed</label></div></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <?php
+                        $dealer_qry = $dbconn->query("SELECT * FROM dealers ORDER BY dealer_id ASC;");
 
-                    while($dealer = $dealer_qry->fetch_assoc()) {
-                        $indent = (strlen($dealer['dealer_id']) > 3) ? "style='margin-left:20px;'" : null;
+                        while($dealer = $dealer_qry->fetch_assoc()) {
+                            $indent = (strlen($dealer['dealer_id']) > 3) ? "style='margin-left:20px;'" : null;
 
-                        echo "<tr style='border:1px solid #000;'><td style='padding:2px;'><div class='checkbox checkbox-primary' $indent><input class='ignoreSaveAlert hide_dealer' id='hide_dealer_{$dealer['dealer_id']}' data-dealer-id='{$dealer['dealer_id']}' type='checkbox' checked><label for='hide_dealer_{$dealer['dealer_id']}'>{$dealer['dealer_id']}: {$dealer['contact']}</label></div></td></tr>";
-                    }
-                    ?>
-                </table>
-            </div>
+                            echo "<tr style='border:1px solid #000;'><td style='padding:2px;'><div class='checkbox checkbox-primary' $indent><input class='ignoreSaveAlert hide_dealer' id='hide_dealer_{$dealer['dealer_id']}' data-dealer-id='{$dealer['dealer_id']}' type='checkbox' checked><label for='hide_dealer_{$dealer['dealer_id']}'>{$dealer['dealer_id']}: {$dealer['contact']}</label></div></td></tr>";
+                        }
+                        ?>
+                    </table>
+                </div>
 
-            <div class="col-md-4">
-                <div class="checkbox checkbox-custom text-md-center"><input id="show_hidden_sales_list" class="ignoreSaveAlert" type="checkbox"><label for="show_hidden_sales_list">Show Hidden</label></div>
+                <div class="col-md-4">
+                    <div class="checkbox checkbox-custom text-md-center"><input id="show_hidden_sales_list" class="ignoreSaveAlert" type="checkbox"><label for="show_hidden_sales_list">Show Hidden</label></div>
 
-                <table class="table table-bordered tablesorter" id="so_global_list">
-                    <thead>
-                    <tr>
-                        <th width="23px">&nbsp;</th>
-                        <th>SO#</th>
-                        <th>PROJECT/ROOM</th>
-                        <th>CONTACT</th>
-                        <th>STATUS</th>
-                        <th>DEALER CODE</th>
-                        <th>IDENTIFIER</th>
-                    </tr>
-                    </thead>
-                    <tbody id="so_global_list_breakdown">
-                    <tr>
-                        <td colspan="9">No SO's to display.</td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <table class="table table-bordered tablesorter" id="so_global_list">
+                        <thead>
+                        <tr>
+                            <th width="23px">&nbsp;</th>
+                            <th>SO#</th>
+                            <th>PROJECT/ROOM</th>
+                            <th>CONTACT</th>
+                            <th>STATUS</th>
+                            <th>DEALER CODE</th>
+                            <th>IDENTIFIER</th>
+                        </tr>
+                        </thead>
+                        <tbody id="so_global_list_breakdown">
+                        <tr>
+                            <td colspan="9">No SO's to display.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

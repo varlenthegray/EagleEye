@@ -5,22 +5,24 @@ require '../includes/header_start.php';
 <div class="row">
     <div class="col-md-12">
         <div class="card-box">
-            <div class="col-md-12">
-                <table class="table table-bordered tablesorter" id="so_global_list">
-                    <thead>
-                    <tr>
-                        <th>SO#</th>
-                        <th>PROJECT/CUSTOMER</th>
-                        <th>PROJECT MANAGER</th>
-                        <th>DEALER/CONTRACTOR</th>
-                    </tr>
-                    </thead>
-                    <tbody id="so_global_list_breakdown">
-                    <tr>
-                        <td colspan="9">No SO's to display.</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="row">
+                <div class="col-md-12">
+                    <table class="table table-bordered tablesorter" id="so_global_list">
+                        <thead>
+                        <tr>
+                            <th>SO#</th>
+                            <th>PROJECT/CUSTOMER</th>
+                            <th>PROJECT MANAGER</th>
+                            <th>DEALER/CONTRACTOR</th>
+                        </tr>
+                        </thead>
+                        <tbody id="so_global_list_breakdown">
+                        <tr>
+                            <td colspan="9">No SO's to display.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

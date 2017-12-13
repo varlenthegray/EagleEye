@@ -48,7 +48,7 @@ function getBracketInfo($bracket, $opID, $room) {
         $bracket_info = $dbconn->query("SELECT id, op_id, job_title, bracket FROM operations WHERE id = $opID")->fetch_assoc();
 
         if((bool)$room[$bracket . "_published"]) {
-            if(stristr($bracket_info['job_title'], 'Bracket Completed') === FALSE) {
+            if((stristr($bracket_info['job_title'], 'Bracket Completed') === FALSE) && (stristr($bracket_info['job_title'], 'N/A') === FALSE)) {
                 $opacity = null;
                 $outline = "btn-primary";
             } else {

@@ -23,27 +23,27 @@ require 'includes/header_end.php';
 <div class="row" id="search_display" style="display: none;">
     <div class="col-md-12">
         <div class="card-box">
-            <div class="col-md-12">
-                <button class="btn btn-primary waves-effect waves-light" id="btn_search_to_main"><i class="zmdi zmdi-arrow-left m-r-5"></i> <span>GO BACK</span></button><br /><br />
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-primary waves-effect waves-light" id="btn_search_to_main"><i class="zmdi zmdi-arrow-left m-r-5"></i> <span>GO BACK</span></button><br /><br />
 
-                <table class="table table-bordered tablesorter" id="search_results_global_table">
-                    <thead>
-                    <tr>
-                        <th colspan="2">SO#</th>
-                        <th>PROJECT/CUSTOMER PO</th>
-                        <th>PROJECT MANAGER</th>
-                        <th>DEALER/CONTRACTOR</th>
-                    </tr>
-                    </thead>
-                    <tbody id="search_results_table">
-                    <tr>
-                        <td colspan="7" class="text-md-center"><span id="global_search_status"><i class="fa fa-3x fa-spin fa-spinner" style="width: auto;margin-right: 10px;"></i></span></td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <table class="table table-bordered tablesorter" id="search_results_global_table">
+                        <thead>
+                        <tr>
+                            <th colspan="2">SO#</th>
+                            <th>PROJECT/CUSTOMER PO</th>
+                            <th>PROJECT MANAGER</th>
+                            <th>DEALER/CONTRACTOR</th>
+                        </tr>
+                        </thead>
+                        <tbody id="search_results_table">
+                        <tr>
+                            <td colspan="7" class="text-md-center"><span id="global_search_status"><i class="fa fa-3x fa-spin fa-spinner" style="width: auto;margin-right: 10px;"></i></span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-
-            <div class="clearfix"></div>
         </div>
     </div>
 </div>
