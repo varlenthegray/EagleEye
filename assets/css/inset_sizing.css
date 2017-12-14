@@ -1,0 +1,19 @@
+th {
+    text-align: center;
+}
+
+td, th {
+    padding: 2px;
+}
+
+@media print {
+    html {
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        margin: -2mm 6mm 5mm 15mm;
+        padding: 0;
+    }
+}

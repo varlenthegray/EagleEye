@@ -220,12 +220,6 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 <tr>
                                     <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Globals</h5></td>
                                 </tr>
-
-
-
-
-
-
                                 <tr>
                                     <td><label for="room">Room</label></td>
                                     <td>

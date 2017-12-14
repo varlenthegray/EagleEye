@@ -140,6 +140,11 @@
         if(!empty($error_display)) {
             echo $error_display;
         }
+
+        if(stristr($_SERVER["REQUEST_URI"],  'inset_sizing.php')) {
+            echo '<link href="/assets/css/inset_sizing.css" rel="stylesheet">';
+            echo '<script src="/assets/plugins/math.min.js"></script>';
+        }
     ?>
 </head>
 
