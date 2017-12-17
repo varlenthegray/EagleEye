@@ -21,7 +21,7 @@ var server = https.createServer({
     requestCert: false,
     rejectUnauthorized: false
 }, sconn);
-server.listen(4100); // live server
+var port = 4100;
 
 /******************************************
  * Server initial connection - DEV
@@ -33,11 +33,12 @@ server.listen(4100); // live server
 //     requestCert: false,
 //     rejectUnauthorized: false
 // }, sconn);
-// server.listen(4000); // dev server
+// var port = 4000;
 
 /******************************************
  * Global connection
  *****************************************/
+server.listen(port); // dev server
 var socket = require('socket.io').listen(server);
 
 /******************************************
@@ -119,4 +120,4 @@ socket.on('connect', function (client) {
     });
 });
 
-console.log("3erp active and listening on Port 4000."); // let the console know what we're doing
+console.log("3erp active and listening on Port " + port + "."); // let the console know what we're doing
