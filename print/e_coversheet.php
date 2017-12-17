@@ -630,7 +630,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                 <tr class="header em_box">
                     <td class="total_text">Total Amount:</td>
                     <td class="total_text">&nbsp;</td>
-                    <td class="text-md-right total_text">$<input type="text" name="final_total" value="0.00" maxlength="10" style="background-color:#000;color:#FFF;font-weight:bold;"></td>
+                    <td class="text-md-right total_text">&nbsp;</td>
                 </tr>
                 <tr>
                     <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>

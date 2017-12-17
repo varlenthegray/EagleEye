@@ -10,109 +10,105 @@ use Carbon\Carbon; // prep carbon
         <div class="card-box">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <table id="individual_login" class="table table-striped table-bordered" width="100%">
-                                <thead>
-                                <tr>
-                                    <th>Employee</th>
-                                    <th>Clocked In Time</th>
-                                    <th>Current Operations</th>
-                                    <th>Time Clocked In</th>
-                                    <?php
-                                    if($_SESSION['userInfo']['account_type'] <= 4) {
-                                        echo "<th width='70px'>Clock Out</th>";
+                    <table id="individual_login" class="table table-striped table-bordered" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Clocked In Time</th>
+                            <th>Current Operations</th>
+                            <th>Time Clocked In</th>
+                            <?php
+                            if($_SESSION['userInfo']['account_type'] <= 4) {
+                                echo "<th width='70px'>Clock Out</th>";
+                            }
+                            ?>
+                        </tr>
+                        </thead>
+                        <tbody id="room_search_table">
+                        <?php
+                        if($_SESSION['userInfo']['account_type'] <= 4) {
+                            $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
+                        } else {
+                            $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE AND id != 7 AND id != 8 AND id != 1 ORDER BY name ASC;");
+                        }
+
+                        while($result = $qry->fetch_assoc()) {
+                            if($result['id'] !== '16') {
+                                $last_login_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = {$result['id']} ORDER BY time_in DESC LIMIT 0,1");
+
+                                if($last_login_qry->num_rows > 0) {
+                                    $last_login = $last_login_qry->fetch_assoc();
+
+                                    if($last_login['time_in'] > strtotime("today")) {
+                                        $time = date(TIME_ONLY, $last_login['time_in']);
+                                    } else {
+                                        $time = date(DATE_DEFAULT, $last_login['time_in']);
                                     }
-                                    ?>
-                                </tr>
-                                </thead>
-                                <tbody id="room_search_table">
-                                <?php
-                                if($_SESSION['userInfo']['account_type'] <= 4) {
-                                    $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
+
+                                    $time_unix = $last_login['time_in'];
                                 } else {
-                                    $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE AND id != 7 AND id != 8 AND id != 1 ORDER BY name ASC;");
+                                    $time = "Never";
+                                    $time_unix = null;
                                 }
 
-                                while($result = $qry->fetch_assoc()) {
-                                    if($result['id'] !== '16') {
-                                        $last_login_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = {$result['id']} ORDER BY time_in DESC LIMIT 0,1");
+                                if(!empty($time_unix)) {
+                                    $today = mktime(0,0);
 
-                                        if($last_login_qry->num_rows > 0) {
-                                            $last_login = $last_login_qry->fetch_assoc();
-
-                                            if($last_login['time_in'] > strtotime("today")) {
-                                                $time = date(TIME_ONLY, $last_login['time_in']);
-                                            } else {
-                                                $time = date(DATE_DEFAULT, $last_login['time_in']);
-                                            }
-
-                                            $time_unix = $last_login['time_in'];
-                                        } else {
-                                            $time = "Never";
-                                            $time_unix = null;
-                                        }
-
-                                        if(!empty($time_unix)) {
-                                            $today = mktime(0,0);
-
-                                            if($time_unix >= $today) {
-                                                $carbon_time = Carbon::createFromTimestamp($time_unix);
-                                                $time_in_display = $carbon_time->diffForHumans(null, true);
-                                            } else {
-                                                $time_in_display = "Hasn't logged in today";
-                                            }
-                                        } else {
-                                            $time_in_display = "Never logged in";
-                                        }
-
-                                        $ops_qry = $dbconn->query("SELECT * FROM op_queue LEFT JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id WHERE active_employees LIKE '%\"{$result['id']}\"%' AND active = TRUE");
-
-                                        $final_ops = '';
-
-                                        if($ops_qry->num_rows > 0) {
-                                            while($ops = $ops_qry->fetch_assoc()) {
-                                                if(!empty($ops['so_parent']) && !empty($ops['room'])) {
-                                                    $so_info = "{$ops['so_parent']}{$ops['room']} - ";
-                                                } else {
-                                                    $so_info = null;
-                                                }
-
-                                                if($ops['job_title'] === 'Non-Billable') {
-                                                    $subtask = " ({$ops['subtask']})";
-                                                } else {
-                                                    $subtask = null;
-                                                }
-
-                                                $operation = $so_info . $ops['op_id'] . ": " . $ops['job_title'] . $subtask;
-                                                $final_ops .= $operation . ", ";
-                                            }
-                                        } else {
-                                            $final_ops = "None";
-                                        }
-
-                                        $final_ops = rtrim($final_ops, ", ");
-
-                                        $clock_out_btn = null;
-
-                                        echo "<tr class='cursor-hand login' data-login-id='{$result['id']}' data-login-name='{$result['name']}'>";
-                                        echo "<td>{$result['name']}</td>";
-                                        echo "<td>$time</td>";
-                                        echo "<td>$final_ops</td>";
-                                        echo "<td>$time_in_display</td>";
-
-                                        if($_SESSION['userInfo']['account_type'] <= 4) {
-                                            echo "<td><button class='btn btn-primary waves-effect waves-light btn-sm clock_out' data-id='{$result['id']}'>Clock Out</button></td>";
-                                        }
-
-                                        echo "</tr>";
+                                    if($time_unix >= $today) {
+                                        $carbon_time = Carbon::createFromTimestamp($time_unix);
+                                        $time_in_display = $carbon_time->diffForHumans(null, true);
+                                    } else {
+                                        $time_in_display = "Hasn't logged in today";
                                     }
+                                } else {
+                                    $time_in_display = "Never logged in";
                                 }
-                                ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+
+                                $ops_qry = $dbconn->query("SELECT * FROM op_queue LEFT JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id WHERE active_employees LIKE '%\"{$result['id']}\"%' AND active = TRUE");
+
+                                $final_ops = '';
+
+                                if($ops_qry->num_rows > 0) {
+                                    while($ops = $ops_qry->fetch_assoc()) {
+                                        if(!empty($ops['so_parent']) && !empty($ops['room'])) {
+                                            $so_info = "{$ops['so_parent']}{$ops['room']} - ";
+                                        } else {
+                                            $so_info = null;
+                                        }
+
+                                        if($ops['job_title'] === 'Non-Billable') {
+                                            $subtask = " ({$ops['subtask']})";
+                                        } else {
+                                            $subtask = null;
+                                        }
+
+                                        $operation = $so_info . $ops['op_id'] . ": " . $ops['job_title'] . $subtask;
+                                        $final_ops .= $operation . ", ";
+                                    }
+                                } else {
+                                    $final_ops = "None";
+                                }
+
+                                $final_ops = rtrim($final_ops, ", ");
+
+                                $clock_out_btn = null;
+
+                                echo "<tr class='cursor-hand login' data-login-id='{$result['id']}' data-login-name='{$result['name']}'>";
+                                echo "<td>{$result['name']}</td>";
+                                echo "<td>$time</td>";
+                                echo "<td>$final_ops</td>";
+                                echo "<td>$time_in_display</td>";
+
+                                if($_SESSION['userInfo']['account_type'] <= 4) {
+                                    echo "<td><button class='btn btn-primary waves-effect waves-light btn-sm clock_out' data-id='{$result['id']}'>Clock Out</button></td>";
+                                }
+
+                                echo "</tr>";
+                            }
+                        }
+                        ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

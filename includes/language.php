@@ -3,7 +3,7 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define("RELEASE_DATE", "12/6/17");
+define("RELEASE_DATE", "12/17/17");
 
 // Global definitions
 define("LOGO_TEXT", "Stone Mountain Cabinetry"); // The logo text displayed
@@ -28,9 +28,6 @@ define("NAV_BRACKET_MGMT", "Bracket Management"); // Navigation menu, bracket ma
 //// Navigation > bracket management
 define("NAV_BRACKET_NEW", "Create Bracket"); // Navigation menu, create bracket
 define("NAV_BRACKET_LIST", "Existing Brackets"); // Navigation menu, existing bracket information
-
-// Pricing bar definition
-define("NAV_PRICINGPROGRAM", "Pricing System"); // Navigation menu Pricing Program
 
 // Inventory bar definitions
 define("NAV_INVENTORY", "Inventory"); // Navigation menu Inventory

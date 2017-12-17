@@ -91,16 +91,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 
     <script>
-        var userTZ = '<?php echo $_SESSION['userInfo']['timezone']; ?>';
-
-        setInterval(function() {
-            $.ajax({
-                cache: false,
-                type: "POST",
-                url: "/ondemand/session_continue.php"
-            })
-        }, 600000);
-
         jconfirm.defaults = {
             title: "Leaving without saving!",
             content: "You have unsaved changes, do you wish to proceed?",
@@ -109,7 +99,7 @@
             theme: 'supervan'
         };
 
-        //var socket = io.connect({secure: true});
+        var socket = io.connect('//dev.3erp.us:4000');
     </script>
 
     <?php

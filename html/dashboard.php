@@ -111,11 +111,6 @@ require '../includes/header_start.php';
 <!-- /.modal -->
 
 <script>
-    function updateQueuedJobs() {
-        queue = $('#viewing_queue').val();
-        queue_table.ajax.url("/ondemand/display_actions.php?action=display_ind_job_queue&queue=" + queue).load(null,false);
-    }
-
     var op_queue_list = "<?php
         echo "<select class='ignoreSaveAlert' name='viewing_queue' id='viewing_queue'>";
         echo "<option value='self'>{$_SESSION['shop_user']['name']}</option>";
@@ -135,35 +130,31 @@ require '../includes/header_start.php';
         echo '</select>';
         ?>";
 
-    <?php
-    if($_SESSION['userInfo']['perm_full_dashboard']) {
-    ?>
-    var quote_table = $("#quote_global_table").DataTable({
-        "ajax": "/ondemand/display_actions.php?action=display_quotes",
-        "createdRow": function (row, data, dataIndex) {
-            $(row).addClass("cursor-hand view_so_info");
-        },
-        "paging": false,
-        scrollY: '31.5vh',
-        scrollCollapse: true,
-        "dom": '<"#quote_header.dt-custom-header">tipr',
-        "order": [[0, "asc"]]
-    });
+    <?php if($_SESSION['userInfo']['perm_full_dashboard']) { ?>
+        var quote_table = $("#quote_global_table").DataTable({
+            "ajax": "/ondemand/display_actions.php?action=display_quotes",
+            "createdRow": function (row, data, dataIndex) {
+                $(row).addClass("cursor-hand view_so_info");
+            },
+            "paging": false,
+            scrollY: '31.5vh',
+            scrollCollapse: true,
+            "dom": '<"#quote_header.dt-custom-header">tipr',
+            "order": [[0, "asc"]]
+        });
 
-    var order_table = $("#orders_global_table").DataTable({
-        "ajax": "/ondemand/display_actions.php?action=display_orders",
-        "createdRow": function (row, data, dataIndex) {
-            $(row).addClass("cursor-hand view_so_info");
-        },
-        "paging": false,
-        scrollY: '31.5vh',
-        scrollCollapse: true,
-        "dom": '<"#order_header.dt-custom-header">tipr',
-        "order": [[0, "asc"]]
-    });
-    <?php
-    }
-    ?>
+        var order_table = $("#orders_global_table").DataTable({
+            "ajax": "/ondemand/display_actions.php?action=display_orders",
+            "createdRow": function (row, data, dataIndex) {
+                $(row).addClass("cursor-hand view_so_info");
+            },
+            "paging": false,
+            scrollY: '31.5vh',
+            scrollCollapse: true,
+            "dom": '<"#order_header.dt-custom-header">tipr',
+            "order": [[0, "asc"]]
+        });
+    <?php } ?>
 
     var active_table = $("#active_ops_global_table").DataTable({
         "ajax": "/ondemand/display_actions.php?action=display_ind_active_jobs",
@@ -208,19 +199,12 @@ require '../includes/header_start.php';
     $("#order_header").html("<h4>Orders</h4>");
     $("#active_header").html("<h4>Operations (Active) for <?php echo $_SESSION['shop_user']['name']; ?></h4>");
 
-    active_table.ajax.reload(null,false);
-    updateQueuedJobs();
+    updateOpQueue();
 
-    dash_auto_interval = setInterval(function() {
-        <?php
-        if($_SESSION['userInfo']['account_type'] <= 4) {
-        ?>
-        quote_table.ajax.reload(null, false);
-        order_table.ajax.reload(null, false);
-        <?php
-        }
-        ?>
-        active_table.ajax.reload(null,false);
-        updateQueuedJobs();
-    }, 5000);
+    <?php if($_SESSION['userInfo']['account_type'] <= 4) { ?>
+        dash_auto_interval = setInterval(function() {
+            quote_table.ajax.reload(null, false);
+            order_table.ajax.reload(null, false);
+        }, 5000);
+    <?php } ?>
 </script>

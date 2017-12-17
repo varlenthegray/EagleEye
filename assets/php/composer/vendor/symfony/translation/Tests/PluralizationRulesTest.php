@@ -32,7 +32,6 @@ class PluralizationRulesTest extends TestCase
     /**
      * We test failed langcode here.
      *
-     * TODO: The languages mentioned in the data provide need to get fixed somehow within PluralizationRules.
      *
      * @dataProvider failingLangcodes
      */

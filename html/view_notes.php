@@ -3,13 +3,13 @@ require '../includes/header_start.php';
 
 $queue_ID = sanitizeInput($_REQUEST['queueID']);
 
-/*$op_queue_qry = $dbconn->query("SELECT * FROM op_queue LEFT JOIN rooms ON op_queue.room_id = rooms.id LEFT JOIN operations ON op_queue.operation_id = operations.id WHERE op_queue.id = '{$queue_ID}'");
+// TODO: Wtf? Why was this query commented out?
+
+$op_queue_qry = $dbconn->query("SELECT * FROM op_queue LEFT JOIN rooms ON op_queue.room_id = rooms.id LEFT JOIN operations ON op_queue.operation_id = operations.id WHERE op_queue.id = '{$queue_ID}'");
 $op_queue = $op_queue_qry->fetch_assoc();
 
 $notes_qry = $dbconn->query("SELECT * FROM op_queue WHERE room_id = {$op_queue['room_id']} ORDER BY id DESC LIMIT 1,1;");
-$notes = $notes_qry->fetch_assoc();*/
-
-
+$notes = $notes_qry->fetch_assoc();
 
 if($op_queue['job_title'] !== 'Honey Do') {
     $title = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";

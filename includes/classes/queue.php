@@ -30,8 +30,8 @@ class queue {
             }
 
             // now that we've cleaned up the operations; it's time to get that operation flowing
-            $dbconn->query("INSERT INTO op_queue (room_id, operation_id, start_time, end_time, active, completed, rework, notes, resumed_time, partially_completed, created) 
-              VALUES ('$roomid', '$operation', NULL, NULL, FALSE, FALSE, FALSE, NULL, NULL, NULL, UNIX_TIMESTAMP())");
+            $dbconn->query("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, partially_completed, created) 
+              VALUES ('$roomid', '$operation', FALSE, FALSE, FALSE, NULL, UNIX_TIMESTAMP())");
         } else {
             while($op_queue = $op_queue_qry->fetch_assoc()) {
                 $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
@@ -193,19 +193,14 @@ class queue {
 
                 $active_emp = rtrim($active_emp, ", ");
 
-                if($op_queue['resumed_time'] !== null) {
-                    $start_resume_time = date(TIME_ONLY, $op_queue['resumed_time']);
-                } else {
-                    $start_resume_time = date(TIME_ONLY, $op_queue['start_time']);
-                }
-
                 $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-$tag";
                 $output['data'][$i][] = $op_queue['room_name'];
                 $output['data'][$i][] = $op_queue['bracket'];
                 $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'] . $subtask;
                 $output['data'][$i][] = $active_emp;
 
-                $output['data'][$i][] = $start_resume_time;
+                // TODO: Fix this so that the start time reflects the last activated time
+                $output['data'][$i][] = date(TIME_ONLY, $op_queue['start_time']);
 
                 $i += 1;
             }
@@ -254,11 +249,11 @@ class queue {
                         $active_employees = json_encode($active); // re-encode it for saving
 
                         // create the op queue listing to be able to update information
-                        $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, started_by, subtask, notes) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '{$_SESSION['shop_user']['id']}', '$subtask', '$notes')");
+                        $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, subtask) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '$subtask')");
 
                         $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
 
-                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes];
+                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask];
                         $final_changes = json_encode($changes);
 
                         $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
@@ -285,11 +280,11 @@ class queue {
                         $active_employees = json_encode($active); // re-encode it for saving
 
                         // create the op queue listing to be able to update information
-                        $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, started_by, subtask, notes) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '{$_SESSION['shop_user']['id']}', '$subtask', '$notes')");
+                        $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, subtask) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '$subtask')");
 
                         $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
 
-                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes];
+                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask];
                         $final_changes = json_encode($changes);
 
                         $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
@@ -337,21 +332,21 @@ class queue {
                         $operation = $op_qry->fetch_assoc();
 
                         // create the op queue listing to be able to update information
-                        $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, start_time, active, created, active_employees, started_by, notes, otf_created) 
-                            VALUES (?, ?, UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), ?, ?, ?, TRUE)");
+                        $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, start_time, active, created, active_employees, otf_created) 
+                            VALUES (?, ?, UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), ?, TRUE)");
 
                         $active[] = $_SESSION['shop_user']['id']; // add individual to the list of active employees
 
                         $active_employees = json_encode($active); // re-encode it for saving
 
-                        $stmt->bind_param("iisis", $room_id, $operation['id'], $active_employees, $_SESSION['shop_user']['id'], $otf_notes);
+                        $stmt->bind_param("iis", $room_id, $operation['id'], $active_employees);
 
                         $stmt->execute();
                         $stmt->close();
 
                         $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
 
-                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "Notes"=>$notes, "OTF"=>'true'];
+                        $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "OTF"=>'true'];
                         $final_changes = json_encode($changes);
 
                         $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('$inserted_id', '{$_SESSION['shop_user']['id']}', '$final_changes', UNIX_TIMESTAMP())");
@@ -399,7 +394,7 @@ class queue {
                             dbLogSQLErr($dbconn);
                         }
                     } else { // if the operation has been started previously
-                        $stmt = $dbconn->prepare("UPDATE op_queue SET active = TRUE, resumed_time = UNIX_TIMESTAMP(), active_employees = ? WHERE id = ?");
+                        $stmt = $dbconn->prepare("UPDATE op_queue SET active = TRUE, active_employees = ? WHERE id = ?");
                         $stmt->bind_param("si", $active_employees, $id);
                         $stmt_result = $stmt->execute();
                         $stmt->close();
@@ -462,7 +457,7 @@ class queue {
                             dbLogSQLErr($dbconn);
                         }
                     } else { // if the operation has been started previously
-                        $stmt = $dbconn->prepare("UPDATE op_queue SET active = TRUE, resumed_time = UNIX_TIMESTAMP(), active_employees = ? WHERE id = ?");
+                        $stmt = $dbconn->prepare("UPDATE op_queue SET active = TRUE, active_employees = ? WHERE id = ?");
                         $stmt->bind_param("si", $active_employees, $id);
                         $stmt_result = $stmt->execute();
                         $stmt->close();
@@ -502,14 +497,6 @@ class queue {
 
         $room_id = $op_queue['room_id']; // assign the room ID for use inside of function incrementJob
 
-        $finalnotes = null; // define final notes as null initially
-
-        if(empty($op_queue['notes'])) { // if no notes exist
-            $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />"; // the notes equals the name and the time
-        } else { // otherwise notes exist
-            $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />" . $op_queue['notes']; // concatenate the notes
-        }
-
         $op_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'");
         $op_results = $op_qry->fetch_assoc();
 
@@ -530,8 +517,8 @@ class queue {
 
         $active_employees = json_encode($active_emp);
 
-        if($dbconn->query("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = $active, notes = '$finalnotes', partially_completed = TRUE, completed = FALSE, active_employees = '$active_employees' WHERE id = $id")) {
-            $changed = ["End time"=>time(), "Active"=>$active, "Notes"=>$finalnotes, "Partially Completed"=>true, "Active Employees"=>json_decode($active_employees)];
+        if($dbconn->query("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = $active, partially_completed = TRUE, completed = FALSE, active_employees = '$active_employees' WHERE id = $id")) {
+            $changed = ["End time"=>time(), "Active"=>$active, "Partially Completed"=>true, "Active Employees"=>json_decode($active_employees)];
             $changed = json_encode($changed);
 
             $stmt = $dbconn->prepare("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
@@ -684,23 +671,17 @@ class queue {
                     $uploadOK = false;
                     $upload_err .= "File already exists on the server.";
                 }
-
-                if(empty($op_queue['notes'])) { // if no notes exist
-                    $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />"; // the notes equals the name and the time
-                } else { // otherwise notes exist
-                    $finalnotes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />" . $op_queue['notes']; // concatenate the notes
-                }
             }
 
             if($rw_reqd === 'true') { // rework is required
-                $stmt = $dbconn->prepare("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = FALSE, notes = ?, completed = TRUE, partially_completed = FALSE, rework = TRUE, active_employees = NULL WHERE id = ?");
+                $stmt = $dbconn->prepare("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = FALSE, completed = TRUE, partially_completed = FALSE, rework = TRUE, active_employees = NULL WHERE id = ?");
 
-                $stmt->bind_param("si", $finalnotes, $id);
+                $stmt->bind_param("i", $id);
 
                 if($stmt->execute()) {
                     $stmt->close();
 
-                    $changed = ["End time" => time(), "Active" => false, "Notes" => $finalnotes, "Qty Completed" => $qty, "Completed" => true, "Active Employees" => 'NULL', "Rework" => true]; // set what has changed for audit trail
+                    $changed = ["End time" => time(), "Active" => false, "Completed" => true, "Active Employees" => 'NULL', "Rework" => true]; // set what has changed for audit trail
                     $changed = json_encode($changed); // encode the audit trail for retrieval later
 
                     // if we're able to insert into the audit trail successfully
@@ -742,8 +723,7 @@ class queue {
                         $room = $room_qry->fetch_assoc();
 
                         // now, create the operation that SHOULD be active
-                        $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, active, completed, rework,
-                             partially_completed, created) VALUES (?, ?, FALSE, FALSE, TRUE, FALSE, UNIX_TIMESTAMP())");
+                        $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, partially_completed, created) VALUES (?, ?, FALSE, FALSE, TRUE, FALSE, UNIX_TIMESTAMP())");
 
                         $stmt->bind_param("ii", $room_id, $next_op);
 
@@ -766,8 +746,8 @@ class queue {
                 }
             } else {
                 // if we've successfully communicated the update to the operation and not completing rework
-                $stmt = $dbconn->prepare("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = FALSE, notes = ?, completed = TRUE, partially_completed = FALSE, rework = FALSE, active_employees = NULL WHERE id = ?");
-                $stmt->bind_param("si", $finalnotes, $id);
+                $stmt = $dbconn->prepare("UPDATE op_queue SET active = FALSE, completed = TRUE, partially_completed = FALSE, rework = FALSE, active_employees = NULL WHERE id = ?");
+                $stmt->bind_param("i", $id);
 
                 if($stmt->execute()) {
                     $changed = ["End time"=>time(), "Active"=>false, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Completed"=>true, "Active Employees"=>'[]']; // set what has changed for audit trail
@@ -827,8 +807,7 @@ class queue {
                                 $room = $room_qry->fetch_assoc();
 
                                 // now, create the operation that SHOULD be active
-                                $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, partially_completed, created) 
-                              VALUES (?, ?, FALSE, FALSE, FALSE, FALSE, UNIX_TIMESTAMP())");
+                                $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, partially_completed, created) VALUES (?, ?, FALSE, FALSE, FALSE, FALSE, UNIX_TIMESTAMP())");
 
                                 $stmt->bind_param("ii", $room_id, $next_op);
 

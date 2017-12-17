@@ -37,7 +37,9 @@ switch($_REQUEST['action']) {
                 }
 
                 $status = (!(bool)$op_queue['rework']) ? "New" : "Rework";
-                $notes = (!empty($op_queue['notes']) ? $op_queue['notes'] : "None");
+
+                // TODO: Update notes to be aggrigate for all notes
+                //$notes = (!empty($op_queue['notes']) ? $op_queue['notes'] : "None");
 
                 echo <<<HEREDOC
                 <div class="modal-dialog" role="document">
@@ -330,7 +332,7 @@ HEREDOC;
         $id = sanitizeInput($_REQUEST['opID']);
 
         $op_queue_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
-            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.priority, op_queue.subtask FROM op_queue
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.urgent, op_queue.subtask FROM op_queue
               LEFT JOIN operations ON op_queue.operation_id = operations.id
                 LEFT JOIN rooms ON op_queue.room_id = rooms.id
                   WHERE op_queue.id = '$id';");
@@ -463,7 +465,9 @@ HEREDOC;
                 }
 
                 $status = (!(bool)$op_queue['rework']) ? "New" : "Rework";
-                $notes = (!empty($op_queue['notes']) ? $op_queue['notes'] : "None");
+
+                // TODO: Update notes to be an aggrigate of all notes
+                //$notes = (!empty($op_queue['notes']) ? $op_queue['notes'] : "None");
 
                 echo <<<HEREDOC
                 <div class="modal-dialog" role="document">

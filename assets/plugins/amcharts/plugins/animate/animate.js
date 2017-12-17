@@ -139,7 +139,6 @@ not apply to any other amCharts products that are covered by different licenses.
 			tweens[ i ].interpolate( time );
 		}
 
-		// TODO check the performance of this
 		pushNew( needsValidation, this._chart );
 	};
 
@@ -198,7 +197,6 @@ not apply to any other amCharts products that are covered by different licenses.
 
 			// If the animation is finished...
 			if ( animation._onFrame( now ) ) {
-				// TODO this is a bit slow, but I don't know of a faster alternative
 				animations.splice( i, 1 );
 				--i;
 			}

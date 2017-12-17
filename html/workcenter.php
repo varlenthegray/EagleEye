@@ -2,9 +2,6 @@
 require '../includes/header_start.php';
 ?>
 
-<!-- Date & Clock -->
-<link href="/assets/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css"/>
-
 <div class="row">
     <div class="col-md-6">
         <div class="card-box table-responsive">
@@ -77,23 +74,7 @@ require '../includes/header_start.php';
 </div>
 
 <script>
-    $("#job_started").datetimepicker({
-        icons: {
-            time: "fa fa-clock-o",
-            date: "fa fa-calendar",
-            up: "fa fa-arrow-up",
-            down: "fa fa-arrow-down"
-        }
-    });
-
-    $("#job_completed").datetimepicker({
-        icons: {
-            time: "fa fa-clock-o",
-            date: "fa fa-calendar",
-            up: "fa fa-arrow-up",
-            down: "fa fa-arrow-down"
-        }
-    });
+    currentPage = 'workcenter';
 
     var jiq_table = $("#jobs_in_queue_global_table").DataTable({
         "ajax": "/ondemand/display_actions.php?action=display_full_job_queue",
@@ -139,10 +120,4 @@ require '../includes/header_start.php';
     $("#jiq_header").html("<h4>Ops in Queue</h4>");
     $("#active_header").html("<h4>Active Ops</h4>");
     $("#completed_header").html("<h4>Completed Ops</h4>");
-
-    wc_auto_interval = setInterval(function() {
-        jiq_table.ajax.reload(null,false);
-        active_table.ajax.reload(null,false);
-        completed_table.ajax.reload(null,false);
-    }, 5000);
 </script>

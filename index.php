@@ -1,114 +1,332 @@
 <?php
 require 'includes/header_start.php';
-require 'includes/header_end.php';
+
+$version = '2.1.02';
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A fully functional ERP designed to manage cabinetry and automation.">
+    <meta name="author" content="Stone Mountain Cabinetry & Millwork">
 
-<script>
+    <!-- App Favicon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico">
+
+    <!-- App title -->
+    <title><?php echo TAB_TEXT; ?></title>
+
+    <!-- JQuery & JQuery UI -->
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/includes/js/jquery-ui.min.js"></script>
+    <link href="/includes/css/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Global JS functions -->
+    <script src="/includes/js/functions.js?v=<?php echo $version; ?>"></script>
+
+    <!-- App CSS -->
+    <link href="/assets/css/style.css?v=<?php echo $version; ?>" rel="stylesheet" type="text/css" />
+    <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    <!-- Modernizr js -->
+    <script src="/assets/js/modernizr.min.js"></script>
+
+    <!-- SocketIO -->
+    <script src="/server/node_modules/socket.io-client/dist/socket.io.js"></script>
+
+    <!-- Toastr setup -->
+    <link href="/assets/plugins/toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Datatables -->
+    <link href="/assets/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.0/css/rowReorder.dataTables.min.css"/>
+
+    <!-- Date Picker -->
+    <link href="/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
+
+    <!-- Alert Windows -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+
     <?php
-        if($_SESSION['userInfo']['justLoggedIn']) {
-            echo "displayToast('success', 'Welcome to your dashboard {$_SESSION['userInfo']['name']}!', 'Successfully Logged In', true);";
-            $_SESSION['userInfo']['justLoggedIn'] = FALSE;
-        }
-    ?>
-</script>
+    $server = explode(".", $_SERVER['HTTP_HOST']);
 
-<div class="col-md-12" id="main_display">
-    <div class="row">
-        <div class="col-md-12">
-            <div id="main_body"></div>
-        </div>
-    </div>
+    if($server[0] === 'dev') {
+        echo "<style>body, html, .account-pages, #topnav .topbar-main, .footer {background-color: #750909 !important; }</style>";
+    } else {
+        echo "<script>$.fn.dataTable.ext.errMode = 'throw';</script>";
+    }
+
+    if(stristr($_SERVER["REQUEST_URI"],  'inset_sizing.php')) {
+        echo '<link href="/assets/css/inset_sizing.css" rel="stylesheet">';
+    }
+    ?>
+</head>
+
+<body>
+<div id="server_failure">
+    <h1>Server down for maintenance. Please contact IT.</h1>
 </div>
 
-<div class="row" id="search_display" style="display: none;">
-    <div class="col-md-12">
-        <div class="card-box">
+<!-- Navigation Bar-->
+<header id="topnav">
+    <div class="custom-logo hidden-print" style="margin-right:130px;position:reliatve;z-index:2;margin-top:-2px;">
+        <img src="../assets/images/logo_new.png" height="135px" />
+    </div>
+
+    <!-- fake fields are a workaround for chrome autofill getting the wrong fields (such as search) -->
+    <input class="ignoreSaveAlert" type="text" name="ausernameidontcareabout" style="display:none;">
+    <input class="ignoreSaveAlert" type="password" name="apasswordidontcareabout" style="display:none;">
+
+    <div class="topbar-main hidden-print">
+        <div class="container">
+            <!-- LOGO -->
+            <div class="topbar-left">
+                <a href="/index.php" class="logo">
+                    <i class="zmdi zmdi-group-work icon-c-logo"></i>
+                    <span><?php echo LOGO_TEXT; ?></span>
+                </a>
+            </div>
+            <!-- End Logo container-->
+
+            <div class="menu-extras">
+                <ul class="nav navbar-nav pull-left">
+                    <li class="nav-item">
+                        <!-- Mobile menu toggle-->
+                        <a class="navbar-toggle">
+                            <div class="lines">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </a>
+                        <!-- End mobile menu toggle-->
+                    </li>
+
+                    <li class="nav-item notification-list">
+                        <a class="nav-link arrow-none waves-light waves-effect" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-email noti-icon"></i></a>
+                    </li>
+
+                    <li class="nav-item notification-list">
+                        <a class="nav-link arrow-none waves-light waves-effect dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-calendar noti-icon"></i></a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-lg" aria-labelledby="Preview">
+                            This is a test.
+                        </div>
+                    </li>
+
+                    <li class="nav-item notification-list">
+                        <a class="nav-link arrow-none waves-light waves-effect" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-comments noti-icon"></i></a>
+                    </li>
+
+                    <li class="nav-item dropdown notification-list" id="notification_list">
+                        <!-- AJAX -->
+                    </li>
+                </ul>
+            </div> <!-- end menu-extras -->
+
+            <div id="clock" style="z-index:999;color:#000;position:absolute;top:40px;right:-110px;"></div>
+
+            <div class="clearfix"></div>
+        </div> <!-- end container -->
+    </div>
+    <!-- end topbar-main -->
+
+    <div class="navbar-custom">
+        <div class="container">
+            <div id="navigation">
+                <!-- Navigation Menu-->
+                <?php require_once("includes/nav_menu.php"); ?>
+                <!-- End navigation menu  -->
+            </div>
+        </div>
+    </div>
+
+    <div class="js_loading"><i class='fa fa-3x fa-spin fa-spinner'></i></div>
+</header>
+<!-- End Navigation Bar-->
+
+<div class="wrapper">
+    <div class="container">
+        <div class="col-md-12" id="main_display">
             <div class="row">
                 <div class="col-md-12">
-                    <button class="btn btn-primary waves-effect waves-light" id="btn_search_to_main"><i class="zmdi zmdi-arrow-left m-r-5"></i> <span>GO BACK</span></button><br /><br />
-
-                    <table class="table table-bordered tablesorter" id="search_results_global_table">
-                        <thead>
-                        <tr>
-                            <th colspan="2">SO#</th>
-                            <th>PROJECT/CUSTOMER PO</th>
-                            <th>PROJECT MANAGER</th>
-                            <th>DEALER/CONTRACTOR</th>
-                        </tr>
-                        </thead>
-                        <tbody id="search_results_table">
-                        <tr>
-                            <td colspan="7" class="text-md-center"><span id="global_search_status"><i class="fa fa-3x fa-spin fa-spinner" style="width: auto;margin-right: 10px;"></i></span></td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div id="main_body"></div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Add Customer modal -->
-<div id="modalAddCustomer" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddCustomerLabel" aria-hidden="true">
-    <!-- Inserted via AJAX -->
-</div>
-<!-- /.modal -->
+        <div class="row" id="search_display" style="display: none;">
+            <div class="col-md-12">
+                <div class="card-box">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button class="btn btn-primary waves-effect waves-light" id="btn_search_to_main"><i class="zmdi zmdi-arrow-left m-r-5"></i> <span>GO BACK</span></button><br /><br />
 
-<!-- modal -->
-<div id="modalLogin" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLoginLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title" id="modalLoginName">Login As XYZ</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12 text-md-center">
-                        <h4>Enter PIN Code</h4>
-
-                        <input type="password" autocomplete="off" name="pin" placeholder="PIN" maxlength="4" id="loginPin" class="text-md-center">
+                            <table class="table table-bordered tablesorter" id="search_results_global_table">
+                                <thead>
+                                <tr>
+                                    <th colspan="2">SO#</th>
+                                    <th>PROJECT/CUSTOMER PO</th>
+                                    <th>PROJECT MANAGER</th>
+                                    <th>DEALER/CONTRACTOR</th>
+                                </tr>
+                                </thead>
+                                <tbody id="search_results_table">
+                                <tr>
+                                    <td colspan="7" class="text-md-center"><span id="global_search_status"><i class="fa fa-3x fa-spin fa-spinner" style="width: auto;margin-right: 10px;"></i></span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary waves-effect waves-light" id="clock_in">Clock In</button>
+        </div>
+
+        <!-- Add Customer modal -->
+        <div id="modalAddCustomer" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddCustomerLabel" aria-hidden="true">
+            <!-- Inserted via AJAX -->
+        </div>
+        <!-- /.modal -->
+
+        <!-- modal -->
+        <div id="modalLogin" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLoginLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="modalLoginName">Login As XYZ</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 text-md-center">
+                                <h4>Enter PIN Code</h4>
+
+                                <input type="password" autocomplete="off" name="pin" placeholder="PIN" maxlength="4" id="loginPin" class="text-md-center ignoreSaveAlert">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary waves-effect waves-light" id="clock_in">Clock In</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <!-- Add Customer modal -->
+        <div id="modalViewNotes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalViewNotesLabel" aria-hidden="true">
+            <!-- Inserted via AJAX -->
+        </div>
+        <!-- /.modal -->
+
+        <div id="feedback-page" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="feedbackPageLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title" id="myModalLabel">Feedback</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <textarea class="form-control" id="feedback-text" style="width:100%;height:200px;"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col-md-1" style="padding-top:3px;"><label for="feedback_to">Notify: </label></div>
+
+                            <div class="col-md-4">
+                                <select name="feedback_to" id="feedback_to" class="form-control">
+                                    <optgroup label="Office">
+                                        <option value="9">Production Administrator</option>
+                                        <option value="14">Shop Foreman</option>
+                                        <option value="7">Robert</option>
+                                        <option value="1">IT</option>
+                                        <option value="10">Engineering</option>
+                                        <option value="8">Accounting</option>
+                                    </optgroup>
+
+                                    <optgroup label="Shop">
+                                        <option value="15">Box</option>
+                                        <option value="12">Customs</option>
+                                        <option value="11">Assembly</option>
+                                        <option value="22">Finishing</option>
+                                        <option value="11">Shipping</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <div class="col-md-1" style="padding-top:3px;"><label for="feedback_priority">Priority: </label></div>
+
+                            <div class="col-md-4">
+                                <select name="feedback_priority" id="feedback_priority" class="form-control">
+                                    <option value="3 - End of Week">End of Week</option>
+                                    <option value="2 - End of Day">End of Day</option>
+                                    <option value="1 - Immediate">Immediate</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary waves-effect waves-light" id="feedback-submit">Submit</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <!-- Footer -->
+        <footer class="footer text-right">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-6 pull-left">
+                        <?php echo date("Y"); ?> &copy; <?php echo FOOTER_TEXT; ?>
+                    </div>
+
+                    <div class="col-xs-6 pull-right text-md-right"><?php echo "RELEASE DATE " . RELEASE_DATE; ?></div>
+                </div>
+
+                <div class="global-feedback"></div>
             </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<!-- Add Customer modal -->
-<div id="modalViewNotes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalViewNotesLabel" aria-hidden="true">
-    <!-- Inserted via AJAX -->
-</div>
-<!-- /.modal -->
-
-<!-- Global Search loading, required for global search to work -->
-<script src="/ondemand/js/global_search.js?random=<?php echo rand(0,1500); ?>"></script>
-
-<!-- Adding SO to the system -->
-<script src="/ondemand/js/add_so.js"></script>
+        </footer>
+        <!-- End Footer -->
+    </div> <!-- container -->
+</div> <!-- End wrapper -->
 
 <script>
-    var indv_dt_interval;
-    var indv_auto_interval;
-    var wc_auto_interval;
-    var dash_auto_interval;
+    // Connect to the socket to begin transmission of data
+    <?php if($server[0] === 'dev') {
+        echo "var socket = io.connect('//dev.3erp.us:4000');";
+    } else {
+        echo "var socket = io.connect('//3erp.us:4100');";
+    } ?>
 
-    var main_body = 'employees';
-    var shop_logged_in;
+    var currentPage = 'dashboard';
+
+    var indv_dt_interval; // used on functions.js
+    var indv_auto_interval; // used on functions.js
+    var wc_auto_interval; // used on functions.js
+    var dash_auto_interval; // used on functions.js
 
     var userID;
 
     // -- Dashboard --
     <?php
-    if(isset($_SESSION['userInfo']['default_queue']) || !empty($_SESSION['userInfo']['default_queue'])) {
-        echo "var queue = '{$_SESSION['userInfo']['default_queue']}';";
-    } else {
-        echo "var queue = '{$_SESSION['shop_user']['default_queue']}';";
-    }
+    echo (isset($_SESSION['userInfo']['default_queue']) || !empty($_SESSION['userInfo']['default_queue'])) ? "var queue = '{$_SESSION['userInfo']['default_queue']}';" : "var queue = '{$_SESSION['shop_user']['default_queue']}';";
+
+    $unique_key = hash("sha256", time() + rand(1,999999999));
+
+    $dbconn->query("UPDATE user SET unique_key = '$unique_key' WHERE id = '{$_SESSION['userInfo']['id']}'");
+
+    $_SESSION['userInfo']['unique_key'] = $unique_key;
+
+    echo "var unique_key = '$unique_key';";
     ?>
 
     var op_id;
@@ -119,160 +337,114 @@ require 'includes/header_end.php';
     var vin_sonum;
     // -- End Build a VIN --
 
-    function clearIntervals() {
-        clearInterval(indv_dt_interval);
-        clearInterval(indv_auto_interval);
-        clearInterval(wc_auto_interval);
-        clearInterval(dash_auto_interval);
-    }
+    // -- Socket Handling --
+    socket.on("connect", function() {
+        socket.emit("setUK", unique_key);
 
-    function backFromSearch() {
-        $("#search_display").fadeOut(200);
-        $("#global_search").val("");
+        $("#server_failure").hide();
+    });
 
-        setTimeout(function() {
-            $("#main_display").fadeIn(200);
-        }, 200);
-    }
+    socket.on("err", function(e) {
+        $.alert({
+            title: 'An error has occurred!',
+            content: e,
+            buttons: {
+                cancel: function() {}
+            }
+        });
+    });
 
-    function calcVin(room_id) {
-        var room;
+    socket.on("catchQueueUpdate", function() {
+        if(currentPage === 'dashboard') {
+            updateOpQueue();
 
-        if($("select[name='room']").val() === undefined) {
-            room = $("input[name='room']").val();
-        } else {
-            room = $("select[name='room']").val();
+            console.log("Queue update caught");
         }
 
-        var iteration = $("input[name='iteration']").val();
-        var product_type = $("select[name='product_type']").val();
-        var order_status = $("select[name='order_status']").val();
-        var days_to_ship = $("select[name='days_to_ship']").val();
-        var dealer_code = $("#vin_dealer_code_" + room_id).val();
+        if(currentPage === 'workcenter') {
+            jiq_table.ajax.reload(null,false);
+            active_table.ajax.reload(null,false);
+            completed_table.ajax.reload(null,false);
+        }
+    });
 
-        var species_grade = $("#species_grade_" + room_id).find(":selected").val();
-        var construction_method = $("#construction_method_" + room_id).find(":selected").val();
-        var door_design = $("#door_design_" + room_id).find(":selected").val();
-        var panel_raise_door = $("#panel_raise_door_" + room_id).find(":selected").val();
-        var panel_raise_sd = $("#panel_raise_sd_" + room_id).find(":selected").val();
-        var panel_raise_td = $("#panel_raise_td_" + room_id).find(":selected").val();
-        var edge_profile = $("#edge_profile_" + room_id).find(":selected").val();
-        var framing_bead = $("#framing_bead_" + room_id).find(":selected").val();
-        var framing_options = $("#framing_options_" + room_id).find(":selected").val();
-        var style_rail_width = $("#style_rail_width_" + room_id).find(":selected").val();
-        var finish_code = $("#finish_code_" + room_id).find(":selected").val();
-        var sheen = $("#sheen_" + room_id).find(":selected").val();
-        var glaze = $("#glaze_" + room_id).find(":selected").val();
-        var glaze_technique = $("#glaze_technique_" + room_id).find(":selected").val();
-        var antiquing = $("#antiquing_" + room_id).find(":selected").val();
-        var worn_edges = $("#worn_edges_" + room_id).find(":selected").val();
-        var distress_level = $("#distress_level_" + room_id).find(":selected").val();
-        var carcass_exterior_species = $("#carcass_exterior_species_" + room_id).find(":selected").val();
-        var carcass_exterior_finish_code = $("#carcass_exterior_finish_code_" + room_id).find(":selected").val();
-        var carcass_exterior_glaze_color = $("#carcass_exterior_glaze_color_" + room_id).find(":selected").val();
-        var carcass_exterior_glaze_technique = $("#carcass_exterior_glaze_technique_" + room_id).find(":selected").val();
-        var carcass_interior_species = $("#carcass_interior_species_" + room_id).find(":selected").val();
-        var carcass_interior_finish_code = $("#carcass_interior_finish_code_" + room_id).find(":selected").val();
-        var carcass_interior_glaze_color = $("#carcass_interior_glaze_color_" + room_id).find(":selected").val();
-        var carcass_interior_glaze_technique = $("#carcass_interior_glaze_technique_" + room_id).find(":selected").val();
-        var drawer_boxes = $("#drawer_boxes_" + room_id).find(":selected").val();
-
-        $("#vin_code_" + room_id).val(active_so_num + room + "-" + iteration + "-" + product_type + order_status + days_to_ship + "_" + dealer_code + "_" + species_grade + construction_method + door_design + "-" + panel_raise_door + panel_raise_sd + panel_raise_td + "-" + edge_profile +
-            framing_bead + framing_options + style_rail_width + "_" + finish_code + sheen + "-" + glaze + glaze_technique + antiquing + worn_edges + distress_level + "_" + carcass_exterior_species + carcass_exterior_finish_code +
-            carcass_exterior_glaze_color + carcass_exterior_glaze_technique + "-" + carcass_interior_species + carcass_interior_finish_code + carcass_interior_glaze_color + carcass_interior_glaze_technique + "_" + drawer_boxes);
-    }
-
-    function loadPage(page) {
-        clearIntervals();
-
-        $(".js_loading").show();
-        $("#main_body").load("/html/" + page + ".php", function() {
-            $(".js_loading").hide();
-        });
-
-        backFromSearch();
-    }
-
-    $(".js_loading").show();
+    socket.on("disconnect", function() {
+        $("#server_failure").show();
+    });
+    // -- End of Socket Handling --
 
     $(function() {
         <?php
-            if(!empty($_SESSION['shop_user'])) {
-                echo "loadPage('dashboard');";
-                echo "shop_logged_in = true;";
-            } else {
-                echo "loadPage('employees');";
-                echo "shop_logged_in = false;";
-            }
+        if(empty($_REQUEST['page'])) {
+            echo "loadPage('dashboard');";
+        } else {
+            echo "loadPage('{$_REQUEST['page']}');";
+        }
+
+        if($_SESSION['userInfo']['justLoggedIn']) {
+            echo "displayToast('success', 'Welcome to your dashboard {$_SESSION['userInfo']['name']}!', 'Successfully Logged In', true);";
+            $_SESSION['userInfo']['justLoggedIn'] = FALSE;
+        }
         ?>
+
+        jconfirm.defaults = {
+            title: "Leaving without saving!",
+            content: "You have unsaved changes, do you wish to proceed?",
+            type: 'orange',
+            typeAnimated: true,
+            theme: 'supervan'
+        };
+
+        // -- toastr defaults --
+        toastr.options = {
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        setInterval(function() {
+            var time = new Date();
+            time = time.toLocaleTimeString();
+
+            $("#clock").html(time);
+        }, 1000); // clock
+
+        $(".modal").draggable({
+            handle: ".modal-header"
+        });
+
+        <?php if($_SESSION['userInfo']['id'] !== '16') { ?>
+            $.post("/ondemand/alerts.php?action=update_alerts", function(data) {
+                $("#notification_list").html(data);
+            });
+
+            setInterval(function() {
+                $.post("/ondemand/alerts.php?action=update_alerts", function(data) {
+                    $("#notification_list").html(data);
+                });
+            }, 10000);
+        <?php }?>
     });
 
     $("body")
-        // -- Navigation --
-        .on("click", "#nav_dashboard", function() {
-            if(shop_logged_in) {
-                unloadPage('dashboard');
-            } else {
-                loadPage('employees');
-            }
-        })
-        .on("click", "#nav_pricing", function() {
-            unloadPage('pricing');
-        })
-        .on("click", "#nav_workcenter", function() {
-            unloadPage('workcenter');
-        })
+    // -- Navigation --
         .on("click", "#nav_timecard", function() {
-            //unloadPage('timecard');
-
             var start = Math.round(new Date().getTime()/1000);
             var end = Math.round(new Date().getTime()/1000);
 
             window.open("/print/timecard.php?start_date=" + start + "&end_date=" + end + "&employee=23", "_blank");
         })
-        .on("click", "#nav_job-management", function() {
-            unloadPage('job_management');
-        })
-        .on("click", "#nav_employees", function() {
-            <?php
-            if($_SESSION['userInfo']['account_type'] > 4) {
-            ?>
-                if(shop_logged_in) {
-                    $.post("/ondemand/account_actions.php?action=logout", function(data) {
-                        if (data === 'success') {
-                            loadPage('employees');
-                            shop_logged_in = false;
-
-                            displayToast("warning", "You have been logged out of the dashboard.", "Logout Complete");
-                        }
-                    });
-                }
-            <?php
-            }
-            ?>
-
-            unloadPage('employees');
-        })
-        .on("click", "#nav_tasks", function() {
-            unloadPage('tasks');
-        })
-        .on("click", "#nav_vin", function() {
-            unloadPage('build_a_vin');
-        })
-        .on("click", "#nav_so_list", function() {
-            unloadPage('so_list');
-        })
-        .on("click", "#nav_sales_list", function() {
-            unloadPage('sales_list');
-        })
         // -- End Navigation --
 
         // -- Dashboard --
         .on("change", "#viewing_queue", function() {
-            updateQueuedJobs();
-        })
-        .on("click", ".view_quote_info", function(e) {
-            e.stopPropagation();
+            updateOpQueue();
         })
         .on("click", ".view_so_info", function() {
             var id = $(this).attr("id");
@@ -297,8 +469,7 @@ require 'includes/header_end.php';
                 $.post("/ondemand/op_actions.php?action=start_operation", {operation: opFull, id: op_id}, function(data) {
                     $('body').append(data);
 
-                    updateQueuedJobs();
-                    active_table.ajax.reload(null,false);
+                    socket.emit("updateQueue");
 
                     $.post("/html/view_notes.php", {queueID: op_id}, function(data) {
                         $("#modalViewNotes").html(data).modal("show");
@@ -317,8 +488,7 @@ require 'includes/header_end.php';
                     $.post("/ondemand/op_actions.php?action=start_operation", {id: op_id, operation: opFull, subtask: "Other", notes: other_notes_field}, function (data) {
                         $("body").append(data);
 
-                        active_table.ajax.reload(null,false);
-                        updateQueuedJobs();
+                        socket.emit("updateQueue");
 
                         $("#modalStartJob").modal('hide');
                     });
@@ -334,9 +504,8 @@ require 'includes/header_end.php';
                 var otf_iteration = $("#otf_iteration").val();
 
                 $.post("/ondemand/op_actions.php?action=start_operation", {id: op_id, operation: opFull, subtask: subtask,
-                    notes: notes_field, otf_so_num: otf_so_num, otf_room: otf_room, otf_op: otf_op, otf_notes: otf_notes, otf_iteration: otf_iteration}, function(data) {
-                    active_table.ajax.reload(null,false);
-                    updateQueuedJobs();
+                notes: notes_field, otf_so_num: otf_so_num, otf_room: otf_room, otf_op: otf_op, otf_notes: otf_notes, otf_iteration: otf_iteration}, function(data) {
+                    socket.emit("updateQueue");
 
                     $('body').append(data);
 
@@ -366,8 +535,7 @@ require 'includes/header_end.php';
         })
         .on("click", "#pause_op", function() {
             $.post("/ondemand/op_actions.php?action=pause_operation", {opID: op_id, notes: $("#notes").val(), qty: $("#qtyCompleted").val()}, function(data) {
-                active_table.ajax.reload(null,false);
-                updateQueuedJobs();
+                socket.emit("updateQueue");
 
                 $("body").append(data);
                 $("#modalUpdateJob").modal('hide');
@@ -398,7 +566,7 @@ require 'includes/header_end.php';
             var notes = $("#notes").val();
             var qty_compl = $("#qtyCompleted").val();
             var rework = $("#rework_reqd").is(":checked");
-            var rw_reason = $("#rework_reason :selected").val();
+            var rw_reason = $("#rework_reason").find(":selected").val();
 
             // formdata required because now we're attaching files
             var formData = new FormData();
@@ -421,8 +589,7 @@ require 'includes/header_end.php';
                     $('body').append(data);
                     $("#modalUpdateJob").modal('hide');
 
-                    updateQueuedJobs();
-                    active_table.ajax.reload(null,false);
+                    socket.emit("updateQueue");
                 }
             });
 
@@ -446,60 +613,8 @@ require 'includes/header_end.php';
         // -- End Workcenter --
 
         // -- Employees --
-        .on("click", ".login", function() {
-            userID = $(this).data("login-id");
-
-            <?php
-            if($_SESSION['userInfo']['account_type'] > 4) {
-            ?>
-            // This was tricky, wtf is with the second variable passed to the object? docs do not explain and the demo shows wrong info
-            $("#modalLogin").modal("show", $(this));
-
-            <?php
-            } else {
-            ?>
-
-            $.post("/ondemand/account_actions.php?action=login", {id: userID, pin: $("#loginPin").val()}, function(data) {
-                if (data === 'success') {
-                    loadPage('dashboard');
-                    shop_logged_in = true;
-                } else {
-                    displayToast("error", "Failed to log in, please try again.", "Login Failure");
-                    $("#modalLogin").modal('hide');
-                }
-            });
-            <?php
-            }
-            ?>
-        })
-        .on("click", "#clock_in", function() {
-            $.post("/ondemand/account_actions.php?action=login", {id: userID, pin: $("#loginPin").val()}, function(data) {
-                console.log(data);
-
-                if (data === 'success') {
-                    loadPage('dashboard');
-                    $("#modalLogin").modal('hide');
-
-                    shop_logged_in = true;
-                    main_body = 'dashboard';
-                } else if(data === 'success - clocked in') {
-                    loadPage('dashboard');
-                    $("#modalLogin").modal('hide');
-                    displayToast("success", "Successfully logged you in for the day.", "Login Successful");
-
-                    shop_logged_in = true;
-                    main_body = 'dashboard';
-                } else {
-                    displayToast("error", "Failed to log in, please try again.", "Login Failure");
-                    $("#modalLogin").modal('hide');
-                    shop_logged_in = false;
-                }
-            });
-        })
         .on("click", ".clock_out", function(e) {
             var id = $(this).data("id");
-
-            console.log("Clicked to clock out!");
 
             e.stopPropagation();
 
@@ -659,17 +774,89 @@ require 'includes/header_end.php';
             $.post("/ondemand/display_actions.php?action=show_sales_list_id&id=" + show);
         })
         // -- End Sales List Page --
+
+        // -- Feedback --
+        .on("click", "#feedback-submit", function() {
+            var description = $("#feedback-text").val();
+            var feedback_to = $("#feedback_to").val();
+            var priority = $("#feedback_priority").val();
+
+            $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: description, assignee: feedback_to, priority: priority}, function(data) {
+                $("body").append(data);
+                $("#feedback-page").modal('hide');
+                unsaved = false;
+                $("#feedback-text").val("");
+            });
+        })
+        // -- End Feedback --
+
+        // -- Notifications --
+        .on("click", "#notification_list", function() {
+            $.post("/ondemand/alerts.php?action=viewed_alerts");
+        })
+    // -- End Notifications --
     ;
-
-    var clockInterval = setInterval(function() {
-        var time = new Date();
-        time = time.toLocaleTimeString();
-
-        $("#clock").html(time);
-    }, 1000);
 </script>
 
+<!-- Global Search loading, required for global search to work -->
+<script src="/ondemand/js/global_search.js?v=<?php echo $version; ?>"></script>
+
+<!-- Adding SO to the system -->
+<script src="/ondemand/js/add_so.js?v=<?php echo $version; ?>"></script>
+
+<!-- jQuery  -->
+<script src="/assets/js/tether.min.js"></script><!-- Tether for Bootstrap -->
+<script src="/assets/js/bootstrap.min.js"></script>
+<script src="/assets/js/waves.js"></script>
+<script src="/assets/js/jquery.nicescroll.js"></script>
+
+<!-- Toastr setup -->
+<script src="/assets/plugins/toastr/toastr.min.js"></script>
+<link href="/assets/plugins/toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
+
+<!-- Datatables -->
+<script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="/assets/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<script src="/assets/plugins/datatables/vfs_fonts.js"></script>
+<script src="/assets/plugins/datatables/dataTables.responsive.min.js"></script>
+<script src="/assets/plugins/datatables/responsive.bootstrap4.min.js"></script>
+
+<!-- Moment.js for Timekeeping -->
+<script src="/assets/plugins/moment/moment.js"></script>
+
+<!-- Alert Windows -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+<!-- Mask -->
+<script src="/assets/plugins/jquery.mask.min.js"></script>
+
+<!-- Counter Up  -->
+<script src="/assets/plugins/waypoints/lib/jquery.waypoints.js"></script>
+<script src="/assets/plugins/counterup/jquery.counterup.min.js"></script>
+
+<!-- App js -->
+<script src="/assets/js/jquery.core.js"></script>
+<script src="/assets/js/jquery.app.js"></script>
+
+<!-- Tinysort -->
+<script type="text/javascript" src="/assets/plugins/tinysort/tinysort.min.js"></script>
+
+<!-- Input Masking -->
+<script type="text/javascript" src="/assets/plugins/jquery.mask.min.js"></script>
+
+<!-- Datepicker -->
+<script src="/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+
+<!-- JScroll -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.0/jquery.scrollTo.min.js"></script>
+
+<!-- Math, fractions and more -->
+<script src="/assets/plugins/math.min.js"></script>
+
+<!-- Unsaved Changes -->
+<script src="/assets/js/unsaved_alert.js?v=<?php echo $version; ?>"></script>
+</body>
+</html>
 <?php
-require 'includes/footer_start.php';
-require 'includes/footer_end.php';
+$dbconn->close();
 ?>

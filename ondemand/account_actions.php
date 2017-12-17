@@ -15,11 +15,9 @@ function login($result, $id) {
 
     if($timecard_qry->num_rows === 0) { // if there is no timecard, we have to create one
         $dbconn->query("INSERT INTO timecards (employee, time_in) VALUES ('$id', UNIX_TIMESTAMP())");
-
-        echo "success - clocked in";
-    } else {
-        echo "success";
     }
+
+    echo "success";
 }
 
 switch($_REQUEST['action']) {
@@ -44,13 +42,6 @@ switch($_REQUEST['action']) {
         }
 
         break;
-    case 'logout':
-        unset($_SESSION['shop_user']);
-        unset($_SESSION['shop_active']);
-
-        echo "success";
-
-        break;
     case 'clock_out':
         $id = sanitizeInput($_REQUEST['user_id']);
 
@@ -66,7 +57,7 @@ switch($_REQUEST['action']) {
                 if($dbconn->query("UPDATE timecards SET time_out = UNIX_TIMESTAMP() WHERE id = {$timecard['id']}")) {
                     echo displayToast("success", "Successfully clocked out {$user['name']}.", "Clocked Out");
 
-                    echo '<script>setTimeout(function() {window.location.replace("/index.php");}, 500)</script>';
+                    echo '<script>setTimeout(function() {window.location.replace("/employees.php");}, 500)</script>';
                 } else {
                     dbLogSQLErr($dbconn);
                     die();

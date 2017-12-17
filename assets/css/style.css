@@ -23506,6 +23506,23 @@ table tbody td {
 .checkbox label::after {
   top: -1px; }
 
+#server_failure {
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #FFF;
+  z-index: 10000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw; }
+  #server_failure h1 {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); }
+
 .cust-table {
   display: table;
   width: 100%;

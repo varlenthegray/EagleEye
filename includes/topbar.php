@@ -95,17 +95,17 @@ switch($_SERVER['SCRIPT_NAME']) {
                         echo "<li class='nav-separator'><span></span></li>";
 
                         echo "<li id='nav_feedback'><a data-toggle='modal' data-target='#feedback-page'><i class='fa fa-comment-o m-r-5'></i><span>" . NAV_FEEDBACK . "</span></a></li>";
-                        echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_tasks'><a><i class='zmdi zmdi-check-circle-u m-r-5'></i><span>" . NAV_TASKS . "</span></a></li>" : null;
+                        echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_tasks'><a onclick='unloadPage(\"tasks\")'><i class='zmdi zmdi-check-circle-u m-r-5'></i><span>" . NAV_TASKS . "</span></a></li>" : null;
 
                         echo "<li class='nav-separator'><span></span></li>";
 
-                        echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_workcenter'><a><i class='zmdi zmdi-receipt m-r-5'></i><span>" . NAV_WORKCENTER . "</span></a></li>" : null;
+                        echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_workcenter'><a onclick='unloadPage(\"workcenter\")'><i class='zmdi zmdi-receipt m-r-5'></i><span>" . NAV_WORKCENTER . "</span></a></li>" : null;
 
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li class='has-submenu'>
                                         <a><i class='zmdi zmdi-assignment'></i>" . NAV_REPORTS . "</a>
                                         <ul class='submenu'>
-                                            <li id='nav_so_list'><a><i class='zmdi zmdi-accounts-list m-r-5'></i>" . NAV_SOLIST . "</a></li>
-                                            <li id='nav_sales_list'><a><i class='zmdi zmdi-accounts-list m-r-5'></i>" . NAV_SALES_LIST . "</a></li>
+                                            <li id='nav_so_list'><a onclick='unloadPage(\"so_list\")'><i class='zmdi zmdi-accounts-list m-r-5'></i>" . NAV_SOLIST . "</a></li>
+                                            <li id='nav_sales_list'><a onclick='unloadPage(\"sales_list\")'><i class='zmdi zmdi-accounts-list m-r-5'></i>" . NAV_SALES_LIST . "</a></li>
                                         </ul>
                                     </li>"
                             : null;
@@ -114,25 +114,6 @@ switch($_SERVER['SCRIPT_NAME']) {
                         echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_timecard'><a><i class='zmdi zmdi-time m-r-5'></i><span>" . NAV_ACCOUNTING_TIMECARDS . "</span></a></li>" : null;
 
                         echo ($_SESSION['userInfo']['account_type'] === '6') ? "<li id='nav_employees'><a><i class='zmdi zmdi-account-circle m-r-5'></i><span>" . NAV_SHOP_LOGOUT . "</span></a></li>" : null;
-
-                        echo ($_SESSION['userInfo']['account_type'] <= '1') ? "<li class='nav-separator'><span></span></li>" : null;
-
-                        echo ($_SESSION['userInfo']['account_type'] <= '1') ? "<li class='has-submenu'>
-                                    <a><i class='zmdi zmdi-accounts-list-alt'></i>Admin</a>
-                                    <ul class='submenu'>
-                                        <li id='nav_kpi'><a><i class='zmdi zmdi-time-interval m-r-5'></i>" . NAV_KPI . "</a></li>
-                                        <li id='nav_pbp'><a><i class='zmdi zmdi-trending-up m-r-5'></i>" . NAV_PBP . "</a></li>
-                                        <li id='nav_adduser'><a><i class='zmdi zmdi-accounts-add m-r-5'></i>" . NAV_ADDUSER . "</a></li>
-                                    </ul>
-                                </li>
-                                <li class='has-submenu'>
-                                    <a><i class='zmdi zmdi zmdi-code-setting'></i>WIP</a>
-                                    <ul class='submenu'>
-                                        <li id='nav_inventory'><a><i class='zmdi zmdi-dropbox m-r-5'></i>" . NAV_INVENTORY . "</a></li>
-                                        <li id='nav_pricing'><a><i class='zmdi zmdi-store m-r-5'></i>" . NAV_PRICINGPROGRAM . "</a></li>
-                                    </ul>
-                                </li>"
-                            : null;
                     ?>
                 </ul>
                 <!-- End navigation menu  -->
