@@ -14,26 +14,26 @@ var db = mysql.createConnection({
 /******************************************
  * Server initial connection - LIVE
  *****************************************/
-// var server = https.createServer({
-//     key: fs.readFileSync('/home/threeerp/ssl.key'),
-//     cert: fs.readFileSync('/home/threeerp/ssl.cert'),
-//     ca: fs.readFileSync('/home/threeerp/ssl.ca'),
-//     requestCert: false,
-//     rejectUnauthorized: false
-// }, sconn);
-// server.listen(4100); // live server
+var server = https.createServer({
+    key: fs.readFileSync('/home/threeerp/ssl.key'),
+    cert: fs.readFileSync('/home/threeerp/ssl.cert'),
+    ca: fs.readFileSync('/home/threeerp/ssl.ca'),
+    requestCert: false,
+    rejectUnauthorized: false
+}, sconn);
+server.listen(4100); // live server
 
 /******************************************
  * Server initial connection - DEV
  *****************************************/
-var server = https.createServer({
-    key: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.key'),
-    cert: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.cert'),
-    ca: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.ca'),
-    requestCert: false,
-    rejectUnauthorized: false
-}, sconn);
-server.listen(4000); // dev server
+// var server = https.createServer({
+//     key: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.key'),
+//     cert: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.cert'),
+//     ca: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.ca'),
+//     requestCert: false,
+//     rejectUnauthorized: false
+// }, sconn);
+// server.listen(4000); // dev server
 
 /******************************************
  * Global connection
