@@ -517,7 +517,7 @@ class queue {
 
         $active_employees = json_encode($active_emp);
 
-        if($dbconn->query("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = $active, partially_completed = TRUE, completed = FALSE, active_employees = '$active_employees' WHERE id = $id")) {
+        if($dbconn->query("UPDATE op_queue SET active = $active, partially_completed = TRUE, completed = FALSE, active_employees = '$active_employees' WHERE id = $id")) {
             $changed = ["End time"=>time(), "Active"=>$active, "Partially Completed"=>true, "Active Employees"=>json_decode($active_employees)];
             $changed = json_encode($changed);
 
@@ -674,7 +674,7 @@ class queue {
             }
 
             if($rw_reqd === 'true') { // rework is required
-                $stmt = $dbconn->prepare("UPDATE op_queue SET end_time = UNIX_TIMESTAMP(), active = FALSE, completed = TRUE, partially_completed = FALSE, rework = TRUE, active_employees = NULL WHERE id = ?");
+                $stmt = $dbconn->prepare("UPDATE op_queue SET active = FALSE, completed = TRUE, partially_completed = FALSE, rework = TRUE, active_employees = NULL WHERE id = ?");
 
                 $stmt->bind_param("i", $id);
 
