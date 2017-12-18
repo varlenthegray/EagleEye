@@ -307,6 +307,10 @@ if($_SESSION['userInfo']['account_type'] > 4) {
     });
     // -- End of Socket Handling --
 
+    setInterval(function() {
+        $.post("/ondemand/session_continue.php");
+    }, 600000);
+
     $(function() {
         // -- toastr defaults --
         toastr.options = {

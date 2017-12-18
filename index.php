@@ -371,6 +371,10 @@ $version = '2.1.02';
     socket.on("disconnect", function() {
         $("#server_failure").show();
     });
+
+    socket.on("catchRefresh", function() {
+        location.reload();
+    });
     // -- End of Socket Handling --
 
     $(function() {
@@ -796,6 +800,10 @@ $version = '2.1.02';
         })
     // -- End Notifications --
     ;
+
+    setInterval(function() { // stops the auto-logout
+        $.post("/ondemand/session_continue.php");
+    }, 600000);
 </script>
 
 <!-- Global Search loading, required for global search to work -->

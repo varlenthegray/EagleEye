@@ -14,26 +14,26 @@ var db = mysql.createConnection({
 /******************************************
  * Server initial connection - LIVE
  *****************************************/
-var server = https.createServer({
-    key: fs.readFileSync('/home/threeerp/ssl.key'),
-    cert: fs.readFileSync('/home/threeerp/ssl.cert'),
-    ca: fs.readFileSync('/home/threeerp/ssl.ca'),
-    requestCert: false,
-    rejectUnauthorized: false
-}, sconn);
-var port = 4100;
+// var server = https.createServer({
+//     key: fs.readFileSync('/home/threeerp/ssl.key'),
+//     cert: fs.readFileSync('/home/threeerp/ssl.cert'),
+//     ca: fs.readFileSync('/home/threeerp/ssl.ca'),
+//     requestCert: false,
+//     rejectUnauthorized: false
+// }, sconn);
+// var port = 4100;
 
 /******************************************
  * Server initial connection - DEV
  *****************************************/
-// var server = https.createServer({
-//     key: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.key'),
-//     cert: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.cert'),
-//     ca: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.ca'),
-//     requestCert: false,
-//     rejectUnauthorized: false
-// }, sconn);
-// var port = 4000;
+var server = https.createServer({
+    key: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.key'),
+    cert: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.cert'),
+    ca: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.ca'),
+    requestCert: false,
+    rejectUnauthorized: false
+}, sconn);
+var port = 4000;
 
 /******************************************
  * Global connection
@@ -116,6 +116,14 @@ socket.on('connect', function (client) {
             socket.emit("catchSOUpdate"); // tell the page to pull AJAX data, tons of information so no need to fetch via database and inject results
         } catch(e) {
             console.log("updateSO Error: " + e); // log an error
+        }
+    });
+
+    client.on("refreshAll", function() {
+        try {
+            socket.emit("catchRefresh"); // send a refresh to every connection
+        } catch(e) {
+            console.log("refreshAll Error: " + e); // log an error
         }
     });
 });
