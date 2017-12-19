@@ -158,7 +158,7 @@ echo "<script>
                 <a class="btn btn-primary btn-block waves-effect waves-light iteration_save">Save</a>
             </div>
 
-            <div class="col-md-3 col-md-offset-1">
+            <div class="col-md-3">
                 <div class="row">
                     <div class="col-md-12">
                         <input type="hidden" name="sonum" value="<?php echo $room['so_parent']; ?>">
