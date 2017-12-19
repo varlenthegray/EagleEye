@@ -572,7 +572,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                 <tr class="border_thin_bottom">
                     <td class="total_text">Shipping Zone: <span class="em_box" style="margin-left: 20px;"><input type="text" name="final_ship_zone" id="final_ship_zone" value="" maxlength="1" class="static_width" style="width:10px;text-align:center;"></span> <span id="final_ship_zone_miles"></span></td>
                     <td class="total_text">&nbsp;</td>
-                    <td class="text-md-right total_text">$<span id="final_shipping"></span></td>
+                    <td class="text-md-right total_text">$<input type="text" name="final_shipping" id="final_shipping" value="0.00" maxlength="10" class="static_width" style="width:20px;"></td>
                 </tr>
                 <tr class="border_thin_bottom">
                     <td class="total_text"><input type="checkbox" id="final_freight_check" class="no-print"> <label for="final_freight_check">Min. Freight: (Under 6 Cabinets)</label></td>
@@ -630,7 +630,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                 <tr class="header em_box">
                     <td class="total_text">Total Amount:</td>
                     <td class="total_text">&nbsp;</td>
-                    <td class="text-md-right total_text">$<input type="text" name="total_amount" value="0.00" maxlength="10"></td>
+                    <td class="text-md-right total_text">$<input type="text" class="total_text" name="total_amount" value="0.00" maxlength="10" style="background-color:#000;color:#FFF;font-weight:bold;"></td>
                 </tr>
                 <tr>
                     <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
@@ -809,7 +809,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
     $("#final_leadtime").html(final_leadtime.toFixed(2));
     $("#final_subtotal").html(final_subtotal.toFixed(2));
     $("#final_net").html(final_net.toFixed(2));
-    $("#final_shipping").html(final_shipping.toFixed(2));
+    $("#final_shipping").val(final_shipping.toFixed(2));
     $("#final_ship_zone").val(final_ship_zone);
     $("#final_ship_zone_miles").html(final_ship_zone_miles);
     $("#final_freight").html(final_freight.toFixed(2));
@@ -1200,7 +1200,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             $("#final_subtotal").html(final_subtotal.toFixed(2));
             $("#final_net").html(final_net.toFixed(2));
             $("#final_ship_zone_miles").html(final_ship_zone_miles);
-            $("#final_shipping").html(final_shipping.toFixed(2));
+            $("#final_shipping").val(final_shipping.toFixed(2));
             $("#final_freight").html(final_freight.toFixed(2));
             $("#final_jobsite").html(final_jobsite.toFixed(2));
             $("#final_cc").html(final_cc.toFixed(2));
@@ -1213,6 +1213,12 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         })
         .on("keyup", "#final_ship_zone", function() {
             $(this).val($(this).val().toUpperCase());
+
+            if($(this).val() !== 'A') {
+                $("#final_shipping").width('30px');
+            } else {
+                $("#final_shipping").width('20px');
+            }
         })
         .on("change", "input[name='arh_multiplier_opts']", function() {
             if($("#arh_landed").is(":checked")) {
