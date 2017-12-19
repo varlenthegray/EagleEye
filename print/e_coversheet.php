@@ -736,6 +736,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 <script src="/assets/js/jquery.min.js"></script>
 
 <script>
+    var ship_charges_changed = false;
+
     /** Fixed Pricing */
     var styles_rails_price = 8.00;
     var short_drawer_raise_price = 65.00;
@@ -1118,38 +1120,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             final_subtotal = parseFloat(final_upcharges) + parseFloat(cabinet_list_price) + parseFloat(mods_accessories) + parseFloat(final_leadtime);
             final_multiplier = $("input[name='multiplier']").val();
             final_net = parseFloat(final_subtotal) * parseFloat(final_multiplier);
-
-            switch($("input[name='final_ship_zone']").val().toUpperCase()) {
-                case 'A':
-                    final_ship_zone_miles = '(0-100 Miles)';
-                    final_shipping = 0.00;
-                    break;
-
-                case 'B':
-                    final_ship_zone_miles = '(100-200 Miles)';
-                    final_shipping = 150.00;
-                    break;
-
-                case 'C':
-                    final_ship_zone_miles = '(200-300 Miles)';
-                    final_shipping = 300.00;
-                    break;
-
-                case 'D':
-                    final_ship_zone_miles = '(300-400 Miles)';
-                    final_shipping = 450.00;
-                    break;
-
-                case 'E':
-                    final_ship_zone_miles = '(400-500 Miles)';
-                    final_shipping = 600.00;
-                    break;
-
-                case 'F':
-                    final_ship_zone_miles = '(500-600 Miles)';
-                    final_shipping = 750.00;
-                    break;
-            }
+            final_shipping = parseFloat($("#final_shipping").val());
 
             if($("#final_freight_check").is(':checked')) {
                 final_freight = 150.00;
@@ -1200,7 +1171,43 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             $("#final_subtotal").html(final_subtotal.toFixed(2));
             $("#final_net").html(final_net.toFixed(2));
             $("#final_ship_zone_miles").html(final_ship_zone_miles);
-            $("#final_shipping").val(final_shipping.toFixed(2));
+
+            if(!ship_charges_changed) {
+                switch($("input[name='final_ship_zone']").val().toUpperCase()) {
+                    case 'A':
+                        final_ship_zone_miles = '(0-100 Miles)';
+                        final_shipping = 0.00;
+                        break;
+
+                    case 'B':
+                        final_ship_zone_miles = '(100-200 Miles)';
+                        final_shipping = 150.00;
+                        break;
+
+                    case 'C':
+                        final_ship_zone_miles = '(200-300 Miles)';
+                        final_shipping = 300.00;
+                        break;
+
+                    case 'D':
+                        final_ship_zone_miles = '(300-400 Miles)';
+                        final_shipping = 450.00;
+                        break;
+
+                    case 'E':
+                        final_ship_zone_miles = '(400-500 Miles)';
+                        final_shipping = 600.00;
+                        break;
+
+                    case 'F':
+                        final_ship_zone_miles = '(500-600 Miles)';
+                        final_shipping = 750.00;
+                        break;
+                }
+
+                $("#final_shipping").val(final_shipping.toFixed(2));
+            }
+
             $("#final_freight").html(final_freight.toFixed(2));
             $("#final_jobsite").html(final_jobsite.toFixed(2));
             $("#final_cc").html(final_cc.toFixed(2));
@@ -1219,6 +1226,9 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             } else {
                 $("#final_shipping").width('20px');
             }
+        })
+        .on("keyup", "#final_shipping", function() {
+            ship_charges_changed = true;
         })
         .on("change", "input[name='arh_multiplier_opts']", function() {
             if($("#arh_landed").is(":checked")) {
