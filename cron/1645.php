@@ -50,7 +50,7 @@ if($user_qry->num_rows > 0) {
 
                 $active = (empty($aemp)) ? 'FALSE' : 'TRUE';
 
-                $dbconn->query("UPDATE op_queue SET active = $active, active_employees = '$active_employees', partially_completed = TRUE, end_time = UNIX_TIMESTAMP() WHERE id = '{$op_queue['id']}'");
+                $dbconn->query("UPDATE op_queue SET active = $active, active_employees = '$active_employees', partially_completed = TRUE WHERE id = '{$op_queue['id']}'");
 
                 $changed = ["Active"=>FALSE,"Active Employees"=>$active_employees,"Partially Completed"=>TRUE,"End Time"=>time(),"Auto-Clock"=>TRUE,"ID"=>$op_queue['id']];
                 $changed = json_encode($changed);
