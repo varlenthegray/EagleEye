@@ -46,6 +46,8 @@ $("body")
             searchTable.html(loadingResults);
 
             if(input.val().length >= 3) {
+                scrollPosition = $(window).scrollTop();
+
                 mainDisplay.hide();
                 searchDisplay.show();
 

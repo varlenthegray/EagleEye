@@ -57,8 +57,14 @@ function backFromSearch() {
     $("#search_display").fadeOut(200);
     $("#global_search").val("");
 
+    if(so_list !== undefined) {
+        so_list.ajax.url('/ondemand/so_actions.php?action=get_sales_list').load();
+    }
+
     setTimeout(function() {
         $("#main_display").fadeIn(200);
+
+        $("html").scrollTop(scrollPosition);
     }, 200);
 }
 

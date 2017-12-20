@@ -308,6 +308,7 @@ $version = '2.1.02';
     } ?>
 
     var currentPage = 'dashboard';
+    var scrollPosition = 0;
 
     var indv_dt_interval; // used on functions.js
     var indv_auto_interval; // used on functions.js
