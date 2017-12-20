@@ -113,19 +113,21 @@ require '../includes/header_start.php';
         }
     });
 
-    $("body").on("change", '#show_hidden_sales_list', function() {
-        if($(this).is(":checked")) {
-            $(".js_loading").show();
+    $("body")
+        .on("change", '#show_hidden_sales_list', function() {
+            if($(this).is(":checked")) {
+                $(".js_loading").show();
 
-            so_list.ajax.url('/ondemand/so_actions.php?action=get_sales_list&hidden=true').load(function() {
-                $(".js_loading").hide();
-            });
-        } else {
-            $(".js_loading").show();
+                so_list.ajax.url('/ondemand/so_actions.php?action=get_sales_list&hidden=true').load(function() {
+                    $(".js_loading").hide();
+                });
+            } else {
+                $(".js_loading").show();
 
-            so_list.ajax.url('/ondemand/so_actions.php?action=get_sales_list').load(function() {
-                $(".js_loading").hide();
-            });
-        }
-    });
+                so_list.ajax.url('/ondemand/so_actions.php?action=get_sales_list').load(function() {
+                    $(".js_loading").hide();
+                });
+            }
+        })
+    ;
 </script>

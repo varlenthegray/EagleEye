@@ -43,6 +43,8 @@ $("body")
             var loadingResults = '<tr><td colspan="7" class="text-md-center"><span id="global_search_status"><i class="fa fa-3x fa-spin fa-spinner" style="width: auto;margin-right: 10px;"></i></span></td></tr>';
             var searchEmpty = '<tr><td colspan="7">No results found.</td></tr>';
 
+            mainDisplay.attr("data-search", "true");
+
             searchTable.html(loadingResults);
 
             if(input.val().length >= 3) {

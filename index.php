@@ -151,7 +151,7 @@ $version = '2.1.02';
 
 <div class="wrapper">
     <div class="container">
-        <div class="col-md-12" id="main_display">
+        <div class="col-md-12" id="main_display" data-showing="dashboard" data-search="false">
             <div class="row">
                 <div class="col-md-12">
                     <div id="main_body"></div>

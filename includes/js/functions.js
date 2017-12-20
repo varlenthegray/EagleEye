@@ -57,12 +57,18 @@ function backFromSearch() {
     $("#search_display").fadeOut(200);
     $("#global_search").val("");
 
-    if(so_list !== undefined) {
-        so_list.ajax.url('/ondemand/so_actions.php?action=get_sales_list').load();
+    switch($("#main_display").attr("data-showing")) {
+        case 'sales_list':
+            so_list.ajax.url('/ondemand/so_actions.php?action=get_sales_list').load();
+
+            break;
     }
 
     setTimeout(function() {
-        $("#main_display").fadeIn(200);
+        var mainDisplay = $("#main_display");
+
+        mainDisplay.fadeIn(200);
+        mainDisplay.attr("data-search", "false");
 
         $("html").scrollTop(scrollPosition);
     }, 200);
@@ -125,6 +131,7 @@ function loadPage(page) {
 
         mainBody.load("/html/" + page + ".php", function() {
             $(".js_loading").hide();
+            $("#main_display").attr("data-showing", page);
         });
 
         backFromSearch();
