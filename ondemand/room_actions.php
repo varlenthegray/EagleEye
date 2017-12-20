@@ -31,9 +31,9 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
         $dbinfo = $dbinfo_qry->fetch_assoc();
 
         // now that we've cleaned up the operations; it's time to get that operation flowing
-        $dbconn->query("INSERT INTO op_queue (room_id, operation_id, start_time, end_time, active, 
-         completed, rework, notes, resumed_time, partially_completed, created) VALUES ('$roomid', 
-          '$operation', NULL, NULL, FALSE, FALSE, FALSE, NULL, NULL, NULL, UNIX_TIMESTAMP())");
+        $dbconn->query("INSERT INTO op_queue (room_id, operation_id, start_time, active, 
+         completed, rework, partially_completed, created) VALUES ('$roomid', 
+          '$operation', NULL, FALSE, FALSE, FALSE, NULL, UNIX_TIMESTAMP())");
     } else {
         while($op_queue = $op_queue_qry->fetch_assoc()) {
             $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
@@ -259,18 +259,35 @@ HEREDOC;
 
         break;
     case 'update_room':
-        $delivery_date = sanitizeInput($_REQUEST['delivery_date']);
-        $product_type = sanitizeInput($_REQUEST['product_type']);
-        $iteration = sanitizeInput($_REQUEST['iteration']);
-        $order_status = sanitizeInput(html_entity_decode($_REQUEST['order_status']));
-        $days_to_ship = sanitizeInput($_REQUEST['days_to_ship']);
+        $so_num = sanitizeInput($_REQUEST['sonum']);
+        $room_id = sanitizeInput($_REQUEST['room_id']);
+
+        $room_letter = sanitizeInput($_REQUEST['room_letter']);
         $room_name = sanitizeInput($_REQUEST['room_name']);
+
+        $section = sanitizeInput($_REQUEST['section']);
+        $section_name = sanitizeInput($_REQUEST['section_name']);
+
+        $construction_method = sanitizeInput($_REQUEST['construction_method']);
+
+        $rework = sanitizeInput($_REQUEST['rework']);
+        $addon = sanitizeInput($_REQUEST['addon']);
+        $warranty = sanitizeInput($_REQUEST['warranty']);
+
+        $billing_type = sanitizeInput($_REQUEST['billing_type']);
+        $days_to_ship = sanitizeInput($_REQUEST['days_to_ship']);
+        $order_status = sanitizeInput(html_entity_decode($_REQUEST['order_status']));
+        $delivery_date = sanitizeInput($_REQUEST['delivery_date']);
+        $ship_via = sanitizeInput($_REQUEST['ship_via']);
+        $ship_to = sanitizeInput($_REQUEST['ship_to']);
+        $payee = sanitizeInput($_REQUEST['payee']);
+        $payment_method = sanitizeInput($_REQUEST['payment_method']);
+        $installation = sanitizeInput($_REQUEST['installation']);
 
         $notes = sanitizeInput($_REQUEST['room_notes']);
         $note_type = sanitizeInput($_REQUEST['note_type']);
         $note_id = sanitizeInput($_REQUEST['note_id']);
 
-        $room_id = sanitizeInput($_REQUEST['roomid']);
         $followup_date = sanitizeInput($_REQUEST['room_inquiry_followup_date']);
         $followup_individual = sanitizeInput($_REQUEST['room_inquiry_requested_of']);
         $inquiry_id = null;
@@ -278,12 +295,22 @@ HEREDOC;
         $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
         $room_info = $room_qry->fetch_assoc();
 
-        $changed[] = whatChanged($delivery_date, $room_info['delivery_date'], 'Delivery Date', true);
-        $changed[] = whatChanged($product_type, $room_info['product_type'], 'Product Type');
-        $changed[] = whatChanged($iteration, $room_info['iteration'], 'Iteration');
-        $changed[] = whatChanged($order_status, $room_info['order_status'], 'Order Status');
-        $changed[] = whatChanged($days_to_ship, $room_info['days_to_ship'], 'Days to Ship');
         $changed[] = whatChanged($room_name, $room_info['room_name'], 'Room Name');
+        $changed[] = whatChanged($section_name, $room_info['section_name'], 'Section Name');
+        $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
+        $changed[] = whatChanged($rework, $room_info['rework'], 'Rework');
+        $changed[] = whatChanged($addon, $room_info['addon'], 'Addon');
+        $changed[] = whatChanged($warranty, $room_info['warranty'], 'Warranty');
+        $changed[] = whatChanged($billing_type, $room_info['billing_type'], 'Billing Type');
+        $changed[] = whatChanged($days_to_ship, $room_info['days_to_ship'], 'Days to Ship');
+        $changed[] = whatChanged($order_status, $room_info['order_status'], 'Order Status');
+        $changed[] = whatChanged($delivery_date, $room_info['delivery_date'], 'Delivery Date', true);
+        $changed[] = whatChanged($ship_via, $room_info['ship_via'], 'Ship Via');
+        $changed[] = whatChanged($ship_to, $room_info['ship_to'], 'Ship To');
+        $changed[] = whatChanged($payee, $room_info['payee'], 'Payee');
+        $changed[] = whatChanged($payment_method, $room_info['payment_method'], 'Payment Method');
+        $changed[] = whatChanged($installation, $room_info['installation'], 'Installation');
+
         $changed[] = (!empty($notes)) ? "Notes added" : null;
 
         if(empty($delivery_date)) {
@@ -292,67 +319,63 @@ HEREDOC;
             $delivery_date = ",delivery_date = " . strtotime($delivery_date) . "";
         }
 
-        if($dbconn->query("UPDATE rooms SET product_type = '$product_type', order_status = '$order_status', days_to_ship = '$days_to_ship', room_name = '$room_name' $delivery_date  WHERE id = $room_id")) {
-            if(!empty($notes)) {
-                switch($note_type) {
-                    case 'room_note':
-                        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+        if(!empty($notes)) {
+            switch($note_type) {
+                case 'room_note':
+                    $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
-                        break;
+                    break;
 
-                    case 'delivery_note':
-                        if(!empty($note_id)) {
-                            $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
+                case 'delivery_note':
+                    if(!empty($note_id)) {
+                        $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
+                    } else {
+                        if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_delivery'")->num_rows === 0) {
+                            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_delivery', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
                         } else {
-                            if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_delivery'")->num_rows === 0) {
-                                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_delivery', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-                            } else {
-                                echo displayToast("warning", "Delivery Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
-                            }
+                            echo displayToast("warning", "Delivery Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
                         }
+                    }
 
-                        break;
+                    break;
 
-                    case 'global_note':
-                        if(!empty($note_id)) {
-                            $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
+                case 'global_note':
+                    if(!empty($note_id)) {
+                        $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
+                    } else {
+                        if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_global'")->num_rows === 0) {
+                            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_global', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
                         } else {
-                            if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_global'")->num_rows === 0) {
-                                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_global', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-                            } else {
-                                echo displayToast("warning", "Global Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
-                            }
+                            echo displayToast("warning", "Global Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
                         }
+                    }
 
-                        break;
+                    break;
 
-                    case 'fin_sample_note':
-                        if(!empty($note_id)) {
-                            $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
+                case 'fin_sample_note':
+                    if(!empty($note_id)) {
+                        $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
+                    } else {
+                        if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
+                            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
                         } else {
-                            if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
-                                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-                            } else {
-                                echo displayToast("warning", "Finishing/Sample Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
-                            }
+                            echo displayToast("warning", "Finishing/Sample Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
                         }
+                    }
 
-                        break;
+                    break;
 
-                    default:
-                        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+                default:
+                    $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
-                        break;
-                }
-
-                $inquiry_id = $dbconn->insert_id;
-
-                echo displayToast("success", "Successfully updated the room with the notes attached.", "Room Updated with Notes");
-            } else {
-                echo displayToast("success", "Successfully updated the room.", "Room Updated");
+                    break;
             }
+
+            $inquiry_id = $dbconn->insert_id;
+
+            echo displayToast("success", "Successfully updated the room with the notes attached.", "Room Updated with Notes");
         } else {
-            dbLogSQLErr($dbconn);
+            echo displayToast("success", "Successfully updated the room.", "Room Updated");
         }
 
         if(!empty($followup_date) && !empty($followup_individual)) {
@@ -382,53 +405,42 @@ HEREDOC;
             echo displayToast("warning", "Unable to set a followup as there is a missing individual or date.", "No Followup Set");
         }
 
-        $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = $followup_individual");
+        $species_grade = sanitizeInput($_REQUEST['species_grade']);
+        $door_design = sanitizeInput($_REQUEST['door_design']);
+        $panel_raise_door = sanitizeInput($_REQUEST['panel_raise_door']);
+        $panel_raise_sd = sanitizeInput($_REQUEST['panel_raise_sd']);
+        $panel_raise_td = sanitizeInput($_REQUEST['panel_raise_td']);
+        $edge_profile = sanitizeInput($_REQUEST['edge_profile']);
+        $framing_bead = sanitizeInput($_REQUEST['framing_bead']);
+        $framing_options = sanitizeInput($_REQUEST['framing_options']);
+        $style_rail_width = sanitizeInput($_REQUEST['style_rail_width']);
+        $finish_code = sanitizeInput($_REQUEST['finish_code']);
+        $sheen = sanitizeInput($_REQUEST['sheen']);
+        $glaze = sanitizeInput($_REQUEST['glaze']);
+        $glaze_technique = sanitizeInput($_REQUEST['glaze_technique']);
+        $antiquing = sanitizeInput($_REQUEST['antiquing']);
+        $worn_edges = sanitizeInput($_REQUEST['worn_edges']);
+        $distress_level = sanitizeInput($_REQUEST['distress_level']);
+        $carcass_exterior_species = sanitizeInput($_REQUEST['carcass_exterior_species']);
+        $carcass_exterior_finish_code = sanitizeInput($_REQUEST['carcass_exterior_finish_code']);
+        $carcass_exterior_glaze_color = sanitizeInput($_REQUEST['carcass_exterior_glaze_color']);
+        $carcass_exterior_glaze_technique = sanitizeInput($_REQUEST['carcass_exterior_glaze_technique']);
+        $carcass_interior_species = sanitizeInput($_REQUEST['carcass_interior_species']);
+        $carcass_interior_finish_code = sanitizeInput($_REQUEST['carcass_interior_finish_code']);
+        $carcass_interior_glaze_color = sanitizeInput($_REQUEST['carcass_interior_glaze_color']);
+        $carcass_interior_glaze_technique = sanitizeInput($_REQUEST['carcass_interior_glaze_technique']);
+        $drawer_boxes = sanitizeInput($_REQUEST['drawer_boxes']);
 
-        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
-        $room = $room_qry->fetch_assoc();
+        $vin_final = sanitizeInput($_REQUEST['vin_code']);
 
-        $so_num = sanitizeInput($_REQUEST['vin_so_num_' . $room_id]);
-        $room = sanitizeInput($_REQUEST['vin_room_' . $room_id]);
-        $iteration = sanitizeInput($_REQUEST['vin_iteration_' . $room_id]);
-
-        $species_grade = sanitizeInput($_REQUEST['species_grade_' . $room_id]);
-        $construction_method = sanitizeInput($_REQUEST['construction_method_' . $room_id]);
-        $door_design = sanitizeInput($_REQUEST['door_design_' . $room_id]);
-        $panel_raise_door = sanitizeInput($_REQUEST['panel_raise_door_' . $room_id]);
-        $panel_raise_sd = sanitizeInput($_REQUEST['panel_raise_sd_' . $room_id]);
-        $panel_raise_td = sanitizeInput($_REQUEST['panel_raise_td_' . $room_id]);
-        $edge_profile = sanitizeInput($_REQUEST['edge_profile_' . $room_id]);
-        $framing_bead = sanitizeInput($_REQUEST['framing_bead_' . $room_id]);
-        $framing_options = sanitizeInput($_REQUEST['framing_options_' . $room_id]);
-        $style_rail_width = sanitizeInput($_REQUEST['style_rail_width_' . $room_id]);
-        $finish_code = sanitizeInput($_REQUEST['finish_code_' . $room_id]);
-        $sheen = sanitizeInput($_REQUEST['sheen_' . $room_id]);
-        $glaze = sanitizeInput($_REQUEST['glaze_' . $room_id]);
-        $glaze_technique = sanitizeInput($_REQUEST['glaze_technique_' . $room_id]);
-        $antiquing = sanitizeInput($_REQUEST['antiquing_' . $room_id]);
-        $worn_edges = sanitizeInput($_REQUEST['worn_edges_' . $room_id]);
-        $distress_level = sanitizeInput($_REQUEST['distress_level_' . $room_id]);
-        $carcass_exterior_species = sanitizeInput($_REQUEST['carcass_exterior_species_' . $room_id]);
-        $carcass_exterior_finish_code = sanitizeInput($_REQUEST['carcass_exterior_finish_code_' . $room_id]);
-        $carcass_exterior_glaze_color = sanitizeInput($_REQUEST['carcass_exterior_glaze_color_' . $room_id]);
-        $carcass_exterior_glaze_technique = sanitizeInput($_REQUEST['carcass_exterior_glaze_technique_' . $room_id]);
-        $carcass_interior_species = sanitizeInput($_REQUEST['carcass_interior_species_' . $room_id]);
-        $carcass_interior_finish_code = sanitizeInput($_REQUEST['carcass_interior_finish_code_' . $room_id]);
-        $carcass_interior_glaze_color = sanitizeInput($_REQUEST['carcass_interior_glaze_color_' . $room_id]);
-        $carcass_interior_glaze_technique = sanitizeInput($_REQUEST['carcass_interior_glaze_technique_' . $room_id]);
-        $drawer_boxes = sanitizeInput($_REQUEST['drawer_boxes_' . $room_id]);
-
-        $vin_final = sanitizeInput($_REQUEST['vin_code_' . $room_id]);
-
-        $sample_block_ordered = sanitizeInput($_REQUEST['sample_block_' . $room_id]);
-        $door_only_ordered = sanitizeInput($_REQUEST['door_only_' . $room_id]);
-        $door_drawer_ordered = sanitizeInput($_REQUEST['door_drawer_' . $room_id]);
-        $inset_square_ordered = sanitizeInput($_REQUEST['inset_square_' . $room_id]);
-        $inset_beaded_ordered = sanitizeInput($_REQUEST['inset_beaded_' . $room_id]);
+        $sample_block_ordered = sanitizeInput($_REQUEST['sample_block']);
+        $door_only_ordered = sanitizeInput($_REQUEST['door_only']);
+        $door_drawer_ordered = sanitizeInput($_REQUEST['door_drawer']);
+        $inset_square_ordered = sanitizeInput($_REQUEST['inset_square']);
+        $inset_beaded_ordered = sanitizeInput($_REQUEST['inset_beaded']);
 
         if(!empty($room_info['vin_code'])) {
             $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
-            $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
             $changed[] = whatChanged($door_design, $room_info['door_design'], 'Door Design');
             $changed[] = whatChanged($panel_raise_door, $room_info['panel_raise_door'], 'Panel Raise (Door)');
             $changed[] = whatChanged($panel_raise_sd, $room_info['panel_raise_sd'], 'Panel Raise Shoot Drawer');
@@ -475,22 +487,6 @@ HEREDOC;
             $sample_ordered_date = null;
         }
 
-        if($dbconn->query("UPDATE rooms SET species_grade = '$species_grade', construction_method = '$construction_method', door_design = '$door_design', 
-         panel_raise_door = '$panel_raise_door', panel_raise_sd = '$panel_raise_sd', panel_raise_td = '$panel_raise_td', edge_profile = '$edge_profile', 
-          framing_bead = '$framing_bead', framing_options = '$framing_options', style_rail_width = '$style_rail_width',
-           finish_code = '$finish_code', sheen = '$sheen', glaze = '$glaze', glaze_technique = '$glaze_technique', antiquing = '$antiquing', 
-            worn_edges = '$worn_edges', distress_level = '$distress_level', carcass_exterior_species = '$carcass_exterior_species', 
-             carcass_exterior_finish_code = '$carcass_exterior_finish_code', carcass_exterior_glaze_color = '$carcass_exterior_glaze_color', 
-              carcass_exterior_glaze_technique = '$carcass_exterior_glaze_technique', carcass_interior_species = '$carcass_interior_species',
-                carcass_interior_finish_code = '$carcass_interior_finish_code', carcass_interior_glaze_color = '$carcass_interior_glaze_color', 
-                 carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', vin_code = '$vin_final', 
-                  sample_block_ordered = '$sample_block_ordered', door_only_ordered = '$door_only_ordered', door_drawer_ordered = '$door_drawer_ordered',
-                   inset_square_ordered = '$inset_square_ordered', inset_beaded_ordered = '$inset_beaded_ordered' $sample_ordered_date WHERE id = '$room_id'")) {
-            echo displayToast("success", "VIN has been updated for SO $so_num room $room iteration $iteration.", "VIN Updated");
-        } else {
-            dbLogSQLErr($dbconn);
-        }
-
         $ops = $_REQUEST['active_ops'];
 
         $sales_op = sanitizeInput($_REQUEST['sales_bracket']);
@@ -535,12 +531,24 @@ HEREDOC;
         $changed[] = whatChanged($pickmat_pub, $room_info['pick_materials_published'], 'Pick & Materials Bracket', false, true);
         $changed[] = whatChanged($ops, $room_info['individual_bracket_buildout'], 'Active Bracket Operations');
 
-        if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
-            $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op',
-             custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
-              preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
-               install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub' WHERE id = '$room_id'");
-
+        if($dbconn->query("UPDATE rooms SET room_name = '$room_name', $section_name = '$section_name', $section_name = '$section_name',  
+        order_status = '$order_status', days_to_ship = '$days_to_ship', rework = '$rework', add_on = '$addon', warranty = '$warranty',  
+        billing_type = '$billing_type', delivery_date = '$delivery_date', ship_via = '$ship_via', ship_to = '$ship_to', payee = '$payee', payment_method = '$payment_method',
+        installation = '$installation', species_grade = '$species_grade', construction_method = '$construction_method', door_design = '$door_design', 
+        panel_raise_door = '$panel_raise_door', panel_raise_sd = '$panel_raise_sd', panel_raise_td = '$panel_raise_td', edge_profile = '$edge_profile', 
+        framing_bead = '$framing_bead', framing_options = '$framing_options', style_rail_width = '$style_rail_width',
+        finish_code = '$finish_code', sheen = '$sheen', glaze = '$glaze', glaze_technique = '$glaze_technique', antiquing = '$antiquing', 
+        worn_edges = '$worn_edges', distress_level = '$distress_level', carcass_exterior_species = '$carcass_exterior_species', 
+        carcass_exterior_finish_code = '$carcass_exterior_finish_code', carcass_exterior_glaze_color = '$carcass_exterior_glaze_color', 
+        carcass_exterior_glaze_technique = '$carcass_exterior_glaze_technique', carcass_interior_species = '$carcass_interior_species',
+        carcass_interior_finish_code = '$carcass_interior_finish_code', carcass_interior_glaze_color = '$carcass_interior_glaze_color', 
+        carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', vin_code = '$vin_final', 
+        sample_block_ordered = '$sample_block_ordered', door_only_ordered = '$door_only_ordered', door_drawer_ordered = '$door_drawer_ordered',
+        inset_square_ordered = '$inset_square_ordered', inset_beaded_ordered = '$inset_beaded_ordered', product_type = '$product_type', individual_bracket_buildout = '$ops',
+        sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op',
+        custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
+        preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
+        install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub' $delivery_date $sample_ordered_date WHERE id = '$room_id'")) {
             createOpQueue($sales_pub, 'Sales', $sales_op, $room_id);
             createOpQueue($sample_pub, 'Sample', $sample_op, $room_id);
             createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $room_id);
@@ -552,6 +560,7 @@ HEREDOC;
             createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $room_id);
 
             echo displayToast("success", "All operations have been refreshed and the bracket has been updated.", "Updated & Refreshed");
+            echo displayToast("success", "VIN has been updated for SO $so_num room $room_letter iteration $iteration.", "VIN Updated");
         } else {
             dbLogSQLErr($dbconn);
         }

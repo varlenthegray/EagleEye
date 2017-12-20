@@ -73,12 +73,6 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
         $op_room_id = "op_{$op['id']}_room_{$room['id']}";
 
         if(in_array($op['id'], $individual_bracket)) {
-            if($op['id'] === $room[$bracket_def]) {
-                $selected = "checked='checked'";
-            } else {
-                $selected = '';
-            }
-
             if((int)substr($op['op_id'], -2) !== 98) {
                 $deactivate = "<span class=\"pull-right cursor-hand text-md-center deactivate_op\" data-opid=\"{$op['id']}\" data-roomid=\"{$room['id']}\" data-soid=\"{$room['so_parent']}\"> <i class=\"fa fa-arrow-circle-right\" style=\"width: 18px;\"></i> </button>";
             } else {
@@ -87,7 +81,7 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
 
             $left_info .= <<<HEREDOC
             <li class="active_ops" data-opnum="{$op['op_id']}" data-opid="{$op['id']}" data-roomid="{$room['id']}">
-                <input type="radio" name="{$bracket_def}" id="$op_room_id" value="{$op['id']}" $selected>
+                <input type="radio" name="{$bracket_def}" id="$op_room_id" value="{$op['id']}">
                 <label for="$op_room_id">{$op['op_id']}-{$op['job_title']}</label>
                 $deactivate
             </li>

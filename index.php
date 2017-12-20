@@ -720,6 +720,9 @@ $version = '2.1.02';
                 $(".room_note_log").hide();
             }
         })
+        .on("change", ".recalcVin", function() {
+            calcVin(active_room_id);
+        })
         // -- End Room Page --
 
         // -- Sales List Page --
@@ -798,7 +801,7 @@ $version = '2.1.02';
         .on("click", "#notification_list", function() {
             $.post("/ondemand/alerts.php?action=viewed_alerts");
         })
-    // -- End Notifications --
+        // -- End Notifications --
     ;
 
     setInterval(function() { // stops the auto-logout
