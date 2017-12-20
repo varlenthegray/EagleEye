@@ -6,47 +6,60 @@ var fs = require('fs');
 var sconn = require('socket.io');
 var mysql = require('mysql');
 
-var db = mysql.createConnection({
-    host:'dev.3erp.us',user:'dev_remote.dev',password:'o4J4G91@uvw%&ptkMOwZ',database:'3erp_dev'
-    //host:'3erp.us',user:'remote.3erp',password:'Gl^1k6LyteGpAJ0SoOcU',database:'3erp'
-});
+var scriptArgs = process.argv; // grab the arguments from the server
 
-/******************************************
- * Server initial connection - LIVE
- *****************************************/
-// var server = https.createServer({
-//     key: fs.readFileSync('/home/threeerp/ssl.key'),
-//     cert: fs.readFileSync('/home/threeerp/ssl.cert'),
-//     ca: fs.readFileSync('/home/threeerp/ssl.ca'),
-//     requestCert: false,
-//     rejectUnauthorized: false
-// }, sconn);
-// var port = 4100;
+var sqlLoc; // SQL database connection object
+var server; // server connection object
+var port; // port for the server
 
-/******************************************
- * Server initial connection - DEV
- *****************************************/
-var server = https.createServer({
-    key: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.key'),
-    cert: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.cert'),
-    ca: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.ca'),
-    requestCert: false,
-    rejectUnauthorized: false
-}, sconn);
-var port = 4000;
+// if we're receiving the console command that we're launching dev environment
+if(scriptArgs[2] === 'dev') {
+    // set the SQL data for dev
+    sqlLoc = {host:'dev.3erp.us',user:'dev_remote.dev',password:'o4J4G91@uvw%&ptkMOwZ',database:'3erp_dev'};
+
+    // setup the dev server for HTTPS
+    server = https.createServer({
+        key: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.key'),
+        cert: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.cert'),
+        ca: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.ca'),
+        requestCert: false,
+        rejectUnauthorized: false
+    }, sconn);
+
+    // port 4k is the dev server
+    port = 4000;
+} else {
+    // set the SQL data for live
+    sqlLoc = {host:'3erp.us',user:'remote.3erp',password:'Gl^1k6LyteGpAJ0SoOcU',database:'3erp'};
+
+    // setup the live server for HTTPS
+    server = https.createServer({
+        key: fs.readFileSync('/home/threeerp/ssl.key'),
+        cert: fs.readFileSync('/home/threeerp/ssl.cert'),
+        ca: fs.readFileSync('/home/threeerp/ssl.ca'),
+        requestCert: false,
+        rejectUnauthorized: false
+    }, sconn);
+
+    // port 4100 is the live server
+    port = 4100;
+}
+
+// connect to the database using the specific SQL details
+var db = mysql.createConnection(sqlLoc);
 
 /******************************************
  * Global connection
  *****************************************/
-server.listen(port); // dev server
-var socket = require('socket.io').listen(server);
+server.listen(port); // listen to the server
+var socket = require('socket.io').listen(server); // setup socketio connection
 
 /******************************************
  * End global connection
  * ----------------------------------------
  * Begin global variable declaration
  *****************************************/
-var conn = {};
+var conn = {}; // storage for everything, expanding and contracting as needed
 
 /******************************************
  * End global variable declaration
