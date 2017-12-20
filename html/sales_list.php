@@ -7,8 +7,6 @@ require '../includes/header_start.php';
         <div class="card-box">
             <div class="row">
                 <div class="col-md-2 no-print" style="position:fixed;top:10vh;overflow:auto;height:87vh;display:none;">
-                    <a class="btn btn-primary btn-block waves-effect waves-light sales_list_print">Print</a><br /><br />
-
                     <table width="100%" style="background-color:#FFFFFF;">
                         <tr>
                             <td><div class="checkbox checkbox-primary"><input id="job_status_lost" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_lost">Lost</label></div></td>
