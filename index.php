@@ -24,6 +24,7 @@ $version = '2.1.02';
 
     <!-- Global JS functions -->
     <script src="/includes/js/functions.js?v=<?php echo $version; ?>"></script>
+    <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
 
     <!-- App CSS -->
     <link href="/assets/css/style.css?v=<?php echo $version; ?>" rel="stylesheet" type="text/css" />
@@ -74,9 +75,15 @@ $version = '2.1.02';
 
 <!-- Navigation Bar-->
 <header id="topnav">
-    <div class="custom-logo hidden-print" style="margin-right:130px;position:reliatve;z-index:2;margin-top:-2px;">
-        <img src="../assets/images/logo_new.png" height="135px" />
+    <div class="custom-logo hidden-print">
+        <div id="header_container">
+            <div id="header_main">EagleEye ERP <div id="header_min">www.3erp.us</div></div>
+        </div>
+
+        <div id="slogan">"The all seeing eye in the cloud"</div>
     </div>
+
+    <div id="clock"></div>
 
     <!-- fake fields are a workaround for chrome autofill getting the wrong fields (such as search) -->
     <input class="ignoreSaveAlert" type="text" name="ausernameidontcareabout" style="display:none;">
@@ -127,8 +134,6 @@ $version = '2.1.02';
                     </li>
                 </ul>
             </div> <!-- end menu-extras -->
-
-            <div id="clock" style="z-index:999;color:#000;position:absolute;top:40px;right:-110px;"></div>
 
             <div class="clearfix"></div>
         </div> <!-- end container -->
@@ -413,11 +418,10 @@ $version = '2.1.02';
             "hideMethod": "fadeOut"
         };
 
-        setInterval(function() {
-            var time = new Date();
-            time = time.toLocaleTimeString();
+        $("#clock").html(getLocalTime);
 
-            $("#clock").html(time);
+        setInterval(function() {
+            $("#clock").html(getLocalTime);
         }, 1000); // clock
 
         $(".modal").draggable({

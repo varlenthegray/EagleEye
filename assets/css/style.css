@@ -23431,15 +23431,6 @@ table tbody td {
 .nowrap {
   white-space: nowrap; }
 
-#clock {
-  float: right;
-  margin-right: 125px;
-  text-align: right;
-  font-size: 20px;
-  font-weight: bold;
-  color: #FFFFFF;
-  line-height: 42px; }
-
 .task_description {
   margin-top: 10px;
   padding-top: 10px;
@@ -23522,6 +23513,46 @@ table tbody td {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); }
+
+.custom-logo {
+  font-family: 'Patua One', cursive;
+  position: absolute;
+  z-index: 2;
+  margin: -2px 130px 0 0;
+  right: 0;
+  color: #FFF; }
+
+#header_container {
+  float: right; }
+
+#header_main {
+  font-size: 18px;
+  letter-spacing: 1px; }
+
+#header_min {
+  font-size: 12px;
+  letter-spacing: 0;
+  margin-top: -7px;
+  text-align: center; }
+
+#slogan {
+  font-size: 12px;
+  text-align: center;
+  float: left;
+  width: 100px;
+  margin-right: 20px; }
+  #slogan::after {
+    clear: both; }
+
+#clock {
+  float: right;
+  text-align: right;
+  font-size: 20px;
+  color: #FFFFFF;
+  line-height: 42px;
+  position: absolute;
+  top: 0;
+  right: 10px; }
 
 .cust-table {
   display: table;
