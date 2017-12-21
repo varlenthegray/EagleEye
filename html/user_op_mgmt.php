@@ -148,6 +148,8 @@ if($_REQUEST['action'] === 'list_ops') {
 
             var thisClick = $(this);
 
+            $("tr").css("background-color", "transparent");
+
             $.post("/html/user_op_mgmt.php?action=list_ops&id=" + assignee, function(data) {
                 if(userContainer.is(":hidden")) {
                     userContainer.html("<td>" + data + "</td>");
@@ -162,8 +164,6 @@ if($_REQUEST['action'] === 'list_ops') {
                     $(".save_container").hide(200);
                     $(".pl_container").hide(200);
                     $(".user_op_save").attr("data-id", "");
-
-                    thisClick.css("background-color", "transparent");
                 }
 
                 $.post("/html/user_op_mgmt.php?action=get_user_ops", {id: assignee}, function(data) {

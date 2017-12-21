@@ -300,6 +300,16 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                     <td colspan="2"></td>
                                 </tr>
                                 <tr>
+                                    <td colspan="2" class="text-md-center">
+                                        <label class="c-input c-checkbox">Deposit Received <input type="checkbox" name="deposit_received" value="1" <?php echo ((bool)$room['payment_deposit']) ? "checked":null; ?>><span class="c-indicator"></span></label>
+                                        <label class="c-input c-checkbox">Final Payment <input type="checkbox" name="final_payment" value="1" <?php echo ((bool)$room['payment_final']) ? "checked":null; ?>><span class="c-indicator"></span></label>
+                                        <label class="c-input c-checkbox">Prior to Loading/Delivery Payment <input type="checkbox" name="ptl_del" value="1" <?php echo ((bool)$room['payment_del_ptl']) ? "checked":null; ?>><span class="c-indicator"></span></label>
+                                    </td>
+                                </tr>
+                                <tr style="height:10px;">
+                                    <td colspan="2"></td>
+                                </tr>
+                                <tr>
                                     <td colspan="2"><input tabindex="37" type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" value="<?php echo $room['vin_code']; ?>" /></td>
                                 </tr>
                                 <tr style="height:10px;">

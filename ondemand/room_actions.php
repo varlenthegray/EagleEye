@@ -270,6 +270,10 @@ HEREDOC;
         $note_type = sanitizeInput($_REQUEST['note_type']);
         $note_id = sanitizeInput($_REQUEST['note_id']);
 
+        $deposit_received = (bool)$_REQUEST['deposit_received'];
+        $final_payment = (bool)$_REQUEST['final_payment'];
+        $ptl_del = (bool)$_REQUEST['ptl_del'];
+
         $room_id = sanitizeInput($_REQUEST['roomid']);
         $followup_date = sanitizeInput($_REQUEST['room_inquiry_followup_date']);
         $followup_individual = sanitizeInput($_REQUEST['room_inquiry_requested_of']);
@@ -284,6 +288,9 @@ HEREDOC;
         $changed[] = whatChanged($order_status, $room_info['order_status'], 'Order Status');
         $changed[] = whatChanged($days_to_ship, $room_info['days_to_ship'], 'Days to Ship');
         $changed[] = whatChanged($room_name, $room_info['room_name'], 'Room Name');
+        $changed[] = whatChanged($deposit_received, $room_info['payment_deposit'], 'Deposit Payment');
+        $changed[] = whatChanged($final_payment, $room_info['payment_final'], 'Final Payment');
+        $changed[] = whatChanged($ptl_del, $room_info['payment_del_ptl'], 'Prior to Loading/Delivery Payment');
         $changed[] = (!empty($notes)) ? "Notes added" : null;
 
         if(empty($delivery_date)) {
@@ -476,16 +483,16 @@ HEREDOC;
         }
 
         if($dbconn->query("UPDATE rooms SET species_grade = '$species_grade', construction_method = '$construction_method', door_design = '$door_design', 
-         panel_raise_door = '$panel_raise_door', panel_raise_sd = '$panel_raise_sd', panel_raise_td = '$panel_raise_td', edge_profile = '$edge_profile', 
-          framing_bead = '$framing_bead', framing_options = '$framing_options', style_rail_width = '$style_rail_width',
-           finish_code = '$finish_code', sheen = '$sheen', glaze = '$glaze', glaze_technique = '$glaze_technique', antiquing = '$antiquing', 
-            worn_edges = '$worn_edges', distress_level = '$distress_level', carcass_exterior_species = '$carcass_exterior_species', 
-             carcass_exterior_finish_code = '$carcass_exterior_finish_code', carcass_exterior_glaze_color = '$carcass_exterior_glaze_color', 
-              carcass_exterior_glaze_technique = '$carcass_exterior_glaze_technique', carcass_interior_species = '$carcass_interior_species',
-                carcass_interior_finish_code = '$carcass_interior_finish_code', carcass_interior_glaze_color = '$carcass_interior_glaze_color', 
-                 carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', vin_code = '$vin_final', 
-                  sample_block_ordered = '$sample_block_ordered', door_only_ordered = '$door_only_ordered', door_drawer_ordered = '$door_drawer_ordered',
-                   inset_square_ordered = '$inset_square_ordered', inset_beaded_ordered = '$inset_beaded_ordered' $sample_ordered_date WHERE id = '$room_id'")) {
+        panel_raise_door = '$panel_raise_door', panel_raise_sd = '$panel_raise_sd', panel_raise_td = '$panel_raise_td', edge_profile = '$edge_profile', 
+        framing_bead = '$framing_bead', framing_options = '$framing_options', style_rail_width = '$style_rail_width',
+        finish_code = '$finish_code', sheen = '$sheen', glaze = '$glaze', glaze_technique = '$glaze_technique', antiquing = '$antiquing', 
+        worn_edges = '$worn_edges', distress_level = '$distress_level', carcass_exterior_species = '$carcass_exterior_species', 
+        carcass_exterior_finish_code = '$carcass_exterior_finish_code', carcass_exterior_glaze_color = '$carcass_exterior_glaze_color', 
+        carcass_exterior_glaze_technique = '$carcass_exterior_glaze_technique', carcass_interior_species = '$carcass_interior_species',
+        carcass_interior_finish_code = '$carcass_interior_finish_code', carcass_interior_glaze_color = '$carcass_interior_glaze_color', 
+        carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', vin_code = '$vin_final', 
+        sample_block_ordered = '$sample_block_ordered', door_only_ordered = '$door_only_ordered', door_drawer_ordered = '$door_drawer_ordered',
+        inset_square_ordered = '$inset_square_ordered', inset_beaded_ordered = '$inset_beaded_ordered' $sample_ordered_date WHERE id = '$room_id'")) {
             echo displayToast("success", "VIN has been updated for SO $so_num room $room iteration $iteration.", "VIN Updated");
         } else {
             dbLogSQLErr($dbconn);
@@ -537,9 +544,10 @@ HEREDOC;
 
         if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
             $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op',
-             custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
-              preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
-               install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub' WHERE id = '$room_id'");
+            custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
+            preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
+            install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub', payment_deposit = '$deposit_received',
+            payment_final = '$final_payment', payment_del_ptl = '$ptl_del' WHERE id = '$room_id'");
 
             createOpQueue($sales_pub, 'Sales', $sales_op, $room_id);
             createOpQueue($sample_pub, 'Sample', $sample_op, $room_id);
