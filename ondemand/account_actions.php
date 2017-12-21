@@ -69,4 +69,18 @@ switch($_REQUEST['action']) {
         }
 
         break;
+    case 'save_account_ops':
+        $id = sanitizeInput($_REQUEST['id']);
+        $ops = sanitizeInput($_REQUEST['op_string']);
+
+        $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$id'");
+        $usr = $usr_qry->fetch_assoc();
+
+        if($dbconn->query("UPDATE user SET ops_available = '$ops' WHERE id = '$id';")) {
+            echo displayToast("success", "Updated user operations for {$usr['name']}.", "Successfully Updated");
+        } else {
+            echo displayToast("error", "Unable to update user operations!", "Try Again");
+        }
+
+        break;
 }

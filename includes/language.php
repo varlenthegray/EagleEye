@@ -50,6 +50,7 @@ define("NAV_ADDUSER", "Add User"); // Control Panel -> Add User
 
 define("NAV_JOBMANAGEMENT", "Job Management"); // Job Management page
 define("NAV_EMPLOYEELOGIN", "Employees"); // List of employees and ability to impersonate
+define("NAV_EMP_OPS", "Employee Ops"); // List of employees and ability to impersonate
 define("NAV_TASKS", "Tasks"); // Task list
 define("NAV_VIN", "VIN"); // VIN management page
 define("NAV_ADD_SO", "Add SO"); // Adding a SO

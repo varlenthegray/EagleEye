@@ -85,6 +85,7 @@ require '../includes/header_start.php';
                                 <th width="215px">Operation</th>
                                 <th width="80px">Release Date</th>
                                 <th width="100px">Operation Time</th>
+                                <th width="100px">Weight</th>
                             </tr>
                             </thead>
                             <tbody id="queue_ops_table"></tbody>
@@ -183,7 +184,8 @@ require '../includes/header_start.php';
         "dom": '<"#queue_header.dt-custom-header">tipr',
         "columnDefs": [
             {"targets": [0], "orderable": false},
-            {"targets": [7], "visible": false, "searchable": false, "type": "num-html"}
+            {"targets": [6, 7], "visible": false},
+            {"targets": [7], "searchable": false, "type": "num-html"}
         ],
         "order": [[7, "desc"]],
         "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {

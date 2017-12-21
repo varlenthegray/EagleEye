@@ -236,58 +236,187 @@ switch($_REQUEST['action']) {
         $output = array();
         $i = 0;
 
-        $hd_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, op_queue.rework, op_queue.active_employees, 
-          op_queue.assigned_to, op_queue.urgent, op_queue.room_id FROM op_queue
-              JOIN operations ON op_queue.operation_id = operations.id
-                  WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
-                    AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) 
-                      AND (op_queue.assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR op_queue.assigned_to IS NULL)
-                        AND operations.job_title = 'Honey Do';");
+        if($queue === 'self') {
+            $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '{$_SESSION['userInfo']['id']}'");
+            $usr = $usr_qry->fetch_assoc();
 
-        if($hd_qry->num_rows > 0) {
-            while($hd = $hd_qry->fetch_assoc()) {
-                if($hd['rework']) {
-                    $rework = "(Rework)";
-                } else {
-                    $rework = null;
+            $usr_ops = json_decode($usr['ops_available']);
+
+            if(!empty($usr_ops)) {
+                $orderby = "FIELD(operations.id,";
+                $filter = 'AND (';
+
+                foreach($usr_ops AS $op) {
+                    $orderby .= "$op,";
+                    $filter .= "operations.id = $op OR ";
                 }
 
-                $release_date = date(DATE_DEFAULT, $hd['created']);
+                $orderby = rtrim($orderby, ",");
+                $orderby .= ")";
 
-                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$hd['id']}'><i class='zmdi zmdi-play'></i></button>";
-                $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = $hd['room_id'];
-                $output['data'][$i][] = "---------";
-                $output['data'][$i][] = "{$hd['op_id']}: {$hd['job_title']} $rework";
-                $output['data'][$i][] = $release_date;
-                $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "&nbsp;";
+                $filter = rtrim($filter, " OR ");
+                $filter .= ")";
 
-                $i += 1;
+                $usr_ops_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
+                op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.urgent, rooms.product_type, rooms.days_to_ship, rooms.order_status FROM op_queue
+                JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id WHERE completed = FALSE AND published = TRUE 
+                AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) AND operations.job_title != 'Honey Do' $filter 
+                ORDER BY op_queue.urgent, $orderby, FIELD(rooms.days_to_ship,'R','N','Y','G'), op_queue.created ASC;");
+
+                while($usr_ops = $usr_ops_qry->fetch_assoc()) {
+                    if($usr_ops['rework']) {
+                        $rework = "(Rework)";
+                    } else {
+                        $rework = null;
+                    }
+
+                    $release_date = date(DATE_DEFAULT, $usr_ops['created']);
+
+                    if(!empty($usr_ops['assigned_to'])) {
+                        $assigned_usrs = json_decode($usr_ops['assigned_to']);
+
+                        $name = null;
+
+                        foreach($assigned_usrs as $usr) {
+                            $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$usr'");
+                            $usr = $usr_qry->fetch_assoc();
+
+                            $name .= $usr['name'] . ", ";
+                        }
+
+                        $assignee = substr($name, 0, -2);
+                    } else {
+                        $assignee = "&nbsp;";
+                    }
+
+                    // TODO: Update urgent code so that it selects that first in the SQL query
+
+//                    if(empty($usr_ops['urgent'])) {
+//                        $pt_weight_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'product_type' AND `column` = '{$usr_ops['product_type']}'");
+//                        $pt_weight = $pt_weight_qry->fetch_assoc();
+//
+//                        $dts_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'days_to_ship' AND `column` = '{$usr_ops['days_to_ship']}'");
+//                        $dts = $dts_qry->fetch_assoc();
+//
+//                        $age = (((time() - $usr_ops['created']) / 60) / 60) / 24;
+//
+//                        $priority = ($pt_weight['weight'] * $dts['weight']) * $age;
+//                    }
+                    
+                    $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$usr_ops['id']}'><i class='zmdi zmdi-play'></i></button>";
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i][] = "{$usr_ops['so_parent']}{$usr_ops['room']}-{$usr_ops['iteration']}";
+                    $output['data'][$i][] = "{$usr_ops['room_name']}";
+                    $output['data'][$i][] = "{$usr_ops['op_id']}: {$usr_ops['job_title']} $rework";
+                    $output['data'][$i][] = $release_date;
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i]['DT_RowId'] = $usr_ops['so_parent'];
+//                    $output['data'][$i]['weight'] = $priority;
+
+                    $i += 1;
+                }
             }
-        }
+        } else {
+            // honey-do operations (deprecated)
+            /*
+            $hd_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, op_queue.rework, op_queue.active_employees,
+            op_queue.assigned_to, op_queue.urgent, op_queue.room_id FROM op_queue JOIN operations ON op_queue.operation_id = operations.id
+            WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue' AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL)
+            AND (op_queue.assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR op_queue.assigned_to IS NULL) AND operations.job_title = 'Honey Do';");
 
-        $op_queue_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
-            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.urgent, rooms.product_type, rooms.days_to_ship, rooms.order_status FROM op_queue
-              JOIN operations ON op_queue.operation_id = operations.id
-                JOIN rooms ON op_queue.room_id = rooms.id
-                  WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue'
-                    AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) 
-                      AND (assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR assigned_to IS NULL)
-                        AND operations.job_title != 'Honey Do' ORDER BY op_queue.urgent ASC;");
+            if($hd_qry->num_rows > 0) {
+                while($hd = $hd_qry->fetch_assoc()) {
+                    if($hd['rework']) {
+                        $rework = "(Rework)";
+                    } else {
+                        $rework = null;
+                    }
 
-        if($op_queue_qry->num_rows > 0) {
-            while($op_queue = $op_queue_qry->fetch_assoc()) {
-                if($op_queue['rework']) {
-                    $rework = "(Rework)";
-                } else {
-                    $rework = null;
+                    $release_date = date(DATE_DEFAULT, $hd['created']);
+
+                    $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$hd['id']}'><i class='zmdi zmdi-play'></i></button>";
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i][] = $hd['room_id'];
+                    $output['data'][$i][] = "---------";
+                    $output['data'][$i][] = "{$hd['op_id']}: {$hd['job_title']} $rework";
+                    $output['data'][$i][] = $release_date;
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i][] = "&nbsp;";
+
+                    $i += 1;
                 }
+            }*/
 
-                $release_date = date(DATE_DEFAULT, $op_queue['created']);
+            $op_queue_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.urgent, rooms.product_type, rooms.days_to_ship, rooms.order_status FROM op_queue
+            JOIN operations ON op_queue.operation_id = operations.id JOIN rooms ON op_queue.room_id = rooms.id
+            WHERE completed = FALSE AND published = TRUE AND operations.responsible_dept = '$queue' AND (active_employees NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR active_employees IS NULL) 
+            AND (assigned_to NOT LIKE '%\"{$_SESSION['shop_user']['id']}\"%' OR assigned_to IS NULL) AND operations.job_title != 'Honey Do' ORDER BY op_queue.urgent ASC;");
 
-                if(!empty($op_queue['assigned_to'])) {
-                    $assigned_usrs = json_decode($op_queue['assigned_to']);
+            if($op_queue_qry->num_rows > 0) {
+                while($op_queue = $op_queue_qry->fetch_assoc()) {
+                    if($op_queue['rework']) {
+                        $rework = "(Rework)";
+                    } else {
+                        $rework = null;
+                    }
+
+                    $release_date = date(DATE_DEFAULT, $op_queue['created']);
+
+                    if(!empty($op_queue['assigned_to'])) {
+                        $assigned_usrs = json_decode($op_queue['assigned_to']);
+
+                        $name = null;
+
+                        foreach($assigned_usrs as $usr) {
+                            $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$usr'");
+                            $usr = $usr_qry->fetch_assoc();
+
+                            $name .= $usr['name'] . ", ";
+                        }
+
+                        $assignee = substr($name, 0, -2);
+                    } else {
+                        $assignee = "&nbsp;";
+                    }
+
+                    // TODO: Update urgent code so that it selects that first in the SQL query
+
+                    if(empty($op_queue['urgent'])) {
+                        $pt_weight_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'product_type' AND `column` = '{$op_queue['product_type']}'");
+                        $pt_weight = $pt_weight_qry->fetch_assoc();
+
+                        $dts_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'days_to_ship' AND `column` = '{$op_queue['days_to_ship']}'");
+                        $dts = $dts_qry->fetch_assoc();
+
+                        $age = (((time() - $op_queue['created']) / 60) / 60) / 24;
+
+                        $priority = ($pt_weight['weight'] * $dts['weight']) * $age;
+                    }
+
+                    $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['id']}'><i class='zmdi zmdi-play'></i></button>";
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
+                    $output['data'][$i][] = "{$op_queue['room_name']}";
+                    $output['data'][$i][] = "{$op_queue['op_id']}: {$op_queue['job_title']} $rework";
+                    $output['data'][$i][] = $release_date;
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i][] = $priority;
+                    $output['data'][$i]['DT_RowId'] = $op_queue['so_parent'];
+                    $output['data'][$i]['weight'] = $priority;
+
+                    $i += 1;
+                }
+            }
+
+            $assigned_ops_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
+            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.urgent, rooms.order_status FROM op_queue JOIN operations ON op_queue.operation_id = operations.id
+            JOIN rooms ON op_queue.room_id = rooms.id WHERE completed = FALSE AND published = TRUE AND assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%' ORDER BY op_queue.urgent ASC;");
+
+            if($assigned_ops_qry->num_rows > 0) {
+                while($assigned_ops = $assigned_ops_qry->fetch_assoc()) {
+                    $assigned_usrs = json_decode($assigned_ops['assigned_to']);
 
                     $name = null;
 
@@ -299,102 +428,61 @@ switch($_REQUEST['action']) {
                     }
 
                     $assignee = substr($name, 0, -2);
-                } else {
-                    $assignee = "&nbsp;";
+                    $release_date = date(DATE_DEFAULT, $assigned_ops['created']);
+
+                    $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$assigned_ops['product_type']}'");
+                    $vin = $vin_qry->fetch_assoc();
+
+                    $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$assigned_ops['room_id']}'");
+                    $room = $room_qry->fetch_assoc();
+
+                    $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$assigned_ops['id']}'><i class='zmdi zmdi-play'></i></button>";
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i][] = "{$assigned_ops['so_parent']}{$assigned_ops['room']}-{$vin['key']}{$assigned_ops['iteration']}";
+                    $output['data'][$i][] = "{$room['room_name']}";
+                    $output['data'][$i][] = "{$assigned_ops['op_id']}: {$assigned_ops['job_title']}";
+                    $output['data'][$i][] = $release_date;
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i]['DT_RowId'] = $assigned_ops['so_parent'];
+
+                    $i += 1;
                 }
+            }
 
-                // TODO: Update urgent code so that it selects that first in the SQL query
+            $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND responsible_dept = '$queue' ORDER BY job_title ASC");
 
-                if(empty($op_queue['urgent'])) {
-                    $pt_weight_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'product_type' AND `column` = '{$op_queue['product_type']}'");
-                    $pt_weight = $pt_weight_qry->fetch_assoc();
+            if($op_queue_qry->num_rows > 0) {
+                while($op_queue = $op_queue_qry->fetch_assoc()) {
+                    $id = $op_queue['id'];
+                    $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+                    $release_date = date(DATE_DEFAULT, $op_queue['created']);
+                    $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
+                    $op_info_payload = json_encode($op_info);
 
-                    $dts_qry = $dbconn->query("SELECT * FROM weights WHERE category = 'days_to_ship' AND `column` = '{$op_queue['days_to_ship']}'");
-                    $dts = $dts_qry->fetch_assoc();
+                    $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='$id'><i class='zmdi zmdi-play'></i></button>";
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i][] = "---------";
+                    $output['data'][$i][] = "---------";
+                    $output['data'][$i][] = $operation;
+                    $output['data'][$i][] = "Now";
+                    $output['data'][$i][] = "&nbsp;";
+                    $output['data'][$i][] = "&nbsp;";
 
-                    $age = (((time() - $op_queue['created']) / 60) / 60) / 24;
-
-                    $priority = ($pt_weight['weight'] * $dts['weight']) * $age;
+                    $i += 1;
                 }
-
-                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$op_queue['id']}'><i class='zmdi zmdi-play'></i></button>";
-                $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
-                $output['data'][$i][] = "{$op_queue['room_name']}";
-                $output['data'][$i][] = "{$op_queue['op_id']}: {$op_queue['job_title']} $rework";
-                $output['data'][$i][] = $release_date;
-                $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = $priority;
-                $output['data'][$i]['DT_RowId'] = $op_queue['so_parent'];
-                $output['data'][$i]['weight'] = $priority;
-
-                $i += 1;
             }
         }
 
-        $assigned_ops_qry = $dbconn->query("SELECT op_queue.id, op_queue.created, operations.op_id, operations.job_title, rooms.room, rooms.so_parent, rooms.room_name, rooms.iteration,
-            op_queue.rework, op_queue.active_employees, op_queue.assigned_to, op_queue.urgent, rooms.order_status FROM op_queue
-              JOIN operations ON op_queue.operation_id = operations.id
-                JOIN rooms ON op_queue.room_id = rooms.id
-                  WHERE completed = FALSE AND published = TRUE AND assigned_to LIKE '%\"{$_SESSION['shop_user']['id']}\"%' ORDER BY op_queue.urgent ASC;");
-
-        if($assigned_ops_qry->num_rows > 0) {
-            while($assigned_ops = $assigned_ops_qry->fetch_assoc()) {
-                $assigned_usrs = json_decode($assigned_ops['assigned_to']);
-
-                $name = null;
-
-                foreach($assigned_usrs as $usr) {
-                    $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$usr'");
-                    $usr = $usr_qry->fetch_assoc();
-
-                    $name .= $usr['name'] . ", ";
-                }
-
-                $assignee = substr($name, 0, -2);
-                $release_date = date(DATE_DEFAULT, $assigned_ops['created']);
-
-                $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'product_type' AND value = '{$assigned_ops['product_type']}'");
-                $vin = $vin_qry->fetch_assoc();
-
-                $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '{$assigned_ops['room_id']}'");
-                $room = $room_qry->fetch_assoc();
-
-                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='{$assigned_ops['id']}'><i class='zmdi zmdi-play'></i></button>";
-                $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "{$assigned_ops['so_parent']}{$assigned_ops['room']}-{$vin['key']}{$assigned_ops['iteration']}";
-                $output['data'][$i][] = "{$room['room_name']}";
-                $output['data'][$i][] = "{$assigned_ops['op_id']}: {$assigned_ops['job_title']}";
-                $output['data'][$i][] = $release_date;
-                $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i]['DT_RowId'] = $assigned_ops['so_parent'];
-
-                $i += 1;
-            }
-        }
-
-        $op_queue_qry = $dbconn->query("SELECT * FROM operations WHERE always_visible = TRUE AND responsible_dept = '$queue' ORDER BY job_title ASC");
-
-        if($op_queue_qry->num_rows > 0) {
-            while($op_queue = $op_queue_qry->fetch_assoc()) {
-                $id = $op_queue['id'];
-                $operation = $op_queue['op_id'] . ": " . $op_queue['job_title'];
-                $release_date = date(DATE_DEFAULT, $op_queue['created']);
-                $op_info = ["id"=>$op_queue['id'], "op_id"=>$op_queue['op_id'], "department"=>$op_queue['department'], "job_title"=>$op_queue['job_title'], "responsible_dept"=>$op_queue['responsible_dept'], "always_visible"=>$op_queue['always_visible']];
-                $op_info_payload = json_encode($op_info);
-
-                $output['data'][$i][] = "<button class='btn waves-effect btn-primary pull-left start-operation' id='$id'><i class='zmdi zmdi-play'></i></button>";
-                $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "---------";
-                $output['data'][$i][] = "---------";
-                $output['data'][$i][] = $operation;
-                $output['data'][$i][] = "Now";
-                $output['data'][$i][] = "&nbsp;";
-                $output['data'][$i][] = "&nbsp;";
-
-                $i += 1;
-            }
+        if(empty($output)) {
+            $output['data'][$i][] = "&nbsp;";
+            $output['data'][$i][] = "&nbsp;";
+            $output['data'][$i][] = "---------";
+            $output['data'][$i][] = "I tried hard but found nothing, I'm sorry :(";
+            $output['data'][$i][] = "---------";
+            $output['data'][$i][] = "Never";
+            $output['data'][$i][] = "&nbsp;";
+            $output['data'][$i][] = "---------";
         }
 
         echo json_encode($output);
