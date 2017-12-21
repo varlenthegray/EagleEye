@@ -34,24 +34,25 @@ switch($_REQUEST['action']) {
 </div>
 HEREDOC;
         } else {
-            $alerts = null;
-            $new_alert = false;
-            $count = $alert_qry->num_rows;
+            if($alert_qry->num_rows > 0) {
+                $alerts = null;
+                $new_alert = false;
+                $count = $alert_qry->num_rows;
 
-            $plural = ($count > 1) ? "s" : null;
+                $plural = ($count > 1) ? "s" : null;
 
-            while($alert = $alert_qry->fetch_assoc()) {
-                $timestamp = Carbon::createFromTimestamp($alert['time_created']);
-                $time_out = $timestamp->diffForHumans();
+                while($alert = $alert_qry->fetch_assoc()) {
+                    $timestamp = Carbon::createFromTimestamp($alert['time_created']);
+                    $time_out = $timestamp->diffForHumans();
 
-                $alerts .= "<a href='javascript:void(0);' class='dropdown-item notify-item' id='{$alert['id']}'><div class='notify-icon {$alert['color']}'><i class='{$alert['icon']}'></i></div><p class='notify-details'>{$alert['message']}<small class='text-muted'>$time_out</small></p></a>\n\n";
+                    $alerts .= "<a href='javascript:void(0);' class='dropdown-item notify-item' id='{$alert['id']}'><div class='notify-icon {$alert['color']}'><i class='{$alert['icon']}'></i></div><p class='notify-details'>{$alert['message']}<small class='text-muted'>$time_out</small></p></a>\n\n";
 
-                $new_alert = (empty($alert['time_viewed'])) ? true : false;
-            }
+                    $new_alert = (empty($alert['time_viewed'])) ? true : false;
+                }
 
-            $class_info = ($new_alert === true) ? "zmdi zmdi-notifications-active noti-icon wiggler" : "zmdi zmdi-notifications-none noti-icon";
+                $class_info = ($new_alert === true) ? "zmdi zmdi-notifications-active noti-icon wiggler" : "zmdi zmdi-notifications-none noti-icon";
 
-            echo <<<HEREDOC
+                echo <<<HEREDOC
 <a class="nav-link dropdown-toggle arrow-none waves-light waves-effect" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
     <i class="$class_info"></i>
 </a>
@@ -69,6 +70,7 @@ HEREDOC;
     </a>
 </div>
 HEREDOC;
+            }
         }
 
         break;

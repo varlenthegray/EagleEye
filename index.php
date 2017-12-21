@@ -429,7 +429,8 @@ $version = '2.1.03';
         });
 
         <?php if($_SESSION['userInfo']['id'] !== '16') { ?>
-            $.post("/ondemand/alerts.php?action=update_alerts", function(data) {
+        // TODO: Alerts disabled due to clicking users out of the box
+            /*$.post("/ondemand/alerts.php?action=update_alerts", function(data) {
                 $("#notification_list").html(data);
             });
 
@@ -437,7 +438,7 @@ $version = '2.1.03';
                 $.post("/ondemand/alerts.php?action=update_alerts", function(data) {
                     $("#notification_list").html(data);
                 });
-            }, 10000);
+            }, 10000);*/
         <?php }?>
     });
 

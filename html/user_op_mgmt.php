@@ -9,7 +9,8 @@ if($_REQUEST['action'] === 'list_ops') {
 
     $ops_qry = $dbconn->query("SELECT * FROM operations WHERE op_id != '000' AND job_title != 'Bracket Completed' AND responsible_dept != 'N/A' ORDER BY op_id, bracket ASC");
 
-    echo "<table>";
+    echo "<a class='btn btn-primary w-sm waves-effect waves-light user_op_edit'>Edit</a>";
+    echo "<table class='all_ops' style='display:none;width:100%;'>";
     echo "<thead>";
     echo "<tr>";
     echo "  <th>Op ID</th>";
@@ -76,6 +77,18 @@ if($_REQUEST['action'] === 'list_ops') {
                     <a class="btn btn-primary btn-block waves-effect waves-light user_op_save" data-id="">Save</a>
                 </div>
 
+                <div class="col-md-3 sticky pl_container" style="max-height:85vh;overflow:auto;display:none;">
+                    <table class="table table-striped table-bordered" style="width:100%;">
+                        <thead>
+                        <tr>
+                            <th class="text-md-center">Priority</th>
+                            <th>Name</th>
+                        </tr>
+                        </thead>
+                        <tbody id="running_priority_list"></tbody>
+                    </table>
+                </div>
+
                 <div class="col-md-3">
                     <table class="table table-bordered" style="width:100%;">
                         <thead>
@@ -98,18 +111,6 @@ if($_REQUEST['action'] === 'list_ops') {
                             }
                         ?>
                         </tbody>
-                    </table>
-                </div>
-
-                <div class="col-md-3 sticky pl_container" style="max-height:85vh;overflow:auto;">
-                    <table class="table table-striped table-bordered" style="width:100%;">
-                        <thead>
-                        <tr>
-                            <th class="text-md-center">Priority</th>
-                            <th>Name</th>
-                        </tr>
-                        </thead>
-                        <tbody id="running_priority_list"></tbody>
                     </table>
                 </div>
             </div>
@@ -152,12 +153,14 @@ if($_REQUEST['action'] === 'list_ops') {
                     userContainer.html("<td>" + data + "</td>");
 
                     $(".save_container").show(200);
+                    $(".pl_container").show(200);
                     $(".user_op_save").attr("data-id", assignee);
                     $("#page_title").html("User Operations:<br />" + name);
 
                     thisClick.css("background-color", "rgba(63,127,191,.5);");
                 } else {
                     $(".save_container").hide(200);
+                    $(".pl_container").hide(200);
                     $(".user_op_save").attr("data-id", "");
 
                     thisClick.css("background-color", "transparent");
@@ -236,6 +239,10 @@ if($_REQUEST['action'] === 'list_ops') {
         })
         .on("focus", "input[type='text']", function() {
             $(this).select();
+        })
+        .on("click", ".user_op_edit", function() {
+            $(this).hide();
+            $(".all_ops").show(200);
         })
     ;
 </script>
