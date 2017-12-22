@@ -127,6 +127,7 @@ echo "<script>var style_rail = '$style_rail';</script>";
                                 <th>Description</th>
                                 <th>Width x Length</th>
                                 <th>Sq. Ft.</th>
+                                <th>Cab #</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -220,46 +221,63 @@ echo "<script>var style_rail = '$style_rail';</script>";
             $("#style_" + line_num + "_subtotal").html(style_rail); // style_rail is defined via PHP above
 
             var qty = $("#qty_" + line_num).val();
-            var style_wxl = style_rail + " x " + $("#height_" + line_num).val();
 
-            var style_sqft = (math.format(math.divide(math.number(math.fraction(style_rail)), 12), 4) * math.format(math.divide(math.number(math.fraction($("#height_" + line_num).val())), 12), 4)) * qty;
+            var height = $("#height_" + line_num);
+            var width = $("#width_" + line_num);
 
-            var rail_length = math.format(math.subtract(math.fraction($("#width_" + line_num).val()), 3.625), {fraction: 'decimal'});
+            if(height.val().length > 0) {
+                var style_wxl = style_rail + " x " + height.val();
 
-            rail_length = rail_length.split("."); // break it into parts
-            var rail_final = rail_length[0] + " " + math.format(math.fraction("." + rail_length[1]), {fraction: 'fixed'});
+                var style_sqft = (math.format(math.divide(math.number(math.fraction(style_rail)), 12), 4) * math.format(math.divide(math.number(math.fraction(height.val())), 12), 4)) * qty;
+            }
 
-            var rail_wxl = rail_final + " x " + rail;
+            if(width.val().length > 0) {
+                var rail_length = math.format(math.subtract(math.fraction(width.val()), 3.625), {fraction: 'decimal'});
 
-            var rail_sqft = (math.format(math.divide(math.number(math.fraction(rail_final)), 12), 4) * math.format(math.divide(math.number(math.fraction(rail)), 12), 4)) * qty;
+                rail_length = rail_length.split("."); // break it into parts
+                var rail_final = rail_length[0] + " " + math.format(math.fraction("." + rail_length[1]), {fraction: 'fixed'});
 
-            style_sqft = math.format(style_sqft, 2);
-            rail_sqft = math.format(rail_sqft, 2);
 
-            line[line_num] = "<tr>\n" +
+            }
+
+            if(width.val().length > 0 && height.val().length > 0) {
+                var rail_wxl = rail_final + " x " + rail;
+                var rail_sqft = (math.format(math.divide(math.number(math.fraction(rail_final)), 12), 4) * math.format(math.divide(math.number(math.fraction(rail)), 12), 4)) * qty;
+
+                style_sqft = math.format(style_sqft, 2);
+                rail_sqft = math.format(rail_sqft, 2);
+
+                var cab = $("#cab_" + line_num).val();
+
+                line[line_num] = "<tr>\n" +
                     "  <td>" + qty + "</td>\n" +
                     "  <td>Left Stiles</td>\n" +
                     "  <td>" + style_wxl + "</td>\n" +
                     "  <td>" + style_sqft + "</td>\n" +
+                    "  <td>" + cab + "</td>\n" +
                     "</tr>\n" +
                     "<tr>\n" +
                     "  <td>" + qty + "</td>\n" +
                     "  <td>Right Stiles</td>\n" +
                     "  <td>" + style_wxl + "</td>\n" +
                     "  <td>" + style_sqft + "</td>\n" +
+                    "  <td>" + cab + "</td>\n" +
                     "</tr>" +
                     "<tr>\n" +
                     "  <td>" + qty + "</td>\n" +
                     "  <td>Top Rails</td>\n" +
                     "  <td>" + rail_wxl + "</td>\n" +
                     "  <td>" + rail_sqft + "</td>\n" +
+                    "  <td>" + cab + "</td>\n" +
                     "</tr>" +
                     "<tr>\n" +
                     "  <td>" + qty + "</td>\n" +
                     "  <td>Bottom Rails</td>\n" +
                     "  <td>" + rail_wxl + "</td>\n" +
                     "  <td>" + rail_sqft + "</td>\n" +
+                    "  <td>" + cab + "</td>\n" +
                     "</tr>";
+            }
 
             var output = '';
 
