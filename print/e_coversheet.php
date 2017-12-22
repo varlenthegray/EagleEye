@@ -1162,16 +1162,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                 final_samples = final_samples + inset_beaded_price;
             }
 
-            final_last_subtotal = parseFloat(final_net) + parseFloat(final_shipping) + parseFloat(final_freight) + parseFloat(final_jobsite) + parseFloat(final_cc) + parseFloat(final_samples);
-            final_total = parseFloat(final_last_subtotal) + parseFloat(final_tax);
-            final_deposit = parseFloat(final_total) * .5;
-
-            $("#final_upcharges").html(final_upcharges.toFixed(2));
-            $("#final_leadtime").html(final_leadtime.toFixed(2));
-            $("#final_subtotal").html(final_subtotal.toFixed(2));
-            $("#final_net").html(final_net.toFixed(2));
-            $("#final_ship_zone_miles").html(final_ship_zone_miles);
-
             if(!ship_charges_changed) {
                 switch($("input[name='final_ship_zone']").val().toUpperCase()) {
                     case 'A':
@@ -1207,6 +1197,16 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 
                 $("#final_shipping").val(final_shipping.toFixed(2));
             }
+
+            final_last_subtotal = parseFloat(final_net) + parseFloat(final_shipping) + parseFloat(final_freight) + parseFloat(final_jobsite) + parseFloat(final_cc) + parseFloat(final_samples);
+            final_total = parseFloat(final_last_subtotal);
+            final_deposit = parseFloat(final_total) * .5;
+
+            $("#final_upcharges").html(final_upcharges.toFixed(2));
+            $("#final_leadtime").html(final_leadtime.toFixed(2));
+            $("#final_subtotal").html(final_subtotal.toFixed(2));
+            $("#final_net").html(final_net.toFixed(2));
+            $("#final_ship_zone_miles").html(final_ship_zone_miles);
 
             $("#final_freight").html(final_freight.toFixed(2));
             $("#final_jobsite").html(final_jobsite.toFixed(2));

@@ -31,9 +31,7 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
         $dbinfo = $dbinfo_qry->fetch_assoc();
 
         // now that we've cleaned up the operations; it's time to get that operation flowing
-        $dbconn->query("INSERT INTO op_queue (room_id, operation_id, start_time, active, 
-         completed, rework, partially_completed, created) VALUES ('$roomid', 
-          '$operation', NULL, FALSE, FALSE, FALSE, NULL, UNIX_TIMESTAMP())");
+        $dbconn->query("INSERT INTO op_queue (room_id, operation_id, start_time, active, completed, rework, partially_completed, created) VALUES ('$roomid', '$operation', NULL, FALSE, FALSE, FALSE, NULL, UNIX_TIMESTAMP())");
     } else {
         while($op_queue = $op_queue_qry->fetch_assoc()) {
             $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
