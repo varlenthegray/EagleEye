@@ -23436,7 +23436,7 @@ table tbody td {
   padding-top: 10px;
   border-top: 1px solid #000000;
   width: 100%;
-  max-height: 175px;
+  max-height: 35vh;
   overflow-y: auto; }
 
 .modal-header {

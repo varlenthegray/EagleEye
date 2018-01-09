@@ -307,6 +307,7 @@ switch($action) {
                                     </div>
                                 </div>
                             </div>
+                            
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
                                 <!--<button type="button" class="btn btn-success-outline waves-effect waves-light" id="create_op_btn" data-taskid="{$task['id']}">Create Op</button>-->

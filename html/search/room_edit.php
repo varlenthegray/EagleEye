@@ -671,11 +671,8 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                     $inquiry_replies = null;
                                 }
 
-                                $notes = str_replace(" ", "&nbsp;", $so_inquiry['note']);
-                                $notes = nl2br($notes);
-
                                 echo "<tr>";
-                                echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
+                                echo "  <td>{$so_inquiry['note']} -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
                                 echo "</tr>";
 
                                 echo $inquiry_replies;

@@ -1,6 +1,8 @@
 <?php
 require_once("../../includes/header_start.php");
 
+//outputPHPErrs();
+
 function displayVINOpts($segment, $db_col = null) {
     global $vin_schema;
     global $room;
@@ -137,7 +139,7 @@ $so_num = sanitizeInput($_REQUEST['so_num']);
 $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' ORDER BY room, iteration ASC LIMIT 0, 1;");
 $room = $room_qry->fetch_assoc();
 
-$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = {$room['so_parent']}");
+$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = $so_num");
 $result = $result_qry->fetch_assoc();
 
 $delivery_date = (!empty($room['delivery_date'])) ? date("m/d/Y", $room['delivery_date']) : "";
@@ -161,7 +163,7 @@ echo "<script>
             <div class="col-md-3">
                 <div class="row">
                     <div class="col-md-12">
-                        <input type="hidden" name="sonum" value="<?php echo $room['so_parent']; ?>">
+                        <input type="hidden" name="sonum" value="<?php echo $so_num; ?>">
                         <input type="hidden" name="room" value="<?php echo $room['room']; ?>">
                         <input type="hidden" name="roomid" value="<?php echo $room['id']; ?>">
 
@@ -620,11 +622,8 @@ echo "<script>
                                     $inquiry_replies = null;
                                 }
 
-                                $notes = str_replace(" ", "&nbsp;", $so_inquiry['note']);
-                                $notes = nl2br($notes);
-
                                 echo "<tr>";
-                                echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
+                                echo "  <td>{$so_inquiry['note']} -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
                                 echo "</tr>";
 
                                 echo $inquiry_replies;
@@ -643,60 +642,62 @@ echo "<script>
                             </tr>
                             <tr style="height:5px;"><td colspan="2"></td></tr>
                             <?php
-                            $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'room_note' OR note_type = 'room_note_log') AND notes.type_id = '{$room['id']}' ORDER BY notes.timestamp DESC;");
+                            /*if(!empty($room['id'])) {
+                                $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'room_note' OR note_type = 'room_note_log') AND notes.type_id = '{$room['id']}' ORDER BY notes.timestamp DESC;");
 
-                            while($room_inquiry = $room_inquiry_qry->fetch_assoc()) {
-                                $inquiry_replies = null;
-
-                                $time = date(DATE_TIME_ABBRV, $room_inquiry['NTimestamp']);
-
-                                if(!empty($room_inquiry['followup_time'])) {
-                                    $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$room_inquiry['user_to']}");
-                                    $followup_usr = $followup_usr_qry->fetch_assoc();
-
-                                    $followup_time = date(DATE_TIME_ABBRV, $room_inquiry['followup_time']);
-
-                                    $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
-                                } else {
-                                    $followup = null;
-                                }
-
-                                $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$room_inquiry['nID']}' ORDER BY timestamp DESC");
-
-                                if($inquiry_reply_qry->num_rows > 0) {
-                                    while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
-                                        $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
-
-                                        $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
-                                    }
-                                } else {
+                                while($room_inquiry = $room_inquiry_qry->fetch_assoc()) {
                                     $inquiry_replies = null;
-                                }
 
-                                $notes = str_replace("  ", "&nbsp;&nbsp;", $room_inquiry['note']);
-                                //$notes = $room_inquiry['note'];
-                                $notes = nl2br($notes);
+                                    $time = date(DATE_TIME_ABBRV, $room_inquiry['NTimestamp']);
 
-                                echo "<tr style='height:5px;'><td colspan='2'></td></tr>";
+                                    if(!empty($room_inquiry['followup_time'])) {
+                                        $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$room_inquiry['user_to']}");
+                                        $followup_usr = $followup_usr_qry->fetch_assoc();
 
-                                $room_note_log = ($room_inquiry['note_type'] === 'room_note_log') ? 'room_note_log' : null;
+                                        $followup_time = date(DATE_TIME_ABBRV, $room_inquiry['followup_time']);
 
-                                echo "<tr class='$room_note_log'>";
-                                echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$room_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
-                                echo "  <td>$notes -- <small><em>{$room_inquiry['name']} on $time $followup</em></small></td>";
-                                echo "</tr>";
+                                        $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
+                                    } else {
+                                        $followup = null;
+                                    }
 
-                                echo "<tr id='inquiry_reply_line_{$room_inquiry['nID']}' style='display:none;'>";
-                                echo "  <td colspan='2'>
+                                    $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$room_inquiry['nID']}' ORDER BY timestamp DESC");
+
+                                    if($inquiry_reply_qry->num_rows > 0) {
+                                        while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
+                                            $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
+
+                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+                                        }
+                                    } else {
+                                        $inquiry_replies = null;
+                                    }
+
+                                    $notes = str_replace("  ", "&nbsp;&nbsp;", $room_inquiry['note']);
+                                    //$notes = $room_inquiry['note'];
+                                    $notes = nl2br($notes);
+
+                                    echo "<tr style='height:5px;'><td colspan='2'></td></tr>";
+
+                                    $room_note_log = ($room_inquiry['note_type'] === 'room_note_log') ? 'room_note_log' : null;
+
+                                    echo "<tr class='$room_note_log'>";
+                                    echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$room_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
+                                    echo "  <td>$notes -- <small><em>{$room_inquiry['name']} on $time $followup</em></small></td>";
+                                    echo "</tr>";
+
+                                    echo "<tr id='inquiry_reply_line_{$room_inquiry['nID']}' style='display:none;'>";
+                                    echo "  <td colspan='2'>
                                                                             <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
                                                                             <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$room_inquiry['nID']}'>Reply</button>
                                                                         </td>";
-                                echo "</tr>";
+                                    echo "</tr>";
 
-                                echo $inquiry_replies;
+                                    echo $inquiry_replies;
 
-                                echo "<tr class='$room_note_log' style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
-                            }
+                                    echo "<tr class='$room_note_log' style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
+                                }
+                            }*/
                             ?>
                             <tr style="height:5px;"><td colspan="2"></td></tr>
                         </table>
