@@ -1077,7 +1077,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 
             /** Charge Summary */
             final_upcharges = construction_subtotal + ext_species_subtotal + ext_finish_code_subtotal + ext_glaze_color_subtotal + ext_glaze_technique_subtotal +
-                int_species_subtotal + int_finish_code_subtotal + int_glaze_technique_subtotal + dd_species_subtotal + dd_deign_subtotal + dd_style_rail_subtotal +
+                int_species_subtotal + int_finish_code_subtotal + int_glaze_color_subtotal + int_glaze_technique_subtotal + dd_species_subtotal + dd_deign_subtotal + dd_style_rail_subtotal +
                 dd_sd_raise_subtotal + dd_td_raise_subtotal + dd_edge_profile_subtotal + dd_frame_option_subtotal + dd_antiquing_subtotal + dd_distressing_subtotal +
                 dd_worn_edges_subtotal + dd_drawer_box_subtotal + finish_code_subtotal;
             cabinet_list_price = $("input[name='list_price']").val();
