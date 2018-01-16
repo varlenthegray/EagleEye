@@ -444,6 +444,56 @@ $("body")
             }, 300);
         });
     })
+    .on("click", "#add_attachment", function() {
+        $("#modalAddAttachment").modal("show");
+    })
+    .on("click", "#submit_attachments", function(e) {
+        e.stopPropagation();
+
+        var footer = $("#r_attachments_footer");
+        var button = $(this).parent().html();
+
+        footer.html(""); // remove the button completely, this prevents any accidental double clicks
+
+        // formdata required because now we're attaching files
+        var formData = new FormData($("#room_attachments")[0]);
+
+        formData.append('roomid', active_room_id);
+
+        $.ajax({
+            url: "/ondemand/room_actions.php?action=upload_attachment",
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+
+                        percentComplete = parseInt(percentComplete * 100);
+
+                        footer.html(percentComplete + "%");
+
+                        if (percentComplete === 100) {
+                            footer.html(button);
+                            $("#modalAddAttachment").modal('hide');
+                        }
+                    }
+                }, false);
+
+                return xhr;
+            },
+            type: 'POST',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                $('body').append(data);
+            }
+        });
+
+        unsaved = false;
+    })
 
     .on("click", "#copy_vin", function() {
         var copy_to_title = $("#copy_vin_target").find(":selected").text();

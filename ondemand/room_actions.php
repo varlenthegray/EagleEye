@@ -604,4 +604,62 @@ HEREDOC;
         echo displayToast("success", "VIN Data copied from {$from['room']}{$from['iteration']} to {$to['room']}{$to['iteration']}", "Copied VIN");
 
         break;
+    case 'upload_attachment':
+        $room_id = sanitizeInput($_REQUEST['roomid']);
+
+        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$room_id'");
+        $room = $room_qry->fetch_assoc();
+
+        // filter out empty attachments
+        $files = array_filter($_FILES['room_attachments']['name']);
+        $file_count = count($files);
+
+        if($file_count > 0) {
+            for($i = 0; $i < $file_count; $i++) {
+                $target_dir = SITE_ROOT . "/attachments/";
+                $target_ext = end(explode(".", $files[$i]));
+                $target_file = "{$target_dir}{$room['so_parent']}/{$room['room']}/{$room['iteration']}/{$files[$i]}";
+
+                $uploadOK = true;
+                $upload_err = '';
+
+                $file_size = filesize($_FILES['room_attachments']['tmp_name'][$i]) / 1048576;
+
+                $allowed_extensions = explode(",", FILE_TYPES);
+                $ext = ".$target_ext";
+
+                if($file_size > 15) {
+                    $uploadOK = false;
+                    $upload_err .= "File Size is greater than 15MB. Please use a smaller file.";
+                }
+
+                if(!in_array($ext, $allowed_extensions)) {
+                    $uploadOK = false;
+                    $upload_err .= "Incorrect Filetype. You can upload " . FILE_TYPES . ". Received $target_ext.";
+                }
+
+                if(file_exists($target_file)) {
+                    $uploadOK = false;
+                    $upload_err .= "File already exists on the server.";
+                }
+
+                if($uploadOK) {
+                    if(!file_exists("{$target_dir}{$room['so_parent']}/{$room['room']}/{$room['iteration']}")) {
+                        mkdir("{$target_dir}{$room['so_parent']}/{$room['room']}/{$room['iteration']}", 0777, true);
+                    }
+
+                    if(move_uploaded_file($_FILES['room_attachments']['tmp_name'][$i], $target_file)) {
+                        echo displayToast("success", "File Uploaded Successfully: {$files[$i]}", "Successful Upload");
+                    } else {
+                        echo displayToast("error", "Unable to upload due to system error.", "System Error");
+                    }
+                } else {
+                    echo displayToast("error", $upload_err, "Unable to Upload");
+                }
+            }
+        } else {
+            echo displayToast("warning", "No files detected, unable to upload.", "No Files Attached");
+        }
+
+        break;
 }

@@ -650,13 +650,13 @@ class queue {
                 $target_dir = SITE_ROOT . "/attachments/";
                 $target_ext = end(explode(".", $_FILES['attachment']['name']));
 
-                if(!file_exists("{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}")) {
-                    mkdir("{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}", 0777, true);
+                if(!file_exists("{$target_dir}{$room['so_parent']}/{$room['room']}/{$room['iteration']}")) {
+                    mkdir("{$target_dir}{$room['so_parent']}/{$room['room']}/{$room['iteration']}", 0777, true);
                 }
 
                 $job_title_fn = str_replace(" ", "_", strtolower($cur_op_info['job_title']));
 
-                $target_file = "{$target_dir}{$op_queue['so_parent']}/{$op_queue['room']}/{$room['iteration']}/{$cur_op_info['op_id']}-$job_title_fn.{$target_ext}";
+                $target_file = "{$target_dir}{$room['so_parent']}/{$room['room']}/{$room['iteration']}/{$cur_op_info['op_id']}-$job_title_fn.{$target_ext}";
 
                 $uploadOK = true;
                 $upload_err = '';

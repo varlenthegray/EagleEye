@@ -862,6 +862,25 @@ switch ($search) {
                                     echo "</tr>";
 
                                     echo "<tr class='tr_room_actions' id='{$room['id']}' style='display:none;'><td colspan='11'><div style='display:none;'></div></td></tr>";
+
+                                    /** BEGIN DISPLAY OF ATTACHMENTS */
+                                    echo "<tr id='tr_attachments_{$room['id']}' style='display: none;'>";
+                                    echo "  <td colspan='10'><div id='div_attachments_{$room['id']}' style='display: none;'>";
+                                    ?>
+
+                                    <div class="col-md-12">
+                                        <?php
+                                        $scanned_directory = array_diff(scandir($attachment_dir), array('..', '.'));
+
+                                        foreach($scanned_directory as $file) {
+                                            echo "<a href='{$http_base}$file' target='_blank'>$file</a><br />";
+                                        }
+                                        ?>
+                                    </div>
+
+                                    <?php echo "</div></td>";
+                                    echo "</tr>";
+                                    /** END DISPLAY OF ATTACHMENTS */
                                 }
                             }
                             ?>

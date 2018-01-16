@@ -1,7 +1,7 @@
 <?php
 require 'includes/header_start.php';
 
-$version = '2.1.03';
+$version = '2.1.05';
 ?>
 <!DOCTYPE html>
 <html>
@@ -223,7 +223,7 @@ $version = '2.1.03';
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
 
-        <!-- Add Customer modal -->
+        <!-- View Notes modal -->
         <div id="modalViewNotes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalViewNotesLabel" aria-hidden="true">
             <!-- Inserted via AJAX -->
         </div>
