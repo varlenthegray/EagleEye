@@ -4,6 +4,7 @@ require '../includes/header_start.php';
 $queue_ID = sanitizeInput($_REQUEST['queueID']);
 
 // TODO: Wtf? Why was this query commented out?
+// FIXME: Query needs to reference notes table, pull out everything for that operational room.
 
 $op_queue_qry = $dbconn->query("SELECT * FROM op_queue LEFT JOIN rooms ON op_queue.room_id = rooms.id LEFT JOIN operations ON op_queue.operation_id = operations.id WHERE op_queue.id = '{$queue_ID}'");
 $op_queue = $op_queue_qry->fetch_assoc();
