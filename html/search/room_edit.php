@@ -72,6 +72,12 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
     while($op = $op_qry->fetch_assoc()) {
         $op_room_id = "op_{$op['id']}_room_{$room['id']}";
 
+        if($op['op_id'] === '102' || $op['op_id'] === '103' || $op['responsible_dept'] === 'Accounting') {
+            $color = 'red';
+        } else {
+            $color = '#132882';
+        }
+
         if(in_array($op['id'], $individual_bracket)) {
             if($op['id'] === $room[$bracket_def]) {
                 $selected = "checked='checked'";
@@ -88,7 +94,7 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
             $left_info .= <<<HEREDOC
             <li class="active_ops_{$room['id']}" data-opnum="{$op['op_id']}" data-opid="{$op['id']}" data-roomid="{$room['id']}">
                 <input type="radio" name="{$bracket_def}" id="$op_room_id" value="{$op['id']}" $selected>
-                <label for="$op_room_id">{$op['op_id']}-{$op['job_title']}</label>
+                <label for="$op_room_id" style="color:$color;">{$op['op_id']}-{$op['job_title']}</label>
                 $deactivate
             </li>
 HEREDOC;
@@ -96,7 +102,7 @@ HEREDOC;
             $right_info .= <<<HEREDOC
                 <li class="inactive_ops_{$room['id']}" data-opnum="{$op['op_id']}" data-opid="{$op['id']}" data-roomid="{$room['id']}">
                     <span class="pull-left cursor-hand activate_op" style="height:18px;width:18px;" data-opid="{$op['id']}" data-roomid="{$room['id']}" data-soid="{$room['so_parent']}"> <i class="fa fa-arrow-circle-left pull-left" style="margin:5px;"></i></span>
-                    {$op['op_id']}-{$op['job_title']}
+                    <span style="color:$color;">{$op['op_id']}-{$op['job_title']}</span>
                 </li>
 HEREDOC;
         }
@@ -303,8 +309,8 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 <tr>
                                     <td colspan="2" class="text-md-center">
                                         <label class="c-input c-checkbox">Deposit Received <input type="checkbox" name="deposit_received" value="1" <?php echo ((bool)$room['payment_deposit']) ? "checked":null; ?>><span class="c-indicator"></span></label>
-                                        <label class="c-input c-checkbox">Final Payment <input type="checkbox" name="final_payment" value="1" <?php echo ((bool)$room['payment_final']) ? "checked":null; ?>><span class="c-indicator"></span></label>
                                         <label class="c-input c-checkbox">Prior to Loading/Delivery Payment <input type="checkbox" name="ptl_del" value="1" <?php echo ((bool)$room['payment_del_ptl']) ? "checked":null; ?>><span class="c-indicator"></span></label>
+                                        <label class="c-input c-checkbox">Final Payment <input type="checkbox" name="final_payment" value="1" <?php echo ((bool)$room['payment_final']) ? "checked":null; ?>><span class="c-indicator"></span></label>
                                     </td>
                                 </tr>
                                 <tr style="height:10px;">
