@@ -257,6 +257,10 @@ HEREDOC;
 
         break;
     case 'update_room':
+        $so_num = sanitizeInput($_REQUEST['vin_so_num_' . $room_id]);
+        $room = sanitizeInput($_REQUEST['vin_room_' . $room_id]);
+        $iteration = sanitizeInput($_REQUEST['vin_iteration_' . $room_id]);
+
         $delivery_date = sanitizeInput($_REQUEST['delivery_date']);
         $product_type = sanitizeInput($_REQUEST['product_type']);
         $iteration = sanitizeInput($_REQUEST['iteration']);
@@ -381,7 +385,7 @@ A new inquiry has been sent in for this room and requires your feedback.<br />
 $msg_notes -- {$_SESSION['userInfo']['name']}
 HEREDOC;
 
-                $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$room['so_parent']}{$room['room']}{$room['iteration']}", $message);
+                $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$so_num}{$room}{$iteration}", $message);
             }
         } elseif((empty($followup_date) && !empty($followup_individual)) || (!empty($followup_date) && empty($followup_individual))) {
             echo displayToast("warning", "Unable to set a followup as there is a missing individual or date.", "No Followup Set");
@@ -391,10 +395,6 @@ HEREDOC;
 
         $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
         $room = $room_qry->fetch_assoc();
-
-        $so_num = sanitizeInput($_REQUEST['vin_so_num_' . $room_id]);
-        $room = sanitizeInput($_REQUEST['vin_room_' . $room_id]);
-        $iteration = sanitizeInput($_REQUEST['vin_iteration_' . $room_id]);
 
         $species_grade = sanitizeInput($_REQUEST['species_grade_' . $room_id]);
         $construction_method = sanitizeInput($_REQUEST['construction_method_' . $room_id]);
