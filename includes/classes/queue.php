@@ -118,12 +118,13 @@ class queue {
         global $dbconn;
 
         $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
-          rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
-              JOIN operations ON op_queue.operation_id = operations.id
-                JOIN rooms ON op_queue.room_id = rooms.id
-                  JOIN sales_order ON rooms.so_parent = sales_order.so_num
-                    WHERE active = FALSE AND completed = TRUE
-                      ORDER BY sales_order.so_num DESC, operations.op_id DESC LIMIT 0,250;");
+            rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.*, op_audit_trail.end_time FROM op_queue 
+            LEFT JOIN operations ON op_queue.operation_id = operations.id
+            LEFT JOIN rooms ON op_queue.room_id = rooms.id
+            LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num
+            LEFT JOIN op_audit_trail ON op_queue.id = op_audit_trail.op_id
+            WHERE active = FALSE AND completed = TRUE AND op_audit_trail.end_time IS NOT NULL
+            ORDER BY sales_order.so_num DESC, operations.op_id DESC LIMIT 0,250;");
 
         $output = array();
         $i = 0;
@@ -136,7 +137,6 @@ class queue {
                 $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
 
                 //$time = Carbon::createFromTimestamp($op_queue['end_time']); // grab the carbon timestamp
-
                 //$output['data'][$i][] = $time->diffForHumans(); // obtain the difference in readable format for humans!
                 $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['end_time']); // meh, readable format breaks the completed date
 
