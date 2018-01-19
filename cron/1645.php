@@ -57,7 +57,7 @@ if($user_qry->num_rows > 0) {
 
                 $dbconn->query("INSERT INTO log_cron (`desc`, time) VALUES ('$changed', UNIX_TIMESTAMP())");
 
-                $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp) VALUES ('{$op_queue['id']}', NULL, '$changed', UNIX_TIMESTAMP())");
+                $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES ('{$op_queue['id']}', NULL, '$changed', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
             }
         }
     }
