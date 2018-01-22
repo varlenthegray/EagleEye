@@ -1,7 +1,7 @@
 <?php
 require 'includes/header_start.php';
 
-$version = '2.1.05';
+$version = '2.1.06';
 ?>
 <!DOCTYPE html>
 <html>
@@ -622,18 +622,6 @@ $version = '2.1.05';
         })
         // -- End Workcenter --
 
-        // -- Employees --
-        .on("click", ".clock_out", function(e) {
-            var id = $(this).data("id");
-
-            e.stopPropagation();
-
-            $.post("/ondemand/account_actions.php?action=clock_out", {user_id: id}, function(data) {
-                $("body").append(data);
-            });
-        })
-        // -- End Employees --
-
         // -- VIN Page --
         .on("blur", "#so_num", function() {
             vin_sonum = $(this).val();
@@ -808,6 +796,18 @@ $version = '2.1.05';
             $.post("/ondemand/alerts.php?action=viewed_alerts");
         })
         // -- End Notifications --
+
+        // -- Employees --
+        .on("click", ".clock_out", function(e) {
+            var id = $(this).data("id");
+
+            e.stopPropagation();
+
+            $.post("/ondemand/account_actions.php?action=clock_out", {user_id: id}, function(data) {
+                $("body").append(data);
+            });
+        })
+        // -- End Employees --
     ;
 
     setInterval(function() { // stops the auto-logout
