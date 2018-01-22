@@ -231,14 +231,6 @@ if($user_qry->num_rows > 0) {
                                         $deduction += $shift['break2_end'] - $started;
                                     }
 
-                                    if(empty($ended)) {
-                                        $ended_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = $employee AND time_out BETWEEN $current_day AND $next_day ORDER BY time_in DESC LIMIT 0,1;");
-                                        $ended = $ended_qry->fetch_assoc();
-                                        $ended = $ended['time_out'];
-
-                                        //$ended = (date("N", $current_day) < 5) ? strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 16:45") : strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 12:15");
-                                    }
-
                                     if(!empty($ended) && !empty($started)) {
                                         if(($ended - $started) > $deduction) {
                                             $total_worked = ($ended - $started) - $deduction;
@@ -255,10 +247,12 @@ if($user_qry->num_rows > 0) {
                                         }
 
                                         $length_worked = "$hours_worked:$mins_readable";
+                                    } else {
+                                        $length_worked = "0:00";
                                     }
 
                                     $started_readable = date(TIME_ONLY, $started);
-                                    $ended_readable = (!empty($ended)) ? date(TIME_ONLY, $ended) : "End of Shift";
+                                    $ended_readable = (!empty($ended)) ? date(TIME_ONLY, $ended) : "N/A";
 
                                     echo "<tr>";
                                     echo "<td>$so</td>";
