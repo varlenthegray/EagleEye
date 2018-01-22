@@ -386,6 +386,15 @@ if($_SESSION['userInfo']['account_type'] > 4) {
                 }
             });
         })
+        .on("click", ".clock_out", function(e) {
+            var id = $(this).data("id");
+
+            e.stopPropagation();
+
+            $.post("/ondemand/account_actions.php?action=clock_out", {user_id: id}, function(data) {
+                $("body").append(data);
+            });
+        })
         // -- End Employees --
     ;
 </script>
