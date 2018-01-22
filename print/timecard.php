@@ -130,7 +130,8 @@ if($user_qry->num_rows > 0) {
                         echo "<tr><th colspan='6'><h4>" . date("l (" . DATE_DEFAULT . ")", $current_day) . "</h4></th></tr>"; // format the date with DAY (DATE)
 
                         // grab all data from the audit trail for that day
-                        $day_qry = $dbconn->query("SELECT op_audit_trail.op_id AS auditOPID, operations.op_id AS opID, op_audit_trail.id AS oID, op_queue.*, rooms.*, operations.*, op_audit_trail.* FROM op_audit_trail 
+                        $day_qry = $dbconn->query("SELECT op_audit_trail.op_id AS auditOPID, operations.op_id AS opID, op_audit_trail.id AS oID, op_queue.id AS queueID, 
+                             op_queue.*, rooms.*, operations.*, op_audit_trail.* FROM op_audit_trail 
                             LEFT JOIN op_queue ON op_audit_trail.op_id = op_queue.id
                             LEFT JOIN rooms ON op_queue.room_id = rooms.id
                             LEFT JOIN operations ON op_queue.operation_id = operations.id
@@ -146,6 +147,7 @@ if($user_qry->num_rows > 0) {
                                 if($audit_id != $line['auditOPID']) { // if the current line does not match the previous line
                                     $started = null; // we're starting with fresh start time
                                     $ended = null; // fresh end time
+                                    $notes = null;
 
                                     // ordering that operation by start time null first, then non-null causing things to be out of order
                                     $start_end_qry = $dbconn->query("SELECT * FROM op_audit_trail WHERE op_id = {$line['op_id']} AND timestamp BETWEEN $current_day AND $next_day ORDER BY start_time ASC");
@@ -173,8 +175,17 @@ if($user_qry->num_rows > 0) {
 
                                     if(!empty($line['so_parent'])) {
                                         $so = "{$line['so_parent']}{$line['room']}-{$line['iteration']}";
+                                        $notes = null;
                                     } else {
                                         $so = "Non-Billable";
+
+                                        $notes_qry = $dbconn->query("SELECT * FROM notes WHERE note_type = 'op_note' AND type_id = '{$line['queueID']}'");
+
+                                        if($notes_qry->num_rows > 0) {
+                                            while($note_result = $notes_qry->fetch_assoc()) {
+                                                $notes .= "<br />{$note_result['note']}";
+                                            }
+                                        }
                                     }
 
                                     $shift['break1_start'] = strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 9:15AM");
@@ -252,7 +263,7 @@ if($user_qry->num_rows > 0) {
                                     echo "<tr>";
                                     echo "<td>$so</td>";
                                     echo "<td>{$line['responsible_dept']}</td>";
-                                    echo "<td>{$line['opID']}: {$line['job_title']} $addl_op</td>";
+                                    echo "<td>{$line['opID']}: {$line['job_title']} $addl_op $notes</td>";
                                     echo "<td>$started_readable</td>";
                                     echo "<td>$ended_readable</td>";
                                     echo "<td>$length_worked</td>";

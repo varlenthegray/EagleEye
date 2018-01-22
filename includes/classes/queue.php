@@ -234,8 +234,6 @@ class queue {
         $otf_notes = sanitizeInput($_REQUEST['otf_notes']);
         $otf_iteration = sanitizeInput($_REQUEST['otf_iteration']);
 
-        $notes = "$notes [$time - {$_SESSION['shop_user']['name']}]<br />";
-
         switch($operation) {
             case '000: Non-Billable':
                 $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'"); // grab the normal op info
@@ -252,6 +250,10 @@ class queue {
                         $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, subtask) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '$subtask')");
 
                         $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
+
+                        if(!empty($notes)) {
+                            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Started Note: $notes', 'op_note', UNIX_TIMESTAMP(), '{$_SESSION['shop_user']['id']}', '$inserted_id')");
+                        }
 
                         $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask];
                         $final_changes = json_encode($changes);
@@ -283,6 +285,10 @@ class queue {
                         $dbconn->query("INSERT INTO op_queue (operation_id, start_time, active, created, active_employees, subtask) VALUES ('{$admin_results['id']}', UNIX_TIMESTAMP(), TRUE, UNIX_TIMESTAMP(), '$active_employees', '$subtask')");
 
                         $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
+
+                        if(!empty($notes)) {
+                            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Started Note: $notes', 'op_note', UNIX_TIMESTAMP(), '{$_SESSION['shop_user']['id']}', '$inserted_id')");
+                        }
 
                         $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask];
                         $final_changes = json_encode($changes);
@@ -346,6 +352,10 @@ class queue {
 
                         $inserted_id = $dbconn->insert_id; // grab the inserted id for audit trail records
 
+                        if(!empty($notes)) {
+                            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Started Note: $notes', 'op_note', UNIX_TIMESTAMP(), '{$_SESSION['shop_user']['id']}', '$inserted_id')");
+                        }
+
                         $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees), "Subtask"=>$subtask, "OTF"=>'true'];
                         $final_changes = json_encode($changes);
 
@@ -375,6 +385,10 @@ class queue {
 
                     if($results['start_time'] === null) { // if this op queue item has never been started
                         if($dbconn->query("UPDATE op_queue SET active = TRUE, start_time = UNIX_TIMESTAMP(), active_employees = '$active_employees' WHERE id = '$id'")) {
+                            if(!empty($notes)) {
+                                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Started Note: $notes', 'op_note', UNIX_TIMESTAMP(), '{$_SESSION['shop_user']['id']}', '$inserted_id')");
+                            }
+
                             $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees)];
                             $final_changes = json_encode($changes);
 
@@ -384,6 +398,7 @@ class queue {
                             $stmt->bind_param("iis", $id, $shop_usr_id, $final_changes);
 
                             $stmt_result = $stmt->execute();
+
                             $stmt->close();
 
                             if($stmt_result)
@@ -397,6 +412,11 @@ class queue {
                         $stmt = $dbconn->prepare("UPDATE op_queue SET active = TRUE, active_employees = ? WHERE id = ?");
                         $stmt->bind_param("si", $active_employees, $id);
                         $stmt_result = $stmt->execute();
+
+                        if(!empty($notes)) {
+                            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Started Note: $notes', 'op_note', UNIX_TIMESTAMP(), '{$_SESSION['shop_user']['id']}', '$inserted_id')");
+                        }
+
                         $stmt->close();
 
                         if($stmt_result) {
@@ -438,13 +458,15 @@ class queue {
 
                     if($results['start_time'] === null) { // if this op queue item has never been started
                         if($dbconn->query("UPDATE op_queue SET active = TRUE, start_time = UNIX_TIMESTAMP(), active_employees = '$active_employees' WHERE id = '$id'")) {
+                            if(!empty($notes)) {
+                                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Started Note: $notes', 'op_note', UNIX_TIMESTAMP(), '{$_SESSION['shop_user']['id']}', '{$dbconn->insert_id}')");
+                            }
+
                             $changes = ["Active"=>TRUE, "Start Time"=>time(), "Active Employees"=>json_decode($active_employees)];
                             $final_changes = json_encode($changes);
 
                             $stmt = $dbconn->prepare("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
-                            $stmt->bind_param("iis", $id, $shop_usr_id, $final_changes);
-
-                            $shop_usr_id = $_SESSION['shop_user']['id'];
+                            $stmt->bind_param("iis", $id, $_SESSION['shop_user']['id'], $final_changes);
 
                             $stmt_result = $stmt->execute();
                             $stmt->close();
@@ -460,6 +482,11 @@ class queue {
                         $stmt = $dbconn->prepare("UPDATE op_queue SET active = TRUE, active_employees = ? WHERE id = ?");
                         $stmt->bind_param("si", $active_employees, $id);
                         $stmt_result = $stmt->execute();
+
+                        if(!empty($notes)) {
+                            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Started Note: $notes', 'op_note', UNIX_TIMESTAMP(), '{$_SESSION['shop_user']['id']}', '{$dbconn->insert_id}')");
+                        }
+
                         $stmt->close();
 
                         if($stmt_result) {
@@ -469,6 +496,7 @@ class queue {
                             $stmt = $dbconn->prepare("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, start_time) VALUES (?, ?, ?, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
                             $stmt->bind_param("iis", $id, $_SESSION['shop_user']['id'], $final_changes);
                             $stmt_result = $stmt->execute();
+
                             $stmt->close();
 
                             if($stmt_result)
@@ -518,6 +546,10 @@ class queue {
         $active_employees = json_encode($active_emp);
 
         if($dbconn->query("UPDATE op_queue SET active = $active, partially_completed = TRUE, completed = FALSE, active_employees = '$active_employees' WHERE id = $id")) {
+            if(!empty($notes)) {
+                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Paused Note: $notes', 'op_note', UNIX_TIMESTAMP(), '{$_SESSION['shop_user']['id']}', '{$dbconn->insert_id}')");
+            }
+
             $changed = ["End time"=>time(), "Active"=>$active, "Partially Completed"=>true, "Active Employees"=>json_decode($active_employees)];
             $changed = json_encode($changed);
 
@@ -538,7 +570,7 @@ class queue {
     function stopOp($id, $notes, $rw_reqd, $rw_reason, $opnum) {
         global $dbconn;
 
-        if(($_SESSION['last_op_action'] + 5) <= time()) {
+        if(($_SESSION['last_op_action'] + 2) <= time()) {
             $_SESSION['last_op_action'] = time();
 
             $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the item from the operation queue
@@ -679,6 +711,10 @@ class queue {
                 $stmt->bind_param("i", $id);
 
                 if($stmt->execute()) {
+                    if(!empty($notes)) {
+                        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Completion Note: $notes', 'op_note', UNIX_TIMESTAMP(), '{$_SESSION['shop_user']['id']}', '$id')");
+                    }
+
                     $stmt->close();
 
                     $changed = ["End time" => time(), "Active" => false, "Completed" => true, "Active Employees" => 'NULL', "Rework" => true]; // set what has changed for audit trail
@@ -750,7 +786,11 @@ class queue {
                 $stmt->bind_param("i", $id);
 
                 if($stmt->execute()) {
-                    $changed = ["End time"=>time(), "Active"=>false, "Notes"=>$finalnotes, "Qty Completed"=>$qty, "Completed"=>true, "Active Employees"=>'[]']; // set what has changed for audit trail
+                    if(!empty($notes)) {
+                        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Completion Note: $notes', 'op_note', UNIX_TIMESTAMP(), '{$_SESSION['shop_user']['id']}', '$id')");
+                    }
+
+                    $changed = ["End time"=>time(), "Active"=>false, "Notes"=>$finalnotes, "Completed"=>true, "Active Employees"=>'[]']; // set what has changed for audit trail
                     $changed = json_encode($changed); // encode the audit trail for retrieval later
 
                     if(!empty($_FILES['uploadedfile'])) {
@@ -848,7 +888,7 @@ class queue {
                 }
             }
         } else {
-            echo displayToast("warning", "Please wait at least 5 seconds between operation updates.", "Please Wait");
+            echo displayToast("warning", "Please wait at least 2 seconds between operation updates.", "Please Wait");
         }
     }
 }
