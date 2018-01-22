@@ -126,28 +126,31 @@ if($user_qry->num_rows > 0) {
                 for($i = 0; $i <= $total_days; $i++) {
                     $next_day = (int)$current_day + 86400;
 
-                    if(date("N", $current_day) < 6) {
-                        echo "<tr><th colspan='6'><h4>" . date("l (" . DATE_DEFAULT . ")", $current_day) . "</h4></th></tr>";
+                    if(date("N", $current_day) < 6) { // if it's not saturday or sunday
+                        echo "<tr><th colspan='6'><h4>" . date("l (" . DATE_DEFAULT . ")", $current_day) . "</h4></th></tr>"; // format the date with DAY (DATE)
 
+                        // grab all data from the audit trail for that day
                         $day_qry = $dbconn->query("SELECT op_audit_trail.op_id AS auditOPID, operations.op_id AS opID, op_audit_trail.id AS oID, op_queue.*, rooms.*, operations.*, op_audit_trail.* FROM op_audit_trail 
-                          LEFT JOIN op_queue ON op_audit_trail.op_id = op_queue.id
+                            LEFT JOIN op_queue ON op_audit_trail.op_id = op_queue.id
                             LEFT JOIN rooms ON op_queue.room_id = rooms.id
-                              LEFT JOIN operations ON op_queue.operation_id = operations.id
-                                WHERE op_audit_trail.timestamp >= $current_day AND op_audit_trail.timestamp <= $next_day AND op_audit_trail.shop_id = $employee AND op_audit_trail.start_time IS NOT NULL
-                                  ORDER BY op_audit_trail.start_time ASC");
+                            LEFT JOIN operations ON op_queue.operation_id = operations.id
+                            WHERE op_audit_trail.timestamp BETWEEN $current_day AND $next_day AND op_audit_trail.shop_id = $employee AND op_audit_trail.start_time IS NOT NULL
+                            ORDER BY op_audit_trail.start_time ASC");
 
                         echo "<tr><th>SO #</th><th>Department</th><th>Operation</th><th>Started</th><th>Ended</th><th>Length Worked</th></tr>";
                         echo "<tr style='height:4px;' class='excluded_bg'><td></td></tr>";
 
+                        // if there is information for that day
                         if($day_qry->num_rows > 0) {
-                            while($day = $day_qry->fetch_assoc()) {
-                                if($audit_id != $day['auditOPID']) {
-                                    $started = null;
-                                    $ended = null;
+                            while($line = $day_qry->fetch_assoc()) { // grab that information and begin working through it
+                                if($audit_id != $line['auditOPID']) { // if the current line does not match the previous line
+                                    $started = null; // we're starting with fresh start time
+                                    $ended = null; // fresh end time
 
-                                    // ordering it by start time null first, then non-null causing things to be out of order
-                                    $start_end_qry = $dbconn->query("SELECT * FROM op_audit_trail WHERE op_id = {$day['op_id']} AND timestamp >= $current_day AND timestamp <= $next_day ORDER BY start_time ASC");
+                                    // ordering that operation by start time null first, then non-null causing things to be out of order
+                                    $start_end_qry = $dbconn->query("SELECT * FROM op_audit_trail WHERE op_id = {$line['op_id']} AND timestamp BETWEEN $current_day AND $next_day ORDER BY start_time ASC");
 
+                                    // for each operation that's related to that audit id
                                     while($start_end = $start_end_qry->fetch_assoc()) {
                                         $changed_array = json_decode($start_end['changed'], true);
 
@@ -162,28 +165,28 @@ if($user_qry->num_rows > 0) {
                                         }
                                     }
 
-                                    if($day['opID'] === '000') {
-                                        $addl_op = "({$day['subtask']})";
+                                    if($line['opID'] === '000') {
+                                        $addl_op = "({$line['subtask']})";
                                     } else {
                                         $addl_op = null;
                                     }
 
-                                    if(!empty($day['so_parent'])) {
-                                        $so = "{$day['so_parent']}{$day['room']}-{$day['iteration']}";
+                                    if(!empty($line['so_parent'])) {
+                                        $so = "{$line['so_parent']}{$line['room']}-{$line['iteration']}";
                                     } else {
                                         $so = "Non-Billable";
                                     }
 
-                                    $shift['break1_start'] = strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 9:15AM");
-                                    $shift['break1_end'] = strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 9:30AM");
+                                    $shift['break1_start'] = strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 9:15AM");
+                                    $shift['break1_end'] = strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 9:30AM");
 
-                                    $shift['lunch_start'] = strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 11:30AM");
-                                    $shift['lunch_end'] = strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 12PM");
+                                    $shift['lunch_start'] = strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 11:30AM");
+                                    $shift['lunch_end'] = strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 12PM");
 
-                                    $shift['break2_start'] = strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 2:15PM");
-                                    $shift['break2_end'] = strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 2:30PM");
+                                    $shift['break2_start'] = strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 2:15PM");
+                                    $shift['break2_end'] = strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 2:30PM");
 
-                                    $shift['fri_end'] = strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 12:15PM");
+                                    $shift['fri_end'] = strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 12:15PM");
 
                                     $deduction = 0;
 
@@ -218,11 +221,19 @@ if($user_qry->num_rows > 0) {
                                     }
 
                                     if(empty($ended)) {
-                                        $ended = (date("N", $current_day) < 5) ? strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 16:45") : strtotime(date(DATE_DEFAULT, $day['timestamp']) . " 12:15");
+                                        $ended_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = $employee AND time_out BETWEEN $current_day AND $next_day ORDER BY time_in DESC LIMIT 0,1;");
+                                        $ended = $ended_qry->fetch_assoc();
+                                        $ended = $ended['time_out'];
+
+                                        //$ended = (date("N", $current_day) < 5) ? strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 16:45") : strtotime(date(DATE_DEFAULT, $line['timestamp']) . " 12:15");
                                     }
 
                                     if(!empty($ended) && !empty($started)) {
-                                        $total_worked = ($ended - $started) - $deduction;
+                                        if(($ended - $started) > $deduction) {
+                                            $total_worked = ($ended - $started) - $deduction;
+                                        } else {
+                                            $total_worked = 0;
+                                        }
 
                                         $hours_worked = floor($total_worked / 3600);
                                         $mins_remainder = ($total_worked % 3600);
@@ -240,18 +251,18 @@ if($user_qry->num_rows > 0) {
 
                                     echo "<tr>";
                                     echo "<td>$so</td>";
-                                    echo "<td>{$day['responsible_dept']}</td>";
-                                    echo "<td>{$day['opID']}: {$day['job_title']} $addl_op</td>";
+                                    echo "<td>{$line['responsible_dept']}</td>";
+                                    echo "<td>{$line['opID']}: {$line['job_title']} $addl_op</td>";
                                     echo "<td>$started_readable</td>";
                                     echo "<td>$ended_readable</td>";
                                     echo "<td>$length_worked</td>";
                                     echo "</tr>";
 
-                                    $audit_id = $day['auditOPID'];
+                                    $audit_id = $line['auditOPID'];
                                 }
                             }
 
-                            $clocked_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = '$employee' AND time_in > $current_day AND time_out < $next_day ORDER BY time_in ASC");
+                            $clocked_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = '$employee' AND time_in BETWEEN $current_day AND $next_day ORDER BY time_in ASC");
 
                             $time_in = '';
                             $time_out = '';
@@ -262,35 +273,42 @@ if($user_qry->num_rows > 0) {
                                     $time_out = $clocked['time_out'];
 
                                     $time_in_human = date(TIME_ONLY, $clocked['time_in']);
-                                    $time_out_human = date(TIME_ONLY, $clocked['time_out']);
+                                    $time_out_human = (!empty($clocked['time_out'])) ? date(TIME_ONLY, $clocked['time_out']) : "N/A";
                                 }
                             }
 
-                            $total_length_worked = $time_out - $time_in;
 
-                            if($total_length_worked >= 35100) {
-                                // deduct 1 hour for 2 15 min breaks and 1 30 min lunch
-                                $total_length_worked -= 3600;
-                            } elseif($total_length_worked <= 26100 && $total_length_worked >= 20700) {
-                                // deduct 45 minutes for 1 15 min break and 1 30 min lunch
-                                $total_length_worked -= 2700;
-                            } elseif($total_length_worked <= 20700 && $total_length_worked >= 9000) {
-                                $total_length_worked -= 1800;
+                            if($time_out_human !== 'N/A') {
+                                $total_length_worked = $time_out - $time_in;
+
+                                if($total_length_worked >= 35100) {
+                                    // deduct 1 hour for 2 15 min breaks and 1 30 min lunch
+                                    $total_length_worked -= 3600;
+                                } elseif($total_length_worked <= 26100 && $total_length_worked >= 20700) {
+                                    // deduct 45 minutes for 1 15 min break and 1 30 min lunch
+                                    $total_length_worked -= 2700;
+                                } elseif($total_length_worked <= 20700 && $total_length_worked >= 9000) {
+                                    $total_length_worked -= 1800;
+                                }
+
+                                $week_total += $total_length_worked;
+
+                                $total_length_worked_hours = floor($total_length_worked / 3600);
+                                $total_length_worked_mins = floor(($total_length_worked % 3600) / 60);
+
+                                $total_length_worked_mins = (strlen($total_length_worked_mins) === 1) ? "0$total_length_worked_mins" : $total_length_worked_mins;
+
+                                $length_worked_output = "$total_length_worked_hours:$total_length_worked_mins";
+                            } else {
+                                $length_worked_output = "N/A";
                             }
 
-                            $week_total += $total_length_worked;
-
-                            $total_length_worked_hours = floor($total_length_worked / 3600);
-                            $total_length_worked_mins = floor(($total_length_worked % 3600) / 60);
-
-                            $total_length_worked_mins = (strlen($total_length_worked_mins) === 1) ? "0$total_length_worked_mins" : $total_length_worked_mins;
-
                             echo "<tr class='excluded_bg' style='height:4px;'><td colspan='6'></td></tr>";
-                            echo "<tr class='excluded_bg'><td colspan='5'>Clocked In: $time_in_human / Clocked Out: $time_out_human</td><td>$total_length_worked_hours:$total_length_worked_mins</td></tr>";
+                            echo "<tr class='excluded_bg'><td colspan='5'>Clocked In: $time_in_human / Clocked Out: $time_out_human</td><td>$length_worked_output</td></tr>";
                         } else {
                             echo "<tr class='excluded_bg'><td colspan='6'><h4>Nothing to report</h4></td></tr>";
 
-                            $timecard_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = '$employee' AND time_in >= $current_day AND time_out <= $next_day");
+                            $timecard_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = '$employee' AND time_in BETWEEN $current_day AND $next_day");
 
                             if($timecard_qry->num_rows > 0) {
                                 echo "<tr class='excluded_bg' style='height:4px;'><td colspan='6'></td></tr>";
@@ -300,28 +318,34 @@ if($user_qry->num_rows > 0) {
                                     $time_out = $timecard['time_out'];
 
                                     $time_in_human = date(TIME_ONLY, $time_in);
-                                    $time_out_human = date(TIME_ONLY, $time_out);
+                                    $time_out_human = (!empty($timecard['time_out'])) ? date(TIME_ONLY, $timecard['time_out']) : "N/A";
 
-                                    $total_length_worked = $time_out - $time_in;
+                                    if($time_out_human !== 'N/A') {
+                                        $total_length_worked = $time_out - $time_in;
 
-                                    if($total_length_worked >= 35100) {
-                                        // deduct 1 hour for 2 15 min breaks and 1 30 min lunch
-                                        $total_length_worked -= 3600;
-                                    } elseif($total_length_worked <= 26100 && $total_length_worked >= 20700) {
-                                        // deduct 45 minutes for 1 15 min break and 1 30 min lunch
-                                        $total_length_worked -= 2700;
-                                    } elseif($total_length_worked <= 20700 && $total_length_worked >= 9000) {
-                                        $total_length_worked -= 1800;
+                                        if($total_length_worked >= 35100) {
+                                            // deduct 1 hour for 2 15 min breaks and 1 30 min lunch
+                                            $total_length_worked -= 3600;
+                                        } elseif($total_length_worked <= 26100 && $total_length_worked >= 20700) {
+                                            // deduct 45 minutes for 1 15 min break and 1 30 min lunch
+                                            $total_length_worked -= 2700;
+                                        } elseif($total_length_worked <= 20700 && $total_length_worked >= 9000) {
+                                            $total_length_worked -= 1800;
+                                        }
+
+                                        $week_total += $total_length_worked;
+
+                                        $total_length_worked_hours = floor($total_length_worked / 3600);
+                                        $total_length_worked_mins = floor(($total_length_worked % 3600) / 60);
+
+                                        $total_length_worked_mins = (strlen($total_length_worked_mins) === 1) ? "0$total_length_worked_mins" : $total_length_worked_mins;
+
+                                        $length_worked_output = "$total_length_worked_hours:$total_length_worked_mins";
+                                    } else {
+                                        $length_worked_output = "N/A";
                                     }
 
-                                    $week_total += $total_length_worked;
-
-                                    $total_length_worked_hours = floor($total_length_worked / 3600);
-                                    $total_length_worked_mins = floor(($total_length_worked % 3600) / 60);
-
-                                    $total_length_worked_mins = (strlen($total_length_worked_mins) === 1) ? "0$total_length_worked_mins" : $total_length_worked_mins;
-
-                                    echo "<tr class='excluded_bg'><td colspan='5'>Clocked In: $time_in_human / Clocked Out: $time_out_human</td><td>$total_length_worked_hours:$total_length_worked_mins</td></tr>";
+                                    echo "<tr class='excluded_bg'><td colspan='5'>Clocked In: $time_in_human / Clocked Out: $time_out_human</td><td>$length_worked_output</td></tr>";
                                 }
                             }
 
