@@ -1,0 +1,29 @@
+.ws_header {
+    font-weight: bold;
+    font-size: 2em;
+    margin-bottom: 25px;
+}
+
+.worksheet_container {
+    margin: 0 auto;
+    width: 80%;
+}
+
+.image {
+    float: left;
+    margin: 0 10px 10px 0;
+}
+
+.spec_text {
+    font-weight: bold;
+    font-size: 1.8em;
+}
+
+.values {
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+.notes {
+    margin-top: 25px;
+}

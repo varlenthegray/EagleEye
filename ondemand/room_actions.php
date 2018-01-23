@@ -1,6 +1,7 @@
 <?php
 require '../includes/header_start.php';
 require '../includes/classes/mail_handler.php';
+//require '../includes/functions.php';
 
 //outputPHPErrs();
 
@@ -659,6 +660,54 @@ HEREDOC;
             }
         } else {
             echo displayToast("warning", "No files detected, unable to upload.", "No Files Attached");
+        }
+
+        break;
+    case 'save_app_worksheet':
+        $room = sanitizeInput($_REQUEST['room']);
+        $notes = sanitizeInput($_REQUEST['notes']);
+        $sheet = sanitizeInput($_REQUEST['sheet_type']);
+
+        $spec = json_encode($_REQUEST['spec'], JSON_UNESCAPED_SLASHES);
+
+        $worksheet_qry = $dbconn->query("SELECT w.*, s.name FROM appliance_worksheets w LEFT JOIN appliance_specs s ON w.spec = s.id WHERE room = $room AND spec = $sheet");
+
+        if($worksheet_qry->num_rows === 0) {
+            $stmt = $dbconn->prepare("INSERT INTO appliance_worksheets (room, spec, `values`, notes) VALUES (?, ?, ?, ?);");
+            $stmt->bind_param('iiss', $room, $sheet, $spec, $notes);
+
+            if($stmt->execute()) {
+                echo $dbconn->insert_id;
+            } else {
+                dbLogSQLErr($dbconn);
+                echo "false";
+            }
+
+            $stmt->close();
+        } else {
+            $worksheet = $worksheet_qry->fetch_assoc();
+
+            $stmt = $dbconn->prepare("UPDATE appliance_worksheets SET `values` = ?, notes = ? WHERE id = {$worksheet['id']}");
+            $stmt->bind_param('ss', $spec, $notes);
+
+            if($stmt->execute()) {
+                echo $worksheet['id'];
+            } else {
+                dbLogSQLErr($dbconn);
+                echo "false";
+            }
+        }
+
+        break;
+    case 'load_app_worksheet':
+        $id = sanitizeInput($_REQUEST['id']);
+
+        $worksheet_qry = $dbconn->query("SELECT * FROM appliance_worksheets WHERE id = $id");
+
+        if($worksheet_qry->num_rows > 0) {
+            $worksheet = $worksheet_qry->fetch_assoc();
+
+            echo json_encode($worksheet, JSON_UNESCAPED_SLASHES);
         }
 
         break;

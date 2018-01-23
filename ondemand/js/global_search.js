@@ -6,16 +6,10 @@ var active_so_num;
 var active_room_id;
 var thisClick;
 
-function toggleDisplay(roomid) {
-    $("[id^=manage_bracket_]").removeClass("active_room_line");
-    $("#manage_bracket_" + active_room_id).addClass("active_room_line");
+function toggleDisplay(x) {
+    $(".room_line").removeClass("active_room_line");
+    $("#" + active_room_id).addClass("active_room_line");
 
-    $("[id^=tr_iteration_]").not("#tr_iteration_" + roomid).hide(250);
-    $("[id^=div_iteration_]").not("#div_iteration_" + roomid).hide(100);
-    $("[id^=tr_single_room_]").hide(250);
-    $("[id^=div_single_room_]").hide(100);
-    $("[id^=tr_add_single_room_info_]").hide(250);
-    $("[id^=div_add_single_room_info_]").hide(100);
     $("[id^=tr_attachments_]").finish().hide(250);
     $("[id^=div_attachments_]").finish().hide(100);
     $("[id^=tr_edit_so_]").finish().hide(250);
@@ -203,7 +197,6 @@ $("body")
 
     .on("click", ".add_room_trigger", function(e) {
         thisClick = this;
-
 
         e.stopPropagation();
 
@@ -605,5 +598,78 @@ $("body")
                 $(".billing_empty").hide();
             }
         }
+    })
+
+    .on("click", "#appliance_worksheets", function(e) {
+        thisClick = this;
+
+        e.stopPropagation();
+
+        checkTransition(function() {
+            active_room_id = $(thisClick).data("roomid");
+
+            toggleDisplay();
+
+            setTimeout(function() {
+                $.post("/html/search/appliance_ws.php?room_id=" + active_room_id + "&id=1", function(data) {
+                    $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
+                });
+
+                scrollLocation("#" + active_room_id + ".tr_room_actions");
+            }, 25);
+        });
+    })
+    .on("change", "#sheet_type", function() {
+        $.post("/html/search/appliance_ws_info.php?room_id=" + active_room_id + "&id=" + $(this).val(), function(data) {
+            $(".sheet_data").html(data);
+
+            $(":input", "#appliance_info").not(':button, :submit, :reset, :hidden, select').val('');
+        });
+    })
+    .on("click", ".appliance_ws_save", function(e) {
+        e.stopPropagation();
+
+        var formInfo = $("#appliance_info").serialize();
+
+        $.post("/ondemand/room_actions.php?action=save_app_worksheet&room=" + active_room_id + "&" + formInfo, function(data) {
+            if(data !== 'false') {
+                $(".print_app_ws").attr("id", data);
+                displayToast("success", "Successfully saved worksheet information.", "Worksheet Saved");
+            } else {
+                displayToast("error", "Unable to save worksheet. Please refresh your page.", "Unable to Save");
+            }
+        });
+
+        unsaved = false;
+    })
+    .on("click", ".load_app_worksheet", function(e) {
+        e.stopPropagation();
+
+        var id = $(this).attr("id");
+
+        $.post("/ondemand/room_actions.php?action=load_app_worksheet&id=" + id, function(data) {
+            var result = JSON.parse(data);
+            var values = JSON.parse(result.values);
+
+            $("#sheet_type").val(result.spec).trigger("change");
+            $(".print_app_ws").attr("id", result.id);
+
+            setTimeout(function() {
+                $.each(values, function(key, value) {
+                    $("#" + key).val(value);
+                });
+
+                $("#notes").val(result.notes);
+            }, 150);
+        });
+    })
+    .on("click", ".print_app_ws", function(e) {
+        e.stopPropagation();
+
+        var ws_id = $(this).attr("id");
+
+        $(".appliance_ws_save").trigger("click");
+
+        window.open("/print/appliance_spec.php?ws_id=" + ws_id, "_blank");
     })
 ;
