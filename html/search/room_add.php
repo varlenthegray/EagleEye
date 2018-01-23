@@ -222,7 +222,7 @@ echo "<script>
                                 </tr>
                                 <tr>
                                     <td><label for="iteration">Iteration</label></td>
-                                    <td><input type="text" class="form-control vin_code_calc" id="edit_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" readonly></td>
+                                    <td><input type="text" class="form-control vin_code_calc" id="edit_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly></td>
                                 </tr>
                                 <tr>
                                     <td><label for="order_status">Order Status</label></td>
