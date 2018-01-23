@@ -132,7 +132,7 @@ HEREDOC;
 // obtain the VIN database table and commit to memory for this query (MAJOR reduction in DB query count)
 $vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY 
   case right(`value`, 5) when 'Paint' then 1 when 'Stain' then 2 end, 
-  FIELD(`value`, 'Design Specific', 'Design Specific (5X-Wood)', 'Design Specific (5X-MDF)', 'Custom/Other', 'TBD', 'N/A',  'Completed', 'Job', 'Quote', 'Lost', ' - Paint', ' - Stain') DESC, segment, `value` ASC");
+  FIELD(`value`, '0.15', 'Design Specific', 'Design Specific (5X-Wood)', 'Design Specific (5X-MDF)', 'Custom/Other', 'TBD', 'N/A', 'None', 'No', 'Completed', 'Job', 'Quote', 'Lost', ' - Paint', ' - Stain') DESC, segment, `value` ASC");
 
 while($vin = $vin_qry->fetch_assoc()) {
     $vin_schema[$vin['segment']][$vin['key']] = $vin['value'];
