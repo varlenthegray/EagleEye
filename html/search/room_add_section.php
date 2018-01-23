@@ -3,18 +3,9 @@ require_once("../../includes/header_start.php");
 
 function displayVINOpts($segment, $db_col = null) {
     global $vin_schema;
-    global $room;
-
-    $dblookup = (!empty($db_col)) ? $db_col : $segment;
 
     foreach($vin_schema[$segment] as $key => $value) {
-        if($key === $room[$dblookup]) {
-            $selected = "selected";
-        } else {
-            $selected = ($key === $room[$dblookup] && empty($room[$dblookup])) ? "selected" : null;
-        }
-
-        echo "<option value='$key' $selected>$value ($key)</option>";
+        echo "<option value='$key'>$value ($key)</option>";
     }
 }
 
@@ -69,18 +60,21 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
     $left_info = '';
     $right_info = '';
 
+    $has_selection = false;
+
     while($op = $op_qry->fetch_assoc()) {
         $op_room_id = "op_{$op['id']}_room_{$room['id']}";
 
         if(in_array($op['id'], $individual_bracket)) {
-            if($op['id'] === $room[$bracket_def]) {
+            if(!$has_selection) {
                 $selected = "checked='checked'";
+                $has_selection = true;
             } else {
                 $selected = '';
             }
 
             if((int)substr($op['op_id'], -2) !== 98) {
-                $deactivate = "<span class=\"pull-right cursor-hand text-md-center deactivate_op\" data-opid=\"{$op['id']}\" data-roomid=\"{$room['id']}\" data-soid=\"{$room['so_parent']}\"> <i class=\"fa fa-arrow-circle-right\" style=\"width: 18px;\"></i> </button>";
+                $deactivate = "<span class='pull-right cursor-hand text-md-center deactivate_op' data-opid='{$op['id']}' data-roomid='{$room['id']}' data-soid='{$room['so_parent']}'> <i class='fa fa-arrow-circle-right' style='width: 18px;'></i> </button>";
             } else {
                 $deactivate = null;
             }
@@ -185,7 +179,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 <tr>
                                     <td><label for="product_type">Product Type</label></td>
                                     <td>
-                                        <select class="form-control vin_code_calc" id="edit_product_type_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="product_type" value="<?php echo $room['product_type']; ?>">
+                                        <select class="form-control vin_code_calc" id="edit_product_type_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="product_type">
                                             <?php
                                             displayVINOpts('product_type');
                                             ?>
@@ -210,10 +204,10 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                     <td><label for="days_to_ship">Days to Ship</label></td>
                                     <td>
                                         <select class="form-control days-to-ship vin_code_calc" id="edit_days_to_ship_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="days_to_ship" data-type="edit" data-room="<?php echo $room['room']; ?>">
-                                            <option value="G" <?php echo ($room['days_to_ship'] === 'G') ? "selected" : null; ?>>Green (26)</option>
-                                            <option value="Y" <?php echo ($room['days_to_ship'] === 'Y') ? "selected" : null; ?>>Yellow (19)</option>
-                                            <option value="N" <?php echo ($room['days_to_ship'] === 'N') ? "selected" : null; ?>>Orange (13)</option>
-                                            <option value="R" <?php echo ($room['days_to_ship'] === 'R') ? "selected" : null; ?>>Red (6)</option>
+                                            <option value="G">Green (26)</option>
+                                            <option value="Y">Yellow (19)</option>
+                                            <option value="N">Orange (13)</option>
+                                            <option value="R">Red (6)</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -225,7 +219,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                     <td colspan="2"></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2"><input tabindex="37" type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" value="<?php echo $room['vin_code']; ?>" /></td>
+                                    <td colspan="2"><input tabindex="37" type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" /></td>
                                 </tr>
                                 <tr style="height:10px;">
                                     <td colspan="2"></td>
@@ -527,19 +521,19 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                     <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Sample Request</h5></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2"><input tabindex="30" type="text" class="form-control text-md-center pull-left" name="sample_block_<?php echo $room['id']; ?>" id="sample_block_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="0"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="sample_block_<?php echo $room['id']; ?>">Sample Block <small>(5 1/4" x 6 1/8")</small></label></td>
+                                    <td colspan="2"><input tabindex="30" type="text" class="form-control text-md-center pull-left" name="sample_block_<?php echo $room['id']; ?>" id="sample_block_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="sample_block_<?php echo $room['id']; ?>">Sample Block <small>(5 1/4" x 6 1/8")</small></label></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2"><input tabindex="31" type="text" class="form-control text-md-center pull-left" name="door_only_<?php echo $room['id']; ?>" id="door_only_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['door_only_ordered']; ?>"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="door_only_<?php echo $room['id']; ?>">Door Only <small>(12" x 15")</small></label></td>
+                                    <td colspan="2"><input tabindex="31" type="text" class="form-control text-md-center pull-left" name="door_only_<?php echo $room['id']; ?>" id="door_only_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="door_only_<?php echo $room['id']; ?>">Door Only <small>(12" x 15")</small></label></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2"><input tabindex="32" type="text" class="form-control text-md-center pull-left" name="door_drawer_<?php echo $room['id']; ?>" id="door_drawer_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['door_drawer_ordered']; ?>"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="door_drawer_<?php echo $room['id']; ?>">Door & Drawer <small>(15 1/2" x 23 1/2")</small></label></td>
+                                    <td colspan="2"><input tabindex="32" type="text" class="form-control text-md-center pull-left" name="door_drawer_<?php echo $room['id']; ?>" id="door_drawer_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="door_drawer_<?php echo $room['id']; ?>">Door & Drawer <small>(15 1/2" x 23 1/2")</small></label></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2"><input tabindex="33" type="text" class="form-control text-md-center pull-left" name="inset_square_<?php echo $room['id']; ?>" id="inset_square_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['inset_square_ordered']; ?>"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="inset_square_<?php echo $room['id']; ?>">Inset Square <small>(15 1/2" x 23 1/2")</small></label></td>
+                                    <td colspan="2"><input tabindex="33" type="text" class="form-control text-md-center pull-left" name="inset_square_<?php echo $room['id']; ?>" id="inset_square_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="inset_square_<?php echo $room['id']; ?>">Inset Square <small>(15 1/2" x 23 1/2")</small></label></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2"><input tabindex="34" type="text" class="form-control text-md-center pull-left" name="inset_beaded_<?php echo $room['id']; ?>" id="inset_beaded_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['inset_beaded_ordered']; ?>"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="inset_beaded_<?php echo $room['id']; ?>">Inset Beaded <small>(16 1/2" x 23 1/2")</small></label></td>
+                                    <td colspan="2"><input tabindex="34" type="text" class="form-control text-md-center pull-left" name="inset_beaded_<?php echo $room['id']; ?>" id="inset_beaded_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;""> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="inset_beaded_<?php echo $room['id']; ?>">Inset Beaded <small>(16 1/2" x 23 1/2")</small></label></td>
                                 </tr>
                             </table>
                         </div>
@@ -692,14 +686,14 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 <td style="width: 49.8%;" class="bracket-border-top">
                                     <div class="row bracket-header-custom">
                                         <div class="col-md-8"><h5><label for="sales_bracket_adjustments_<?php echo $room['id']; ?>">Sales Bracket</label></h5></div>
-                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" value="1" id="sales_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sales_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" value="1" id="sales_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
                                     </div>
                                 </td>
                                 <td style="background-color:#eceeef;"></td>
                                 <td style="width: 49.8%;" class="bracket-border-top">
                                     <div class="row bracket-header-custom">
                                         <div class="col-md-8"><h5><label for="sample_bracket_adjustments_<?php echo $room['id']; ?>">Sample Bracket</label></h5></div>
-                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" value="1" id="sample_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sample_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" value="1" id="sample_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
                                     </div>
                                 </td>
                             </tr>
@@ -716,14 +710,14 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 <td class="bracket-border-top">
                                     <div class="row bracket-header-custom">
                                         <div class="col-md-8"><h5><label for="pre_prod_bracket_adjustments_<?php echo $room['id']; ?>">Pre-production Bracket</label></h5></div>
-                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="preprod_published" value="1" id="pre_prod_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['preproduction_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="preprod_published" value="1" id="pre_prod_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
                                     </div>
                                 </td>
                                 <td style="background-color: #eceeef;">&nbsp;</td>
                                 <td class="bracket-border-top">
                                     <div class="row bracket-header-custom">
                                         <div class="col-md-8"><h5><label for="door_drawer_bracket_adjustments_<?php echo $room['id']; ?>">Door/Drawer Bracket</label></h5></div>
-                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="doordrawer_published" value="1" id="doordrawer_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['doordrawer_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="doordrawer_published" value="1" id="doordrawer_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
                                     </div>
                                 </td>
                             </tr>
@@ -740,14 +734,14 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 <td class="bracket-border-top">
                                     <div class="row bracket-header-custom">
                                         <div class="col-md-8"><h5><label for="main_bracket_adjustments_<?php echo $room['id']; ?>">Main Bracket</label></h5></div>
-                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="main_published" value="1" id="main_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['main_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="main_published" value="1" id="main_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
                                     </div>
                                 </td>
                                 <td style="background-color: #eceeef;">&nbsp;</td>
                                 <td class="bracket-border-top">
                                     <div class="row bracket-header-custom">
                                         <div class="col-md-8"><h5><label for="custom_bracket_adjustments_<?php echo $room['id']; ?>">Custom Bracket</label></h5></div>
-                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" value="1" id="custom_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['custom_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" value="1" id="custom_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
                                     </div>
                                 </td>
                             </tr>
@@ -764,14 +758,14 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 <td class="bracket-border-top">
                                     <div class="row bracket-header-custom">
                                         <div class="col-md-8"><h5><label for="shipping_bracket_adjustments_<?php echo $room['id']; ?>">Shipping Bracket</label></h5></div>
-                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shipping_published" value="1" id="shipping_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['shipping_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shipping_published" value="1" id="shipping_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
                                     </div>
                                 </td>
                                 <td style="background-color: #eceeef;">&nbsp;</td>
                                 <td class="bracket-border-top">
                                     <div class="row bracket-header-custom">
                                         <div class="col-md-8"><h5><label for="install_bracket_adjustments_<?php echo $room['id']; ?>">Install Bracket</label></h5></div>
-                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published" value="1" id="install_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['install_bracket_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published" value="1" id="install_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
                                     </div>
                                 </td>
                             </tr>
@@ -788,7 +782,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 <td class="bracket-border-top">
                                     <div class="row bracket-header-custom">
                                         <div class="col-md-8"><h5><label for="pickmat_bracket_adjustments_<?php echo $room['id']; ?>">Pick & Materials Bracket</label></h5></div>
-                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pickmat_published" value="1" id="pickmat_bracket_adjustments_<?php echo $room['id']; ?>" <?php echo ((bool)$room['pick_materials_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
+                                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pickmat_published" value="1" id="pickmat_bracket_adjustments_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
                                     </div>
                                 </td>
                                 <td style="background-color: #eceeef;">&nbsp;</td>
