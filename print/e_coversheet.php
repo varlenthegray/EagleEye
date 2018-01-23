@@ -604,7 +604,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                     <td class="total_text">&nbsp;</td>
                     <td class="text-md-right total_text">$<span id="final_total"></span></td>
                 </tr>
-                <tr>
+                <tr id="deposit_line">
                     <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
                     <td class="text-md-right em_box">$<span id="final_deposit"></span></td>
                 </tr>
@@ -1203,6 +1203,12 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             final_last_subtotal = parseFloat(final_net) + parseFloat(final_shipping) + parseFloat(final_freight) + parseFloat(final_jobsite) + parseFloat(final_cc) + parseFloat(final_samples);
             final_total = parseFloat(final_last_subtotal);
             final_deposit = parseFloat(final_total) * .5;
+
+            if(parseFloat(final_last_subtotal) < 500) {
+                $("#deposit_line").hide();
+            } else {
+                $("#deposit_line").show();
+            }
 
             $("#final_upcharges").html(final_upcharges.toFixed(2));
             $("#final_leadtime").html(final_leadtime.toFixed(2));
