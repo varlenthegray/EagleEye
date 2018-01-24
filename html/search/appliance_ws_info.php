@@ -36,7 +36,7 @@ $cur_spec = $spec_qry->fetch_assoc();
                 ?>
             </select>
 
-            <?php echo "<img src='../../assets/images/appliance_specs/{$cur_spec['image']}.jpg' width='400px'>"; ?>
+            <?php echo "<img src='../../assets/images/appliance_specs/{$cur_spec['image']}.jpg' style='max-height:70vh;max-width:20vw;'>"; ?>
         </div>
 
         <div class="col-md-3">

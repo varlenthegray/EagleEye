@@ -616,7 +616,7 @@ $("body")
                 });
 
                 scrollLocation("#" + active_room_id + ".tr_room_actions");
-            }, 25);
+            }, 100);
         });
     })
     .on("change", "#sheet_type", function() {

@@ -164,10 +164,8 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>&action=arh' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print ARH Coversheet</a>
                 <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>&action=no_totals' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Shop Coversheet</a>
                 <a href='/print/sample_label.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Sample Label</a>
-                <a href='/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Inset Sizing</a>
+                <br /><br />
                 <a id="add_attachment" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Add Attachments</a>
-                <a id="appliance_worksheets" data-roomid="<?php echo $room['id']; ?>" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Appliance Worksheets</a>
-
                 <?php
                     $other_rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so'");
 
@@ -213,6 +211,9 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                         <?php
                     }
                 ?>
+                <br />
+                <a href='/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Inset Sizing</a>
+                <a id="appliance_worksheets" data-roomid="<?php echo $room['id']; ?>" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Appliance Worksheets</a>
             </div>
 
             <div class="col-md-3">
