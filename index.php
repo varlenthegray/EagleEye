@@ -1,7 +1,7 @@
 <?php
 require 'includes/header_start.php';
 
-$version = '2.1.06';
+$version = '2.1.07';
 ?>
 <!DOCTYPE html>
 <html>
