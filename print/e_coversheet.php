@@ -180,7 +180,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                     <th class="dark_gray_bg" width="7%">Attributes:</th>
                     <th class="dark_gray_bg" width="15%">&nbsp;</th>
                     <th class="dark_gray_bg" width="18%">&nbsp;</th>
-                    <th class="dark_gray_bg">&nbsp;</th>
+                    <th class="dark_gray_bg text-md-right" id="executive_ref"></th>
                     <th class="dark_gray_bg">QTY</th>
                     <th class="dark_gray_bg">Amount</th>
                     <th class="dark_gray_bg text-md-center pct_value">%</th>
@@ -921,6 +921,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             $(".toggle_gray").toggle();
 
             $(".arh_highlight").show().toggleClass('highlight_input');
+            $("#executive_ref").html('<span style="margin-right:20px;">Exec. Reference</span>');
         } else if(getUrlParams('action') === 'no_totals') {
             $("#charge_summary_std").hide();
             $("#charge_summary_arh").hide();
