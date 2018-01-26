@@ -8,11 +8,7 @@ function displayVINOpts($segment, $db_col = null) {
     $dblookup = (!empty($db_col)) ? $db_col : $segment;
 
     foreach($vin_schema[$segment] as $key => $value) {
-        if($key === $room[$dblookup]) {
-            $selected = "selected";
-        } else {
-            $selected = ($key === $room[$dblookup] && empty($room[$dblookup])) ? "selected" : null;
-        }
+        $selected = ((string)$key === (string)$room[$dblookup]) ? "selected" : null;
 
         echo "<option value='$key' $selected>$value ($key)</option>";
     }
