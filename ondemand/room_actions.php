@@ -321,6 +321,8 @@ HEREDOC;
                             }
                         }
 
+                        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Delivery Note: $notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+
                         break;
 
                     case 'global_note':
@@ -334,6 +336,8 @@ HEREDOC;
                             }
                         }
 
+                        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Global Note: $notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+
                         break;
 
                     case 'fin_sample_note':
@@ -346,6 +350,8 @@ HEREDOC;
                                 echo displayToast("warning", "Finishing/Sample Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
                             }
                         }
+
+                        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Finishing/Sample Note: $notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
                         break;
 
