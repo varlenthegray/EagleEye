@@ -714,7 +714,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                     }
 
                     if($info['door_drawer_ordered'] > 0) {
-                        displaySampleStatus('Door & Drawer (15 1/2" x 23 1/2")', 'door_drawer_ordered');
+                        displaySampleStatus('Door & Drawer (14 1/2" x 23 1/2")', 'door_drawer_ordered');
                     }
 
                     if($info['inset_square_ordered'] > 0) {
