@@ -1,7 +1,7 @@
 <?php
 require("../includes/header_start.php");
 
-$qry = $dbconn->query("SELECT DISTINCT so_num FROM sales_order ORDER BY so_num DESC LIMIT 0,1");
+$qry = $dbconn->query("SELECT DISTINCT so_num FROM sales_order WHERE so_num REGEXP '^[0-9]+$' ORDER BY so_num DESC LIMIT 0,1");
 
 if($qry->num_rows > 0) {
     $result = $qry->fetch_assoc();
