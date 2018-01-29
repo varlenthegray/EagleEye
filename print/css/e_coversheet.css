@@ -64,7 +64,7 @@ td {
 }
 
 #logo_container {
-    top: 10px;
+    top: 5px;
     left: calc(50% - 85px);
     position: absolute;
 }
@@ -81,7 +81,7 @@ td {
 
 #page_type {
     float: left;
-    padding-top: 70px;
+    padding-top: 50px;
 }
 
 #page_type_header {
@@ -103,7 +103,19 @@ td {
 
 #page_info {
     float: right;
-    padding-top: 70px;
+    padding-top: 50px;
+}
+
+#notes_section textarea {
+    margin: 0;
+    padding: 2px;
+    width: calc(100% - 4px);
+    text-align: left;
+}
+
+#delivery_notes, #global_notes {
+    width: 33%;
+    border-right: 1px solid #000;
 }
 
 #vin {

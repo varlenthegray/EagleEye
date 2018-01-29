@@ -51,7 +51,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
     <meta name="description" content="A fully functional ERP designed to manage cabinetry and automation.">
     <meta name="author" content="Stone Mountain Cabinetry & Millwork">
 
-    <link href="css/e_coversheet.css?v=111320171016" type="text/css" rel="stylesheet">
+    <link href="css/e_coversheet.css?v=012920181528" type="text/css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
 
@@ -142,20 +142,32 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         <div id="main_section">
             <table>
                 <tr>
-                    <th colspan="2"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['dealer_name']}"; ?></span></th>
+                    <th colspan="3"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['dealer_name']}"; ?></span></th>
                 </tr>
-                <tr class="border_thin_bottom" id="delivery_notes">
+                <tr>
+                    <td style="border-right:1px solid #000;" class="gray_bg">Delivery Notes:</td>
+                    <td style="border-right:1px solid #000;" class="gray_bg">Global Notes:</td>
+                    <td class="gray_bg">Finishing/Sample Notes:</td>
+                </tr>
+
+                <tr id="notes_section">
+                    <td id="delivery_notes"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
+                    <td id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_global']; ?></textarea></td>
+                    <td id="layout_notes_title"><textarea name="layout_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
+                </tr>
+
+                <!--<tr class="border_thin_bottom" id="delivery_notes">
                     <td class="gray_bg" width="13%">Delivery Notes:</td>
-                    <td><textarea name="delivery_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
+                    <td><textarea name="delivery_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="3"><?php /*echo $note_arr['room_note_delivery']; */?></textarea></td>
                 </tr>
                 <tr class="border_thin_bottom" width="13%" id="global_notes">
                     <td class="gray_bg">Global Notes:</td>
-                    <td><textarea name="global_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $note_arr['room_note_global']; ?></textarea></td>
+                    <td><textarea name="global_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="3"><?php /*echo $note_arr['room_note_global']; */?></textarea></td>
                 </tr>
                 <tr id="layout_notes">
                     <td class="gray_bg" width="13%" id="layout_notes_title">Finishing/Sample Notes:</td>
-                    <td><textarea name="layout_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="2"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
-                </tr>
+                    <td><textarea name="layout_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="3"><?php /*echo $note_arr['room_note_fin_sample']; */?></textarea></td>
+                </tr>-->
             </table>
 
             <table>
