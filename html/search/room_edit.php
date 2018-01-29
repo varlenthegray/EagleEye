@@ -210,6 +210,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 <br />
                 <a href='/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Inset Sizing</a>
                 <a id="appliance_worksheets" data-roomid="<?php echo $room['id']; ?>" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Appliance Worksheets</a>
+                <a href='/pdf/preprod_checklist.pdf' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Preproduction Checklist</a>
             </div>
 
             <div class="col-md-3">

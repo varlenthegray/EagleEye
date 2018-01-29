@@ -1,7 +1,5 @@
 <?php
 require 'includes/header_start.php';
-
-$version = '2.1.07';
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,11 +21,11 @@ $version = '2.1.07';
     <link href="/includes/css/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
 
     <!-- Global JS functions -->
-    <script src="/includes/js/functions.js?v=<?php echo $version; ?>"></script>
+    <script src="/includes/js/functions.js?v=<?php echo VERSION; ?>"></script>
     <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
 
     <!-- App CSS -->
-    <link href="/assets/css/style.css?v=<?php echo $version; ?>" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/style.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
     <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -816,10 +814,10 @@ $version = '2.1.07';
 </script>
 
 <!-- Global Search loading, required for global search to work -->
-<script src="/ondemand/js/global_search.js?v=<?php echo $version; ?>"></script>
+<script src="/ondemand/js/global_search.js?v=<?php echo VERSION; ?>"></script>
 
 <!-- Adding SO to the system -->
-<script src="/ondemand/js/add_so.js?v=<?php echo $version; ?>"></script>
+<script src="/ondemand/js/add_so.js?v=<?php echo VERSION; ?>"></script>
 
 <!-- jQuery  -->
 <script src="/assets/js/tether.min.js"></script><!-- Tether for Bootstrap -->
@@ -871,7 +869,7 @@ $version = '2.1.07';
 <script src="/assets/plugins/math.min.js"></script>
 
 <!-- Unsaved Changes -->
-<script src="/assets/js/unsaved_alert.js?v=<?php echo $version; ?>"></script>
+<script src="/assets/js/unsaved_alert.js?v=<?php echo VERSION; ?>"></script>
 </body>
 </html>
 <?php
