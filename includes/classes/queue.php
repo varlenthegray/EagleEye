@@ -597,15 +597,15 @@ class queue {
 
             // time to auto-release brackets!
             switch($op_queue['operation_id']) {
-                case 9: // 150: Contract Signed > 205: Sample Door Request
+                /*case 9: // 150: Contract Signed > 205: Sample Door Request
                     $this->autoRelease($room, 'Sample', 'sample', $room_id);
 
-                    break;
+                    break;*/
 
-                case 109: // 300: SA Review Request for Quote > 205: Sample Door Request
+                /*case 109: // 300: SA Review Request for Quote > 205: Sample Door Request
                     $this->autoRelease($room, 'Sample', 'sample', $room_id);
 
-                    break;
+                    break;*/
 
                 case 28: // 355: Place Orders > 505: Pick List for Box, 605: Pick List for Custom, 410: Door Quote
                     $this->autoRelease($room, 'Main', 'main', $room_id);
