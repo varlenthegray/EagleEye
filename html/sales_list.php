@@ -36,7 +36,15 @@ require '../includes/header_start.php';
                 </div>
 
                 <div class="col-md-4">
-                    <div class="checkbox checkbox-custom text-md-center"><input id="show_hidden_sales_list" class="ignoreSaveAlert" type="checkbox"><label for="show_hidden_sales_list">Show Hidden</label></div>
+                    <table>
+                        <tr>
+                            <td style="padding-right:5px;"><div class="checkbox checkbox-custom text-md-center"><input id="show_hidden_sales_list" class="ignoreSaveAlert" type="checkbox"><label for="show_hidden_sales_list">Show Hidden</label></div></td>
+                            <td style="padding-right:5px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_lost" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_lost">Lost</label></div></td>
+                            <td style="padding-right:5px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_quote" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_quote">Quote</label></div></td>
+                            <td style="padding-right:5px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_job" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_job">Job</label></div></td>
+                            <td style="padding-right:5px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_completed" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_completed">Completed</label></div></td>
+                        </tr>
+                    </table>
 
                     <table class="table table-bordered tablesorter" id="so_global_list">
                         <thead>
