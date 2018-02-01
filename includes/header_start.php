@@ -3,11 +3,11 @@ session_start();
 
 $error_display = null;
 
-if(!$_SESSION['valid']){
+if(!$_SESSION['valid'] && $_SERVER['SCRIPT_NAME'] !== "/display/finishing/production.php"){
     header("Location: /login.php?pli=true");
 }
 
-if(empty($_SESSION['shop_user']) && $_SERVER['SCRIPT_NAME'] !== "/employees.php" && $_SERVER['SCRIPT_NAME'] !== "/ondemand/account_actions.php") {
+if(empty($_SESSION['shop_user']) && $_SERVER['SCRIPT_NAME'] !== "/employees.php" && $_SERVER['SCRIPT_NAME'] !== "/ondemand/account_actions.php" && $_SERVER['SCRIPT_NAME'] !== "/display/finishing/production.php") {
     header("Location: /employees.php");
 } else {
     switch($_SESSION['userInfo']['account_type']) {

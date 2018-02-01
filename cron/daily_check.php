@@ -50,6 +50,6 @@ if($cal_qry->num_rows > 0) {
         $message .= "Initial Requestor: {$user_name[$calendar['user_from']]} at email {$user_email[$calendar['user_from']]}<br />";
         $message .= "Followup Of: {$user_name[$calendar['user_to']]} at email {$user_email[$calendar['user_to']]}";
 
-        $mailer->sendMessage($to, $user['email'], $subject, $message);
+        $mailer->sendMessage($to, $user['email'], $subject, $message, true);
     }
 }

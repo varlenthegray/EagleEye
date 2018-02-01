@@ -236,7 +236,7 @@ A new inquiry has been sent in for this room and requires your feedback.<br />
 $msg_notes -- {$_SESSION['userInfo']['name']}
 HEREDOC;
 
-                        $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$so_num}{$room}{$iteration}", $message);
+                        $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$so_num}{$room}{$iteration}", $message, true);
                     }
                 }
 
@@ -392,7 +392,7 @@ A new inquiry has been sent in for this room and requires your feedback.<br />
 $msg_notes -- {$_SESSION['userInfo']['name']}
 HEREDOC;
 
-                $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$so_num}{$room}{$iteration}", $message);
+                $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$so_num}{$room}{$iteration}", $message, true);
             }
         } elseif((empty($followup_date) && !empty($followup_individual)) || (!empty($followup_date) && empty($followup_individual))) {
             echo displayToast("warning", "Unable to set a followup as there is a missing individual or date.", "No Followup Set");

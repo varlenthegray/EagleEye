@@ -30,7 +30,7 @@ switch($action) {
             $dbconn->query("INSERT INTO alerts (type, status, message, time_created, time_acknowledged, alert_user, icon, type_id, color) VALUES ('feedback', 'new', 'New feedback submitted by $submitted_name.', UNIX_TIMESTAMP(), null, $assignee, 'icon-bubble', $dbconn->insert_id, 'bg-warning')");
 
             if(!empty($notify['email']))
-                $mail->sendMessage($notify['email'], $_SESSION['userInfo']['email'], 'New Feedback Logged', mail_nl2br($task_desc));
+                $mail->sendMessage($notify['email'], $_SESSION['userInfo']['email'], 'New Feedback Logged', mail_nl2br($task_desc), true);
 
             echo displayToast("success", "Successfully logged feedback.", "Feedback Logged");
         } else {
@@ -376,8 +376,8 @@ HEREDOC;
             $usr_2_qry = $dbconn->query("SELECT email FROM user WHERE id = $split_2_notify");
             $usr_2 = $usr_2_qry->fetch_assoc();
 
-            $mail->sendMessage($usr_1['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", nl2br($split_1_text));
-            $mail->sendMessage($usr_2['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", nl2br($split_2_text));
+            $mail->sendMessage($usr_1['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", nl2br($split_1_text), true);
+            $mail->sendMessage($usr_2['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", nl2br($split_2_text), true);
 
             echo displayToast("success", "Split task successfully.", "Task Split");
 
