@@ -235,7 +235,7 @@ class queue {
         $otf_iteration = sanitizeInput($_REQUEST['otf_iteration']);
 
         switch($operation) {
-            case '000: Non-Billable':
+            case 'NB00: Non-Billable':
                 $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'"); // grab the normal op info
 
                 if($admin_qry->num_rows > 0) { // if we were able to get the operation
@@ -270,7 +270,7 @@ class queue {
 
                 break;
 
-            case '000: Cabinet Vision':
+            case 'EN00: Cabinet Vision':
                 $admin_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'"); // grab the normal op info
 
                 if($admin_qry->num_rows > 0) { // if we were able to get the operation
@@ -305,7 +305,7 @@ class queue {
 
                 break;
 
-            case '000: On The Fly':
+            case 'TF00: On The Fly':
                 $otf_info = null;
 
                 $otf_notes = "$otf_notes [$time - {$_SESSION['shop_user']['name']} <i>OTF Created</i>]<br />";
@@ -369,7 +369,7 @@ class queue {
 
                 break;
 
-            case '000: Honey Do':
+            case 'HD00: Honey Do':
                 $qry = $dbconn->query("SELECT * FROM op_queue WHERE id = '$id'"); // grab the existing op queue id
 
                 if($qry->num_rows > 0) {  // if we were able to find the operation inside of the queue

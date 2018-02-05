@@ -20,7 +20,7 @@ switch($_REQUEST['action']) {
 
         echo "<script>console.log('\"$op\"')</script>";
 
-        if(substr($op, 0, 3) !== '000') { // if not an op in the 000's (always visible op)
+        if(substr($op, 1, 3) !== '00') { // if not an op in the 000's (always visible op)
             $op_query = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE op_queue.id = '$id';");
 
             if($op_query->num_rows === 1) {
@@ -80,7 +80,7 @@ HEREDOC;
                 $op_info = $op_query->fetch_assoc();
 
                 switch($op) {
-                    case '000: On The Fly':
+                    case 'TF00: On The Fly':
                         $current_time = date("g:i A");
                         $responsible_dept = $op_info['responsible_dept'];
                         $all_ops = null;
@@ -154,7 +154,7 @@ HEREDOC;
 
                         break;
 
-                    case '000: Honey Do':
+                    case 'HD00: Honey Do':
                         $operation = $op_info['op_id'] . ": " . $op_info['job_title'];
                         $current_time = date("g:i A");
                         $responsible_dept = $op_info['responsible_dept'];
