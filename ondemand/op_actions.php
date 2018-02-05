@@ -20,7 +20,7 @@ switch($_REQUEST['action']) {
 
         echo "<script>console.log('\"$op\"')</script>";
 
-        if(substr($op, 1, 2) !== '00') { // if not an op in the 000's (always visible op)
+        if(substr($op, 2, 2) !== '00') { // if not an op in the 000's (always visible op)
             $op_query = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE op_queue.id = '$id';");
 
             if($op_query->num_rows === 1) {

@@ -465,7 +465,7 @@ require 'includes/header_start.php';
             opFull = $(this).closest('tr').find('td').eq(4).html();
             op_id = $(this).attr("id");
 
-            if(opFull === '000: Non-Billable' || opFull === '000: On The Fly') {
+            if(opFull === 'NB00: Non-Billable' || opFull === 'TF00: On The Fly') {
                 $.post("/ondemand/op_actions.php?action=get_start_info", {opID: op_id, op: opFull}, function(data) {
                     $("#modalStartJob").html(data);
                 }).done(function() {
