@@ -155,19 +155,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                     <td id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_global']; ?></textarea></td>
                     <td id="layout_notes_title"><textarea name="layout_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
                 </tr>
-
-                <!--<tr class="border_thin_bottom" id="delivery_notes">
-                    <td class="gray_bg" width="13%">Delivery Notes:</td>
-                    <td><textarea name="delivery_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="3"><?php /*echo $note_arr['room_note_delivery']; */?></textarea></td>
-                </tr>
-                <tr class="border_thin_bottom" width="13%" id="global_notes">
-                    <td class="gray_bg">Global Notes:</td>
-                    <td><textarea name="global_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="3"><?php /*echo $note_arr['room_note_global']; */?></textarea></td>
-                </tr>
-                <tr id="layout_notes">
-                    <td class="gray_bg" width="13%" id="layout_notes_title">Finishing/Sample Notes:</td>
-                    <td><textarea name="layout_notes" maxlength="280" style="width:100%;text-align:left;" class="static_width" rows="3"><?php /*echo $note_arr['room_note_fin_sample']; */?></textarea></td>
-                </tr>-->
             </table>
 
             <table>
@@ -956,8 +943,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             $("#page_type_header").html("SAMPLE REQUEST");
             $("#sample_qty").show();
 
-            $("#delivery_notes").hide();
-            $("#layout_notes_title").html("Sample Notes:");
+            //$("#delivery_notes").hide();
+            //$("#layout_notes_title").html("Sample Notes:");
         }
 
         setTimeout(function() {
