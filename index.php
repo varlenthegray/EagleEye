@@ -361,8 +361,6 @@ require 'includes/header_start.php';
     socket.on("catchQueueUpdate", function() {
         if(currentPage === 'dashboard') {
             updateOpQueue();
-
-            console.log("Queue update caught");
         }
 
         if(currentPage === 'workcenter') {

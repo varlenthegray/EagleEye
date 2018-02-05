@@ -18,8 +18,6 @@ switch($_REQUEST['action']) {
         $id = sanitizeInput($_REQUEST['opID']);
         $op = sanitizeInput($_REQUEST['op']);
 
-        echo "<script>console.log('\"$op\"')</script>";
-
         if(substr($op, 2, 2) !== '00') { // if not an op in the 000's (always visible op)
             $op_query = $dbconn->query("SELECT * FROM op_queue JOIN operations ON op_queue.operation_id = operations.id WHERE op_queue.id = '$id';");
 
