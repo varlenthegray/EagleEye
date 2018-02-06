@@ -10,7 +10,7 @@ namespace MailHandler;
 
 
 class mail_handler {
-    public function sendMessage($to, $from, $subject, $message) {
+    public function sendMessage($to, $from, $subject, $message, $null) {
         $headers = "From: EagleEye <dashboard@3erp.us>\r\n";
         $headers .= "Reply-To: ". strip_tags($from) . "\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
