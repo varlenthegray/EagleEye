@@ -2,7 +2,7 @@
 require '../includes/header_start.php';
 ?>
 
-<div class="row">
+<div class="row  hidden-print">
     <div class="col-md-12">
         <div class="card-box">
             <div class="row">
