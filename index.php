@@ -331,6 +331,13 @@ require 'includes/header_start.php';
     $_SESSION['userInfo']['unique_key'] = $unique_key;
 
     echo "var unique_key = '$unique_key';";
+
+    if($_SESSION['userInfo']['account_type'] < 5) {
+        echo '$("body").on("click", ".view_so_info", function() {
+            var id = $(this).attr("id");
+            $("#global_search").val(id).trigger("keyup");
+        })';
+    }
     ?>
 
     var op_id;
@@ -452,10 +459,7 @@ require 'includes/header_start.php';
         .on("change", "#viewing_queue", function() {
             updateOpQueue();
         })
-        .on("click", ".view_so_info", function() {
-            var id = $(this).attr("id");
-            $("#global_search").val(id).trigger("keyup");
-        })
+
 
         .on("click", ".start-operation", function(e) {
             e.stopPropagation();
