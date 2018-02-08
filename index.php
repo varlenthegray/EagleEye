@@ -332,7 +332,7 @@ require 'includes/header_start.php';
 
     echo "var unique_key = '$unique_key';";
 
-    if($_SESSION['userInfo']['account_type'] < 5) {
+    if($_SESSION['userInfo']['account_type'] <= 5) {
         echo '$("body").on("click", ".view_so_info", function() {
             var id = $(this).attr("id");
             $("#global_search").val(id).trigger("keyup");
