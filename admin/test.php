@@ -2,6 +2,32 @@
 require ("../includes/header_start.php");
 require("../includes/classes/mail_handler.php");
 require ("../includes/classes/queue.php");
+require_once "../assets/plugins/flowroute/vendor/autoload.php";
+require_once "../assets/plugins/flowroute/src/Configuration.php";
+
+outputPHPErrs();
+
+use FlowrouteNumbersAndMessagingLib\Models;
+
+// Access your Flowroute API credentials as local environment variables
+$username = '46449714';
+$password = 'aQlpTe9RgTVWfDL6jw0BEKSo3r4hPfxN';
+
+// create our client object
+$flowroute = new FlowrouteNumbersAndMessagingLib\FlowrouteNumbersAndMessagingClient($username, $password);
+
+$msg = new Models\Message();
+
+$msg->from = '18285755727';
+$msg->to = '19047382234';
+$msg->body = "Hello, this is a wonderful test.";
+
+$messages = $flowroute->getMessages();
+$result = $messages->createSendAMessage($msg);
+
+print_r($result);
+
+
 
 //outputPHPErrs();
 
@@ -25,7 +51,7 @@ if($rooms_qry->num_rows > 0) {
 
 echo "<h4>Update completed.</h4>";*/
 
-$remove = array('109','166','85','110','113','114','115','140');
+/*$remove = array('109','166','85','110','113','114','115','140');
 $room_qry = $dbconn->query("SELECT * FROM rooms");
 
 while($room = $room_qry->fetch_assoc()) {
@@ -46,4 +72,5 @@ while($room = $room_qry->fetch_assoc()) {
     $dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$final_output' WHERE id = {$room['id']}");
 }
 
-echo "Completed with removing operations.";
+echo "Completed with removing operations.";*/
+

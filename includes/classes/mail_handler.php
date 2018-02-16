@@ -11,6 +11,8 @@ namespace MailHandler;
 
 class mail_handler {
     public function sendMessage($to, $from, $subject, $message, $null) {
+        global $dbconn;
+
         $headers = "From: EagleEye <dashboard@3erp.us>\r\n";
         $headers .= "Reply-To: ". strip_tags($from) . "\r\n";
         $headers .= "MIME-Version: 1.0\r\n";
@@ -78,6 +80,14 @@ HEADER;
 </body>
 </html>
 BODY;
+
+        $sms_qry = $dbconn->query("SELECT * FROM user WHERE email = '$to'");
+
+        if($sms_qry->num_rows === 1) {
+            $sms = $sms_qry->fetch_assoc();
+
+            sendText($sms['phone'], "$subject: $message");
+        }
 
         return mail($to, $subject, $message_out, $headers);
     }

@@ -6,6 +6,8 @@
  * Time: 3:33 PM
  */
 
+use FlowrouteNumbersAndMessagingLib\Models;
+
 // Display a PHP toast
 function displayToast($type, $message, $subject) {
     return <<<HEREDOC
@@ -110,4 +112,17 @@ function calcDelDate($days_to_ship) {
 function mail_nl2br($string) {
     //return preg_replace('/\<br(\s*)?\/?\>/i', "\n", $string);
     return str_replace('\\n', '<br />', $string);
+}
+
+function sendText($to, $message) {
+    global $flowroute;
+
+    $msg = new Models\Message();
+
+    $msg->from = '18285755727';
+    $msg->to = $to;
+    $msg->body = $message;
+
+    $messages = $flowroute->getMessages();
+    $result = $messages->createSendAMessage($msg);
 }
