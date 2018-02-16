@@ -21,6 +21,11 @@ html {
   padding: 5px 10px;
 }
 
+.card {
+  padding: 0.5rem;
+  background-color: #F9F9F9;
+}
+
 // allow custom background colors
 .bg-lightgray {
   background-color: rgba(228, 228, 228, .8);
@@ -688,4 +693,19 @@ table tbody td {
   position: absolute;
   top: 0;
   right: 10px;
+}
+
+h5 {
+  margin: 0.5rem 0;
+}
+
+.swimlane {
+  max-height: 86.6vh;
+  overflow-y: scroll;
+
+  .card {
+    &:hover {
+      background-color: #EEEEEE;
+    }
+  }
 }

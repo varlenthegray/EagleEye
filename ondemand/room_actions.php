@@ -514,6 +514,7 @@ HEREDOC;
         $shipping_op = sanitizeInput($_REQUEST['shipping_bracket']);
         $install_op = sanitizeInput($_REQUEST['install_bracket']);
         $pickmat_op = sanitizeInput($_REQUEST['pick_materials_bracket']);
+        $edgebanding_op = sanitizeInput($_REQUEST['edgebanding_bracket']);
 
         $changed[] = whatChanged($sales_op, $room_info['sales_bracket'], 'Sales Bracket', false, false, true);
         $changed[] = whatChanged($sample_op, $room_info['sample_bracket'], 'Sample Bracket', false, false, true);
@@ -524,6 +525,7 @@ HEREDOC;
         $changed[] = whatChanged($shipping_op, $room_info['shipping_bracket'], 'Shipping Bracket', false, false, true);
         $changed[] = whatChanged($install_op, $room_info['install_bracket'], 'Install Bracket', false, false, true);
         $changed[] = whatChanged($pickmat_op, $room_info['pick_materials_bracket'], 'Pick & Materials Bracket', false, false, true);
+        $changed[] = whatChanged($edgebanding_op, $room_info['edgebanding_bracket'], 'Edge Banding Bracket', false, false, true);
 
         $sales_pub = (!empty($_REQUEST['sales_published'])) ? sanitizeInput($_REQUEST['sales_published']) : 0;
         $sample_pub = (!empty($_REQUEST['sample_published'])) ? sanitizeInput($_REQUEST['sample_published']) : 0;
@@ -534,6 +536,7 @@ HEREDOC;
         $shipping_pub = (!empty($_REQUEST['shipping_published'])) ? sanitizeInput($_REQUEST['shipping_published']) : 0;
         $install_pub = (!empty($_REQUEST['install_published'])) ? sanitizeInput($_REQUEST['install_published']) : 0;
         $pickmat_pub = (!empty($_REQUEST['pick_materials_published'])) ? sanitizeInput($_REQUEST['pickmat_published']) : 0;
+        $edgebanding_pub = (!empty($_REQUEST['edgebanding_published'])) ? sanitizeInput($_REQUEST['edgebanding_published']) : 0;
 
 
         $changed[] = whatChanged($sales_pub, $room_info['sales_published'], 'Sales Bracket', false, true);
@@ -545,12 +548,13 @@ HEREDOC;
         $changed[] = whatChanged($shipping_pub, $room_info['shipping_published'], 'Shipping Bracke', false, true);
         $changed[] = whatChanged($install_pub, $room_info['install_bracket_published'], 'Install Bracket', false, true);
         $changed[] = whatChanged($pickmat_pub, $room_info['pick_materials_published'], 'Pick & Materials Bracket', false, true);
+        $changed[] = whatChanged($edgebanding_pub, $room_info['edgebanding_published'], 'Edgebanding Bracket', false, true);
         $changed[] = whatChanged($ops, $room_info['individual_bracket_buildout'], 'Active Bracket Operations');
 
         if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
-            $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op',
+            $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op', edgebanding_bracket = '$edgebanding_op',
             custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
-            preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
+            preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', edgebanding_published = '$edgebanding_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
             install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub', payment_deposit = '$deposit_received',
             payment_final = '$final_payment', payment_del_ptl = '$ptl_del' WHERE id = '$room_id'");
 
@@ -563,17 +567,25 @@ HEREDOC;
             createOpQueue($shipping_pub, 'Shipping', $shipping_op, $room_id);
             createOpQueue($install_pub, 'Installation', $install_op, $room_id);
             createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $room_id);
+            createOpQueue($edgebanding_pub, 'Edge Banding', $edgebanding_op, $room_id);
 
             echo displayToast("success", "All operations have been refreshed and the bracket has been updated.", "Updated & Refreshed");
         } else {
             dbLogSQLErr($dbconn);
         }
 
+
         if(!empty(array_values(array_filter($changed)))) {
             $c_note = "<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             $c_note .= implode(", ", array_values(array_filter($changed)));
 
-            $stmt = $dbconn->prepare("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES (?, 'room_note_log', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, ?);");
+            if(empty($_SESSION['userInfo'])) {
+                $user = 36;
+            } else {
+                $user = $_SESSION['userInfo']['id'];
+            }
+
+            $stmt = $dbconn->prepare("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES (?, 'room_note_log', UNIX_TIMESTAMP(), $user, ?);");
             $stmt->bind_param("si", $c_note, $room_id);
             $stmt->execute();
             $stmt->close();
@@ -716,5 +728,7 @@ HEREDOC;
             echo json_encode($worksheet, JSON_UNESCAPED_SLASHES);
         }
 
+        break;
+    case 'save_coversheet':
         break;
 }

@@ -3,11 +3,14 @@ require '../includes/header_start.php';
 ?>
 
 <div class="row">
-    <?php
-    if($_SESSION['userInfo']['perm_full_dashboard']) {
-    ?>
+
+    <?php if($bouncer->validate('view_quotes') || $bouncer->validate('view_orders')) { ?>
+
     <div class="col-md-6">
         <div class="col-md-12">
+
+            <?php if($bouncer->validate('view_quotes')) { ?>
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="card-box table-responsive" style="min-height:42vh;">
@@ -26,6 +29,8 @@ require '../includes/header_start.php';
                 </div>
             </div>
 
+            <?php } if($bouncer->validate('view_orders')) { ?>
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="card-box table-responsive" style="min-height:42vh;">
@@ -43,11 +48,12 @@ require '../includes/header_start.php';
                     </div>
                 </div>
             </div>
+
+            <?php } ?>
         </div>
     </div>
-    <?php
-    }
-    ?>
+
+    <?php } if($bouncer->validate('view_operation')) { ?>
 
     <div class="col-md-6">
         <div class="col-md-12">
@@ -95,6 +101,8 @@ require '../includes/header_start.php';
             </div>
         </div>
     </div>
+
+    <?php } ?>
 </div>
 
 

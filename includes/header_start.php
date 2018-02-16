@@ -3,11 +3,23 @@ session_start();
 
 $error_display = null;
 
-if(!$_SESSION['valid'] && $_SERVER['SCRIPT_NAME'] !== "/display/finishing/production.php"){
+$nologin[] = "/display/finishing/production.php";
+$nologin[] = "/dealer/index.php";
+$nologin[] = "/includes/classes/search.php";
+$nologin[] = "/ondemand/livesearch/search_results.php";
+$nologin[] = "/html/search/appliance_ws.php";
+$nologin[] = "/html/search/appliance_ws_info.php";
+$nologin[] = "/html/search/room_add.php";
+$nologin[] = "/html/search/room_add_section.php";
+$nologin[] = "/html/search/room_edit.php";
+$nologin[] = "/includes/classes/bouncer.php";
+$nologin[] = "/ondemand/room_actions.php";
+
+if(!$_SESSION['valid'] && !in_array($_SERVER['SCRIPT_NAME'], $nologin)) {
     header("Location: /login.php?pli=true");
 }
 
-if(empty($_SESSION['shop_user']) && $_SERVER['SCRIPT_NAME'] !== "/employees.php" && $_SERVER['SCRIPT_NAME'] !== "/ondemand/account_actions.php" && $_SERVER['SCRIPT_NAME'] !== "/display/finishing/production.php") {
+if(empty($_SESSION['shop_user']) && $_SERVER['SCRIPT_NAME'] !== "/employees.php" && $_SERVER['SCRIPT_NAME'] !== "/ondemand/account_actions.php" && !in_array($_SERVER['SCRIPT_NAME'], $nologin)) {
     header("Location: /employees.php");
 } else {
     switch($_SESSION['userInfo']['account_type']) {
@@ -26,6 +38,9 @@ if(empty($_SESSION['shop_user']) && $_SERVER['SCRIPT_NAME'] !== "/employees.php"
 require("functions.php"); // require functions first
 require("language.php"); // require the language file once
 require("config.php"); // require the config file once
+require("classes/bouncer.php"); // require the bouncer
 
 // set the timezone for all PHP information
 date_default_timezone_set($_SESSION['userInfo']['timezone']);
+
+$bouncer = new \Bouncer\bouncer();

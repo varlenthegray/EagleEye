@@ -5,7 +5,7 @@ require_once ("../../includes/classes/search.php");
 //outputPHPErrs();
 
 $find = sanitizeInput($_REQUEST['find']);
-$search = sanitizeInput($_REQUEST['search'], $dbconn);
+$search = sanitizeInput($_REQUEST['search']);
 
 $sClass = new \Search\search();
 
@@ -176,8 +176,8 @@ switch ($search) {
         }
 
         $qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num LIKE '%$find%' OR LOWER(dealer_code) LIKE LOWER('%$find%') 
-          OR LOWER(project_name) LIKE LOWER('%$find%') OR LOWER(project_mgr) LIKE LOWER('%$find%') OR LOWER(name_1) LIKE LOWER('%$find%') OR LOWER(name_2) LIKE LOWER('%$find%')  
-              ORDER BY so_num DESC");
+            OR LOWER(project_name) LIKE LOWER('%$find%') OR LOWER(project_mgr) LIKE LOWER('%$find%') OR LOWER(name_1) LIKE LOWER('%$find%') OR LOWER(name_2) LIKE LOWER('%$find%')  
+            ORDER BY so_num DESC");
 
         if($qry->num_rows > 0) {
             while($result = $qry->fetch_assoc()) {
@@ -188,7 +188,11 @@ switch ($search) {
 
                 /** BEGIN LISTING OF SO'S */
                 echo "  <tr class='cursor-hand' id='show_room_{$result['so_num']}'>";
-                echo "    <td class='nowrap' style='width:50px;'><button class='btn waves-effect btn-primary' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button> <button class='btn btn-primary-outline waves-effect add_room_trigger' data-sonum='{$result['so_num']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional room' style='font-size:10px;width:23px;height:22px;margin-top:1px;padding:0;'> +X</button></td>";
+
+                if(!empty($_SESSION['userInfo'])) {
+                    echo "    <td class='nowrap' style='width:50px;'><button class='btn waves-effect btn-primary' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button> <button class='btn btn-primary-outline waves-effect add_room_trigger' data-sonum='{$result['so_num']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional room' style='font-size:10px;width:23px;height:22px;margin-top:1px;padding:0;'> +X</button></td>";
+                }
+
                 echo "    <td>{$result['so_num']}</td>";
                 echo "    <td>{$result['project_name']}</td>";
                 echo "    <td>{$dealer['contact']}</td>";
@@ -846,9 +850,13 @@ switch ($search) {
 
                                     echo "<tr class='cursor-hand room_line' id='{$room['id']}'>";
                                     echo "  <td class='nowrap' style='width:50px;'>
-                                                <button class='btn waves-effect btn-primary edit_room' id='{$room['id']}' data-sonum='{$room['so_parent']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button> 
-                                                <button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-addto='sequence' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional sequence' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:$seq_visible;'> S +1</button> <button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-addto='iteration' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional iteration' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:$iteration_visible;'> I +.01</button>
+                                                <button class='btn waves-effect btn-primary edit_room' id='{$room['id']}' data-sonum='{$room['so_parent']}'><i class='zmdi zmdi-edit'></i></button> <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button>";
+
+                                    if(!empty($_SESSION['userInfo'])) {
+                                        echo "      <button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-addto='sequence' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional sequence' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:$seq_visible;'> S +1</button> <button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-addto='iteration' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional iteration' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:$iteration_visible;'> I +.01</button>
                                             </td>";
+                                    }
+
                                     echo "  <td class='nowrap'><span class='pull-left'>{$tab}{$room_name}</span> <span class='pull-right' style='margin-right:5px;'>$order_status</span></td>";
                                     echo "  <td class='$salesColor' style='width:9%'>$sales_published_display</td>";
                                     echo "  <td class='$sampleColor' style='width:9%'>$sample_published_display</td>";

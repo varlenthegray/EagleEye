@@ -333,7 +333,9 @@ require 'includes/header_start.php';
     echo "var unique_key = '$unique_key';";
 
     if($_SESSION['userInfo']['account_type'] <= 5) {
-        echo '$("body").on("click", ".view_so_info", function() {
+        echo '$("body").on("click", ".view_so_info", function(e) {
+            e.stopPropagation();        
+        
             var id = $(this).attr("id");
             $("#global_search").val(id).trigger("keyup");
         })';
@@ -446,7 +448,8 @@ require 'includes/header_start.php';
     });
 
     $("body")
-    // -- Navigation --
+        <?php if($bouncer->validate('view_timecards')) { ?>
+        // -- Navigation --
         .on("click", "#nav_timecard", function() {
             var start = Math.round(new Date().getTime()/1000);
             var end = Math.round(new Date().getTime()/1000);
@@ -454,12 +457,13 @@ require 'includes/header_start.php';
             window.open("/print/timecard.php?start_date=" + start + "&end_date=" + end + "&employee=23", "_blank");
         })
         // -- End Navigation --
+        <?php } ?>
 
+        <?php if($bouncer->validate('view_operation')) { ?>
         // -- Dashboard --
         .on("change", "#viewing_queue", function() {
             updateOpQueue();
         })
-
 
         .on("click", ".start-operation", function(e) {
             e.stopPropagation();
@@ -614,14 +618,18 @@ require 'includes/header_start.php';
             });
         })
         // -- End Dashboard --
+        <?php } ?>
 
+        <?php if($bouncer->validate('view_workcenter')) { ?>
         // -- Workcenter --
         .on("click", ".wc-view-queue-so", function() {
             var id = $(this).attr("id");
             $("#global_search").val(id).trigger("keyup");
         })
         // -- End Workcenter --
+        <?php } ?>
 
+        <?php if($bouncer->validate('edit_vin')) { ?>
         // -- VIN Page --
         .on("blur", "#so_num", function() {
             vin_sonum = $(this).val();
@@ -656,8 +664,14 @@ require 'includes/header_start.php';
         .on("change keydown", ".vin_code_calc", function() {
             calcVin(active_room_id);
         })
-        // -- End VIN Page --
 
+        .on("change", ".recalcVin", function() {
+            calcVin(active_room_id);
+        })
+        // -- End VIN Page --
+        <?php } ?>
+
+        <?php if($bouncer->validate('view_tasks')) { ?>
         // -- Task Page --
         .on("click", ".display-task-info", function() {
             $.post("/ondemand/admin/tasks.php?action=get_task_info", {task_id: $(this).attr("id")}, function(data) {
@@ -705,7 +719,9 @@ require 'includes/header_start.php';
             });
         })
         // -- End Task Page --
+        <?php } ?>
 
+        <?php if($bouncer->validate('view_audit_log')) { ?>
         // -- Room Page --
         .on("change", "#display_log", function() {
             if($(this).is(":checked")) {
@@ -714,11 +730,10 @@ require 'includes/header_start.php';
                 $(".room_note_log").hide();
             }
         })
-        .on("change", ".recalcVin", function() {
-            calcVin(active_room_id);
-        })
         // -- End Room Page --
+        <?php } ?>
 
+        <?php if($bouncer->validate('view_sales_list')) { ?>
         // -- Sales List Page --
         .on("change", "#job_status_lost", function() {
             if($(this).is(":checked")) {
@@ -775,7 +790,9 @@ require 'includes/header_start.php';
             $.post("/ondemand/display_actions.php?action=show_sales_list_id&id=" + show);
         })
         // -- End Sales List Page --
+        <?php } ?>
 
+        <?php if($bouncer->validate('add_feedback')) { ?>
         // -- Feedback --
         .on("click", "#feedback-submit", function() {
             var description = $("#feedback-text").val();
@@ -790,6 +807,7 @@ require 'includes/header_start.php';
             });
         })
         // -- End Feedback --
+        <?php } ?>
 
         // -- Notifications --
         .on("click", "#notification_list", function() {
@@ -797,6 +815,7 @@ require 'includes/header_start.php';
         })
         // -- End Notifications --
 
+        <?php if($bouncer->validate('clock_out')) { ?>
         // -- Employees --
         .on("click", ".clock_out", function(e) {
             var id = $(this).data("id");
@@ -808,6 +827,7 @@ require 'includes/header_start.php';
             });
         })
         // -- End Employees --
+        <?php } ?>
     ;
 
     setInterval(function() { // stops the auto-logout
@@ -818,8 +838,10 @@ require 'includes/header_start.php';
 <!-- Global Search loading, required for global search to work -->
 <script src="/ondemand/js/global_search.js?v=<?php echo VERSION; ?>"></script>
 
+<?php if($bouncer->validate('add_so')) { ?>
 <!-- Adding SO to the system -->
 <script src="/ondemand/js/add_so.js?v=<?php echo VERSION; ?>"></script>
+<?php } ?>
 
 <!-- jQuery  -->
 <script src="/assets/js/tether.min.js"></script><!-- Tether for Bootstrap -->

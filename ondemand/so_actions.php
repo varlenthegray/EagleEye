@@ -474,4 +474,13 @@ switch($_REQUEST['action']) {
         echo json_encode($output);
 
         break;
+    case 'generate_code':
+        $key = md5(microtime());
+        $so = sanitizeInput($_REQUEST['so_num']);
+
+        $dbconn->query("UPDATE sales_order SET access_code = '$key' WHERE so_num = '$so'");
+
+        echo $key;
+
+        break;
 }

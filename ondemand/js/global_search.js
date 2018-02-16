@@ -672,4 +672,27 @@ $("body")
 
         window.open("/print/appliance_spec.php?ws_id=" + ws_id, "_blank");
     })
+
+    .on("click", "#generate_code", function(e) {
+        var so = $(this).data("so");
+
+        $.ajax({
+            url: '/ondemand/so_actions.php?action=generate_code&so_num=' + so,
+            dataType: 'text',
+            async: false,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            success: function(data){
+                let copyFrom = document.createElement("textarea");
+                document.body.appendChild(copyFrom);
+                copyFrom.textContent = "https://dev.3erp.us/dealer/index.php?key=" + data;
+                copyFrom.select();
+                document.execCommand("copy");
+                copyFrom.remove();
+
+                displayToast("success", "Copied code to clipboard!", "Code Copied");
+            }
+        });
+    })
 ;

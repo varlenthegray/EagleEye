@@ -4,38 +4,13 @@
     </div>
     <li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>
     <?php
-    $non_shop_1 = '';
-    $non_shop_2 = '';
-    $non_shop_3 = '';
-    $non_shop_4 = '';
+    $nav_out = '';
 
-    if((int)$_SESSION['userInfo']['account_type'] !== 6) {
-        $non_shop_1 = <<<HEREDOC
-<li id='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add SO</span></a></li>
-<li class='nav-separator'><span></span></li>
-HEREDOC;
+    $nav_out .= ($bouncer->validate('add_so')) ? "<li id='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add SO</span></a></li><li class='nav-separator'><span></span></li>" : null;
+    $nav_out .= "<li id='nav_dashboard'><a href='/index.php'><i class='zmdi zmdi-view-dashboard m-r-5'></i><span>Dashboard</span></a></li>";
 
-        $non_shop_2 = "<li id='nav_tasks'><a onclick='unloadPage(\"tasks\")'><i class='zmdi zmdi-check-circle-u m-r-5'></i><span>Tasks</span></a></li>";
-
-        $non_shop_3 = <<<HEREDOC
-<li class='has-submenu'>
-    <a><i class='zmdi zmdi-assignment'></i>Reports</a>
-    <ul class='submenu'>
-        <li id='nav_workcenter'><a onclick='unloadPage("workcenter")'><i class='zmdi zmdi-receipt m-r-5'></i>Workcenter</a></li>
-        <li id='nav_so_list'><a onclick='unloadPage("so_list")'><i class='zmdi zmdi-accounts-list m-r-5'></i>SO List</a></li>
-        <li id='nav_sales_list'><a onclick='unloadPage("sales_list")'><i class='zmdi zmdi-accounts-list m-r-5'></i>Sales List</a></li>
-        <li id='nav_timecard'><a><i class='zmdi zmdi-time m-r-5'></i>Timecards</a></li>
-    </ul>
-</li>
-HEREDOC;
-    }
-
-    /** @var string $a1 - Admin operations and availability */
-    if((int)$_SESSION['userInfo']['account_type'] <= 4) $a1 = "<li id='nav_employee_ops'><a href='?page=user_op_mgmt'><i class='zmdi zmdi-assignment-account m-r-5'></i><span>Employee Ops</span></a></li>";
-
-    echo <<<HEREDOC
-$non_shop_1
-<li id='nav_dashboard'><a href='/index.php'><i class='zmdi zmdi-view-dashboard m-r-5'></i><span>Dashboard</span></a></li>
+    if($bouncer->validate("clock_out")) {
+        $nav_out .= <<<HEREDOC
 <li class='has-submenu'>
     <a><i class='zmdi zmdi-account'></i>Account</a>
     <ul class='submenu'>
@@ -43,13 +18,38 @@ $non_shop_1
         <li id='nav_logout'><a href='/login.php?logout=true'><i class='fa fa-sign-out m-r-5'></i>Log Out</a></li>
     </ul>
 </li>
-<li class='nav-separator'><span></span></li>
-<li id='nav_feedback'><a data-toggle='modal' data-target='#feedback-page'><i class='fa fa-comment-o m-r-5'></i><span>Feedback</span></a></li>
-$non_shop_2
-<li class='nav-separator'><span></span></li>
-$non_shop_3
-<li id='nav_employees'><a href='employees.php'><i class='zmdi zmdi-account-circle m-r-5'></i><span>Employees</span></a></li>
-$a1
 HEREDOC;
+    } else {
+        $nav_out .= "<li id='nav_logout'><a href='/login.php?logout=true'><i class='fa fa-sign-out m-r-5'></i>Log Out</a></li>";
+    }
+
+    $nav_out .= "<li class='nav-separator'><span></span></li>";
+
+    $nav_out .= ($bouncer->validate('add_feedback')) ? "<li id='nav_feedback'><a data-toggle='modal' data-target='#feedback-page'><i class='fa fa-comment-o m-r-5'></i><span>Feedback</span></a></li>" : null;
+    $nav_out .= ($bouncer->validate('view_tasks')) ? "<li id='nav_tasks'><a onclick='unloadPage(\"tasks\")'><i class='zmdi zmdi-check-circle-u m-r-5'></i><span>Tasks</span></a></li>" : null;
+
+    if($bouncer->validate('add_feedback') || $bouncer->validate('view_tasks')) {
+        $nav_out .= "<li class='nav-separator'><span></span></li>";
+    }
+
+    if($bouncer->validate('view_workcenter') || $bouncer->validate('view_so_list') || $bouncer->validate('view_sales_list') || $bouncer->validate('view_timecards')) {
+        $nav_out .= "<li class='has-submenu'>
+                        <a><i class='zmdi zmdi-assignment'></i>Reports</a>
+                        <ul class='submenu'>";
+
+        $nav_out .= ($bouncer->validate('view_workcenter')) ? "<li id='nav_workcenter'><a onclick='unloadPage(\"workcenter\")'><i class='zmdi zmdi-receipt m-r-5'></i>Workcenter</a></li>" : null;
+        $nav_out .= ($bouncer->validate('view_so_list')) ? "<li id='nav_so_list'><a onclick='unloadPage(\"so_list\")'><i class='zmdi zmdi-accounts-list m-r-5'></i>SO List</a></li>" : null;
+        $nav_out .= ($bouncer->validate('view_sales_list')) ? "<li id='nav_sales_list'><a onclick='unloadPage(\"sales_list\")'><i class='zmdi zmdi-accounts-list m-r-5'></i>Sales List</a></li>" : null;
+        $nav_out .= ($bouncer->validate('view_timecards')) ? "<li id='nav_timecard'><a><i class='zmdi zmdi-time m-r-5'></i>Timecards</a></li>" : null;
+
+        $nav_out .= "</ul></li>";
+    }
+
+    $nav_out .= ($bouncer->validate('view_employees')) ? "<li id='nav_employees'><a href='employees.php'><i class='zmdi zmdi-account-circle m-r-5'></i><span>Employees</span></a></li>" : null;
+    $nav_out .= ($bouncer->validate('view_employee_ops')) ? "<li id='nav_employee_ops'><a href='?page=user_op_mgmt'><i class='zmdi zmdi-assignment-account m-r-5'></i><span>Employee Ops</span></a></li>" : null;
+
+
+
+    echo $nav_out;
     ?>
 </ul>

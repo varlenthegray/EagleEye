@@ -15,24 +15,34 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
             $_SESSION['valid'] = true; // set the session as valid
             $_SESSION['userInfo'] = $result;
 
-            $timecard_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = {$result['id']} AND time_out IS NULL");
+            $perm_qry = $dbconn->query("SELECT * FROM permissions WHERE user_id = {$result['id']}");
 
-            if($timecard_qry->num_rows === 0) { // if there is no timecard, we have to create one
-                $dbconn->query("INSERT INTO timecards (employee, time_in) VALUES ('{$result['id']}', UNIX_TIMESTAMP())");
-            }
+            if($perm_qry->num_rows === 1) {
+                $perm = $perm_qry->fetch_assoc();
 
-            $ip = $_SERVER['REMOTE_ADDR'];
+                $_SESSION['permissions'] = $perm;
 
-            $dbconn->query("UPDATE user SET last_login = UNIX_TIMESTAMP(), last_ip_address = '$ip' WHERE id = {$result['id']}");
+                $timecard_qry = $dbconn->query("SELECT * FROM timecards WHERE employee = {$result['id']} AND time_out IS NULL");
 
-            if($result['id'] !== '16') {
-                $_SESSION['shop_user'] = $result;
-                $_SESSION['shop_active'] = true;
-                $_SESSION['userInfo']['justLoggedIn'] = true;
+                if($timecard_qry->num_rows === 0) { // if there is no timecard, we have to create one
+                    $dbconn->query("INSERT INTO timecards (employee, time_in) VALUES ('{$result['id']}', UNIX_TIMESTAMP())");
+                }
 
-                echo "<script type='text/javascript'>window.location.replace('index.php');</script>";
+                $ip = $_SERVER['REMOTE_ADDR'];
+
+                $dbconn->query("UPDATE user SET last_login = UNIX_TIMESTAMP(), last_ip_address = '$ip' WHERE id = {$result['id']}");
+
+                if($result['id'] !== '16') {
+                    $_SESSION['shop_user'] = $result;
+                    $_SESSION['shop_active'] = true;
+                    $_SESSION['userInfo']['justLoggedIn'] = true;
+
+                    echo "<script type='text/javascript'>window.location.replace('index.php');</script>";
+                } else {
+                    echo "<script type='text/javascript'>window.location.replace('employees.php');</script>";
+                }
             } else {
-                echo "<script type='text/javascript'>window.location.replace('employees.php');</script>";
+                displayToast("error", "You have no permissions set!", "Permissions Unavailable");
             }
         } else {
             ?>
