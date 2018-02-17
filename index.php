@@ -1,7 +1,7 @@
 <?php
 require 'includes/header_start.php';
 
-outputPHPErrs();
+//outputPHPErrs();
 ?>
 <!DOCTYPE html>
 <html>
