@@ -126,7 +126,7 @@ if($user_qry->num_rows > 0) {
                 for($i = 0; $i <= $total_days; $i++) {
                     $next_day = (int)$current_day + 86400;
 
-                    if(date("N", $current_day) < 6) { // if it's not saturday or sunday
+                    if(date("N", $current_day) < 7) { // if it's not sunday
                         echo "<tr><th colspan='6'><h4>" . date("l (" . DATE_DEFAULT . ")", $current_day) . "</h4></th></tr>"; // format the date with DAY (DATE)
 
                         // grab all data from the audit trail for that day
