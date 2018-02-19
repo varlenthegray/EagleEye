@@ -258,6 +258,8 @@ HEREDOC;
 
         break;
     case 'update_room':
+        $room_id = sanitizeInput($_REQUEST['roomid']);
+
         $so_num = sanitizeInput($_REQUEST['vin_so_num_' . $room_id]);
         $room = sanitizeInput($_REQUEST['vin_room_' . $room_id]);
         $iteration = sanitizeInput($_REQUEST['vin_iteration_' . $room_id]);
@@ -277,7 +279,6 @@ HEREDOC;
         $final_payment = (bool)$_REQUEST['final_payment'];
         $ptl_del = (bool)$_REQUEST['ptl_del'];
 
-        $room_id = sanitizeInput($_REQUEST['roomid']);
         $followup_date = sanitizeInput($_REQUEST['room_inquiry_followup_date']);
         $followup_individual = sanitizeInput($_REQUEST['room_inquiry_requested_of']);
         $inquiry_id = null;
@@ -515,6 +516,8 @@ HEREDOC;
         $install_op = sanitizeInput($_REQUEST['install_bracket']);
         $pickmat_op = sanitizeInput($_REQUEST['pick_materials_bracket']);
         $edgebanding_op = sanitizeInput($_REQUEST['edgebanding_bracket']);
+
+
 
         $changed[] = whatChanged($sales_op, $room_info['sales_bracket'], 'Sales Bracket', false, false, true);
         $changed[] = whatChanged($sample_op, $room_info['sample_bracket'], 'Sample Bracket', false, false, true);
