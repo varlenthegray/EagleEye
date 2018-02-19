@@ -701,11 +701,19 @@ h5 {
 
 .swimlane {
   max-height: 86.6vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 
   .card {
     &:hover {
       background-color: #EEEEEE;
     }
   }
+}
+
+.hidden-section {
+  display: none;
+}
+
+.text-secondary {
+  color: $gray-light;
 }

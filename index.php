@@ -27,7 +27,7 @@ require 'includes/header_start.php';
     <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
 
     <!-- App CSS -->
-    <link href="/assets/css/style.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/style.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
     <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>

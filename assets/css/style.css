@@ -23563,7 +23563,7 @@ h5 {
 
 .swimlane {
   max-height: 86.6vh;
-  overflow-y: scroll; }
+  overflow-y: auto; }
   .swimlane .card:hover {
     background-color: #EEEEEE; }
 

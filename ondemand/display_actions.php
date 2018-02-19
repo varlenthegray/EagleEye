@@ -570,4 +570,76 @@ switch($_REQUEST['action']) {
         }
 
         break;
+
+    /** Engineering Cardlist */
+    case 'update_eng_order':
+        $items = sanitizeInput($_REQUEST['items']);
+
+        $eng_order_qry = $dbconn->query("SELECT * FROM eng_report WHERE user_id = '{$_SESSION['userInfo']['id']}'");
+
+        if($eng_order_qry->num_rows === 1) {
+            $eng_order = $eng_order_qry->fetch_assoc();
+
+            $dbconn->query("UPDATE eng_report SET `order` = '$items' WHERE id = '{$eng_order['id']}'");
+        } else {
+            $dbconn->query("INSERT INTO eng_report (user_id, `order`, hidden) VALUES ('{$_SESSION['userInfo']['id']}', '$items', NULL);");
+        }
+
+        break;
+    case 'hide_eng_card':
+        $room_id = sanitizeInput($_REQUEST['room_id']);
+
+        $eng_report_qry = $dbconn->query("SELECT * FROM eng_report WHERE user_id = '{$_SESSION['userInfo']['id']}'");
+
+        if($eng_report_qry->num_rows === 1) {
+            $eng_report = $eng_report_qry->fetch_assoc();
+
+            if(!empty($eng_report['hidden'])) {
+                $hidden_cards = json_decode($eng_report['hidden']);
+
+                $hidden_cards[] = $room_id;
+            } else {
+                $hidden_cards[] = $room_id;
+            }
+
+            $hidden_cards = json_encode($hidden_cards);
+
+            $dbconn->query("UPDATE eng_report SET hidden = '$hidden_cards' WHERE user_id = '{$_SESSION['userInfo']['id']}'");
+        } else {
+            $hidden_cards = json_encode($room_id);
+
+            echo "First Hidden Cards: $hidden_cards";
+
+            $dbconn->query("INSERT INTO eng_report (user_id, `order`, hidden) VALUES ('{$_SESSION['userInfo']['id']}', NULL, '$hidden_cards')");
+        }
+
+        break;
+    case 'show_eng_card':
+        $room_id = sanitizeInput($_REQUEST['room_id']);
+
+        $eng_report_qry = $dbconn->query("SELECT * FROM eng_report WHERE user_id = '{$_SESSION['userInfo']['id']}'");
+
+        if($eng_report_qry->num_rows === 1) {
+            $eng_report = $eng_report_qry->fetch_assoc();
+
+            if(!empty($eng_report['hidden'])) {
+                $hidden_cards = json_decode($eng_report['hidden']);
+
+                $array_location = array_search($room_id, $hidden_cards); // find the index of the card to remove
+
+                unset($hidden_cards[$array_location]); // remove the card from hidden view
+
+                $hidden_cards = array_values($hidden_cards); // reset the index of the array
+
+                $hidden_cards = json_encode($hidden_cards);
+            } else {
+                $hidden_cards = "";
+            }
+
+            $dbconn->query("UPDATE eng_report SET hidden = '$hidden_cards' WHERE user_id = '{$_SESSION['userInfo']['id']}'");
+        } else {
+            echo displayToast("error", "No cards to unhide.", "Unable to Unhide");
+        }
+
+        break;
 }
