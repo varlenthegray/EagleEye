@@ -708,6 +708,12 @@ h5 {
       background-color: #EEEEEE;
     }
   }
+
+  .sticky {
+    top: -5px;
+    z-index: 2;
+    background-color: #FFFFFF;
+  }
 }
 
 .hidden-section {
