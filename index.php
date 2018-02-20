@@ -393,7 +393,10 @@ require 'includes/header_start.php';
     $(function() {
         <?php
         if(empty($_REQUEST['page'])) {
-            echo "loadPage('dashboard');";
+            $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '{$_SESSION['userInfo']['id']}'");
+            $usr = $usr_qry->fetch_assoc();
+
+            echo "loadPage('{$usr['default_dashboard']}');";
         } else {
             echo "loadPage('{$_REQUEST['page']}');";
         }
