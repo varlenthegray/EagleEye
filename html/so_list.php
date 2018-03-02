@@ -36,6 +36,9 @@ require '../includes/header_start.php';
         },
         "order": [0,'desc'],
         "dom": 'rti',
-        "paging": false
+        "paging": false,
+        fixedHeader: {
+            headerOffset: 78
+        }
     });
 </script>
