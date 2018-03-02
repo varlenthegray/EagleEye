@@ -46,6 +46,7 @@ require 'includes/header_start.php';
     <!-- Datatables -->
     <link href="/assets/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.0/css/rowReorder.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.1.3/css/fixedHeader.dataTables.min.css"/>
 
     <!-- Date Picker -->
     <link href="/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
@@ -250,10 +251,11 @@ require 'includes/header_start.php';
                                 <select name="feedback_to" id="feedback_to" class="form-control">
                                     <optgroup label="Office">
                                         <option value="9">Production Administrator</option>
-                                        <option value="14">Shop Foreman</option>
+                                        <option value="36">Shop Foreman</option>
                                         <option value="7">Robert</option>
                                         <option value="1">IT</option>
-                                        <option value="10">Engineering</option>
+                                        <option value="15">Engineering</option>
+                                        <option value="24">Brent</option>
                                         <option value="8">Accounting</option>
                                     </optgroup>
 
@@ -306,13 +308,19 @@ require 'includes/header_start.php';
 
 <script>
     // Connect to the socket to begin transmission of data
-    <?php if($server[0] === 'dev') {
+    <?php
+    if($server[0] === 'dev') {
         echo "var socket = io.connect('//dev.3erp.us:4000');";
     } else {
         echo "var socket = io.connect('//3erp.us:4100');";
-    } ?>
+    }
 
-    var currentPage = 'dashboard';
+    $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '{$_SESSION['userInfo']['id']}'");
+    $usr = $usr_qry->fetch_assoc();
+    ?>
+
+
+    var currentPage = '<?php echo $usr['default_dashboard']; ?>';
     var scrollPosition = 0;
 
     var indv_dt_interval; // used on functions.js
@@ -326,22 +334,13 @@ require 'includes/header_start.php';
     <?php
     echo (isset($_SESSION['userInfo']['default_queue']) || !empty($_SESSION['userInfo']['default_queue'])) ? "var queue = '{$_SESSION['userInfo']['default_queue']}';" : "var queue = '{$_SESSION['shop_user']['default_queue']}';";
 
-    $unique_key = hash("sha256", time() + rand(1,999999999));
+    $unique_key = hash("sha256", microtime() + rand(1,999999999));
 
     $dbconn->query("UPDATE user SET unique_key = '$unique_key' WHERE id = '{$_SESSION['userInfo']['id']}'");
 
     $_SESSION['userInfo']['unique_key'] = $unique_key;
 
     echo "var unique_key = '$unique_key';";
-
-    if($_SESSION['userInfo']['account_type'] <= 5) {
-        echo '$("body").on("click", ".view_so_info", function(e) {
-            e.stopPropagation();        
-        
-            var id = $(this).attr("id");
-            $("#global_search").val(id).trigger("keyup");
-        })';
-    }
     ?>
 
     var op_id;
@@ -393,9 +392,6 @@ require 'includes/header_start.php';
     $(function() {
         <?php
         if(empty($_REQUEST['page'])) {
-            $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '{$_SESSION['userInfo']['id']}'");
-            $usr = $usr_qry->fetch_assoc();
-
             echo "loadPage('{$usr['default_dashboard']}');";
         } else {
             echo "loadPage('{$_REQUEST['page']}');";
@@ -462,6 +458,17 @@ require 'includes/header_start.php';
             window.open("/print/timecard.php?start_date=" + start + "&end_date=" + end + "&employee=23", "_blank");
         })
         // -- End Navigation --
+        <?php } ?>
+
+        <?php if($bouncer->validate('view_so')) { ?>
+        // -- Clicking an SO to view it
+        .on("click", ".view_so_info", function(e) {
+            e.stopPropagation();
+
+            var id = $(this).attr("id");
+            $("#global_search").val(id).trigger("keyup");
+        })
+        // -- End clicking an SO to view it
         <?php } ?>
 
         <?php if($bouncer->validate('view_operation')) { ?>
@@ -840,8 +847,10 @@ require 'includes/header_start.php';
     }, 600000);
 </script>
 
+<?php if($bouncer->validate('search')) { ?>
 <!-- Global Search loading, required for global search to work -->
 <script src="/ondemand/js/global_search.js?v=<?php echo VERSION; ?>"></script>
+<?php } ?>
 
 <?php if($bouncer->validate('add_so')) { ?>
 <!-- Adding SO to the system -->
@@ -899,6 +908,9 @@ require 'includes/header_start.php';
 
 <!-- Unsaved Changes -->
 <script src="/assets/js/unsaved_alert.js?v=<?php echo VERSION; ?>"></script>
+
+<!-- Sticky table header -->
+<script src="https://cdn.datatables.net/fixedheader/3.1.3/js/dataTables.fixedHeader.min.js"></script>
 </body>
 </html>
 <?php

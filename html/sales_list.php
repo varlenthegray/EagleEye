@@ -4,7 +4,7 @@ require '../includes/header_start.php';
 
 <div class="row">
     <div class="col-md-12">
-        <div class="card-box">
+        <div class="card-box" id="float_container">
             <div class="row">
                 <div class="col-md-2 no-print" style="position:fixed;top:10vh;overflow:auto;height:87vh;display:none;">
                     <table width="100%" style="background-color:#FFFFFF;">
@@ -36,13 +36,13 @@ require '../includes/header_start.php';
                 </div>
 
                 <div class="col-md-4">
-                    <table>
+                    <table class="sticky" style="width:calc(100% + 2px);background-color:#FFF;top:84px;">
                         <tr>
-                            <td style="padding-right:5px;"><div class="checkbox checkbox-custom text-md-center"><input id="show_hidden_sales_list" class="ignoreSaveAlert" type="checkbox"><label for="show_hidden_sales_list">Show Hidden</label></div></td>
-                            <td style="padding-right:5px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_lost" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_lost">Lost</label></div></td>
-                            <td style="padding-right:5px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_quote" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_quote">Quote</label></div></td>
-                            <td style="padding-right:5px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_job" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_job">Job</label></div></td>
-                            <td style="padding-right:5px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_completed" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_completed">Completed</label></div></td>
+                            <td style="padding-right:15px;"><div class="checkbox checkbox-custom text-md-center"><input id="show_hidden_sales_list" class="ignoreSaveAlert" type="checkbox"><label for="show_hidden_sales_list">Show Hidden</label></div></td>
+                            <td style="padding-right:15px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_lost" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_lost">Lost</label></div></td>
+                            <td style="padding-right:15px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_quote" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_quote">Quote</label></div></td>
+                            <td style="padding-right:15px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_job" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_job">Job</label></div></td>
+                            <td style="padding-right:15px;"><div class="checkbox checkbox-custom text-md-center"><input id="job_status_completed" class="ignoreSaveAlert" type="checkbox" checked><label for="job_status_completed">Completed</label></div></td>
                         </tr>
                     </table>
 
@@ -71,7 +71,9 @@ require '../includes/header_start.php';
 </div>
 
 <script>
-    var so_list = $("#so_global_list").DataTable({
+    var table = $("#so_global_list");
+
+    var so_list = table.DataTable({
         "ajax": "/ondemand/so_actions.php?action=get_sales_list",
         "columnDefs": [
             {"visible": false, "targets": [3, 5, 6]},
@@ -118,6 +120,9 @@ require '../includes/header_start.php';
                     last = group;
                 }
             });
+        },
+        fixedHeader: {
+            headerOffset: 100
         }
     });
 

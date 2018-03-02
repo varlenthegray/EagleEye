@@ -293,7 +293,15 @@ switch($_REQUEST['action']) {
         $output = array();
         $i = 0;
 
-        $so_qry = $dbconn->query("SELECT sales_order.*, dealers.dealer_name, dealers.contact FROM sales_order LEFT JOIN dealers ON sales_order.dealer_code = dealers.dealer_id");
+        if((bool)$_SESSION['userInfo']['dealer']) {
+            $dealer = DEALER;
+
+            $dealer_where = "WHERE dealers.dealer_id LIKE '$dealer%'";
+        } else {
+            $dealer_where = null;
+        }
+
+        $so_qry = $dbconn->query("SELECT sales_order.*, dealers.dealer_name, dealers.contact FROM sales_order LEFT JOIN dealers ON sales_order.dealer_code = dealers.dealer_id $dealer_where");
 
         if($so_qry->num_rows > 0) {
             while($so = $so_qry->fetch_assoc()) {
@@ -345,8 +353,16 @@ switch($_REQUEST['action']) {
         $prev_room = null;
         $prev_seq = null;
 
+        if((bool)$_SESSION['userInfo']['dealer']) {
+            $dealer = DEALER;
+
+            $dealer_where = "WHERE dealers.dealer_id LIKE '$dealer%'";
+        } else {
+            $dealer_where = null;
+        }
+
         $so_qry = $dbconn->query("SELECT sales_order.id AS sID, sales_order.*, rooms.id AS rID, rooms.*, dealers.* FROM sales_order 
-          LEFT JOIN rooms ON sales_order.so_num = rooms.so_parent LEFT JOIN dealers ON sales_order.dealer_code = dealers.dealer_id 
+          LEFT JOIN rooms ON sales_order.so_num = rooms.so_parent LEFT JOIN dealers ON sales_order.dealer_code = dealers.dealer_id $dealer_where 
             ORDER BY so_num ASC, room ASC, iteration ASC;");
 
         $usr_qry = $dbconn->query("SELECT hide_sales_list_values FROM user WHERE id = {$_SESSION['userInfo']['id']};");
@@ -416,7 +432,7 @@ switch($_REQUEST['action']) {
                         $iteration = explode(".", number_format($so['iteration'], 2));
                         $prev_seq = $iteration[0];
 
-                        $output['data'][$i][] = "<button class='btn waves-effect $btn_classes' data-identifier='{$so['rID']}'><i class='zmdi $btn_icon'></i></button>";
+                        $output['data'][$i][] = "<button class='$btn_classes' data-identifier='{$so['rID']}'><i class='zmdi $btn_icon'></i></button>";
                         $output['data'][$i][] = "<span style='padding-left:20px;'>$room_iteration</span>";
                         $output['data'][$i][] = "<span style='padding-left:20px;'>$room_name</span>";
                         $output['data'][$i][] = $contact;
@@ -446,7 +462,7 @@ switch($_REQUEST['action']) {
                             $room_def = "<span style='padding-left:{$final_padding}px;'>$final_iteration</span>";
                         }
 
-                        $output['data'][$i][] = "<button class='btn waves-effect $btn_classes' data-identifier='{$so['rID']}'><i class='zmdi $btn_icon'></i></button>";
+                        $output['data'][$i][] = "<button class='$btn_classes' data-identifier='{$so['rID']}'><i class='zmdi $btn_icon'></i></button>";
                         $output['data'][$i][] = "<span style='padding-left:20px;'>$room_def</span>";
                         $output['data'][$i][] = "<span style='padding-left:20px;'>{$so['room_name']}</span>";
                         $output['data'][$i][] = $contact;
