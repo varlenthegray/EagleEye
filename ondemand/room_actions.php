@@ -168,16 +168,15 @@ switch($_REQUEST['action']) {
             '$doordrawer_op', '$custom_op', '$main_op', '$ops', '$order_status', '$shipping_op', '$install_op', '$del_date_unix', '$sales_pub', 
             '$preprod_pub', '$sample_pub', '$doordrawer_pub', '$custom_pub', '$main_pub', '$shipping_pub', '$install_pub', '$pickmat_pub')")) {
                 $new_room_id = $dbconn->insert_id;
-
-                createOpQueue($sales_pub, 'Sales', $sales_op, $room_id);
-                createOpQueue($sample_pub, 'Sample', $sample_op, $room_id);
-                createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $room_id);
-                createOpQueue($doordrawer_pub, 'Drawer & Doors', $doordrawer_op, $room_id);
-                createOpQueue($main_pub, 'Main', $main_op, $room_id);
-                createOpQueue($custom_pub, 'Custom', $custom_op, $room_id);
-                createOpQueue($shipping_pub, 'Shipping', $shipping_op, $room_id);
-                createOpQueue($install_pub, 'Installation', $install_op, $room_id);
-                createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $room_id);
+                createOpQueue($sales_pub, 'Sales', $sales_op, $new_room_id);
+                createOpQueue($sample_pub, 'Sample', $sample_op, $new_room_id);
+                createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $new_room_id);
+                createOpQueue($doordrawer_pub, 'Drawer & Doors', $doordrawer_op, $new_room_id);
+                createOpQueue($main_pub, 'Main', $main_op, $new_room_id);
+                createOpQueue($custom_pub, 'Custom', $custom_op, $new_room_id);
+                createOpQueue($shipping_pub, 'Shipping', $shipping_op, $new_room_id);
+                createOpQueue($install_pub, 'Installation', $install_op, $new_room_id);
+                createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $new_room_id);
 
                 if(!empty($sample_block_ordered) || !empty($door_only_ordered) || !empty($door_drawer_ordered) || !empty($inset_square_ordered) || !empty($inset_beaded_ordered)) {
                     $now = time();
