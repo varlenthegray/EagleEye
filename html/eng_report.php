@@ -271,6 +271,18 @@ require '../includes/header_start.php';
 </div>
 <!-- /.modal -->
 
+<!-- modal -->
+<div id="modalStartJob" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalStartJobLabel" aria-hidden="true">
+    <!-- for flexibility, I'm going to display this via AJAX data return -->
+</div>
+<!-- /.modal -->
+
+<!-- modal -->
+<div id="modalUpdateJob" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalUpdateJob" aria-hidden="true">
+    <!-- same here, displayed via AJAX -->
+</div>
+<!-- /.modal -->
+
 <script>
     var sortList = $(".room_sort");
 
@@ -413,7 +425,7 @@ require '../includes/header_start.php';
         echo '</select>';
         ?>";
 
-    <?php if($_SESSION['userInfo']['perm_full_dashboard']) { ?>
+    <?php if($bouncer->validate('view_quotes')) { ?>
     var quote_table = $("#quote_global_table").DataTable({
         "ajax": "/ondemand/display_actions.php?action=display_quotes",
         "createdRow": function (row, data, dataIndex) {
@@ -426,6 +438,8 @@ require '../includes/header_start.php';
         "order": [[0, "asc"]]
     });
 
+    $("#quote_header").html("<h4>Quotes</h4>");
+    <?php } if($bouncer->validate('view_orders')) { ?>
     var order_table = $("#orders_global_table").DataTable({
         "ajax": "/ondemand/display_actions.php?action=display_orders",
         "createdRow": function (row, data, dataIndex) {
@@ -437,7 +451,9 @@ require '../includes/header_start.php';
         "dom": '<"#order_header.dt-custom-header">tipr',
         "order": [[0, "asc"]]
     });
-    <?php } ?>
+
+    $("#order_header").html("<h4>Orders</h4>");
+    <?php } if($bouncer->validate('view_operation')) { ?>
 
     var active_table = $("#active_ops_global_table").DataTable({
         "ajax": "/ondemand/display_actions.php?action=display_ind_active_jobs",
@@ -479,13 +495,11 @@ require '../includes/header_start.php';
     });
 
     $("#queue_header").html("<h4 class='pull-left'>Operations for " + op_queue_list + "</h4>");
-    $("#quote_header").html("<h4>Quotes</h4>");
-    $("#order_header").html("<h4>Orders</h4>");
     $("#active_header").html("<h4>Operations (Active) for <?php echo $_SESSION['shop_user']['name']; ?></h4>");
 
     updateOpQueue();
 
-    <?php if($_SESSION['userInfo']['account_type'] <= 4) { ?>
+    <?php } if($_SESSION['userInfo']['account_type'] <= 4) { ?>
     dash_auto_interval = setInterval(function() {
         quote_table.ajax.reload(null, false);
         order_table.ajax.reload(null, false);
