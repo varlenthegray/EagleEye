@@ -328,7 +328,7 @@ require '../includes/header_start.php';
             }
         })
         .on("click", ".card", function(e) {
-            if($("#lock_unlock").attr("data-status") === 'locked') {
+            if($("#quote_lock_unlock").attr("data-status") === 'locked' && $("#fineng_lock_unlock").attr("data-status") === 'locked') {
                 e.stopPropagation();
 
                 $.post("/html/modals/view_card.php", {room_id: $(this).data("room-id"), so_id: $(this).data("so-id"), type: $(this).data("type")}, function(data) {
