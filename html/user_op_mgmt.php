@@ -7,7 +7,7 @@ if($_REQUEST['action'] === 'list_ops') {
     $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$id'");
     $usr = $usr_qry->fetch_assoc();
 
-    $ops_qry = $dbconn->query("SELECT * FROM operations WHERE op_id != '000' AND job_title != 'Bracket Completed' AND responsible_dept != 'N/A' ORDER BY op_id, bracket ASC");
+    $ops_qry = $dbconn->query("SELECT * FROM operations WHERE job_title != 'Bracket Completed' ORDER BY op_id, bracket ASC");
 
     echo "<a class='btn btn-primary w-sm waves-effect waves-light user_op_edit'>Edit</a>";
     echo "<table class='all_ops' style='display:none;width:100%;'>";
