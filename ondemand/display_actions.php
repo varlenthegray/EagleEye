@@ -9,140 +9,116 @@ use Carbon\Carbon; // prep carbon
 
 $queue = new \Queue\queue();
 
+if((bool)$_SESSION['userInfo']['dealer']) {
+    $dealer = DEALER;
+
+    $dealer_filter = "AND dealer_code LIKE '$dealer%'";
+} else {
+    $dealer_filter = null;
+}
+
+function displayOrderQuote ($type) {
+    global $dbconn;
+    global $dealer_filter;
+
+    $output = array();
+    $i = 0;
+
+    $prev_so = null;
+    $prev_room = null;
+    $prev_seq = null;
+
+    $room_qry = $dbconn->query("SELECT * FROM sales_order so LEFT JOIN rooms r ON so.so_num = r.so_parent WHERE r.order_status = '$type' $dealer_filter ORDER BY so_num, room, iteration ASC;");
+
+    if($room_qry->num_rows > 0) {
+        while($room = $room_qry->fetch_assoc()) {
+            if($type === '#') {
+                $bracket1 = 'sales_bracket';
+                $bracket2 = 'sample_bracket';
+            } else {
+                $bracket1 = 'preproduction_bracket';
+                $bracket2 = 'main_bracket';
+            }
+
+            if((bool)$room['sales_published']) {
+                $sales_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room[$bracket1]}'");
+                $sales_op = $sales_op_qry->fetch_assoc();
+
+                if((bool)$_SESSION['userInfo']['dealer'] && $type === '$') {
+                    $sales_op_display = 'In Production';
+                } else {
+                    $sales_op_display = (!empty($sales_op)) ? "{$sales_op['op_id']}: {$sales_op['job_title']}" : "None";
+                }
+            } else {
+                $sales_op_display = "";
+            }
+
+            if((bool)$room['sample_published']) {
+                $sample_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room[$bracket2]}'");
+                $sample_op = $sample_op_qry->fetch_assoc();
+
+                if((bool)$_SESSION['userInfo']['dealer'] && $type === '$') {
+                    $sales_op_display = 'In Production';
+                } else {
+                    $sample_op_display = (!empty($sample_op)) ? "{$sample_op['op_id']}: {$sample_op['job_title']}" : "None";
+                }
+            } else {
+                $sample_op_display = "";
+            }
+
+            $iteration = explode(".", number_format($room['iteration'], 2));
+
+            if($room['room'] === $prev_room && $room['so_num'] === $prev_so && $iteration[0] === $prev_seq) {
+                $indent = "margin-left:55px";
+                $addl_room_info = ".{$iteration[1]}";
+            } else {
+                $indent = "margin-left:40px";
+                $addl_room_info = "{$room['room']}{$room['iteration']}";
+            }
+
+            $rowID = (empty($room['so_num'])) ? $room['project_name'] : $rowID = $room['so_num'];
+
+            if($prev_so !== $room['so_num']) {
+                $output['data'][$i][] = $room['so_num'];
+                $output['data'][$i][] = "<strong>{$room['dealer_code']}_{$room['project_name']}</strong>";
+                $output['data'][$i][] = null;
+                $output['data'][$i][] = null;
+                $output['data'][$i]['DT_RowId'] = $rowID;
+
+                $i += 1;
+            }
+
+            $output['data'][$i][] = $room['so_parent'];
+            $output['data'][$i][] = "<span style='$indent'>$addl_room_info-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}-{$room['room_name']}</span>";
+            $output['data'][$i][] = $sales_op_display;
+            $output['data'][$i][] = $sample_op_display;
+            $output['data'][$i]['DT_RowId'] = $rowID;
+
+            $prev_room = $room['room'];
+            $prev_seq = $iteration[0];
+            $prev_so = $room['so_num'];
+
+            $i += 1;
+        }
+    } else {
+        $output['data'][$i][] = "";
+        $output['data'][$i][] = "No rooms found.";
+        $output['data'][$i][] = "";
+        $output['data'][$i][] = "";
+    }
+
+
+    return $output;
+}
+
 switch($_REQUEST['action']) {
     /** Dashboard */
     case "display_quotes":
-        $output = array();
-        $i = 0;
-
-        $so_qry = $dbconn->query("SELECT * FROM sales_order ORDER BY so_num DESC");
-
-        while($so = $so_qry->fetch_assoc()) {
-            $prev_room = null;
-            $prev_seq = null;
-
-            $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = {$so['so_num']} AND order_status = '#' ORDER BY room, iteration ASC");
-
-            if($room_qry->num_rows > 0) {
-                $output['data'][$i][] = $so['so_num'];
-                $output['data'][$i][] = "<strong>{$so['dealer_code']}_{$so['project_name']}</strong>";
-                $output['data'][$i][] = null;
-                $output['data'][$i][] = null;
-                $output['data'][$i]['DT_RowId'] = $so['so_num'];
-
-                $i += 1;
-
-                while($room = $room_qry->fetch_assoc()) {
-                    if((bool)$room['sales_published']) {
-                        $sales_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room['sales_bracket']}'");
-                        $sales_op = $sales_op_qry->fetch_assoc();
-
-                        $sales_op_display = (!empty($sales_op)) ? "{$sales_op['op_id']}: {$sales_op['job_title']}" : "None";
-                    } else {
-                        $sales_op_display = "";
-                    }
-
-                    if((bool)$room['sample_published']) {
-                        $sample_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room['sample_bracket']}'");
-                        $sample_op = $sample_op_qry->fetch_assoc();
-
-                        $sample_op_display = (!empty($sample_op)) ? "{$sample_op['op_id']}: {$sample_op['job_title']}" : "None";
-                    } else {
-                        $sample_op_display = "";
-                    }
-
-                    $iteration = explode(".", number_format($room['iteration'], 2));
-
-                    if($room['room'] === $prev_room && $iteration[0] === $prev_seq) {
-                        $indent = "margin-left:55px";
-                        $addl_room_info = ".{$iteration[1]}";
-                    } else {
-                        $indent = "margin-left:40px";
-                        $addl_room_info = "{$room['room']}{$room['iteration']}";
-                    }
-
-                    $prev_room = $room['room'];
-                    $prev_seq = $iteration[0];
-
-                    $output['data'][$i][] = $room['so_parent'];
-                    $output['data'][$i][] = "<span style='$indent'>$addl_room_info-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}-{$room['room_name']}</span>";
-                    $output['data'][$i][] = $sales_op_display;
-                    $output['data'][$i][] = $sample_op_display;
-                    $output['data'][$i]['DT_RowId'] = $room['so_parent'];
-
-                    $i += 1;
-                }
-            }
-        }
-
-        echo json_encode($output);
+        echo json_encode(displayOrderQuote('#'));
 
         break;
     case "display_orders":
-                    $output = array();
-                    $i = 0;
-
-                    $so_qry = $dbconn->query("SELECT * FROM sales_order ORDER BY so_num DESC");
-
-                    while($so = $so_qry->fetch_assoc()) {
-                        $prev_room = null;
-                        $prev_seq = null;
-
-                        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = {$so['so_num']} AND order_status = '$' ORDER BY room, iteration ASC");
-
-                        if($room_qry->num_rows > 0) {
-                            $output['data'][$i][] = $so['so_num'];
-                            $output['data'][$i][] = "<strong>{$so['dealer_code']}_{$so['project_name']}</strong>";
-                            $output['data'][$i][] = null;
-                            $output['data'][$i][] = null;
-                            $output['data'][$i]['DT_RowId'] = $so['so_num'];
-
-                            $i += 1;
-
-                            while($room = $room_qry->fetch_assoc()) {
-                                if((bool)$room['sales_published']) {
-                                    $sales_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room['sales_bracket']}'");
-                                    $sales_op = $sales_op_qry->fetch_assoc();
-
-                                    $sales_op_display = (!empty($sales_op)) ? "{$sales_op['op_id']}: {$sales_op['job_title']}" : "None";
-                                } else {
-                                    $sales_op_display = "";
-                                }
-
-                                if((bool)$room['sample_published']) {
-                                    $sample_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room['sample_bracket']}'");
-                                    $sample_op = $sample_op_qry->fetch_assoc();
-
-                                    $sample_op_display = (!empty($sample_op)) ? "{$sample_op['op_id']}: {$sample_op['job_title']}" : "None";
-                                } else {
-                                    $sample_op_display = "";
-                                }
-
-                                $iteration = explode(".", number_format($room['iteration'], 2));
-
-                                if($room['room'] === $prev_room && $iteration[0] === $prev_seq) {
-                                    $indent = "margin-left:55px";
-                                    $addl_room_info = ".{$iteration[1]}";
-                                } else {
-                                    $indent = "margin-left:40px";
-                                    $addl_room_info = "{$room['room']}{$room['iteration']}";
-                                }
-
-                                $prev_room = $room['room'];
-                                $prev_seq = $iteration[0];
-
-                    $output['data'][$i][] = $room['so_parent'];
-                    $output['data'][$i][] = "<span style='$indent'>$addl_room_info-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}-{$room['room_name']}</span>";
-                    $output['data'][$i][] = $sales_op_display;
-                    $output['data'][$i][] = $sample_op_display;
-                    $output['data'][$i]['DT_RowId'] = $room['so_parent'];
-
-                    $i += 1;
-                }
-            }
-        }
-
-        echo json_encode($output);
+        echo json_encode(displayOrderQuote('$'));
 
         break;
     case 'display_ind_active_jobs':
@@ -490,7 +466,6 @@ switch($_REQUEST['action']) {
         break;
 
     /** Workcenter */
-
     case 'display_full_job_queue':
         $jiq = $queue->wc_jobsInQueue();
 
@@ -644,6 +619,21 @@ switch($_REQUEST['action']) {
             $dbconn->query("UPDATE eng_report SET {$type}_invisible = '$hidden_cards' WHERE user_id = '{$_SESSION['userInfo']['id']}'");
         } else {
             echo displayToast("error", "No cards to unhide.", "Unable to Unhide");
+        }
+
+        break;
+
+    /** VIN Image display */
+    case 'vin_image_ref':
+        $type = sanitizeInput($_REQUEST['type']);
+        $vinID = sanitizeInput($_REQUEST['vinID']);
+
+        $qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$type' AND `key` = '$vinID'");
+
+        if($qry->num_rows > 0) {
+            $result = $qry->fetch_assoc();
+
+            echo (!empty($result['image'])) ? "<img src='/assets/images/vin/{$result['image']}'>" : null;
         }
 
         break;
