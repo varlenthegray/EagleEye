@@ -312,6 +312,7 @@ $("body")
 
         checkTransition(function() {
             active_room_id = $(thisClick).data('roomid');
+
             var seqAjax;
             var iterationAjax;
             var header;
@@ -337,7 +338,7 @@ $("body")
                     $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
 
                     $("#add_iteration_header_" + active_room_id).html(header);
-                    $("#edit_iteration_" + active_room_id).val(next_iteration);
+                    $("#edit_iteration_" + active_room_id).attr('value', next_iteration);
                     $("#vin_iteration_" + active_room_id).val(next_iteration);
                 });
             });
