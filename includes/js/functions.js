@@ -76,7 +76,6 @@ function backFromSearch() {
 
 function calcVin(room_id) {
     var room;
-
     if($("select[name='room']").val() === undefined) {
         room = $("input[name='room']").val();
     } else {
@@ -84,37 +83,37 @@ function calcVin(room_id) {
     }
 
     var iteration = $("input[name='iteration']").val();
-    var product_type = $("select[name='product_type']").val();
-    var order_status = $("select[name='order_status']").val();
-    var days_to_ship = $("select[name='days_to_ship']").val();
+    var product_type = $("#product_type").val();
+    var order_status = $("#order_status").val();
+    var days_to_ship = $("#days_to_ship").val();
     var dealer_code = $("#vin_dealer_code_" + room_id).val();
 
-    var species_grade = $("#species_grade_" + room_id).find(":selected").val();
-    var construction_method = $("#construction_method_" + room_id).find(":selected").val();
-    var door_design = $("#door_design_" + room_id).find(":selected").val();
-    var panel_raise_door = $("#panel_raise_door_" + room_id).find(":selected").val();
-    var panel_raise_sd = $("#panel_raise_sd_" + room_id).find(":selected").val();
-    var panel_raise_td = $("#panel_raise_td_" + room_id).find(":selected").val();
-    var edge_profile = $("#edge_profile_" + room_id).find(":selected").val();
-    var framing_bead = $("#framing_bead_" + room_id).find(":selected").val();
-    var framing_options = $("#framing_options_" + room_id).find(":selected").val();
-    var style_rail_width = $("#style_rail_width_" + room_id).find(":selected").val();
-    var finish_code = $("#finish_code_" + room_id).find(":selected").val();
-    var sheen = $("#sheen_" + room_id).find(":selected").val();
-    var glaze = $("#glaze_" + room_id).find(":selected").val();
-    var glaze_technique = $("#glaze_technique_" + room_id).find(":selected").val();
-    var antiquing = $("#antiquing_" + room_id).find(":selected").val();
-    var worn_edges = $("#worn_edges_" + room_id).find(":selected").val();
-    var distress_level = $("#distress_level_" + room_id).find(":selected").val();
-    var carcass_exterior_species = $("#carcass_exterior_species_" + room_id).find(":selected").val();
-    var carcass_exterior_finish_code = $("#carcass_exterior_finish_code_" + room_id).find(":selected").val();
-    var carcass_exterior_glaze_color = $("#carcass_exterior_glaze_color_" + room_id).find(":selected").val();
-    var carcass_exterior_glaze_technique = $("#carcass_exterior_glaze_technique_" + room_id).find(":selected").val();
-    var carcass_interior_species = $("#carcass_interior_species_" + room_id).find(":selected").val();
-    var carcass_interior_finish_code = $("#carcass_interior_finish_code_" + room_id).find(":selected").val();
-    var carcass_interior_glaze_color = $("#carcass_interior_glaze_color_" + room_id).find(":selected").val();
-    var carcass_interior_glaze_technique = $("#carcass_interior_glaze_technique_" + room_id).find(":selected").val();
-    var drawer_boxes = $("#drawer_boxes_" + room_id).find(":selected").val();
+    var species_grade = $("#species_grade").val();
+    var construction_method = $("#construction_method").val();
+    var door_design = $("#door_design").val();
+    var panel_raise_door = $("#panel_raise_door").val();
+    var panel_raise_sd = $("#panel_raise_sd").val();
+    var panel_raise_td = $("#panel_raise_td").val();
+    var edge_profile = $("#edge_profile").val();
+    var framing_bead = $("#framing_bead").val();
+    var framing_options = $("#framing_options").val();
+    var style_rail_width = $("#style_rail_width").val();
+    var finish_code = $("#finish_code").val();
+    var sheen = $("#sheen").val();
+    var glaze = $("#glaze").val();
+    var glaze_technique = $("#glaze_technique").val();
+    var antiquing = $("#antiquing").val();
+    var worn_edges = $("#worn_edges").val();
+    var distress_level = $("#distress_level").val();
+    var carcass_exterior_species = $("#carcass_exterior_species").val();
+    var carcass_exterior_finish_code = $("#carcass_exterior_finish_code").val();
+    var carcass_exterior_glaze_color = $("#carcass_exterior_glaze_color").val();
+    var carcass_exterior_glaze_technique = $("#carcass_exterior_glaze_technique").val();
+    var carcass_interior_species = $("#carcass_interior_species").val();
+    var carcass_interior_finish_code = $("#carcass_interior_finish_code").val();
+    var carcass_interior_glaze_color = $("#carcass_interior_glaze_color").val();
+    var carcass_interior_glaze_technique = $("#carcass_interior_glaze_technique").val();
+    var drawer_boxes = $("#drawer_boxes").val();
 
     $("#vin_code_" + room_id).val(active_so_num + room + "-" + iteration + "-" + product_type + order_status + days_to_ship + "_" + dealer_code + "_" + species_grade + construction_method + door_design + "-" + panel_raise_door + panel_raise_sd + panel_raise_td + "-" + edge_profile +
         framing_bead + framing_options + style_rail_width + "_" + finish_code + sheen + "-" + glaze + glaze_technique + antiquing + worn_edges + distress_level + "_" + carcass_exterior_species + carcass_exterior_finish_code +
@@ -149,4 +148,51 @@ function updateOpQueue() {
 function getLocalTime() {
     var time = new Date();
     return time.toLocaleTimeString();
+}
+
+function productTypeSwitch() {
+    function setPcts(g, y, n, r) {
+        $(".dts_pct_g").html("(" + g + ")");
+        $(".dts_pct_y").html("(" + y + ")");
+        $(".dts_pct_n").html("(" + n + ")");
+        $(".dts_pct_r").html("(" + r + ")");
+    }
+
+    switch($("#product_type").val()) {
+        case 'C':
+            setPcts('0%', '25%', '50%', 'Not Available');
+            break;
+
+        case 'L':
+            setPcts('0%', '0%', '25%', 'Not Available');
+            break;
+
+        case 'S':
+            setPcts('Not Available', 'Not Available', '0%', '0%');
+            break;
+
+        case 'D':
+            setPcts('0%', 'Not Available', 'Not Available', 'Not Available');
+            break;
+
+        case 'A':
+            setPcts('Not Available', '0%', '25%', '25%');
+            break;
+
+        case 'W':
+            setPcts('Not Available', '0%', '0%', '0%');
+            break;
+
+        case 'H':
+            setPcts('Not Available', 'Not Available', '0%', 'Not Available');
+            break;
+
+        case 'N':
+            setPcts('Not Available', 'Not Available', '0%', 'Not Available');
+            break;
+
+        case 'R':
+            setPcts('Not Available', 'Not Available', 'Not Available', 'Not Available');
+            break;
+    }
 }

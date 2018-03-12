@@ -4,16 +4,6 @@ session_start();
 $error_display = null;
 
 $nologin[] = "/display/finishing/production.php";
-$nologin[] = "/dealer/index.php";
-$nologin[] = "/includes/classes/search.php";
-$nologin[] = "/ondemand/livesearch/search_results.php";
-$nologin[] = "/html/search/appliance_ws.php";
-$nologin[] = "/html/search/appliance_ws_info.php";
-$nologin[] = "/html/search/room_add.php";
-$nologin[] = "/html/search/room_add_section.php";
-$nologin[] = "/html/search/room_edit.php";
-$nologin[] = "/includes/classes/bouncer.php";
-$nologin[] = "/ondemand/room_actions.php";
 
 if(!$_SESSION['valid'] && !in_array($_SERVER['SCRIPT_NAME'], $nologin)) {
     header("Location: /login.php?pli=true");

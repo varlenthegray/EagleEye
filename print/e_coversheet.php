@@ -14,6 +14,11 @@ $sheen = $sheen_qry->fetch_assoc();
 
 function translateVIN($segment, $key) {
     global $dbconn;
+    global $info;
+
+    $output = array();
+
+    $custom_keys = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX'];
 
     if($segment === 'finish_code') {
         $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
@@ -23,7 +28,39 @@ function translateVIN($segment, $key) {
 
     $vin = $vin_qry->fetch_assoc();
 
-    return "{$key} = {$vin['value']}";
+    $mfg = '';
+    $code = '';
+    $name = '';
+    $ikey = '';
+    $desc = '';
+
+    if(!empty($info['custom_vin_info'])) {
+        if(in_array($key, $custom_keys)) {
+            $custom_info = json_decode($info['custom_vin_info'], true);
+
+            if(count($custom_info[$segment]) > 1) {
+                foreach($custom_info[$segment] as $key => $value) {
+                    $mfg = (stristr($key, 'mfg')) ? $value : $mfg;
+                    $code = (stristr($key, 'code')) ? $value : $code;
+                    $name = (stristr($key, 'name')) ? $value : $name;
+                }
+
+                $ikey = $code;
+                $desc = "($mfg) $name";
+            } else {
+                $ikey = $key;
+                $desc = "Custom - " . array_values($custom_info[$segment])[0];
+            }
+        } else {
+            $ikey = $key;
+            $desc = $vin['value'];
+        }
+    } else {
+        $ikey = $key;
+        $desc = $vin['value'];
+    }
+
+    return "$ikey = $desc";
 }
 
 $note_arr = array();

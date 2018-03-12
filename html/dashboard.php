@@ -3,12 +3,10 @@ require '../includes/header_start.php';
 ?>
 
 <div class="row">
-
     <?php if($bouncer->validate('view_quotes') || $bouncer->validate('view_orders')) { ?>
 
     <div class="col-md-6">
         <div class="col-md-12">
-
             <?php if($bouncer->validate('view_quotes')) { ?>
 
             <div class="row">
@@ -54,7 +52,6 @@ require '../includes/header_start.php';
     </div>
 
     <?php } if($bouncer->validate('view_operation')) { ?>
-
     <div class="col-md-6">
         <div class="col-md-12">
             <div class="row">
@@ -120,6 +117,8 @@ require '../includes/header_start.php';
 <!-- /.modal -->
 
 <script>
+    // TODO: Adjust the JS output based on permissions
+
     var op_queue_list = "<?php
         echo "<select class='ignoreSaveAlert' name='viewing_queue' id='viewing_queue'>";
         echo "<option value='self'>{$_SESSION['shop_user']['name']}</option>";
@@ -139,7 +138,7 @@ require '../includes/header_start.php';
         echo '</select>';
         ?>";
 
-    <?php if($_SESSION['userInfo']['perm_full_dashboard']) { ?>
+    <?php if($bouncer->validate('view_quotes')) { ?>
         var quote_table = $("#quote_global_table").DataTable({
             "ajax": "/ondemand/display_actions.php?action=display_quotes",
             "createdRow": function (row, data, dataIndex) {
@@ -152,6 +151,8 @@ require '../includes/header_start.php';
             "order": [[0, "asc"]]
         });
 
+        $("#quote_header").html("<h4>Quotes</h4>");
+    <?php } if($bouncer->validate('view_orders')) { ?>
         var order_table = $("#orders_global_table").DataTable({
             "ajax": "/ondemand/display_actions.php?action=display_orders",
             "createdRow": function (row, data, dataIndex) {
@@ -163,7 +164,9 @@ require '../includes/header_start.php';
             "dom": '<"#order_header.dt-custom-header">tipr',
             "order": [[0, "asc"]]
         });
-    <?php } ?>
+
+        $("#order_header").html("<h4>Orders</h4>");
+    <?php } if($bouncer->validate('view_operation')) { ?>
 
     var active_table = $("#active_ops_global_table").DataTable({
         "ajax": "/ondemand/display_actions.php?action=display_ind_active_jobs",
@@ -205,13 +208,11 @@ require '../includes/header_start.php';
     });
 
     $("#queue_header").html("<h4 class='pull-left'>Operations for " + op_queue_list + "</h4>");
-    $("#quote_header").html("<h4>Quotes</h4>");
-    $("#order_header").html("<h4>Orders</h4>");
     $("#active_header").html("<h4>Operations (Active) for <?php echo $_SESSION['shop_user']['name']; ?></h4>");
 
     updateOpQueue();
 
-    <?php if($_SESSION['userInfo']['account_type'] <= 4) { ?>
+    <?php } if($_SESSION['userInfo']['account_type'] <= 4) { ?>
         dash_auto_interval = setInterval(function() {
             quote_table.ajax.reload(null, false);
             order_table.ajax.reload(null, false);

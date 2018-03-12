@@ -3,8 +3,8 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define("RELEASE_DATE", "3/2/18");
-define("VERSION", "2.2.11");
+define("RELEASE_DATE", "3/12/18");
+define("VERSION", "2.3.00");
 
 // Global definitions
 define("LOGO_TEXT", "Stone Mountain Cabinetry"); // The logo text displayed
@@ -66,4 +66,4 @@ define("NAV_SALES_LIST", "Sales List"); // Sales List Button
 // default file types accepted (HTML)
 define("FILE_TYPES", ".pdf,.jpg,.jpeg,.png,.bmp,.doc,.xls,.xlsx,.dwg,.vsdx,.docx,.kit,.cvj");
 
-define("DEALER", strtoupper(substr($_SESSION['userInfo']['username'], 0, 3)));
+define("DEALER", strtoupper($_SESSION['userInfo']['username']));

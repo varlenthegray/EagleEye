@@ -46,6 +46,6 @@ require '../includes/header_start.php';
         },
         "order": [1,'asc'],
         "dom": 'rti',
-        "pageLength": 25
+        "paging": false
     });
 </script>

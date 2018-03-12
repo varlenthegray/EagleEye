@@ -307,3 +307,7 @@ input[type=text], textarea {
     width: 325px;
     transform: translateY(-50%) translateX(50%);
 }
+
+.txt_custom_input {
+    display: none;
+}

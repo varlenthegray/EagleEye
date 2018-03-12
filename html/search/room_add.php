@@ -115,7 +115,7 @@ $so_num = sanitizeInput($_REQUEST['so_num']);
 $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' ORDER BY room, iteration ASC LIMIT 0, 1;");
 $room = $room_qry->fetch_assoc();
 
-$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = {$room['so_parent']}");
+$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
 $result = $result_qry->fetch_assoc();
 
 $delivery_date = (!empty($room['delivery_date'])) ? date("m/d/Y", $room['delivery_date']) : "";

@@ -723,3 +723,260 @@ h5 {
 .text-secondary {
   color: $gray-light;
 }
+
+.c-input {
+  line-height: 14px;
+}
+
+// Wizard flow
+.wizard {
+  > .content {
+    overflow-y: auto !important;
+    height: 59vh;
+    min-height: inherit;
+    margin-top: 0 !important;
+
+    .body {
+      width: 99% !important;
+      padding: 0 !important;
+      left: 5px;
+      top: 5px;
+    }
+  }
+
+  > .steps > ul > li {
+    width: 10% !important;
+  }
+}
+
+.wizard > .steps a, .wizard > .steps a:hover, .wizard > .steps a:active {
+  padding: 0 6px !important;
+  font-size: 12px;
+  height: 51px;
+}
+
+.vin_table {
+  width: 100%;
+
+  .active {
+    background-color: $brand-success;
+  }
+
+  .subitems {
+    .item {
+      float: left;
+      border-bottom: none;
+      border-right: 1px solid $brand-primary;
+      padding: 0;
+      margin: 0;
+
+      &:last-of-type {
+        border-right: 0;
+      }
+    }
+
+    &:hover {
+      background-color: #EEEEEE;
+    }
+
+    .clearfix:hover {
+      background-color: #EEEEEE;
+    }
+  }
+
+  td {
+    width: 10%;
+    text-align: center;
+    vertical-align: top !important;
+
+    > div {
+      border-right: 1px solid $brand-primary;
+      cursor: pointer;
+
+      > div {
+        padding: 10px;
+        border-bottom: 1px solid $brand-primary;
+        margin: 10px;
+
+        &:hover {
+          background-color: #DDDDDD;
+        }
+
+        img {
+          max-width: 127px;
+          max-height: 324px;
+        }
+      }
+    }
+  }
+
+  tr {
+    width: 100%;
+  }
+
+  th {
+    background-color: $brand-primary;
+    color: $white;
+    font-weight: bold;
+    font-size: 1.2em;
+    padding-left: 10px;
+    border-radius: 5px 5px 0 0;
+  }
+
+  tbody {
+    width: 100%;
+  }
+}
+
+/** Custom Dropdown **/
+#vin_info_input {
+  td {
+    vertical-align: top !important;
+  }
+}
+
+.custom_dropdown {
+  position: relative;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+
+  img {
+    max-width: 155px;
+    max-height: 340px;
+  }
+
+  .wide_img {
+    max-width: 1000px;
+  }
+
+  .selected {
+    border: 1px solid #CCCCCC;
+    border-radius: 4px;
+    float: left;
+    width: 100%;
+    padding-left: 5px;
+    min-height: 20px;
+
+    input {
+      display: block;
+    }
+
+    img {
+      display: none;
+    }
+  }
+
+  .dropdown_arrow {
+    position: absolute;
+    right: 8px;
+    top: 1px;
+  }
+
+  .dropdown_options {
+    border: 1px solid #CCC;
+    clear: both;
+    display: none;
+    position: absolute;
+    z-index: 3;
+    width: 100%;
+    background-color: #FFFFFF;
+    top: 20px;
+    overflow-y: auto;
+
+    .option_list {
+      .header {
+        font-weight: bold;
+        font-size: 1.2em;
+        background-color: $brand-primary;
+        color: #FFFFFF;
+        margin: 5px 0;
+        padding-left: 5px;
+
+        &:first-of-type {
+          margin: 0 0 5px 0;
+        }
+      }
+
+      img {
+        display: none;
+      }
+
+      .sub_option_header {
+        padding-left: 25px;
+        color: #AAAAAA;
+        font-weight: bold;
+      }
+
+      .sub_option {
+        padding-left: 40px;
+      }
+    }
+
+    .option {
+      padding-left: 15px;
+
+      > input {
+        display: none;
+      }
+
+      &:hover {
+        background-color: rgb(30,144,255);
+        color: #FFFFFF;
+      }
+    }
+
+    .option_grid {
+      //display: none;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+
+      > .header {
+        font-weight: bold;
+        font-size: 1.2em;
+        background-color: $brand-primary;
+        color: #FFFFFF;
+        margin: 5px 0;
+        padding-left: 5px;
+        width: 100%;
+
+        &:first-of-type {
+          margin: 0 0 5px 0;
+        }
+      }
+
+      .grid_element {
+        min-width: 150px;
+        min-height: 150px;
+        padding: 10px;
+        text-align: center;
+
+        img {
+          max-width: 1000px;
+        }
+
+        input {
+          display: none;
+        }
+
+        .option {
+          &:hover {
+            background-color: rgb(30,144,255);
+            color: #FFFFFF;
+          }
+        }
+
+        > .header {
+           text-align: center;
+           font-weight: bold;
+           font-size: 1.1em;
+           margin-bottom: 2px;
+         }
+      }
+    }
+  }
+}

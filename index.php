@@ -369,7 +369,7 @@ require 'includes/header_start.php';
     });
 
     socket.on("catchQueueUpdate", function() {
-        if(currentPage === 'dashboard') {
+        if(currentPage === 'dashboard' || currentPage === 'eng_report') {
             updateOpQueue();
         }
 

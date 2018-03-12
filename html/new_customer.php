@@ -1,40 +1,36 @@
 <?php
 require("../includes/header_start.php");
 
-$qry = $dbconn->query("SELECT DISTINCT so_num FROM sales_order WHERE so_num REGEXP '^[0-9]+$' ORDER BY so_num DESC LIMIT 0,1");
+if(!(bool)$_SESSION['userInfo']['dealer']) {
+    $qry = $dbconn->query("SELECT DISTINCT so_num FROM sales_order WHERE so_num REGEXP '^[0-9]+$' ORDER BY so_num DESC LIMIT 0,1");
 
-if($qry->num_rows > 0) {
+    if($qry->num_rows > 0) {
+        $result = $qry->fetch_assoc();
+
+        $next_so = $result['so_num'] + 1;
+    } else {
+        $next_so = 1;
+    }
+} else {
+    $qry = $dbconn->query("SELECT id FROM sales_order ORDER BY id DESC LIMIT 0, 1;");
     $result = $qry->fetch_assoc();
 
-    $next_so = $result['so_num'] + 1;
-} else {
-    $next_so = 1;
+    $next_so = "D" . ($result['id'] + 1);
 }
-
 ?>
 
 <div class="modal-dialog" role="document">
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h4 class="modal-title" id="modalAddCustomerTitle">Add New Customer</h4>
+            <h4 class="modal-title" id="modalAddCustomerTitle">Add New Project</h4>
         </div>
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
-                    <!--<div class="row">
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" id="so_num" name="so_num" placeholder="SO #" value="<?php echo $next_so; ?>">
-                            <div class="radio" style="margin-top: 5px;">
-                                <input name="cu_type" id="retail" value="retail" type="radio"><label for="retail"> Retail</label><br/>
-                                <input name="cu_type" id="distribution" value="distribution" type="radio"><label for="distribution"> Distribution</label><br/>
-                                <input name="cu_type" id="cutting" value="cutting" type="radio"><label for="cutting"> Contract Cutting</label>
-                            </div>
-                        </div>
-                    </div>-->
-
                     <form id="add_retail_customer">
                         <table style="width:100%;margin-top:8px;">
+                            <?php if(!(bool)$_SESSION['userInfo']['dealer']) { ?>
                             <tr>
                                 <td style="width:33.3%"><input type="text" class="form-control" id="so_num" name="so_num" placeholder="SO #" value="<?php echo $next_so; ?>"></td>
                                 <td style="width: 33.3%;">
@@ -54,6 +50,12 @@ if($qry->num_rows > 0) {
                             <tr style="height: 5px;">
                                 <td colspan="3"></td>
                             </tr>
+                            <?php } else {
+                                $dealer_code = ucwords($_SESSION['userInfo']['username']);
+
+                                echo "<input type='hidden' name='dealer_code' id='dealer_code' value='$dealer_code'>";
+                                echo "<input type='hidden' name='so_num' id='so_num' value='$next_so'>";
+                            } ?>
                             <tr>
                                 <td colspan="3">
                                     <input type="text" name="project_name" class="form-control pull-left" placeholder="Project Name" id="project_name" style="width:50%;" />
@@ -400,7 +402,7 @@ if($qry->num_rows > 0) {
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary waves-effect waves-light" id="submit_new_customer">Add Customer</button>
+            <button type="button" class="btn btn-primary waves-effect waves-light" id="submit_new_customer">Add Project</button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

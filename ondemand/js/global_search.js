@@ -1,4 +1,5 @@
 /*jshint strict: false*/
+/*global productTypeSwitch*//*global calcVin*//*global displayToast*//*global checkTransition*//*global unsaved:true*//*global tinysort*//*global backFromSearch*//*global clearIntervals*//*global scrollPosition:true*/
 
 // Goal: to ensure the loading of Global Search input field
 var timer;
@@ -25,6 +26,23 @@ function scrollLocation(container) {
     }, 300);
 }
 
+function adjustImgPopups() {
+    if($("#show_image_popups").is(":checked")) {
+        $(".option_grid").css("display", "flex");
+        $(".option_list").hide();
+        $(".custom_dropdown .selected img").show();
+
+        $(".dropdown_options").css("width", "60vw");
+    } else {
+        $(".option_grid").hide();
+        $(".option_list").show();
+        $(".custom_dropdown .selected img").hide();
+
+        $(".dropdown_options").css("width", "");
+    }
+}
+
+// TODO: Lock down separeate sections based on bouncer results
 $("body")
     .on("keyup", "#global_search", function() {
         checkTransition(function() {
@@ -139,6 +157,9 @@ $("body")
 
         e.stopPropagation();
 
+        active_room_id = $(thisClick).attr("id");
+        active_so_num = $(thisClick).data("sonum");
+
         checkTransition(function() {
             active_room_id = $(thisClick).attr("id");
             active_so_num = $(thisClick).data("sonum");
@@ -212,44 +233,20 @@ $("body")
 
         scrollLocation("#" + active_so_num + ".add_room");
     })
-    .on("click", "[id^=add_room_save_]", function() {
-        var save_info = $("#form_add_room_" + active_so_num).serialize();
+
+    /** Deprecated
+    .on("click", ".add_room_save", function() {
+        var save_info = $("#room_add_" + active_so_num).serialize();
 
         $.post("/ondemand/room_actions.php?action=insert_new_room&" + save_info, function(data) {
             $("body").append(data);
         });
 
         unsaved = false;
-    })
-    .on("change click", ".days-to-ship", function() {
-        var dts = $(this).find(":selected").val();
-        var classColor;
+    }) End Deprecated **/
 
-        switch(dts) {
-            case 'G':
-                classColor = 'green';
-                break;
+    .on("change", ".days-to-ship", function() {
 
-            case 'Y':
-                classColor = 'yellow';
-                break;
-
-            case 'N':
-                classColor = 'orange';
-                break;
-
-            case 'R':
-                classColor = 'red';
-                break;
-
-            default:
-                classColor = 'gray';
-                break;
-        }
-
-        $.post("/ondemand/room_actions.php?action=calc_del_date", {days_to_ship: dts}, function(data) {
-            $(".delivery_date").val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + classColor).data("datepicker").setDate(data);
-        });
     })
     .on("change", ".dealer_code", function() {
         $.post("/ondemand/play_fetch.php?action=get_dealer_info&dealer_code=" + $(this).val(), function(data) {
@@ -273,6 +270,7 @@ $("body")
         e.stopPropagation();
 
         var thisClick = this;
+        var val_array = {};
 
         $(thisClick).removeClass('edit_room_save');
 
@@ -281,7 +279,23 @@ $("body")
 
         active_ops = JSON.stringify(active_ops);
 
-        $.post("/ondemand/room_actions.php?action=update_room&" + edit_info, {active_ops: active_ops}, function(data) {
+        $("input[type='hidden']").each(function() {
+            var ele = $(this);
+            var field = $(this).attr('id');
+            var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX'];
+
+            if($.inArray(ele.val(), custom_fields) >= 0) {
+                val_array[field] = {};
+
+                ele.parent().find('.selected').find('input').each(function() {
+                    val_array[field][$(this).attr('name')] = $(this).val();
+                });
+            }
+        });
+
+        var customVals = JSON.stringify(val_array);
+
+        $.post("/ondemand/room_actions.php?action=update_room&" + edit_info, {active_ops: active_ops, customVals: customVals}, function(data) {
             $('body').append(data);
         }).done(function() {
             $(thisClick).addClass('edit_room_save');
@@ -616,7 +630,7 @@ $("body")
                 });
 
                 scrollLocation("#" + active_room_id + ".tr_room_actions");
-            }, 100);
+            }, 350);
         });
     })
     .on("change", "#sheet_type", function() {
@@ -695,4 +709,144 @@ $("body")
             }
         });
     })
+
+    .on("change", "#vin_info_input select", function() {
+        if($("#show_image_popups").is(":checked")) {
+            $.post("/ondemand/display_actions.php?action=vin_image_ref", {type: $(this).attr("data-type"), vinID: $(this).val()}, function(data) {
+                if(data !== '') {
+                    $("#modalImageInfo").modal().find('.modal-body').html(data);
+                }
+            });
+        }
+    })
+
+    .on("click", ".custom_dropdown", function(e) {
+        adjustImgPopups();
+
+
+
+        if(e.target.nodeName !== 'INPUT') {
+            $(".custom_dropdown").not(this).children('.dropdown_options').hide();
+            $(this).find('.dropdown_options').toggle();
+
+            var clicked = $(this).find('.dropdown_options').attr("data-for");
+
+            if(clicked === 'days_to_ship') {
+                var dts = $("#days_to_ship").val();
+                var classColor;
+
+                switch(dts) {
+                    case 'G':
+                        classColor = 'green';
+                        break;
+
+                    case 'Y':
+                        classColor = 'yellow';
+                        break;
+
+                    case 'N':
+                        classColor = 'orange';
+                        break;
+
+                    case 'R':
+                        classColor = 'red';
+                        break;
+
+                    default:
+                        classColor = 'gray';
+                        break;
+                }
+
+                $.post("/ondemand/room_actions.php?action=calc_del_date", {days_to_ship: dts}, function(data) {
+                    $(".delivery_date").val(data).removeClass('job-color-red job-color-green job-color-yellow job-color-orange').addClass('job-color-' + classColor).data("datepicker").setDate(data);
+                });
+            }
+
+            // grabs the current element in a rectangle box
+            var viewPortOffset = this.getBoundingClientRect();
+
+            // calculates the current offset to the top vs the total height and the available space
+            var dropdown_height = (window.innerHeight - (viewPortOffset.top + $(this).outerHeight(true))) - 50;
+
+            // if it's going to be too small, go vertical
+            if(dropdown_height < 120) {
+                $(this).find(".dropdown_options").css({"bottom":"0", "top":"inherit"});
+                dropdown_height = 300;
+            } else if(dropdown_height > 400) { // if it's too big, set the max size
+                $(this).find(".dropdown_options").css({"bottom": "inherit", "top": "20px"});
+                dropdown_height = 400;
+            } else { // otherwise, just figure out the size
+                $(this).find(".dropdown_options").css({"bottom":"inherit", "top":"20px"});
+            }
+
+            // set the max size
+            $(this).find(".dropdown_options").css('max-height', dropdown_height);
+
+            // stops the scrolling of the window while in the dropdown specifically
+            $(".dropdown_options").on('DOMMouseScroll mousewheel', function(ev) {
+                var $this = $(this),
+                    scrollTop = this.scrollTop,
+                    scrollHeight = this.scrollHeight,
+                    height = $this.height(),
+                    delta = (ev.type === 'DOMMouseScroll' ?
+                        ev.originalEvent.detail * -40 :
+                        ev.originalEvent.wheelDelta),
+                    up = delta > 0;
+
+                var prevent = function() {
+                    ev.stopPropagation();
+                    ev.preventDefault();
+                    ev.returnValue = false;
+                    return false;
+                };
+
+                if (!up && -delta > scrollHeight - height - scrollTop) {
+                    // Scrolling down, but this will take us past the bottom.
+                    $this.scrollTop(scrollHeight);
+                    return prevent();
+                } else if (up && delta > scrollTop) {
+                    // Scrolling up, but this will take us past the top.
+                    $this.scrollTop(0);
+                    return prevent();
+                }
+            });
+        } else {
+            $(".custom_dropdown").find('.dropdown_options').hide();
+        }
+    })
+    .on("click", ".option", function() {
+        var field;
+
+        var value = $(this).attr('data-value');
+
+        if($(this).hasClass('sub_option') && $(this).parent().hasClass('grid_element')) {
+            field = $(this).parent().parent().parent().attr('data-for');
+            $(this).parent().parent().parent().parent().find('.selected').html($(this).html());
+        } else {
+            field = $(this).parent().parent().attr('data-for');
+            $(this).parent().parent().parent().find('.selected').html($(this).html());
+        }
+
+        $("#" + field).val(value);
+
+        calcVin(active_room_id);
+    })
+    .on("change", "#show_image_popups", function() {
+        adjustImgPopups();
+    })
+    .on("click", "#dropdown_p_type", function() {
+        productTypeSwitch();
+    })
+
+    .on("click", "#submit_quote", function(e) {
+        e.stopPropagation();
+
+        $.post("/ondemand/room_actions.php?action=submit_quote", {roomid: active_room_id}, function(data) {
+            $("body").append(data);
+        });
+    })
 ;
+
+$(document).on("scroll", function() {
+    $(".dropdown_options").hide();
+});

@@ -1,17 +1,66 @@
 <?php
 require_once("../../includes/header_start.php");
 
-function displayVINOpts($segment, $db_col = null) {
+//outputPHPErrs();
+
+function displayVINOpts($segment, $db_col = null, $id = null) {
     global $vin_schema;
     global $room;
 
+    // assigns SEGMENT = VIN Schema column (panel_raise) of which there may be multiple pulled from VIN SCHEMA, DB_COL of which there is only one (panel_raise_sd, stored in ROOMS table)
     $dblookup = (!empty($db_col)) ? $db_col : $segment;
+    $addl_id = (!empty($id)) ? "id = '$id'" : null; // for duplicate values (panel_raise vs panel_raise_sd)
+    $options = null;
+    $option_grid = null;
 
-    foreach($vin_schema[$segment] as $key => $value) {
-        $selected = ((string)$key === (string)$room[$dblookup]) ? "selected" : null;
+    $prev_header = null;
+    $section_head = null;
 
-        echo "<option value='$key' $selected>$value ($key)</option>";
+    $selected = '';
+
+    foreach($vin_schema[$segment] as $value) {
+        if(((string)$value['key'] === (string)$room[$dblookup]) && empty($selected)) {
+            $selected = "{$value['value']} ({$value['key']})";
+            $selected_img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
+            $sel_key = $value['key'];
+        }
+
+        if((bool)$value['visible']) {
+            $img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
+
+            if ($value['group'] !== $prev_header) {
+                $section_head = "<div class='header'>{$value['group']}</div>";
+                $prev_header = $value['group'];
+            } else {
+                $section_head = null;
+            }
+
+            $options .= "$section_head <div class='option' data-value='{$value['key']}'>{$value['value']} ({$value['key']}) $img</div>";
+
+            if(!empty($value['subitems'])) {
+                $subitems = json_decode($value['subitems']);
+                $option_grid .= "$section_head <div class='grid_element' data-value='{$value['key']}'><div class='header'>{$value['value']} ({$value['key']})</div>$img";
+
+                foreach($subitems as $key => $item) {
+                    $options .= "<div class='option sub_option' data-value='{$key}'>{$item} ({$key})</div>";
+                    $option_grid .= "<div class='option sub_option' data-value='{$key}'>{$item} ({$key})</div>";
+                }
+
+                $option_grid .= "</div>";
+            } else {
+                $option_grid .= "$section_head <div class='grid_element option' data-value='{$value['key']}'><div class='header'>{$value['value']} ({$value['key']})</div>$img</div>";
+            }
+        }
     }
+
+    $selected = (empty($selected)) ? "Not Selected Yet" : $selected;
+
+    echo "<div class='custom_dropdown' $addl_id>";
+    echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
+    echo "<div class='dropdown_options' data-for='$dblookup'>";
+    echo "<div class='option_list'>$options</div>";
+    echo "<div class='option_grid'>$option_grid</div>";
+    echo "</div><input type='hidden' value='$sel_key' id='{$dblookup}' name='{$dblookup}' /><div class='clearfix'></div></div>";
 }
 
 function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
@@ -130,12 +179,19 @@ HEREDOC;
 }
 
 // obtain the VIN database table and commit to memory for this query (MAJOR reduction in DB query count)
-$vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY 
-  case right(`value`, 5) when 'Paint' then 1 when 'Stain' then 2 end, 
-  FIELD(`value`, '0.15', 'Design Specific', 'Design Specific (5X-Wood)', 'Design Specific (5X-MDF)', 'Custom/Other', 'TBD', 'N/A', 'None', 'No', 'Completed', 'Job', 'Quote', 'Lost', ' - Paint', ' - Stain') DESC, segment, `value` ASC");
+/*$vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY
+  case right(`value`, 5) when 'Paint' then 1 when 'Stain' then 2 end,
+  FIELD(`value`, '0.15', 'TBD', 'N/A', 'Custom/Other', 'Design Specific', 'Design Specific (5X-Wood)', 'Design Specific (5X-MDF)', 'Red [6 days]', 'Orange [13 days]', 'Yellow [19 days]', 'Green [26 days]', 'None', 'No', 'Completed', 'Job', 'Quote', 'Lost', ' - Paint', ' - Stain') DESC, segment, `value` ASC");
 
 while($vin = $vin_qry->fetch_assoc()) {
     $vin_schema[$vin['segment']][$vin['key']] = $vin['value'];
+}*/
+
+$vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
+ FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC");
+
+while($vin = $vin_qry->fetch_assoc()) {
+    $vin_schema[$vin['segment']][] = $vin;
 }
 
 $room_id = sanitizeInput($_REQUEST['room_id']);
@@ -143,7 +199,7 @@ $room_id = sanitizeInput($_REQUEST['room_id']);
 $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$room_id' ORDER BY room, iteration ASC;");
 $room = $room_qry->fetch_assoc();
 
-$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = {$room['so_parent']}");
+$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
 $result = $result_qry->fetch_assoc();
 
 $so = $room['so_parent'];
@@ -160,74 +216,68 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
         <div class="row">
             <div class="col-md-1 sticky">
                 <h5 class="text-md-center"><?php echo "Edit Room {$room['room']}{$room['iteration']}" ?></h5>
+                <?php echo (!empty($room['quote_submission'])) ? "<p class='text-md-center'>Quote Submitted<br />" . date(DATE_TIME_ABBRV, $room['quote_submission']) . "</p>" : null; ?>
                 <a class="btn btn-primary btn-block waves-effect waves-light edit_room_save">Save</a>
 
-                <?php if(!empty($_SESSION['userInfo'])) { ?>
-
-                <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>&action=sample_req' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Sample Request</a>
-                <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Coversheet</a>
-                <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>&action=arh' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Executive Coversheet</a>
-                <a href='/print/e_coversheet.php?room_id=<?php echo $room['id']; ?>&action=no_totals' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Shop Coversheet</a>
-                <a href='/print/sample_label.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Print Sample Label</a>
-                <br /><br />
-                <a id="add_attachment" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Add Attachments</a>
-                <br />
-                <?php } ?>
                 <?php
-                    $other_rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so'");
+                echo ($bouncer->validate('submit_quote') && empty($room['quote_submission'])) ? "<a id='submit_quote' class='btn btn-success-outline btn-block waves-effect waves-light w-xs'>Submit Quote</a>" : null;
+                echo ($bouncer->validate('print_sample')) ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=sample_req' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Sample Request</a>" : null;
+                echo ($bouncer->validate('print_coversheet')) ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Coversheet</a>" : null;
+                echo ($bouncer->validate('print_exec_coversheet')) ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=arh' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Executive Coversheet</a>" : null;
+                echo ($bouncer->validate('print_shop_coversheet')) ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=no_totals' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Shop Coversheet</a>" : null;
+                echo ($bouncer->validate('print_sample_label')) ? "<a href='/print/sample_label.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Sample Label</a>" : null;
+                echo ($bouncer->validate('add_attachment')) ? "<br /><br /><a id='add_attachment' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Add Attachments</a>" : null;
 
-                    if($other_rooms_qry->num_rows > 1 && !empty($_SESSION['userInfo'])) {
-                        ?>
-                        <div class="vin_copy text-md-center" style="margin-top:10px;">
-                            <h5>Copy VIN</h5>
-                            <label for="copy_vin_target">To Where?</label>
-                            <select class="form-control ignoreSaveAlert" id="copy_vin_target" name="copy_vin_target">
-                                <?php
-                                $all_rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so' ORDER BY room, iteration ASC");
+                $other_rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so'");
 
-                                $all_rooms_prev_room = null;
-                                $all_rooms_prev_seq = null;
+                if($other_rooms_qry->num_rows > 1 && $bouncer->validate('copy_vin')) {
+                    ?>
+                    <div class="vin_copy text-md-center" style="margin-top:10px;">
+                        <h5>Copy VIN</h5>
+                        <label for="copy_vin_target">To Where?</label>
+                        <select class="form-control ignoreSaveAlert" id="copy_vin_target" name="copy_vin_target">
+                            <?php
+                            $all_rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so' ORDER BY room, iteration ASC");
 
-                                while ($all_rooms = $all_rooms_qry->fetch_assoc()) {
-                                    if ($all_rooms['id'] !== $room['id']) {
-                                        $seq_it = explode(".", $all_rooms['iteration']);
+                            $all_rooms_prev_room = null;
+                            $all_rooms_prev_seq = null;
 
-                                        if ($all_rooms_prev_room === $all_rooms['room']) {
-                                            if ($all_rooms_prev_seq === $seq_it[0]) {
-                                                $title = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.{$seq_it[1]}";
-                                            } else {
-                                                $title = "&nbsp;&nbsp;&nbsp;{$all_rooms['iteration']}";
-                                            }
+                            while ($all_rooms = $all_rooms_qry->fetch_assoc()) {
+                                if ($all_rooms['id'] !== $room['id']) {
+                                    $seq_it = explode(".", $all_rooms['iteration']);
 
-                                            $all_rooms_prev_seq = $seq_it[0];
+                                    if ($all_rooms_prev_room === $all_rooms['room']) {
+                                        if ($all_rooms_prev_seq === $seq_it[0]) {
+                                            $title = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.{$seq_it[1]}";
                                         } else {
-                                            $title = "{$all_rooms['room']}{$all_rooms['iteration']}";
-                                            $all_rooms_prev_seq = $seq_it[0];
+                                            $title = "&nbsp;&nbsp;&nbsp;{$all_rooms['iteration']}";
                                         }
 
-                                        echo "<option value='{$all_rooms['id']}'>$title</option>";
-
-                                        $all_rooms_prev_room = $all_rooms['room'];
+                                        $all_rooms_prev_seq = $seq_it[0];
+                                    } else {
+                                        $title = "{$all_rooms['room']}{$all_rooms['iteration']}";
+                                        $all_rooms_prev_seq = $seq_it[0];
                                     }
+
+                                    echo "<option value='{$all_rooms['id']}'>$title</option>";
+
+                                    $all_rooms_prev_room = $all_rooms['room'];
                                 }
-                                ?>
-                            </select>
-                            <br/>
-                            <a id='copy_vin' data-roomid="<?php echo $room['id']; ?>" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Copy VIN</a>
-                        </div>
-                        <?php
-                    }
-                ?>
+                            }
+                            ?>
+                        </select>
+                        <br/>
+                        <a id='copy_vin' data-roomid="<?php echo $room['id']; ?>" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Copy VIN</a>
+                    </div>
+                    <?php } ?>
                 <br />
-
-                <?php if(!empty($_SESSION['userInfo'])) { ?>
-
-                <a id='generate_code' data-so="<?php echo $so; ?>" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Copy Dealer URL</a><br /><br />
-                <a href='/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Inset Sizing</a>
-                <a href='/pdf/preprod_checklist.pdf' target="_blank" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Preproduction Checklist</a>
-
-                <a id="appliance_worksheets" data-roomid="<?php echo $room['id']; ?>" class="btn btn-primary-outline btn-block waves-effect waves-light w-xs">Appliance Worksheets</a>
-                <?php } ?>
+                <?php
+                //echo ($bouncer->validate('')) ? "<a id='generate_code' data-so='{$so}' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Copy Dealer URL</a><br /><br />" : null;
+                echo ($bouncer->validate('view_inset_sizing')) ? "<a href='/html/inset_sizing.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Inset Sizing</a>" : null;
+                echo ($bouncer->validate('view_preprod_checklist')) ? "<a href='/pdf/preprod_checklist.pdf' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Preproduction Checklist</a>" : null;
+                echo ($bouncer->validate('view_appliance_ws')) ? "<a id='appliance_worksheets' data-roomid='{$room['id']}' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Appliance Worksheets</a>" : null;
+                ?>
+                
             </div>
 
             <div class="col-md-3">
@@ -239,8 +289,9 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                         <input type="hidden" name="room" value="<?php echo $room['room']; ?>">
                         <input type="hidden" name="roomid" value="<?php echo $room['id']; ?>">
 
-                        <div class="table_outline">
+                        <div class="table_outline" id="vin_info_input">
                             <table style="width:97%;margin:0 auto;" class="table">
+                                <?php if($bouncer->validate('view_globals')) { ?>
                                 <tr>
                                     <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Globals</h5></td>
                                 </tr>
@@ -250,6 +301,34 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                         <input type="text" class="form-control" id="edit_room_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room" placeholder="Room" value="<?php echo $room['room']; ?>" style="float:left;width:10%;" readonly>
                                         <input type="text" class="form-control" id="edit_room_name_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>" style="float:left;width:88%;margin-left:5px;">
                                     </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="iteration">Iteration</label></td>
+                                    <td><input type="text" class="form-control" id="edit_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="product_type">Product Type</label></td>
+                                    <td><?php displayVINOpts('product_type', null, 'dropdown_p_type'); ?></td>
+                                </tr>
+                                <?php if($bouncer->validate('change_order_status')) { ?>
+                                <tr>
+                                    <td><label for="order_status">Order Status</label></td>
+                                    <td><?php displayVINOpts('order_status'); ?></td>
+                                </tr>
+                                <?php } else {
+                                    echo "<input type='hidden' name='order_status' id='order_status' value='{$room['order_status']}'>";
+                                } ?>
+                                <?php if($bouncer->validate('view_dealer_status')) { ?>
+                                <tr>
+                                    <td><label for="order_status">Status</label></td>
+                                    <td><?php displayVINOpts('dealer_status'); ?></td>
+                                </tr>
+                                <?php } else {
+                                    echo "<input type='hidden' name='dealer_status' id='edit_dealer_status_{$room['room']}_so_{$result['so_num']}' value='{$room['dealer_status']}'>";
+                                } ?>
+                                <tr>
+                                    <td><label for="days_to_ship">Days to Ship</label></td>
+                                    <td><?php displayVINOpts('days_to_ship'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="delivery_date">Delivery Date</label></td>
@@ -284,47 +363,10 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                         </div>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td><label for="product_type">Product Type</label></td>
-                                    <td>
-                                        <select class="form-control" id="edit_product_type_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="product_type" value="<?php echo $room['product_type']; ?>">
-                                            <?php
-                                            displayVINOpts('product_type');
-                                            ?>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="iteration">Iteration</label></td>
-                                    <td><input type="text" class="form-control" id="edit_iteration_<?php echo $room['id']; ?>" name="iteration" placeholder="Iteration" value="<?php echo $room['iteration']; ?>" readonly></td>
-                                </tr>
-                                <tr>
-                                    <td><label for="order_status">Order Status</label></td>
-                                    <td>
-                                        <select class="form-control" id="edit_order_status_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="order_status">
-                                            <?php
-                                            displayVINOpts('order_status');
-                                            ?>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><label for="days_to_ship">Days to Ship</label></td>
-                                    <td>
-                                        <select class="form-control days-to-ship" id="edit_days_to_ship_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="days_to_ship" data-type="edit" data-room="<?php echo $room['room']; ?>">
-                                            <option value="G" <?php echo ($room['days_to_ship'] === 'G') ? "selected" : null; ?>>Green (26)</option>
-                                            <option value="Y" <?php echo ($room['days_to_ship'] === 'Y') ? "selected" : null; ?>>Yellow (19)</option>
-                                            <option value="N" <?php echo ($room['days_to_ship'] === 'N') ? "selected" : null; ?>>Orange (13)</option>
-                                            <option value="R" <?php echo ($room['days_to_ship'] === 'R') ? "selected" : null; ?>>Red (6)</option>
-                                        </select>
-                                    </td>
-                                </tr>
                                 <tr style="height:10px;">
                                     <td colspan="2"></td>
                                 </tr>
-
-                                <?php if(!empty($_SESSION['userInfo'])) { ?>
-
+                                <?php if($bouncer->validate('view_accounting')) { ?>
                                 <tr>
                                     <td colspan="2">
                                         <label class="c-input c-checkbox">Deposit Received <input type="checkbox" name="deposit_received" value="1" <?php echo ((bool)$room['payment_deposit']) ? "checked":null; ?>><span class="c-indicator"></span></label><br />
@@ -332,12 +374,10 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                         <label class="c-input c-checkbox">Retail - Final Payment <input type="checkbox" name="final_payment" value="1" <?php echo ((bool)$room['payment_final']) ? "checked":null; ?>><span class="c-indicator"></span></label>
                                     </td>
                                 </tr>
-
-                                <?php } ?>
-
                                 <tr style="height:10px;">
                                     <td colspan="2"></td>
                                 </tr>
+                                <?php }} if($bouncer->validate('view_vin')) { ?>
                                 <tr>
                                     <td colspan="2"><input tabindex="37" type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" value="<?php echo $room['vin_code']; ?>" /></td>
                                 </tr>
@@ -345,37 +385,19 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                     <td colspan="2"></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5><label>Door, Drawer & Hardwood</label></h5></td>
+                                    <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left"><label>Door, Drawer & Hardwood</label></h5><label class="c-input c-checkbox pull-right" style="margin-top:7px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></td>
                                 </tr>
                                 <tr>
                                     <td><label for="species_grade_<?php echo $room['id']; ?>">Species</label></td>
-                                    <td>
-                                        <select tabindex="2" name="species_grade_<?php echo $room['id']; ?>" id="species_grade_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('species_grade');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('species_grade'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="construction_method_<?php echo $room['id']; ?>">Construction Method</label></td>
-                                    <td>
-                                        <select tabindex="18" name="construction_method_<?php echo $room['id']; ?>" id="construction_method_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('construction_method');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('construction_method'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="door_design_<?php echo $room['id']; ?>">Door Design</label></td>
-                                    <td>
-                                        <select tabindex="3" name="door_design_<?php echo $room['id']; ?>" id="door_design_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('door_design');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('door_design'); ?></td>
                                 </tr>
                                 <tr style="height:10px;">
                                     <td colspan="2"></td>
@@ -385,146 +407,62 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 </tr>
                                 <tr>
                                     <td style="padding-left:20px;"><label for="panel_raise_door_<?php echo $room['id']; ?>">Door</label></td>
-                                    <td>
-                                        <select tabindex="4" name="panel_raise_door_<?php echo $room['id']; ?>" id="panel_raise_door_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('panel_raise', 'panel_raise_door');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
                                 </tr>
                                 <tr>
                                     <td style="padding-left:20px;"><label for="panel_raise_sd_<?php echo $room['id']; ?>">Short Drawer</label></td>
-                                    <td>
-                                        <select tabindex="5" name="panel_raise_sd_<?php echo $room['id']; ?>" id="panel_raise_sd_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('panel_raise', 'panel_raise_sd');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
                                 </tr>
                                 <tr>
                                     <td style="padding-left:20px;"><label for="panel_raise_td_<?php echo $room['id']; ?>">Tall Drawer</label></td>
-                                    <td>
-                                        <select tabindex="6" name="panel_raise_td_<?php echo $room['id']; ?>" id="panel_raise_td_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('panel_raise', 'panel_raise_td');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="edge_profile_<?php echo $room['id']; ?>">Edge Profile</label></td>
-                                    <td>
-                                        <select tabindex="7" name="edge_profile_<?php echo $room['id']; ?>" id="edge_profile_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('edge_profile');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('edge_profile'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="framing_bead_<?php echo $room['id']; ?>">Framing Bead</label></td>
-                                    <td>
-                                        <select tabindex="8" name="framing_bead_<?php echo $room['id']; ?>" id="framing_bead_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('framing_bead');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('framing_bead'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="framing_options_<?php echo $room['id']; ?>">Framing Options</label></td>
-                                    <td>
-                                        <select tabindex="9" name="framing_options_<?php echo $room['id']; ?>" id="framing_options_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('framing_options');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('framing_options'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="style_rail_width_<?php echo $room['id']; ?>">Style/Rail Width</label></td>
-                                    <td>
-                                        <select tabindex="4" name="style_rail_width_<?php echo $room['id']; ?>" id="style_rail_width_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('style_rail_width');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('style_rail_width'); ?></td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">&nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td><label for="finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                                    <td>
-                                        <select tabindex="11" name="finish_code_<?php echo $room['id']; ?>" id="finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('finish_code');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('finish_code'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="sheen_<?php echo $room['id']; ?>">Sheen</label></td>
-                                    <td>
-                                        <select tabindex="12" name="sheen_<?php echo $room['id']; ?>" id="sheen_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('sheen');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('sheen'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="glaze_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                                    <td>
-                                        <select tabindex="13" name="glaze_<?php echo $room['id']; ?>" id="glaze_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('glaze');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('glaze'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                                    <td>
-                                        <select tabindex="14" name="glaze_technique_<?php echo $room['id']; ?>" id="glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('glaze_technique');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('glaze_technique'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="antiquing_<?php echo $room['id']; ?>">Antiquing</label></td>
-                                    <td>
-                                        <select tabindex="15" name="antiquing_<?php echo $room['id']; ?>" id="antiquing_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('antiquing');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('antiquing'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="worn_edges_<?php echo $room['id']; ?>">Worn Edges</label></td>
-                                    <td>
-                                        <select tabindex="16" name="worn_edges_<?php echo $room['id']; ?>" id="worn_edges_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('worn_edges');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('worn_edges'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="distress_level_<?php echo $room['id']; ?>">Distress Level</label></td>
-                                    <td>
-                                        <select tabindex="17" name="distress_level_<?php echo $room['id']; ?>" id="distress_level_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('distress_level');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('distress_level'); ?></td>
                                 </tr>
                                 <tr style="height:10px;">
                                     <td colspan="2"></td>
@@ -534,43 +472,19 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 </tr>
                                 <tr>
                                     <td><label for="carcass_exterior_species_<?php echo $room['id']; ?>">Species</label></td>
-                                    <td>
-                                        <select tabindex="19" name="carcass_exterior_species_<?php echo $room['id']; ?>" id="carcass_exterior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('carcass_species', 'carcass_exterior_species');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="carcass_exterior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                                    <td>
-                                        <select tabindex="21" name="carcass_exterior_finish_code_<?php echo $room['id']; ?>" id="carcass_exterior_finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('finish_code', 'carcass_exterior_finish_code');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('finish_code', 'carcass_exterior_finish_code'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="carcass_exterior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                                    <td>
-                                        <select tabindex="22" name="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('glaze', 'carcass_exterior_glaze_color');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                                    <td>
-                                        <select tabindex="23" name="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>" id="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
                                 </tr>
                                 <tr style="height:10px;">
                                     <td colspan="2"></td>
@@ -580,42 +494,19 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 </tr>
                                 <tr>
                                     <td><label for="carcass_interior_species_<?php echo $room['id']; ?>">Species</label></td>
-                                    <td>
-                                        <select tabindex="24" name="carcass_interior_species_<?php echo $room['id']; ?>" id="carcass_interior_species_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('carcass_species', 'carcass_interior_species');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="carcass_interior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                                    <td>
-                                        <select tabindex="26" name="carcass_interior_finish_code_<?php echo $room['id']; ?>" id="carcass_interior_finish_code_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('finish_code', 'carcass_interior_finish_code');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('finish_code', 'carcass_interior_finish_code'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="carcass_interior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                                    <td>
-                                        <select tabindex="27" name="carcass_interior_glaze_color_<?php echo $room['id']; ?>" id="carcass_interior_glaze_color_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('glaze', 'carcass_interior_glaze_color');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
                                 </tr>
                                 <tr>
                                     <td><label for="carcass_interior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                                    <td>
-                                        <select tabindex="28" name="carcass_interior_glaze_technique_<?php echo $room['id']; ?>" id="carcass_interior_glaze_technique_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique');
-                                            ?>
-                                        </select>
+                                    <td><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?>
                                     </td>
                                 </tr>
                                 <tr style="height:10px;">
@@ -626,13 +517,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 </tr>
                                 <tr>
                                     <td><label for="drawer_boxes_<?php echo $room['id']; ?>">Drawer Boxes</label></td>
-                                    <td>
-                                        <select tabindex="29" name="drawer_boxes_<?php echo $room['id']; ?>" id="drawer_boxes_<?php echo $room['id']; ?>" class="form-control" onchange="calcVin(<?php echo $room['id']; ?>)">
-                                            <?php
-                                            displayVINOpts('drawer_boxes');
-                                            ?>
-                                        </select>
-                                    </td>
+                                    <td><?php displayVINOpts('drawer_boxes'); ?></td>
                                 </tr>
                                 <tr style="height:10px;">
                                     <td colspan="2"></td>
@@ -655,15 +540,16 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 <tr>
                                     <td colspan="2"><input tabindex="34" type="text" class="form-control text-md-center pull-left" name="inset_beaded_<?php echo $room['id']; ?>" id="inset_beaded_<?php echo $room['id']; ?>" placeholder="X" style="width:40px;" value="<?php echo $room['inset_beaded_ordered']; ?>"> <label class="pull-left" style="margin-left:5px;line-height:28px;" for="inset_beaded_<?php echo $room['id']; ?>">Inset Beaded <small>(16 1/2" x 23 1/2")</small></label></td>
                                 </tr>
+                                <?php } ?>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <?php if(!empty($_SESSION['userInfo'])) { ?>
             <div class="col-md-8">
                 <div class="row">
+                    <?php if($bouncer->validate('view_so_notes')) { ?>
                     <div class="col-md-4" style="height:304px;overflow-y:auto;">
                         <table class="table_outline" width="100%">
                             <tr>
@@ -671,7 +557,14 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                             </tr>
                             <tr style="height:5px;"><td colspan="2"></td></tr>
                             <?php
-                            $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE note_type = 'so_inquiry' AND notes.type_id = '{$result['id']}' ORDER BY notes.timestamp DESC;");
+                            if((bool)$_SESSION['userInfo']['dealer']) {
+                                $dealer = strtolower(DEALER);
+                                $where = "AND user.username LIKE '$dealer%'";
+                            } else {
+                                $where = null;
+                            }
+
+                            $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE note_type = 'so_inquiry' AND notes.type_id = '{$result['id']}' $where ORDER BY notes.timestamp DESC;");
 
                             while($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
                                 $inquiry_replies = null;
@@ -695,7 +588,11 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                     while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
                                         $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
 
-                                        $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+                                        if((substr(strtoupper($inquiry_reply['username']), 0, 3) === DEALER) && (bool)$_SESSION['userInfo']['dealer']) {
+                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+                                        } elseif(!(bool)$_SESSION['userInfo']['dealer']) {
+                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+                                        }
                                     }
                                 } else {
                                     $inquiry_replies = null;
@@ -716,11 +613,13 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                             <tr style="height:5px;"><td colspan="2"></td></tr>
                         </table>
                     </div>
+                    <?php } ?>
 
+                    <?php if($bouncer->validate('view_room_notes')) { ?>
                     <div class="col-md-4" style="height:304px;overflow-y:auto;">
                         <table class="table table-custom-nb table-v-top">
                             <tr>
-                                <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Room Notes</h5> <?php if(!empty($_SESSION['userInfo'])) { ?><div class="pull-right"><input type="checkbox" class="ignoreSaveAlert" id="display_log" /> <label for="display_log">Show Audit Log</label></div><?php } ?></td>
+                                <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Room Notes</h5> <?php if($bouncer->validate('view_audit_log')) { ?><div class="pull-right"><input type="checkbox" class="ignoreSaveAlert" id="display_log" /> <label for="display_log">Show Audit Log</label></div><?php } ?></td>
                             </tr>
                             <tr style="height:5px;"><td colspan="2"></td></tr>
                             <?php
@@ -769,9 +668,9 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
                                 echo "<tr id='inquiry_reply_line_{$room_inquiry['nID']}' style='display:none;'>";
                                 echo "  <td colspan='2'>
-                                                                                <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
-                                                                                <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$room_inquiry['nID']}'>Reply</button>
-                                                                            </td>";
+                                            <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
+                                            <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='r_{$room_inquiry['nID']}_submit'>Reply</button>
+                                        </td>";
                                 echo "</tr>";
 
                                 echo $inquiry_replies;
@@ -808,10 +707,11 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                             }
                             ?>
                         </select>
-                        <?php } ?>
+                        <?php }} ?>
                     </div>
                 </div>
 
+                <?php if($bouncer->validate('edit_brackets')) { ?>
                 <div class="row">
                     <div class="col-md-12">
                         <table width="100%" class="bracket-adjustment-table">
@@ -938,10 +838,9 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                         </table>
                     </div>
                 </div>
+                <?php } ?>
             </div>
         </div>
-
-        <?php } ?>
     </form>
 
     <form id="room_attachments">
@@ -972,10 +871,43 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
         </div>
         <!-- /.modal -->
     </form>
+
+    <!-- image modal -->
+    <div id="modalImageInfo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalImageInfoLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Image Details</h4>
+                </div>
+                <div class="modal-body" style="text-align:center;">
+
+                </div>
+                <div class="modal-footer" id="r_attachments_footer">
+                    <button type="button" class="btn btn-primary waves-effect" id="dismiss" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 </div>
 
 <script>
     $(".delivery_date").datepicker();
 
     $(".room_note_log").hide();
+
+    <?php echo (!empty($room['custom_vin_info'])) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}')": null; ?>
+
+    $(function() {
+        productTypeSwitch();
+
+        <?php if (!empty($room['custom_vin_info'])) { ?>
+        $.each(customFieldInfo, function(mainID, value) {
+            $.each(value, function(i, v) {
+                $("#" + mainID).parent().find(".selected").find("input[name='" + i + "']").val(v);
+            });
+        });
+        <?php } ?>
+    });
 </script>
