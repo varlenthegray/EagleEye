@@ -655,7 +655,14 @@ switch ($search) {
 
                                                 <table class="table table-custom-nb table-v-top" width="100%">
                                                     <?php
-                                                    $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$result['id']}' ORDER BY notes.timestamp DESC;");
+                                                    if((bool)$_SESSION['userInfo']['dealer']) {
+                                                        $dealer = strtolower(DEALER);
+                                                        $where = "AND user.username LIKE '$dealer%'";
+                                                    } else {
+                                                        $where = null;
+                                                    }
+
+                                                    $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$result['id']}' $where ORDER BY notes.timestamp DESC;");
 
                                                     while ($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
                                                         $inquiry_replies = null;

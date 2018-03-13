@@ -623,7 +623,14 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                             </tr>
                             <tr style="height:5px;"><td colspan="2"></td></tr>
                             <?php
-                            $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'room_note' OR note_type = 'room_note_log') AND notes.type_id = '{$room['id']}' ORDER BY notes.timestamp DESC;");
+                            if((bool)$_SESSION['userInfo']['dealer']) {
+                                $dealer = strtolower(DEALER);
+                                $where = "AND user.username LIKE '$dealer%'";
+                            } else {
+                                $where = null;
+                            }
+
+                            $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'room_note' OR note_type = 'room_note_log') AND notes.type_id = '{$room['id']}' $where ORDER BY notes.timestamp DESC;");
 
                             while($room_inquiry = $room_inquiry_qry->fetch_assoc()) {
                                 $inquiry_replies = null;

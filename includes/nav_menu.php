@@ -11,9 +11,8 @@
 HEREDOC;
     }
 
-    $so_btn_title = ((bool)$_SESSION['userInfo']['dealer']) ? "Project" : "SO";
-
-    $nav_out .= ($bouncer->validate('add_so')) ? "<li id='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add $so_btn_title</span></a></li><li class='nav-separator'><span></span></li>" : null;
+    $nav_out .= ($bouncer->validate('add_so')) ? "<li id='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add SO</span></a></li><li class='nav-separator'><span></span></li>" : null;
+    $nav_out .= ($bouncer->validate('add_project')) ? "<li id='nav_add_project'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add Project</span></a></li><li class='nav-separator'><span></span></li>" : null;
     $nav_out .= "<li id='nav_dashboard'><a href='/index.php'><i class='zmdi zmdi-view-dashboard m-r-5'></i><span>Dashboard</span></a></li>";
 
     if($bouncer->validate("clock_out")) {

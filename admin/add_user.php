@@ -21,17 +21,22 @@ if((bool)$_REQUEST['add_usr']) {
             switch($account_type) {
                 case 5:
                     $dept_list = '["Assembly","Box","Custom","Design","Finishing","Production Administrator","Shop Foreman","Shipping"]';
-                    $perms = 'FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE';
+                    $perms = 'FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE';
                     break;
 
                 default:
                     $dept_list = '["Accounting","Assembly","Box","Custom","Design","Engineering","Finishing","Production Administrator","Project Manager","Sales Administrator","Shop Foreman","Shipping"]';
-                    $perms = 'TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE';
+                    $perms = 'TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE';
                     break;
             }
 
             if($dealer) {
-                $perms = 'FALSE,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE,FALSE,TRUE,TRUE';
+                $perms = 'FALSE,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE,
+                TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,TRUE,FALSE,
+                TRUE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,
+                FALSE,TRUE,TRUE,FALSE,FALSE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE,
+                TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,TRUE,FALSE,
+                TRUE,TRUE,TRUE,FALSE,TRUE,TRUE,TRUE';
 
                 $dbconn->query("INSERT INTO user (username, password, email, phone, last_login, account_type, account_status, department, name, 
             shift, pin_code, timezone, auto_clock, hourly, pref_filters, perm_full_dashboard, dealer) 
@@ -51,7 +56,7 @@ if((bool)$_REQUEST['add_usr']) {
         view_appliance_ws, view_preprod_checklist, view_globals, view_accounting, view_vin, view_so_notes, view_room_notes, view_audit_log, view_brackets, view_tasks, 
         view_workcenter, view_so_list, view_sales_list, view_timecards, view_employees, view_employee_ops, add_feedback, add_so, search, edit_quotes, edit_orders, 
         edit_operation, edit_so, edit_room, edit_appliance_ws, edit_globals, edit_accounting, edit_vin, edit_brackets, update_tasks, edit_employee_ops, login, clock_out, 
-        view_all_so, view_attachments, view_rooms, change_order_status, view_dealer_status, submit_quote) VALUES ($insert_id, " . $perms . ");");
+        view_all_so, view_attachments, view_rooms, change_order_status, view_dealer_status, submit_quote, add_project) VALUES ($insert_id, " . $perms . ");");
 
             echo "<h1 style='color:darkgreen;'>Success: User Created</h1>";
         } else {

@@ -90,6 +90,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 
     <link href="css/e_coversheet.css?v=012920181528" type="text/css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/includes/js/functions.js?v=<?php echo VERSION; ?>"></script>
 </head>
 
 <!--<body onload="printMe()">-->
@@ -769,8 +771,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
     </form>
 </div>
 
-<script src="/assets/js/jquery.min.js"></script>
-
 <script>
     var ship_charges_changed = false;
 
@@ -778,7 +778,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
     var styles_rails_price = 8.00;
     var short_drawer_raise_price = 65.00;
     var tall_drawer_raise_price = 65.00;
-    var edge_profile_price = 57.00;
 
     <?php
         if($info['framing_options'] === '1') {
@@ -789,6 +788,14 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             echo "var frame_option_price = 28.00;";
         } else {
             echo "var frame_option_price = 0.00;";
+        }
+
+        if($info['door_design'] === 'B03' && $info['panel_raise_td'] === '7') {
+            echo "var edge_profile_price = 95.00;";
+        } elseif($info['door_design'] === 'B03') {
+            echo "var edge_profile_price = 65.00;";
+        } else {
+            echo "var edge_profile_price = 57.00;";
         }
 
         echo $hide;
@@ -825,8 +832,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 
     /** Charge Summary */
     var final_upcharges = 0.00;
-    var cabinet_list_price = $("input[name='list_price']").val();
-    var mods_accessories = $("input[name='mods_accessories']").val();
+    var cabinet_list_price = $("input[name='list_price']").val().replace(/,/g , "");
+    var mods_accessories = $("input[name='mods_accessories']").val().replace(/,/g , "");
     var final_leadtime = 0.00;
     var final_subtotal = 0.00;
     var final_multiplier = $("input[name='multiplier']");
@@ -924,7 +931,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
     var distressing_pct = $("#distressing_pct").val();
     var worn_edges_pct = $("#worn_edges_pct").val();
     var drawer_boxes_pct = $("#drawer_boxes_pct").val();
-    var finish_code_pct = $("#finish_code_pct").val()
+    var finish_code_pct = $("#finish_code_pct").val();
     /** End Percent Fields */
 
     /** Qty Fields */
@@ -1041,6 +1048,10 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             }
         })
         .on("change", "input", function() {
+            /** Cabinet pricing */
+            cabinet_list_price = $("input[name='list_price']").val().replace(/,/g , "");
+            mods_accessories = $("input[name='mods_accessories']").val().replace(/,/g , "");
+
             /** Percent Fields */
             glaze_tech_pct = $("input[name='glaze_tech_pct'").val();
             sheen_pct = $("input[name='sheen_pct'").val();
@@ -1091,27 +1102,27 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             dd_drawer_box_subtotal = (!emptyOrZero(drawer_boxes_pct)) ? (drawer_boxes_pct / 100) * cabinet_list_price : 0;
             finish_code_subtotal = (!emptyOrZero(finish_code_pct)) ? (finish_code_pct / 100) * cabinet_list_price : 0;
 
-            $("#glaze_tech_subtotal").html(glaze_tech_subtotal.toFixed(2));
-            $("#sheen_subtotal").html(sheen_subtotal.toFixed(2));
-            $("#construction_subtotal").html(construction_subtotal.toFixed(2));
-            $("#ext_species_subtotal").html(ext_species_subtotal.toFixed(2));
-            $("#ext_finish_code_subtotal").html(ext_finish_code_subtotal.toFixed(2));
-            $("#ext_glaze_tech_subtotal").html(ext_glaze_tech_subtotal.toFixed(2));
-            $("#int_species_subtotal").html(int_species_subtotal.toFixed(2));
-            $("#int_finish_code_subtotal").html(int_finish_code_subtotal.toFixed(2));
-            $("#int_glaze_tech_subtotal").html(int_glaze_tech_subtotal.toFixed(2));
-            $("#dd_species_subtotal").html(dd_species_subtotal.toFixed(2));
-            $("#dd_deign_subtotal").html(dd_deign_subtotal.toFixed(2));
-            $("#dd_style_rail_subtotal").html(dd_style_rail_subtotal.toFixed(2));
-            $("#dd_sd_raise_subtotal").html(dd_sd_raise_subtotal.toFixed(2));
-            $("#dd_td_raise_subtotal").html(dd_td_raise_subtotal.toFixed(2));
-            $("#dd_edge_profile_subtotal").html(dd_edge_profile_subtotal.toFixed(2));
-            $("#dd_frame_option_subtotal").html(dd_frame_option_subtotal.toFixed(2));
-            $("#dd_antiquing_subtotal").html(dd_antiquing_subtotal.toFixed(2));
-            $("#dd_distressing_subtotal").html(dd_distressing_subtotal.toFixed(2));
-            $("#dd_worn_edges_subtotal").html(dd_worn_edges_subtotal.toFixed(2));
-            $("#dd_drawer_box_subtotal").html(dd_drawer_box_subtotal.toFixed(2));
-            $("#finish_code_subtotal").html(finish_code_subtotal.toFixed(2));
+            $("#glaze_tech_subtotal").html(addCommas(glaze_tech_subtotal.toFixed(2)));
+            $("#sheen_subtotal").html(addCommas(sheen_subtotal.toFixed(2)));
+            $("#construction_subtotal").html(addCommas(construction_subtotal.toFixed(2)));
+            $("#ext_species_subtotal").html(addCommas(ext_species_subtotal.toFixed(2)));
+            $("#ext_finish_code_subtotal").html(addCommas(ext_finish_code_subtotal.toFixed(2)));
+            $("#ext_glaze_tech_subtotal").html(addCommas(ext_glaze_tech_subtotal.toFixed(2)));
+            $("#int_species_subtotal").html(addCommas(int_species_subtotal.toFixed(2)));
+            $("#int_finish_code_subtotal").html(addCommas(int_finish_code_subtotal.toFixed(2)));
+            $("#int_glaze_tech_subtotal").html(addCommas(int_glaze_tech_subtotal.toFixed(2)));
+            $("#dd_species_subtotal").html(addCommas(dd_species_subtotal.toFixed(2)));
+            $("#dd_deign_subtotal").html(addCommas(dd_deign_subtotal.toFixed(2)));
+            $("#dd_style_rail_subtotal").html(addCommas(dd_style_rail_subtotal.toFixed(2)));
+            $("#dd_sd_raise_subtotal").html(addCommas(dd_sd_raise_subtotal.toFixed(2)));
+            $("#dd_td_raise_subtotal").html(addCommas(dd_td_raise_subtotal.toFixed(2)));
+            $("#dd_edge_profile_subtotal").html(addCommas(dd_edge_profile_subtotal.toFixed(2)));
+            $("#dd_frame_option_subtotal").html(addCommas(dd_frame_option_subtotal.toFixed(2)));
+            $("#dd_antiquing_subtotal").html(addCommas(dd_antiquing_subtotal.toFixed(2)));
+            $("#dd_distressing_subtotal").html(addCommas(dd_distressing_subtotal.toFixed(2)));
+            $("#dd_worn_edges_subtotal").html(addCommas(dd_worn_edges_subtotal.toFixed(2)));
+            $("#dd_drawer_box_subtotal").html(addCommas(dd_drawer_box_subtotal.toFixed(2)));
+            $("#finish_code_subtotal").html(addCommas(finish_code_subtotal.toFixed(2)));
             /** End Attribute Subtotals */
 
             /** Charge Summary */
@@ -1119,8 +1130,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                 int_species_subtotal + int_finish_code_subtotal + int_glaze_tech_subtotal + dd_species_subtotal + dd_deign_subtotal + dd_style_rail_subtotal +
                 dd_sd_raise_subtotal + dd_td_raise_subtotal + dd_edge_profile_subtotal + dd_frame_option_subtotal + dd_antiquing_subtotal + dd_distressing_subtotal +
                 dd_worn_edges_subtotal + dd_drawer_box_subtotal + finish_code_subtotal;
-            cabinet_list_price = $("input[name='list_price']").val();
-            mods_accessories = $("input[name='mods_accessories']").val();
 
             <?php
                 switch($info['days_to_ship']) {
@@ -1247,21 +1256,24 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                 $("#deposit_line").show();
             }
 
-            $("#final_upcharges").html(final_upcharges.toFixed(2));
-            $("#final_leadtime").html(final_leadtime.toFixed(2));
-            $("#final_subtotal").html(final_subtotal.toFixed(2));
-            $("#final_net").html(final_net.toFixed(2));
-            $("#final_ship_zone_miles").html(final_ship_zone_miles);
+            $("#final_upcharges").html(addCommas(final_upcharges.toFixed(2)));
+            $("#final_leadtime").html(addCommas(final_leadtime.toFixed(2)));
+            $("#final_subtotal").html(addCommas(final_subtotal.toFixed(2)));
+            $("#final_net").html(addCommas(final_net.toFixed(2)));
+            $("#final_ship_zone_miles").html(addCommas(final_ship_zone_miles));
 
-            $("#final_freight").html(final_freight.toFixed(2));
-            $("#final_jobsite").html(final_jobsite.toFixed(2));
-            $("#final_cc").html(final_cc.toFixed(2));
-            $("#final_samples").html(final_samples.toFixed(2));
-            $("#final_last_subtotal").html(final_last_subtotal.toFixed(2));
-            $("#final_tax").html(final_tax.toFixed(2));
-            $("#final_total").html(final_total.toFixed(2));
-            $("#final_deposit").html(final_deposit.toFixed(2));
+            $("#final_freight").html(addCommas(final_freight.toFixed(2)));
+            $("#final_jobsite").html(addCommas(final_jobsite.toFixed(2)));
+            $("#final_cc").html(addCommas(final_cc.toFixed(2)));
+            $("#final_samples").html(addCommas(final_samples.toFixed(2)));
+            $("#final_last_subtotal").html(addCommas(final_last_subtotal.toFixed(2)));
+            $("#final_tax").html(addCommas(final_tax.toFixed(2)));
+            $("#final_total").html(addCommas(final_total.toFixed(2)));
+            $("#final_deposit").html(addCommas(final_deposit.toFixed(2)));
             /** End Charge Summary */
+
+            $("input[name='list_price']").val(addCommas($("input[name='list_price']").val()));
+            $("input[name='mods_accessories']").val(addCommas($("input[name='mods_accessories']").val()));
         })
         .on("keyup", "#final_ship_zone", function() {
             $(this).val($(this).val().toUpperCase());
