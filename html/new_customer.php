@@ -1,5 +1,5 @@
 <?php
-require("../includes/header_start.php");
+require_once("../includes/header_start.php");
 
 if(!(bool)$_SESSION['userInfo']['dealer']) {
     $qry = $dbconn->query("SELECT DISTINCT so_num FROM sales_order WHERE so_num REGEXP '^[0-9]+$' ORDER BY so_num DESC LIMIT 0,1");
@@ -30,7 +30,6 @@ if(!(bool)$_SESSION['userInfo']['dealer']) {
                 <div class="col-md-12">
                     <form id="add_retail_customer">
                         <table style="width:100%;margin-top:8px;">
-                            <?php if(!(bool)$_SESSION['userInfo']['dealer']) { ?>
                             <tr>
                                 <td style="width:33.3%"><input type="text" class="form-control" id="so_num" name="so_num" placeholder="SO #" value="<?php echo $next_so; ?>"></td>
                                 <td style="width: 33.3%;">
@@ -50,12 +49,6 @@ if(!(bool)$_SESSION['userInfo']['dealer']) {
                             <tr style="height: 5px;">
                                 <td colspan="3"></td>
                             </tr>
-                            <?php } else {
-                                $dealer_code = ucwords($_SESSION['userInfo']['username']);
-
-                                echo "<input type='hidden' name='dealer_code' id='dealer_code' value='$dealer_code'>";
-                                echo "<input type='hidden' name='so_num' id='so_num' value='$next_so'>";
-                            } ?>
                             <tr>
                                 <td colspan="3">
                                     <input type="text" name="project_name" class="form-control pull-left" placeholder="Project Name" id="project_name" style="width:50%;" />

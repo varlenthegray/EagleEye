@@ -1,5 +1,5 @@
 <?php
-require("../includes/header_start.php");
+require_once("../includes/header_start.php");
 
 if(!(bool)$_SESSION['userInfo']['dealer']) {
     $qry = $dbconn->query("SELECT DISTINCT so_num FROM sales_order WHERE so_num REGEXP '^[0-9]+$' ORDER BY so_num DESC LIMIT 0,1");
@@ -30,32 +30,13 @@ if(!(bool)$_SESSION['userInfo']['dealer']) {
                 <div class="col-md-12">
                     <form id="add_retail_customer">
                         <table style="width:100%;margin-top:8px;">
-                            <?php if(!(bool)$_SESSION['userInfo']['dealer']) { ?>
-                                <tr>
-                                    <td style="width:33.3%"><input type="text" class="form-control" id="so_num" name="so_num" placeholder="SO #" value="<?php echo $next_so; ?>"></td>
-                                    <td style="width: 33.3%;">
-                                        <select class="form-control" id="dealer_code" name="dealer_code">
-                                            <?php
-                                            $dealer_qry = $dbconn->query("SELECT * FROM dealers ORDER BY dealer_id ASC;");
+                            <?php
+                            $dealer_code = ucwords($_SESSION['userInfo']['username']);
 
-                                            while($dealer = $dealer_qry->fetch_assoc()) {
-                                                $indent = (strlen($dealer['dealer_id']) > 3) ? "---" : null;
+                            echo "<input type='hidden' name='dealer_code' id='dealer_code' value='$dealer_code'>";
+                            echo "<input type='hidden' name='so_num' id='so_num' value='$next_so'>";
+                            ?>
 
-                                                echo "<option value='{$dealer['dealer_id']}'>$indent {$dealer['dealer_id']} ({$dealer['contact']})</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr style="height: 5px;">
-                                    <td colspan="3"></td>
-                                </tr>
-                            <?php } else {
-                                $dealer_code = ucwords($_SESSION['userInfo']['username']);
-
-                                echo "<input type='hidden' name='dealer_code' id='dealer_code' value='$dealer_code'>";
-                                echo "<input type='hidden' name='so_num' id='so_num' value='$next_so'>";
-                            } ?>
                             <tr>
                                 <td colspan="3">
                                     <input type="text" name="project_name" class="form-control pull-left" placeholder="Project Name" id="project_name" style="width:50%;" />

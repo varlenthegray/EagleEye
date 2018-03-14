@@ -454,7 +454,7 @@ switch($_REQUEST['action']) {
             $output['data'][$i][] = "&nbsp;";
             $output['data'][$i][] = "&nbsp;";
             $output['data'][$i][] = "---------";
-            $output['data'][$i][] = "I tried hard but found nothing, I'm sorry :(";
+            $output['data'][$i][] = "No operations found.";
             $output['data'][$i][] = "---------";
             $output['data'][$i][] = "Never";
             $output['data'][$i][] = "&nbsp;";

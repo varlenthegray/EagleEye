@@ -897,7 +897,7 @@ require 'includes/header_start.php';
 
         <?php if($bouncer->validate('add_project')) { ?>
         .on("click", "#nav_add_project", function() {
-            $.post('/html/add_project.php', function(data) {
+            $.post('/html/add_project.php?display=dealer', function(data) {
                 $("#modalAddCustomer").html(data).modal('show');
             });
         })

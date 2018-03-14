@@ -589,9 +589,9 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                         $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
 
                                         if((substr(strtoupper($inquiry_reply['username']), 0, 3) === DEALER) && (bool)$_SESSION['userInfo']['dealer']) {
-                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small><div><button class='btn waves-effect btn-primary post_to_cal'>Post to Calendar</button></div></td></tr>";
                                         } elseif(!(bool)$_SESSION['userInfo']['dealer']) {
-                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small><div><button class='btn waves-effect btn-primary post_to_cal'>Post to Calendar</button></div></td></tr>";
                                         }
                                     }
                                 } else {
