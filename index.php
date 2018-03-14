@@ -918,6 +918,10 @@ require 'includes/header_start.php';
             unsaved = false;
         })
         <?php } ?>
+
+        .on("click", ".post_to_cal", function(e) {
+            e.stopPropagation();
+        })
     ;
 
     setInterval(function() { // stops the auto-logout

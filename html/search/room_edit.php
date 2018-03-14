@@ -589,9 +589,9 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                         $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
 
                                         if((substr(strtoupper($inquiry_reply['username']), 0, 3) === DEALER) && (bool)$_SESSION['userInfo']['dealer']) {
-                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small><div><button class='btn waves-effect btn-primary post_to_cal'>Post to Calendar</button></div></td></tr>";
+                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
                                         } elseif(!(bool)$_SESSION['userInfo']['dealer']) {
-                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small><div><button class='btn waves-effect btn-primary post_to_cal'>Post to Calendar</button></div></td></tr>";
+                                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
                                         }
                                     }
                                 } else {
@@ -602,7 +602,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 $notes = nl2br($notes);
 
                                 echo "<tr>";
-                                echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
+                                echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small><div><button type='button' class='btn waves-effect btn-primary post_to_cal'>Post to Calendar</button></div></td>";
                                 echo "</tr>";
 
                                 echo $inquiry_replies;
@@ -670,7 +670,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
                                 echo "<tr class='$room_note_log'>";
                                 echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$room_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
-                                echo "  <td>$notes -- <small><em>{$room_inquiry['name']} on $time $followup</em></small></td>";
+                                echo "  <td>$notes -- <small><em>{$room_inquiry['name']} on $time $followup</em></small><div><button type='button' class='btn waves-effect btn-primary post_to_cal'>Post to Calendar</button></div></td>";
                                 echo "</tr>";
 
                                 echo "<tr id='inquiry_reply_line_{$room_inquiry['nID']}' style='display:none;'>";
