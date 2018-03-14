@@ -245,9 +245,6 @@ $("body")
         unsaved = false;
     }) End Deprecated **/
 
-    .on("change", ".days-to-ship", function() {
-
-    })
     .on("change", ".dealer_code", function() {
         $.post("/ondemand/play_fetch.php?action=get_dealer_info&dealer_code=" + $(this).val(), function(data) {
             if(data !== '') {
@@ -709,16 +706,6 @@ $("body")
                 displayToast("success", "Copied code to clipboard!", "Code Copied");
             }
         });
-    })
-
-    .on("change", "#vin_info_input select", function() {
-        if($("#show_image_popups").is(":checked")) {
-            $.post("/ondemand/display_actions.php?action=vin_image_ref", {type: $(this).attr("data-type"), vinID: $(this).val()}, function(data) {
-                if(data !== '') {
-                    $("#modalImageInfo").modal().find('.modal-body').html(data);
-                }
-            });
-        }
     })
 
     .on("click", ".custom_dropdown", function(e) {

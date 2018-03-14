@@ -878,31 +878,18 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
         </div>
         <!-- /.modal -->
     </form>
-
-    <!-- image modal -->
-    <div id="modalImageInfo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalImageInfoLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title">Image Details</h4>
-                </div>
-                <div class="modal-body" style="text-align:center;">
-
-                </div>
-                <div class="modal-footer" id="r_attachments_footer">
-                    <button type="button" class="btn btn-primary waves-effect" id="dismiss" data-dismiss="modal">Close</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
 </div>
 
 <script>
     $(".delivery_date").datepicker();
 
     $(".room_note_log").hide();
+
+    if($("#vin_code_" + active_room_id).val().indexOf("?") > -1) {
+        $("#submit_quote").hide();
+    } else {
+        $("#submit_quote").show();
+    }
 
     <?php echo (!empty($room['custom_vin_info'])) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}')": null; ?>
 
