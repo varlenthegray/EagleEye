@@ -45,7 +45,7 @@ function translateVIN($segment, $key) {
                     $name = (stristr($key, 'name')) ? $value : $name;
                 }
 
-                $ikey = "{$mfg}{$code}";
+                $ikey = "{$mfg}-{$code}";
                 $desc = "$name";
             } else {
                 $ikey = $key;
