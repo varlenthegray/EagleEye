@@ -45,8 +45,8 @@ function translateVIN($segment, $key) {
                     $name = (stristr($key, 'name')) ? $value : $name;
                 }
 
-                $ikey = $code;
-                $desc = "($mfg) $name";
+                $ikey = "{$mfg}{$code}";
+                $desc = "$name";
             } else {
                 $ikey = $key;
                 $desc = "Custom - " . array_values($custom_info[$segment])[0];
