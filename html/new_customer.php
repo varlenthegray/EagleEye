@@ -35,12 +35,14 @@ if(!(bool)$_SESSION['userInfo']['dealer']) {
                                 <td style="width: 33.3%;">
                                     <select class="form-control" id="dealer_code" name="dealer_code">
                                         <?php
-                                        $dealer_qry = $dbconn->query("SELECT * FROM dealers ORDER BY dealer_id ASC;");
+                                        $dealer_qry = $dbconn->query("SELECT d.dealer_id AS dealerCode, c.* FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id ORDER BY d.dealer_id ASC");
 
                                         while($dealer = $dealer_qry->fetch_assoc()) {
-                                            $indent = (strlen($dealer['dealer_id']) > 3) ? "---" : null;
+                                            $indent = (strlen($dealer['dealerCode']) > 3) ? "---" : null;
 
-                                            echo "<option value='{$dealer['dealer_id']}'>$indent {$dealer['dealer_id']} ({$dealer['contact']})</option>";
+                                            $name = (empty($dealer['first_name']) && empty($dealer['last_name'])) ? $dealer['company_name'] : "{$dealer['first_name']} {$dealer['last_name']}";
+
+                                            echo "<option value='{$dealer['dealerCode']}'>$indent {$dealer['dealerCode']} ($name)</option>";
                                         }
                                         ?>
                                     </select>

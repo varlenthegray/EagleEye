@@ -98,17 +98,21 @@ switch($_REQUEST['action']) {
         $billing_cc_exp = sanitizeInput($_REQUEST['billing_cc_exp']);
         $billing_cc_ccv = sanitizeInput($_REQUEST['billing_cc_ccv']);
 
+        $designer_id = sanitizeInput($_REQUEST['designer']);
+
+        echo "<script>console.log('Designer ID: $designer_id');</script>";
+
         if ($dbconn->query("INSERT INTO sales_order (so_num, dealer_code, project_name, project_addr, project_city, project_state, project_zip, 
-          project_landline, name_1, cell_1, business_1, email_1, name_2, cell_2, business_2, email_2, secondary_addr, secondary_city, secondary_state, 
+            project_landline, name_1, cell_1, business_1, email_1, name_2, cell_2, business_2, email_2, secondary_addr, secondary_city, secondary_state, 
             secondary_zip, secondary_landline, contractor_name, contractor_business, contractor_cell, contractor_email, project_mgr, project_mgr_cell, 
-              project_mgr_email, bill_to, billing_contact, billing_landline, billing_cell, billing_addr, billing_city, billing_state, billing_zip, 
-                billing_account, billing_routing, billing_cc_num, billing_cc_exp, billing_cc_ccv, contractor_zip, contractor_state, contractor_city, 
-                  contractor_addr) VALUES ('$so_num', '$dealer_code', '$project_name', '$project_addr', '$project_city', '$project_state', '$project_zip',
-                    '$project_landline', '$name_1', '$cell_1', '$business_1', '$email_1', '$name_2', '$cell_2', '$business_2', '$email_2', '$secondary_addr',
-                      '$secondary_city', '$secondary_state', '$secondary_zip', '$secondary_landline', '$contractor_name', '$contractor_business', '$contractor_cell',
-                        '$contractor_email', '$project_mgr', '$project_mgr_cell', '$project_mgr_email', '$bill_to', '$billing_contact', '$billing_landline',
-                          '$billing_cell', '$billing_addr', '$billing_city', '$billing_state', '$billing_zip', '$billing_account', '$billing_routing',
-                            '$billing_cc_num', '$billing_cc_exp', '$billing_cc_ccv', '$contractor_zip', '$contractor_state', '$contractor_city', '$contractor_addr')")) {
+            project_mgr_email, bill_to, billing_contact, billing_landline, billing_cell, billing_addr, billing_city, billing_state, billing_zip, 
+            billing_account, billing_routing, billing_cc_num, billing_cc_exp, billing_cc_ccv, contractor_zip, contractor_state, contractor_city, 
+            contractor_addr, designer_id) VALUES ('$so_num', '$dealer_code', '$project_name', '$project_addr', '$project_city', '$project_state', '$project_zip',
+            '$project_landline', '$name_1', '$cell_1', '$business_1', '$email_1', '$name_2', '$cell_2', '$business_2', '$email_2', '$secondary_addr',
+            '$secondary_city', '$secondary_state', '$secondary_zip', '$secondary_landline', '$contractor_name', '$contractor_business', '$contractor_cell',
+            '$contractor_email', '$project_mgr', '$project_mgr_cell', '$project_mgr_email', '$bill_to', '$billing_contact', '$billing_landline',
+            '$billing_cell', '$billing_addr', '$billing_city', '$billing_state', '$billing_zip', '$billing_account', '$billing_routing',
+            '$billing_cc_num', '$billing_cc_exp', '$billing_cc_ccv', '$contractor_zip', '$contractor_state', '$contractor_city', '$contractor_addr', '$designer_id')")) {
 
             $op_qry = $dbconn->query("SELECT * FROM operations WHERE op_id != '000' AND job_title NOT LIKE '%N/A%' ORDER BY op_id;");
 
@@ -127,10 +131,10 @@ switch($_REQUEST['action']) {
             $ind_bracket_final = json_encode($ind_bracket);
 
             $dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, individual_bracket_buildout, order_status, sales_bracket, sample_bracket,
-              preproduction_bracket, doordrawer_bracket, main_bracket, custom_bracket, install_bracket, shipping_bracket, sales_published) 
-                VALUES ('$so_num', 'A', 'Intake (Auto-Generated)', 'C', '$ind_bracket_final', '#', '{$starting_ops['Sales']}', '{$starting_ops['Sample']}', 
-                '{$starting_ops['Pre-Production']}', '{$starting_ops['Drawer & Doors']}', '{$starting_ops['Main']}', '{$starting_ops['Custom']}', 
-                  '{$starting_ops['Installation']}', '{$starting_ops['Shipping']}', TRUE);");
+            preproduction_bracket, doordrawer_bracket, main_bracket, custom_bracket, install_bracket, shipping_bracket, sales_published) 
+            VALUES ('$so_num', 'A', 'Intake (Auto-Generated)', 'C', '$ind_bracket_final', '#', '{$starting_ops['Sales']}', '{$starting_ops['Sample']}', 
+            '{$starting_ops['Pre-Production']}', '{$starting_ops['Drawer & Doors']}', '{$starting_ops['Main']}', '{$starting_ops['Custom']}', 
+            '{$starting_ops['Installation']}', '{$starting_ops['Shipping']}', TRUE);");
 
             $room_id = $dbconn->insert_id;
 
@@ -301,14 +305,15 @@ switch($_REQUEST['action']) {
             $dealer_where = null;
         }
 
-        $so_qry = $dbconn->query("SELECT sales_order.*, dealers.dealer_name, dealers.contact FROM sales_order LEFT JOIN dealers ON sales_order.dealer_code = dealers.dealer_id $dealer_where");
+        //$so_qry = $dbconn->query("SELECT sales_order.*, dealers.dealer_name, dealers.contact FROM sales_order LEFT JOIN dealers ON sales_order.dealer_code = dealers.dealer_id $dealer_where");
+        $so_qry = $dbconn->query("SELECT so.*, c.company_name, c.first_name, c.last_name FROM sales_order so LEFT JOIN dealers d ON so.dealer_code = d.dealer_id LEFT JOIN contact c ON d.id = c.dealer_id $dealer_where");
 
         if($so_qry->num_rows > 0) {
             while($so = $so_qry->fetch_assoc()) {
                 $output['data'][$i][] = $so['so_num'];
                 $output['data'][$i][] = $so['project_name'];
                 $output['data'][$i][] = $so['contact'];
-                $output['data'][$i][] = "{$so['dealer_name']}: {$so['contact']}";
+                $output['data'][$i][] = "{$so['company_name']}: {$so['first_name']} {$so['last_name']}";
                 $output['data'][$i]['DT_RowId'] = $so['so_num'];
 
                 $i += 1;
@@ -361,9 +366,9 @@ switch($_REQUEST['action']) {
             $dealer_where = null;
         }
 
-        $so_qry = $dbconn->query("SELECT sales_order.id AS sID, sales_order.*, rooms.id AS rID, rooms.*, dealers.* FROM sales_order 
-          LEFT JOIN rooms ON sales_order.so_num = rooms.so_parent LEFT JOIN dealers ON sales_order.dealer_code = dealers.dealer_id $dealer_where 
-            ORDER BY so_num ASC, room ASC, iteration ASC;");
+        $so_qry = $dbconn->query("SELECT so.id AS sID, so.*, r.id AS rID, d.dealer_id AS dealerIDCode, r.*, d.*, c.* FROM sales_order so
+        LEFT JOIN rooms r ON so.so_num = r.so_parent LEFT JOIN dealers d ON so.dealer_code = d.dealer_id
+        LEFT JOIN contact c ON d.id = c.dealer_id $dealer_where ORDER BY so_num ASC, room ASC, iteration ASC;");
 
         $usr_qry = $dbconn->query("SELECT hide_sales_list_values FROM user WHERE id = {$_SESSION['userInfo']['id']};");
         $usr = $usr_qry->fetch_assoc();
@@ -381,7 +386,7 @@ switch($_REQUEST['action']) {
                 }
 
                 if(!in_array($so['rID'], $hidden) || $hidden_enabled) {
-                    $contact = (!empty($so['contact'])) ? "{$so['dealer_id']}: {$so['contact']} ({$so['dealer_name']})" : "<span style='color: #FF0000 !important;'>A00: None Assigned</span>";
+                    $contact = (!empty($so['dealerIDCode'])) ? "{$so['dealerIDCode']}: {$so['first_name']} {$so['last_name']} ({$so['company_name']})" : "<span style='color: #FF0000 !important;'>A00: None Assigned</span>";
 
                     switch($so['order_status']) {
                         case '-':

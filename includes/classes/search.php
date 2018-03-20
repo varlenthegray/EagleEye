@@ -19,7 +19,7 @@ class search {
 
         if($qry->num_rows > 0) {
             while($result = $qry->fetch_assoc()) {
-                $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%{$result['dealer_code']}%'");
+                $dealer_qry = $dbconn->query("SELECT * FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id LIKE '%{$result['dealer_code']}%'");
                 $dealer = $dealer_qry->fetch_assoc();
 
                 /** BEGIN LISTING OF SO'S */
@@ -27,8 +27,9 @@ class search {
                 echo "    <td width='26px'><button class='btn waves-effect btn-primary pull-right' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button></td>";
                 echo "    <td>{$result['so_num']}</td>";
                 echo "    <td>{$result['project_name']}</td>";
-                echo "    <td>{$dealer['contact']}</td>";
-                echo "    <td>{$result['dealer_code']}: {$dealer['dealer_name']}</td>";
+                echo "    <td>{$dealer['first_name']} {$dealer['last_name']}</td                                                                                                                                                                                                                                                                                             nnnnnnnnn
+    >";
+                echo "    <td>{$result['dealer_code']}: {$dealer['company_name']}</td>";
                 echo "  </tr>";
 
                 /** BEGIN ROOM INFORMATION */

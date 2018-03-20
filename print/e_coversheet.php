@@ -6,7 +6,7 @@ $room_id = sanitizeInput($_REQUEST['room_id']);
 $info_qry = $dbconn->query("SELECT rooms.*, sales_order.*, rooms.order_status AS rOrderStatus FROM rooms LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num WHERE rooms.id = '$room_id'");
 $info = $info_qry->fetch_assoc();
 
-$dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$info['dealer_code']}'");
+$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id dealer_id = '{$info['dealer_code']}'");
 $dealer_info = $dealer_qry->fetch_assoc();
 
 $sheen_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' AND `key` = '{$info['sheen']}'");
@@ -181,7 +181,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         <div id="main_section">
             <table>
                 <tr>
-                    <th colspan="3"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['dealer_name']}"; ?></span></th>
+                    <th colspan="3"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['company_name']}"; ?></span></th>
                 </tr>
                 <tr>
                     <td style="border-right:1px solid #000;" class="gray_bg">Delivery Notes:</td>

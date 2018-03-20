@@ -11,6 +11,7 @@
 HEREDOC;
     }
 
+    $nav_out .= ($bouncer->validate('view_contacts')) ? "<li class='nav_add_contact'><a><i class='zmdi zmdi-collection-plus m-r-5'></i><span>New Contact</span></a></li>" : null;
     $nav_out .= ($bouncer->validate('add_so')) ? "<li id='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add SO</span></a></li><li class='nav-separator'><span></span></li>" : null;
     $nav_out .= ($bouncer->validate('add_project')) ? "<li id='nav_add_project'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add Project</span></a></li><li class='nav-separator'><span></span></li>" : null;
     $nav_out .= "<li id='nav_dashboard'><a href='/index.php'><i class='zmdi zmdi-view-dashboard m-r-5'></i><span>Dashboard</span></a></li>";
@@ -37,6 +38,8 @@ HEREDOC;
     if($bouncer->validate('add_feedback') || $bouncer->validate('view_tasks')) {
         $nav_out .= "<li class='nav-separator'><span></span></li>";
     }
+
+    $nav_out .= ($bouncer->validate('view_contacts')) ? "<li id='nav_contacts'><a onclick='unloadPage(\"display_contacts\")'><i class='zmdi zmdi-account-box-mail m-r-5'></i>Contacts</a></li>" : null;
 
     if($bouncer->validate('view_workcenter') || $bouncer->validate('view_so_list') || $bouncer->validate('view_sales_list') || $bouncer->validate('view_timecards')) {
         $nav_out .= "<li class='has-submenu'>

@@ -3,7 +3,7 @@ require_once("../../includes/header_start.php");
 
 function displayVINOpts($segment, $db_col = null, $id = null) {
     global $vin_schema;
-    global $room;
+    $room = null;
 
     // assigns SEGMENT = VIN Schema column (panel_raise) of which there may be multiple pulled from VIN SCHEMA, DB_COL of which there is only one (panel_raise_sd, stored in ROOMS table)
     $dblookup = (!empty($db_col)) ? $db_col : $segment;
@@ -18,7 +18,7 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
 
     foreach($vin_schema[$segment] as $value) {
         if(((string)$value['key'] === (string)$room[$dblookup]) && empty($selected)) {
-            $selected = "{$value['value']} ({$value['key']})";
+            $selected = "{$value['value']}";
             $selected_img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
             $sel_key = $value['key'];
         }
@@ -33,20 +33,20 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
                 $section_head = null;
             }
 
-            $options .= "$section_head <div class='option' data-value='{$value['key']}'>{$value['value']} ({$value['key']}) $img</div>";
+            $options .= "$section_head <div class='option' data-value='{$value['key']}'>{$value['value']} $img</div>";
 
             if(!empty($value['subitems'])) {
                 $subitems = json_decode($value['subitems']);
-                $option_grid .= "$section_head <div class='grid_element' data-value='{$value['key']}'><div class='header'>{$value['value']} ({$value['key']})</div>$img";
+                $option_grid .= "$section_head <div class='grid_element' data-value='{$value['key']}'><div class='header'>{$value['value']}</div>$img";
 
                 foreach($subitems as $key => $item) {
-                    $options .= "<div class='option sub_option' data-value='{$key}'>{$item} ({$key})</div>";
-                    $option_grid .= "<div class='option sub_option' data-value='{$key}'>{$item} ({$key})</div>";
+                    $options .= "<div class='option sub_option' data-value='{$key}'>{$item}</div>";
+                    $option_grid .= "<div class='option sub_option' data-value='{$key}'>{$item})</div>";
                 }
 
                 $option_grid .= "</div>";
             } else {
-                $option_grid .= "$section_head <div class='grid_element option' data-value='{$value['key']}'><div class='header'>{$value['value']} ({$value['key']})</div>$img</div>";
+                $option_grid .= "$section_head <div class='grid_element option' data-value='{$value['key']}'><div class='header'>{$value['value']}</div>$img</div>";
             }
         }
     }
@@ -231,7 +231,7 @@ echo "<script>
                                                 }
                                                 ?>
                                             </select>
-                                            <input type="text" class="form-control" id="edit_room_name_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>" style="float:left;width:86%;margin-left:5px;">
+                                            <input type="text" class="form-control" id="edit_room_name_<?php echo $room['room']; ?>_so_<?php echo $result['so_num']; ?>" name="room_name" placeholder="Room Name" value="" style="float:left;width:86%;margin-left:5px;">
                                         </td>
                                     </tr>
                                     <tr>
@@ -262,6 +262,7 @@ echo "<script>
                                         <td><label for="days_to_ship">Days to Ship</label></td>
                                         <td><?php displayVINOpts('days_to_ship'); ?></td>
                                     </tr>
+                                    <?php if(!(bool)$_SESSION['userInfo']['dealer']) {  ?>
                                     <tr>
                                         <td><label for="delivery_date">Delivery Date</label></td>
                                         <td>
@@ -295,6 +296,7 @@ echo "<script>
                                             </div>
                                         </td>
                                     </tr>
+                                        <?php } ?>
                                     <tr style="height:10px;">
                                         <td colspan="2"></td>
                                     </tr>
@@ -309,10 +311,11 @@ echo "<script>
                                         <tr style="height:10px;">
                                             <td colspan="2"></td>
                                         </tr>
-                                    <?php }} if($bouncer->validate('view_vin')) { ?>
+                                    <?php }} if($bouncer->validate('view_vin')) { if(!(bool)$_SESSION['userInfo']['dealer']) { ?>
                                     <tr>
                                         <td colspan="2"><input tabindex="37" type="text" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" placeholder="VIN Code" value="<?php echo $room['vin_code']; ?>" /></td>
                                     </tr>
+                                    <?php } ?>
                                     <tr style="height:10px;">
                                         <td colspan="2"></td>
                                     </tr>

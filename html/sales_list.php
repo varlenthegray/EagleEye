@@ -24,12 +24,16 @@ require '../includes/header_start.php';
                             <td>&nbsp;</td>
                         </tr>
                         <?php
-                        $dealer_qry = $dbconn->query("SELECT * FROM dealers ORDER BY dealer_id ASC;");
+                        $dealer_qry = $dbconn->query("SELECT d.dealer_id AS dealerCode, c.* FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id ORDER BY d.dealer_id ASC");
 
                         while($dealer = $dealer_qry->fetch_assoc()) {
-                            $indent = (strlen($dealer['dealer_id']) > 3) ? "style='margin-left:20px;'" : null;
+                            $indent = (strlen($dealer['dealerCode']) > 3) ? "style='margin-left:20px;'" : null;
 
-                            echo "<tr style='border:1px solid #000;'><td style='padding:2px;'><div class='checkbox checkbox-primary' $indent><input class='ignoreSaveAlert hide_dealer' id='hide_dealer_{$dealer['dealer_id']}' data-dealer-id='{$dealer['dealer_id']}' type='checkbox' checked><label for='hide_dealer_{$dealer['dealer_id']}'>{$dealer['dealer_id']}: {$dealer['contact']}</label></div></td></tr>";
+                            $name = (empty($dealer['first_name']) && empty($dealer['last_name'])) ? $dealer['company_name'] : "{$dealer['first_name']} {$dealer['last_name']}";
+
+                            echo "<tr style='border:1px solid #000;'><td style='padding:2px;'><div class='checkbox checkbox-primary' $indent><input class='ignoreSaveAlert hide_dealer' id='hide_dealer_{$dealer['dealerCode']}' data-dealer-id='{$dealer['dealerCode']}' type='checkbox' checked><label for='hide_dealer_{$dealer['dealerCode']}'>{$dealer['dealerCode']}: $name</label></div></td></tr>";
+
+                            //echo "<option value='{$dealer['dealerCode']}'>$indent {$dealer['dealerCode']} ($name)</option>";
                         }
                         ?>
                     </table>

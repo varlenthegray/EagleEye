@@ -102,8 +102,6 @@ require '../includes/header_start.php';
     <?php } ?>
 </div>
 
-
-
 <!-- modal -->
 <div id="modalStartJob" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalStartJobLabel" aria-hidden="true">
     <!-- for flexibility, I'm going to display this via AJAX data return -->

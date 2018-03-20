@@ -11,7 +11,7 @@ $room_id = $ws['room'];
 $info_qry = $dbconn->query("SELECT rooms.*, sales_order.*, rooms.order_status AS rOrderStatus FROM rooms LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num WHERE rooms.id = '$room_id'");
 $info = $info_qry->fetch_assoc();
 
-$dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$info['dealer_code']}'");
+$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$info['dealer_code']}'");
 $dealer_info = $dealer_qry->fetch_assoc();
 
 function translateVIN($segment, $key) {
@@ -140,7 +140,7 @@ if($notes_qry->num_rows > 0) {
         <div id="main_section">
             <table style="margin-bottom: 20px;">
                 <tr>
-                    <th colspan="2"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['dealer_name']}"; ?></span></th>
+                    <th colspan="2"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['company_name']}"; ?></span></th>
                 </tr>
                 <tr class="border_thin_bottom" id="delivery_notes">
                     <td class="gray_bg" width="13%">Delivery Notes:</td>
