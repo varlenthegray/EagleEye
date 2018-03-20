@@ -372,9 +372,6 @@ switch ($search) {
                               ?>
                             </select>
                           </td>
-                          <td style="padding-left:5px;">
-                            <div class="checkbox"><input id="hide_empty_fields" class="ignoreSaveAlert" type="checkbox"><label for="hide_empty_fields"> Show Empty Fields</label></div>
-                          </td>
                         </tr>
                         <tr style="height: 5px;">
                           <td colspan="3"></td>
