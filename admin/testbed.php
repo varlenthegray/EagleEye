@@ -1,7 +1,7 @@
 <?php
 require ("../includes/header_start.php");
 
-outputPHPErrs();
+//outputPHPErrs();
 ?>
   <!DOCTYPE html>
   <html>
@@ -73,93 +73,129 @@ outputPHPErrs();
       <div class="row">
         <div class="col-md-12">
           <div class="card-box">
-            <img src="/assets/images/sample_display.jpg" width="778" height="800" border="0" usemap="#sampleMap" />
+            <?php
+            $options = '';
+            
+            $sample_display_qry = $dbconn->query("SELECT * FROM `3erp_dev`.vin_schema WHERE vin_schema.imagemap_coords IS NOT null;");
+            
+            while($sample_display = $sample_display_qry->fetch_assoc()) {
+              if(stristr($sample_display['imagemap_coords'], '[')) {
+                $multimap = json_decode($sample_display['imagemap_coords']);
+                
+                foreach($multimap AS $map) {
+                  $options .= "<area shape='rect' coords='$map' href='#' data-value='{$sample_display['key']}' />";
+                }
+              } else {
+                $options .= "<area shape='rect' coords='{$sample_display['imagemap_coords']}' href='#' data-value='{$sample_display['key']}' />";
+              }
+            }
+            
+            echo "<img src='/assets/images/sample_display.jpg' width='778' height='800' border='0' usemap='#sampleMap' style='max-width:800px;max-height:800px;' /><map name='sampleMap'>$options</map>";
 
-            <map name="sampleMap">
-              <area shape="rect" coords="145,40,210,90" href="#articwhite" />
-              <area shape="rect" coords="215,40,280,90" href="#designerwhite" />
-              <area shape="rect" coords="285,40,350,90" href="#frostywhite" />
-              <area shape="rect" coords="355,40,425,90" href="#alabaster" />
-              <area shape="rect" coords="425,40,495,90" href="#antiquewhite" />
-              <area shape="rect" coords="495,40,565,90" href="#crystalwhite" />
-              <area shape="rect" coords="565,40,635,90" href="#chesapeake" />
-              <area shape="rect" coords="75,120,140,170" href="#heron" />
-              <area shape="rect" coords="145,120,210,170" href="#hearthstonegrey" />
-              <area shape="rect" coords="215,120,280,170" href="#cadetgrey" />
-              <area shape="rect" coords="285,120,350,170" href="#metrogrey" />
-              <area shape="rect" coords="425,120,495,170" href="#baldrock" />
-              <area shape="rect" coords="495,120,565,170" href="#cliffs" />
-              <area shape="rect" coords="565,120,635,170" href="#sand" />
-              <area shape="rect" coords="635,120,705,170" href="#river" />
-              <area shape="rect" coords="145,190,210,240" href="#roja" />
-              <area shape="rect" coords="215,190,280,240" href="#butter" />
-              <area shape="rect" coords="285,190,350,240" href="#taupe" />
-              <area shape="rect" coords="355,190,425,240" href="#sage" />
-              <area shape="rect" coords="425,190,495,240" href="#marina" />
-              <area shape="rect" coords="495,190,565,240" href="#regentblue" />
-              <area shape="rect" coords="565,190,635,240" href="#urbanbronze" />
-              <area shape="rect" coords="635,190,705,240" href="#ebony" />
-              <area shape="rect" coords="5,330,70,375" href="#a_harvestgold" />
-              <area shape="rect" coords="70,325,140,375" href="#a_ginger" />
-              <area shape="rect" coords="145,325,210,375" href="#a_honey" />
-              <area shape="rect" coords="215,325,280,375" href="#a_chestnut" />
-              <area shape="rect" coords="285,324,350,374" href="#a_cordovan" />
-              <area shape="rect" coords="355,325,425,375" href="#a_bordeaux" />
-              <area shape="rect" coords="495,325,565,375" href="#a_alpine" />
-              <area shape="rect" coords="565,325,635,375" href="#a_nickel" />
-              <area shape="rect" coords="635,325,705,375" href="#a_driftwood" />
-              <area shape="rect" coords="710,325,775,375" href="#a_nitefall" />
-              <area shape="rect" coords="5,395,70,445" href="#c_harvestgold" />
-              <area shape="rect" coords="70,395,140,445" href="#c_ginger" />
-              <area shape="rect" coords="145,395,210,445" href="#c_honey" />
-              <area shape="rect" coords="215,395,280,445" href="#c_chestnut" />
-              <area shape="rect" coords="285,395,350,445" href="#c_cordovan" />
-              <area shape="rect" coords="355,395,425,445" href="#c_bordeaux" />
-              <area shape="rect" coords="495,395,565,445" href="#c_alpine" />
-              <area shape="rect" coords="565,395,635,445" href="#c_nickel" />
-              <area shape="rect" coords="635,395,705,445" href="#c_driftwood" />
-              <area shape="rect" coords="710,395,775,445" href="#c_nitefall" />
-              <area shape="rect" coords="0,460,70,510" href="#m_harvestgold" />
-              <area shape="rect" coords="70,460,140,510" href="#m_ginger" />
-              <area shape="rect" coords="145,460,210,510" href="#m_honey" />
-              <area shape="rect" coords="215,460,280,510" href="#m_chestnut" />
-              <area shape="rect" coords="285,460,350,510" href="#m_cordovan" />
-              <area shape="rect" coords="355,460,425,510" href="#m_bordeaux" />
-              <area shape="rect" coords="495,460,565,510" href="#m_alpine" />
-              <area shape="rect" coords="565,460,635,510" href="#m_nickel" />
-              <area shape="rect" coords="635,460,705,510" href="#m_driftwood" />
-              <area shape="rect" coords="710,460,775,510" href="#m_nitefall" />
-              <area shape="rect" coords="2,597,72,647" href="#a_natural" />
-              <area shape="rect" coords="72,597,142,647" href="#a_nutmeg" />
-              <area shape="rect" coords="142,597,212,647" href="#a_portabella" />
-              <area shape="rect" coords="212,597,282,647" href="#a_autumn" />
-              <area shape="rect" coords="282,597,352,647" href="#a_colonial" />
-              <area shape="rect" coords="352,597,422,647" href="#a_saddle" />
-              <area shape="rect" coords="427,597,492,647" href="#a_cocoa" />
-              <area shape="rect" coords="497,597,567,647" href="#a_pecan" />
-              <area shape="rect" coords="567,597,637,647" href="#a_darkroast" />
-              <area shape="rect" coords="637,597,707,647" href="#a_espresso" />
-              <area shape="rect" coords="2,667,72,717" href="#c_natural" />
-              <area shape="rect" coords="72,667,142,717" href="#c_nutmeg" />
-              <area shape="rect" coords="142,667,212,717" href="#c_portabella" />
-              <area shape="rect" coords="212,667,282,717" href="#c_autumn" />
-              <area shape="rect" coords="282,667,352,717" href="#c_colonial" />
-              <area shape="rect" coords="352,667,422,717" href="#c_saddle" />
-              <area shape="rect" coords="427,667,492,717" href="#c_cocoa" />
-              <area shape="rect" coords="497,667,562,717" href="#c_pecan" />
-              <area shape="rect" coords="567,667,632,717" href="#c_darkroast" />
-              <area shape="rect" coords="637,667,707,717" href="#c_espresso" />
-              <area shape="rect" coords="2,732,72,782" href="#m_natural" />
-              <area shape="rect" coords="72,732,142,782" href="#m_nutmeg" />
-              <area shape="rect" coords="142,732,212,782" href="#m_portabella" />
-              <area shape="rect" coords="212,732,282,782" href="#m_autumn" />
-              <area shape="rect" coords="282,732,352,782" href="#m_colonial" />
-              <area shape="rect" coords="352,732,422,782" href="#m_saddle" />
-              <area shape="rect" coords="427,732,492,782" href="#m_cocoa" />
-              <area shape="rect" coords="497,732,562,782" href="#m_pecan" />
-              <area shape="rect" coords="567,732,632,782" href="#m_darkroast" />
-              <area shape="rect" coords="637,732,707,782" href="#m_espresso" />
-            </map>
+            /*$options = <<<HEREDOC
+<img src="/assets/images/sample_display.jpg" width="778" height="800" border="0" usemap="#sampleMap" style='max-width:800px;max-height:800px;' />
+
+<map name="sampleMap">
+  <area shape="rect" coords="145,40,210,90" href="#articwhite" />
+  <area shape="rect" coords="215,40,280,90" href="#designerwhite" />
+  <area shape="rect" coords="285,40,350,90" href="#frostywhite" />
+  <area shape="rect" coords="355,40,425,90" href="#alabaster" />
+  <area shape="rect" coords="425,40,495,90" href="#antiquewhite" />
+  <area shape="rect" coords="495,40,565,90" href="#crystalwhite" />
+  <area shape="rect" coords="565,40,635,90" href="#chesapeake" />
+  <area shape="rect" coords="75,120,140,170" href="#heron" />
+  <area shape="rect" coords="145,120,210,170" href="#hearthstonegrey" />
+  <area shape="rect" coords="215,120,280,170" href="#cadetgrey" />
+  <area shape="rect" coords="285,120,350,170" href="#metrogrey" />
+  <area shape="rect" coords="425,120,495,170" href="#baldrock" />
+  <area shape="rect" coords="495,120,565,170" href="#cliffs" />
+  <area shape="rect" coords="565,120,635,170" href="#sand" />
+  <area shape="rect" coords="635,120,705,170" href="#river" />
+  <area shape="rect" coords="145,190,210,240" href="#roja" />
+  <area shape="rect" coords="215,190,280,240" href="#butter" />
+  <area shape="rect" coords="285,190,350,240" href="#taupe" />
+  <area shape="rect" coords="355,190,425,240" href="#sage" />
+  <area shape="rect" coords="425,190,495,240" href="#marina" />
+  <area shape="rect" coords="495,190,565,240" href="#regentblue" />
+  <area shape="rect" coords="565,190,635,240" href="#urbanbronze" />
+  <area shape="rect" coords="635,190,705,240" href="#ebony" />
+  
+  <area shape="rect" coords="5,330,70,375" href="#a_harvestgold" />
+  <area shape="rect" coords="70,325,140,375" href="#a_ginger" />
+  <area shape="rect" coords="145,325,210,375" href="#a_honey" />
+  <area shape="rect" coords="215,325,280,375" href="#a_chestnut" />
+  <area shape="rect" coords="285,324,350,374" href="#a_cordovan" />
+  <area shape="rect" coords="355,325,425,375" href="#a_bordeaux" />
+  <area shape="rect" coords="495,325,565,375" href="#a_alpine" />
+  <area shape="rect" coords="565,325,635,375" href="#a_nickel" />
+  <area shape="rect" coords="635,325,705,375" href="#a_driftwood" />
+  <area shape="rect" coords="710,325,775,375" href="#a_nitefall" />
+  
+  <area shape="rect" coords="5,395,70,445" href="#c_harvestgold" />
+  <area shape="rect" coords="70,395,140,445" href="#c_ginger" />
+  <area shape="rect" coords="145,395,210,445" href="#c_honey" />
+  <area shape="rect" coords="215,395,280,445" href="#c_chestnut" />
+  <area shape="rect" coords="285,395,350,445" href="#c_cordovan" />
+  <area shape="rect" coords="355,395,425,445" href="#c_bordeaux" />
+  <area shape="rect" coords="495,395,565,445" href="#c_alpine" />
+  <area shape="rect" coords="565,395,635,445" href="#c_nickel" />
+  <area shape="rect" coords="635,395,705,445" href="#c_driftwood" />
+  <area shape="rect" coords="710,395,775,445" href="#c_nitefall" />
+  
+  <area shape="rect" coords="0,460,70,510" href="#m_harvestgold" />
+  <area shape="rect" coords="70,460,140,510" href="#m_ginger" />
+  <area shape="rect" coords="145,460,210,510" href="#m_honey" />
+  <area shape="rect" coords="215,460,280,510" href="#m_chestnut" />
+  <area shape="rect" coords="285,460,350,510" href="#m_cordovan" />
+  <area shape="rect" coords="355,460,425,510" href="#m_bordeaux" />
+  <area shape="rect" coords="495,460,565,510" href="#m_alpine" />
+  <area shape="rect" coords="565,460,635,510" href="#m_nickel" />
+  <area shape="rect" coords="635,460,705,510" href="#m_driftwood" />
+  <area shape="rect" coords="710,460,775,510" href="#m_nitefall" />
+  
+  <area shape="rect" coords="2,597,72,647" href="#a_natural" />
+  <area shape="rect" coords="72,597,142,647" href="#a_nutmeg" />
+  <area shape="rect" coords="142,597,212,647" href="#a_portabella" />
+  <area shape="rect" coords="212,597,282,647" href="#a_autumn" />
+  <area shape="rect" coords="282,597,352,647" href="#a_colonial" />
+  <area shape="rect" coords="352,597,422,647" href="#a_saddle" />
+  <area shape="rect" coords="427,597,492,647" href="#a_cocoa" />
+  <area shape="rect" coords="497,597,567,647" href="#a_pecan" />
+  <area shape="rect" coords="567,597,637,647" href="#a_darkroast" />
+  <area shape="rect" coords="637,597,707,647" href="#a_espresso" />
+  
+  <area shape="rect" coords="2,667,72,717" href="#c_natural" />
+  <area shape="rect" coords="72,667,142,717" href="#c_nutmeg" />
+  <area shape="rect" coords="142,667,212,717" href="#c_portabella" />
+  <area shape="rect" coords="212,667,282,717" href="#c_autumn" />
+  <area shape="rect" coords="282,667,352,717" href="#c_colonial" />
+  <area shape="rect" coords="352,667,422,717" href="#c_saddle" />
+  <area shape="rect" coords="427,667,492,717" href="#c_cocoa" />
+  <area shape="rect" coords="497,667,562,717" href="#c_pecan" />
+  <area shape="rect" coords="567,667,632,717" href="#c_darkroast" />
+  <area shape="rect" coords="637,667,707,717" href="#c_espresso" />
+  
+  <area shape="rect" coords="2,732,72,782" href="#m_natural" />
+  <area shape="rect" coords="72,732,142,782" href="#m_nutmeg" />
+  <area shape="rect" coords="142,732,212,782" href="#m_portabella" />
+  <area shape="rect" coords="212,732,282,782" href="#m_autumn" />
+  <area shape="rect" coords="282,732,352,782" href="#m_colonial" />
+  <area shape="rect" coords="352,732,422,782" href="#m_saddle" />
+  <area shape="rect" coords="427,732,492,782" href="#m_cocoa" />
+  <area shape="rect" coords="497,732,562,782" href="#m_pecan" />
+  <area shape="rect" coords="567,732,632,782" href="#m_darkroast" />
+  <area shape="rect" coords="637,732,707,782" href="#m_espresso" />
+</map>
+HEREDOC;*/
+
+            /*echo "<div class='custom_dropdown'>";
+            echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
+            echo "<div class='dropdown_options' data-for='finish_code'>";
+            echo "<div class='option_list'>$options</div>";
+            echo "<div class='option_grid'>$options</div>";
+            echo "</div><input type='hidden' value='$sel_key' id='{$dblookup}' name='{$dblookup}' /><div class='clearfix'></div></div>";*/
+
+            ?>
           </div>
         </div>
       </div>

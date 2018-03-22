@@ -803,15 +803,22 @@ $("body")
   })
   .on("click", ".option", function() {
     var field;
+    var display;
 
     var value = $(this).attr('data-value');
 
+    if($(this).html() === '') {
+      display = $(this).attr('data-display-text');
+    } else {
+      display = $(this).html();
+    }
+
     if($(this).hasClass('sub_option') && $(this).parent().hasClass('grid_element')) {
       field = $(this).parent().parent().parent().attr('data-for');
-      $(this).parent().parent().parent().parent().find('.selected').html($(this).html());
+      $(this).parent().parent().parent().parent().find('.selected').html(display);
     } else {
       field = $(this).parent().parent().attr('data-for');
-      $(this).parent().parent().parent().find('.selected').html($(this).html());
+      $(this).parent().parent().parent().find('.selected').html(display);
     }
 
     $("#" + field).val(value);

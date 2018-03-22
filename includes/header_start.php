@@ -4,6 +4,8 @@ session_start();
 $error_display = null;
 
 $nologin[] = "/display/finishing/production.php";
+$nologin[] = "/out.php";
+$nologin[] = "/ondemand/account_actions.php";
 
 if(!$_SESSION['valid'] && !in_array($_SERVER['SCRIPT_NAME'], $nologin)) {
     header("Location: /login.php?pli=true");
