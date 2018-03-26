@@ -718,6 +718,8 @@ $("body")
 
       var clicked = $(this).find('.dropdown_options').attr("data-for");
 
+      console.log("Clicked: " . clicked);
+
       if(clicked === 'days_to_ship') {
         var dts = $("#days_to_ship").val();
         var classColor;
@@ -815,11 +817,17 @@ $("body")
 
     if($(this).hasClass('sub_option') && $(this).parent().hasClass('grid_element')) {
       field = $(this).parent().parent().parent().attr('data-for');
+
       $(this).parent().parent().parent().parent().find('.selected').html(display);
     } else {
       field = $(this).parent().parent().attr('data-for');
+
       $(this).parent().parent().parent().find('.selected').html(display);
     }
+
+    console.log($(this).parent().parent().parent().attr('data-for'));
+
+    console.log(field);
 
     $("#" + field).val(value);
 
