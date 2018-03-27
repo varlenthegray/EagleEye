@@ -148,10 +148,10 @@ if($_SESSION['userInfo']['account_type'] > 4) {
               <table id="individual_login" class="table table-striped table-bordered" width="100%">
                 <thead>
                 <tr>
-                  <th>Employee</th>
-                  <th>Clocked In Time</th>
+                  <th style="min-width:125px;">Employee</th>
+                  <th style="min-width:75px;">Last Login</th>
                   <th>Current Operations</th>
-                  <th>Time Clocked In</th>
+                  <th style="min-width:100px;">Time Clocked In</th>
                   <?php
                   if($_SESSION['userInfo']['account_type'] <= 4) {
                     echo "<th width='70px'>Clock Out</th>";
@@ -175,22 +175,26 @@ if($_SESSION['userInfo']['account_type'] > 4) {
                       $last_login = $last_login_qry->fetch_assoc();
 
                       if($last_login['time_in'] > strtotime("today")) {
-                        $time = date(TIME_ONLY, $last_login['time_in']);
+                        $time = date(DATE_TIME_ABBRV, $last_login['time_in']);
                       } else {
-                        $time = date(DATE_DEFAULT, $last_login['time_in']);
+                        $time = date(DATE_TIME_ABBRV, $last_login['time_in']);
                       }
 
-                      $time_unix = $last_login['time_in'];
+                      if(empty($last_login['time_out'])) {
+                        $time_unix = $last_login['time_in'];
+
+                        if(!empty($time_unix)) {
+                          $carbon_time = Carbon::createFromTimestamp($time_unix);
+                          $time_in_display = $carbon_time->diffForHumans(null, true);
+                        } else {
+                          $time_in_display = "Never logged in";
+                        }
+                      } else {
+                        $time_in_display = "Not Logged In";
+                      }
                     } else {
                       $time = "Never";
                       $time_unix = null;
-                    }
-
-                    if(!empty($time_unix)) {
-                      $carbon_time = Carbon::createFromTimestamp($time_unix);
-                      $time_in_display = $carbon_time->diffForHumans(null);
-                    } else {
-                      $time_in_display = "Never logged in";
                     }
 
                     $ops_qry = $dbconn->query("SELECT * FROM op_queue LEFT JOIN operations ON op_queue.operation_id = operations.id LEFT JOIN rooms ON op_queue.room_id = rooms.id WHERE active_employees LIKE '%\"{$result['id']}\"%' AND active = TRUE");
