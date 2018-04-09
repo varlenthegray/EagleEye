@@ -136,7 +136,7 @@ function getHMMSS($duration)
           </tr>
           <tr>
             <td>Printed:</td>
-            <td><?php echo date(DATE_DEFAULT); ?></td>
+            <td><?php echo date(DATE_TIME_ABBRV); ?></td>
           </tr>
         </table>
       </div>
