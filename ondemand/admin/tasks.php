@@ -9,165 +9,167 @@ $mail = new \MailHandler\mail_handler();
 $action = sanitizeInput($_REQUEST['action']);
 
 switch($action) {
-    case 'submit_feedback':
-        $task_desc = sanitizeInput($_REQUEST['description']);
-        $assignee = sanitizeInput($_REQUEST['assignee']);
-        $priority = sanitizeInput($_REQUEST['priority']);
+  case 'submit_feedback':
+    $task_desc = sanitizeInput($_REQUEST['description']);
+    $assignee = sanitizeInput($_REQUEST['assignee']);
+    $priority = sanitizeInput($_REQUEST['priority']);
 
-        if($_SESSION['userInfo']['id'] === '16') {
-            $submitted_by = $_SESSION['shop_user']['id'];
-            $submitted_name = $_SESSION['shop_user']['name'];
+    if($_SESSION['userInfo']['id'] === '16') {
+      $submitted_by = $_SESSION['shop_user']['id'];
+      $submitted_name = $_SESSION['shop_user']['name'];
+    } else {
+      $submitted_by = $_SESSION['userInfo']['id'];
+      $submitted_name = $_SESSION['userInfo']['name'];
+    }
+
+    $notify_qry = $dbconn->query("SELECT * FROM user WHERE id = $assignee");
+    $notify = $notify_qry->fetch_assoc();
+
+    if($dbconn->query("INSERT INTO tasks (description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved)
+    VALUES ('$task_desc', UNIX_TIMESTAMP(), null, '$priority', $assignee, null, $submitted_by, FALSE);")) {
+      $dbconn->query("INSERT INTO alerts (type, status, message, time_created, time_acknowledged, alert_user, icon, type_id, color) VALUES ('feedback', 'new', 'New feedback submitted by $submitted_name.', UNIX_TIMESTAMP(), null, $assignee, 'icon-bubble', $dbconn->insert_id, 'bg-warning')");
+
+      if(!empty($notify['email']))
+        $msg_body = mail_nl2br($task_desc . "\r\n\r\n- $submitted_name");
+
+      $mail->sendMessage($notify['email'], $_SESSION['userInfo']['email'], 'New Feedback Logged', $msg_body, true);
+
+      echo displayToast("success", "Successfully logged feedback.", "Feedback Logged");
+    } else {
+      dbLogSQLErr($dbconn);
+    }
+
+    break;
+  case 'get_task_list':
+    $i = 0;
+
+    $output = array();
+
+    $tasks_qry = $dbconn->query("SELECT tasks.id AS taskID, user.name AS userName, tasks.*, user.* FROM tasks LEFT JOIN user ON tasks.assigned_to = user.id WHERE resolved = FALSE;");
+
+    if($tasks_qry->num_rows > 0) {
+      while($task = $tasks_qry->fetch_assoc()) {
+        $short_desc = strip_tags(substr($task['description'], 0, 40) . "...");
+
+        if(!empty($task['last_updated'])) {
+          $last_updated = date(DATE_TIME_ABBRV, $task['last_update']);
         } else {
-            $submitted_by = $_SESSION['userInfo']['id'];
-            $submitted_name = $_SESSION['userInfo']['name'];
+          $last_updated = "New";
         }
 
-        $notify_qry = $dbconn->query("SELECT * FROM user WHERE id = $assignee");
-        $notify = $notify_qry->fetch_assoc();
-
-        if($dbconn->query("INSERT INTO tasks (description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved)
-         VALUES ('$task_desc', UNIX_TIMESTAMP(), null, '$priority', $assignee, null, $submitted_by, FALSE);")) {
-            $dbconn->query("INSERT INTO alerts (type, status, message, time_created, time_acknowledged, alert_user, icon, type_id, color) VALUES ('feedback', 'new', 'New feedback submitted by $submitted_name.', UNIX_TIMESTAMP(), null, $assignee, 'icon-bubble', $dbconn->insert_id, 'bg-warning')");
-
-            if(!empty($notify['email']))
-                $mail->sendMessage($notify['email'], $_SESSION['userInfo']['email'], 'New Feedback Logged', mail_nl2br($task_desc), true);
-
-            echo displayToast("success", "Successfully logged feedback.", "Feedback Logged");
+        if(empty($task['name'])) {
+          $name = "<i>Unassigned</i>";
         } else {
-            dbLogSQLErr($dbconn);
+          $name = $task['taskName'];
         }
 
-        break;
-    case 'get_task_list':
-        $i = 0;
-
-        $output = array();
-
-        $tasks_qry = $dbconn->query("SELECT tasks.id AS taskID, user.name AS userName, tasks.*, user.* FROM tasks LEFT JOIN user ON tasks.assigned_to = user.id WHERE resolved = FALSE;");
-
-        if($tasks_qry->num_rows > 0) {
-            while($task = $tasks_qry->fetch_assoc()) {
-                $short_desc = strip_tags(substr($task['description'], 0, 40) . "...");
-
-                if(!empty($task['last_updated'])) {
-                    $last_updated = date(DATE_TIME_ABBRV, $task['last_update']);
-                } else {
-                    $last_updated = "New";
-                }
-
-                if(empty($task['name'])) {
-                    $name = "<i>Unassigned</i>";
-                } else {
-                    $name = $task['taskName'];
-                }
-
-                if($task['eta'] > 1) {
-                    $humanized_eta = "hrs";
-                } else {
-                    $humanized_eta = "hr";
-                }
-
-                $created = date(DATE_TIME_ABBRV, $task['created']);
-
-                $output['data'][$i][] = $task['taskID'];
-                $output['data'][$i][] = $task['userName'];
-                $output['data'][$i][] = $created;
-                $output['data'][$i][] = $short_desc;
-                $output['data'][$i][] = $task['priority'];
-                $output['data'][$i][] = $task['eta_hrs'] . " $humanized_eta";
-                $output['data'][$i][] = $task['pct_completed'] * 100 . "%";
-                $output['data'][$i][] = $last_updated;
-                $output['data'][$i]['DT_RowId'] = $task['taskID'];
-
-                $i += 1;
-            }
+        if($task['eta'] > 1) {
+          $humanized_eta = "hrs";
         } else {
-            $output['data'][0][] = "&nbsp;";
-            $output['data'][0][] = "&nbsp;";
-            $output['data'][0][] = "None Available";
-            $output['data'][0][] = "&nbsp;";
-            $output['data'][0][] = "&nbsp;";
-            $output['data'][0][] = "&nbsp;";
-            $output['data'][0][] = "&nbsp;";
-            $output['data'][0][] = "&nbsp;";
+          $humanized_eta = "hr";
         }
 
-        echo json_encode($output);
+        $created = date(DATE_TIME_ABBRV, $task['created']);
 
-        break;
-    case 'get_task_info':
-        $task_id = sanitizeInput($_REQUEST['task_id']);
-        $user_opts = null;
-        $created_by = null;
+        $output['data'][$i][] = $task['taskID'];
+        $output['data'][$i][] = $task['userName'];
+        $output['data'][$i][] = $created;
+        $output['data'][$i][] = $short_desc;
+        $output['data'][$i][] = $task['priority'];
+        $output['data'][$i][] = $task['eta_hrs'] . " $humanized_eta";
+        $output['data'][$i][] = $task['pct_completed'] * 100 . "%";
+        $output['data'][$i][] = $last_updated;
+        $output['data'][$i]['DT_RowId'] = $task['taskID'];
 
-        $task_qry = $dbconn->query("SELECT * FROM tasks WHERE id = '$task_id'");
+        $i += 1;
+      }
+    } else {
+      $output['data'][0][] = "&nbsp;";
+      $output['data'][0][] = "&nbsp;";
+      $output['data'][0][] = "None Available";
+      $output['data'][0][] = "&nbsp;";
+      $output['data'][0][] = "&nbsp;";
+      $output['data'][0][] = "&nbsp;";
+      $output['data'][0][] = "&nbsp;";
+      $output['data'][0][] = "&nbsp;";
+    }
 
-        if($task_qry->num_rows === 1) {
-            $task = $task_qry->fetch_assoc();
+    echo json_encode($output);
 
-            $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
+    break;
+  case 'get_task_info':
+    $task_id = sanitizeInput($_REQUEST['task_id']);
+    $user_opts = null;
+    $created_by = null;
 
-            while($user = $user_qry->fetch_assoc()) {
-                $selected = ($user['id'] === $task['assigned_to']) ? "selected" : null;
+    $task_qry = $dbconn->query("SELECT * FROM tasks WHERE id = '$task_id'");
 
-                $user_opts .= "<option value='{$user['id']}' $selected>{$user['name']}</option>";
+    if($task_qry->num_rows === 1) {
+      $task = $task_qry->fetch_assoc();
 
-                if($user['id'] === $task['submitted_by']) $created_by = $user['name'];
-            }
+      $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
 
-            $perform_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
+      while($user = $user_qry->fetch_assoc()) {
+        $selected = ($user['id'] === $task['assigned_to']) ? "selected" : null;
 
-            while($perform = $perform_qry->fetch_assoc()) {
-                $per_selected = ($perform['id'] === $task['perform_by']) ? "selected" : null;
+        $user_opts .= "<option value='{$user['id']}' $selected>{$user['name']}</option>";
 
-                $perform_opts .= "<option value='{$perform['id']}' $per_selected>{$perform['name']}</option>";
-            }
+        if($user['id'] === $task['submitted_by']) $created_by = $user['name'];
+      }
 
-            $pct_complete = $task['pct_completed'] * 100;
+      $perform_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
 
-            switch($task['priority']) {
-                case '3 - End of Week':
-                    $sel_we = "selected";
-                    break;
+      while($perform = $perform_qry->fetch_assoc()) {
+        $per_selected = ($perform['id'] === $task['perform_by']) ? "selected" : null;
 
-                case '2 - End of Day':
-                    $sel_de = "selected";
-                    break;
+        $perform_opts .= "<option value='{$perform['id']}' $per_selected>{$perform['name']}</option>";
+      }
 
-                case '1 - Immediate':
-                    $sel_imm = "selected";
-                    break;
+      $pct_complete = $task['pct_completed'] * 100;
 
-                default:
-                    $sel_we = "selected";
-                    break;
-            }
+      switch($task['priority']) {
+        case '3 - End of Week':
+          $sel_we = "selected";
+          break;
 
-            $task_description = nl2br($task['description']);
+        case '2 - End of Day':
+          $sel_de = "selected";
+          break;
 
-            $task_initial_comment_time = date(DATE_TIME_ABBRV, $task['created']);
+        case '1 - Immediate':
+          $sel_imm = "selected";
+          break;
 
-            $desc_nl = str_ireplace("<br />", "\r\n", $task['description']);
+        default:
+          $sel_we = "selected";
+          break;
+      }
 
-            $notes_desc = "<strong>($created_by $task_initial_comment_time):</strong> $task_description";
+      $task_description = nl2br($task['description']);
 
-            $addl_notes_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'task_reply' AND type_id = $task_id");
+      $task_initial_comment_time = date(DATE_TIME_ABBRV, $task['created']);
 
-            if($addl_notes_qry->num_rows > 0) {
-                while($addl_notes = $addl_notes_qry->fetch_assoc()) {
-                    $comment_time = date(DATE_TIME_ABBRV, $addl_notes['timestamp']);
+      $desc_nl = str_ireplace("<br />", "\r\n", $task['description']);
 
-                    $notes_desc .= "<br /><br /><strong>({$addl_notes['name']} $comment_time):</strong> {$addl_notes['note']}";
-                }
-            }
+      $notes_desc = "<strong>($created_by $task_initial_comment_time):</strong> $task_description";
 
-            echo /** @lang HTML */
-            <<<HEREDOC
+      $addl_notes_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'task_reply' AND type_id = $task_id");
+
+      if($addl_notes_qry->num_rows > 0) {
+        while($addl_notes = $addl_notes_qry->fetch_assoc()) {
+          $comment_time = date(DATE_TIME_ABBRV, $addl_notes['timestamp']);
+
+          $notes_desc .= "<br /><br /><strong>({$addl_notes['name']} $comment_time):</strong> {$addl_notes['note']}";
+        }
+      }
+
+      echo /** @lang HTML */
+      <<<HEREDOC
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <form name="task_details" id="task_details">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">Ã—</button>
                                 <h4 class="modal-title" id="modalTaskTitle">Task Details</h4>
                             </div>
                             <div class="modal-body">
@@ -320,153 +322,153 @@ switch($action) {
                     </div><!-- /.modal-content -->
                 </div><!-- /.modal-dialog -->
 HEREDOC;
-        } else {
-            echo displayToast("error", "Invalid task ID.", "Invalid Task");
-            http_response_code(400);
-        }
+    } else {
+      echo displayToast("error", "Invalid task ID.", "Invalid Task");
+      http_response_code(400);
+    }
 
-        break;
-    case 'update_task':
-        $task_id = sanitizeInput($_REQUEST['task_id']);
+    break;
+  case 'update_task':
+    $task_id = sanitizeInput($_REQUEST['task_id']);
 
-        $task_split = (bool)$_REQUEST['split_task_enabled'];
+    $task_split = (bool)$_REQUEST['split_task_enabled'];
 
-        $task_qry = $dbconn->query("SELECT * FROM tasks WHERE id = $task_id");
-        $task = $task_qry->fetch_assoc();
+    $task_qry = $dbconn->query("SELECT * FROM tasks WHERE id = $task_id");
+    $task = $task_qry->fetch_assoc();
 
-        if($task_split) {
-            $split_1_text = sanitizeInput($_REQUEST['s_text_1']);
-            $split_1_notify = sanitizeInput($_REQUEST['split_feedback_to_1']);
-            $split_1_priority = sanitizeInput($_REQUEST['split_1_priority']);
+    if($task_split) {
+      $split_1_text = sanitizeInput($_REQUEST['s_text_1']);
+      $split_1_notify = sanitizeInput($_REQUEST['split_feedback_to_1']);
+      $split_1_priority = sanitizeInput($_REQUEST['split_1_priority']);
 
-            $split_2_text = sanitizeInput($_REQUEST['s_text_2']);
-            $split_2_notify = sanitizeInput($_REQUEST['split_feedback_to_2']);
-            $split_2_priority = sanitizeInput($_REQUEST['split_2_priority']);
+      $split_2_text = sanitizeInput($_REQUEST['s_text_2']);
+      $split_2_notify = sanitizeInput($_REQUEST['split_feedback_to_2']);
+      $split_2_priority = sanitizeInput($_REQUEST['split_2_priority']);
 
-            $db_stmt = $dbconn->prepare("INSERT INTO tasks (description, created,  priority, assigned_to, submitted_by, resolved, split_by) VALUES (?, UNIX_TIMESTAMP(), ?, ?, {$task['submitted_by']}, FALSE, {$_SESSION['userInfo']['id']});");
+      $db_stmt = $dbconn->prepare("INSERT INTO tasks (description, created,  priority, assigned_to, submitted_by, resolved, split_by) VALUES (?, UNIX_TIMESTAMP(), ?, ?, {$task['submitted_by']}, FALSE, {$_SESSION['userInfo']['id']});");
 
-            if(!$db_stmt) dbLogSQLErr($dbconn);
+      if(!$db_stmt) dbLogSQLErr($dbconn);
 
-            $db_stmt->bind_param("ssi", $desc, $priority, $assignee);
+      $db_stmt->bind_param("ssi", $desc, $priority, $assignee);
 
-            try {
-                $desc = $split_1_text;
-                $priority = $split_1_priority;
-                $assignee = $split_1_notify;
+      try {
+        $desc = $split_1_text;
+        $priority = $split_1_priority;
+        $assignee = $split_1_notify;
 
-                $db_stmt->execute();
-            } catch(Exception $e) {
-                echo displayToast("error", "Unable to create task 1: $e", "Task 1 Error");
-            }
+        $db_stmt->execute();
+      } catch(Exception $e) {
+        echo displayToast("error", "Unable to create task 1: $e", "Task 1 Error");
+      }
 
-            try {
-                $desc = $split_2_text;
-                $priority = $split_2_priority;
-                $assignee = $split_2_notify;
+      try {
+        $desc = $split_2_text;
+        $priority = $split_2_priority;
+        $assignee = $split_2_notify;
 
-                $db_stmt->execute();
-            } catch(Exception $e) {
-                echo displayToast("error", "Unable to create task 2: $e", "Task 2 Error");
-            }
+        $db_stmt->execute();
+      } catch(Exception $e) {
+        echo displayToast("error", "Unable to create task 2: $e", "Task 2 Error");
+      }
 
-            $dbconn->query("UPDATE tasks SET pct_completed = 1, resolved = TRUE, last_updated = UNIX_TIMESTAMP() WHERE id = $task_id");
+      $dbconn->query("UPDATE tasks SET pct_completed = 1, resolved = TRUE, last_updated = UNIX_TIMESTAMP() WHERE id = $task_id");
 
-            $usr_1_qry = $dbconn->query("SELECT email FROM user WHERE id = $split_1_notify");
-            $usr_1 = $usr_1_qry->fetch_assoc();
+      $usr_1_qry = $dbconn->query("SELECT email FROM user WHERE id = $split_1_notify");
+      $usr_1 = $usr_1_qry->fetch_assoc();
 
-            $usr_2_qry = $dbconn->query("SELECT email FROM user WHERE id = $split_2_notify");
-            $usr_2 = $usr_2_qry->fetch_assoc();
+      $usr_2_qry = $dbconn->query("SELECT email FROM user WHERE id = $split_2_notify");
+      $usr_2 = $usr_2_qry->fetch_assoc();
 
-            $mail->sendMessage($usr_1['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", nl2br($split_1_text), true);
-            $mail->sendMessage($usr_2['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", nl2br($split_2_text), true);
+      $mail->sendMessage($usr_1['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", nl2br($split_1_text), true);
+      $mail->sendMessage($usr_2['email'], $_SESSION['userInfo']['email'], "Task Split Assigned to You", nl2br($split_2_text), true);
 
-            echo displayToast("success", "Split task successfully.", "Task Split");
+      echo displayToast("success", "Split task successfully.", "Task Split");
 
-            $db_stmt->close();
-        } else {
-            $assigned_to = sanitizeInput($_REQUEST['assigned_to']);
-            $priority = sanitizeInput($_REQUEST['priority']);
-            $eta = sanitizeInput($_REQUEST['eta']);
-            $perform_by = sanitizeInput($_REQUEST['perform_by']);
-            $pct_completed = sanitizeInput($_REQUEST['pct_completed']) / 100;
-            $reply_text = sanitizeInput($_REQUEST['addl_notes']);
+      $db_stmt->close();
+    } else {
+      $assigned_to = sanitizeInput($_REQUEST['assigned_to']);
+      $priority = sanitizeInput($_REQUEST['priority']);
+      $eta = sanitizeInput($_REQUEST['eta']);
+      $perform_by = sanitizeInput($_REQUEST['perform_by']);
+      $pct_completed = sanitizeInput($_REQUEST['pct_completed']) / 100;
+      $reply_text = sanitizeInput($_REQUEST['addl_notes']);
 
-            $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
+      $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
 
-            if($dbconn->query("UPDATE tasks SET last_updated = UNIX_TIMESTAMP(), priority = '$priority', 
+      if($dbconn->query("UPDATE tasks SET last_updated = UNIX_TIMESTAMP(), priority = '$priority', 
                 assigned_to = '$assigned_to', resolved = $resolved, pct_completed = '$pct_completed', eta_hrs = '$eta', perform_by = '$perform_by' WHERE id = '$task_id'")) {
-                if(!empty($reply_text)) {
-                    $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$reply_text', 'task_reply', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, $task_id)");
-                }
-
-                echo displayToast("success", "Updated task successfully.", "Task Updated");
-                echo "<script>task_table.ajax.reload(null,false);</script>";
-            } else {
-                dbLogSQLErr($dbconn);
-            }
+        if(!empty($reply_text)) {
+          $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$reply_text', 'task_reply', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, $task_id)");
         }
 
-        break;
-    case 'create_operation':
-        $task_id = sanitizeInput($_REQUEST['task_id']);
-        $assigned_to = sanitizeInput($_REQUEST['assigned_to']);
-        $priority = sanitizeInput($_REQUEST['priority']);
-        $eta = sanitizeInput($_REQUEST['eta']);
-        $perform_by = sanitizeInput($_REQUEST['perform_by']);
-        $pct_completed = sanitizeInput($_REQUEST['pct_completed']) / 100;
-        $reply_text = sanitizeInput($_REQUEST['addl_notes']);
+        echo displayToast("success", "Updated task successfully.", "Task Updated");
+        echo "<script>task_table.ajax.reload(null,false);</script>";
+      } else {
+        dbLogSQLErr($dbconn);
+      }
+    }
 
-        $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
+    break;
+  case 'create_operation':
+    $task_id = sanitizeInput($_REQUEST['task_id']);
+    $assigned_to = sanitizeInput($_REQUEST['assigned_to']);
+    $priority = sanitizeInput($_REQUEST['priority']);
+    $eta = sanitizeInput($_REQUEST['eta']);
+    $perform_by = sanitizeInput($_REQUEST['perform_by']);
+    $pct_completed = sanitizeInput($_REQUEST['pct_completed']) / 100;
+    $reply_text = sanitizeInput($_REQUEST['addl_notes']);
 
-        if($dbconn->query("UPDATE tasks SET last_updated = UNIX_TIMESTAMP(), priority = '$priority', 
+    $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
+
+    if($dbconn->query("UPDATE tasks SET last_updated = UNIX_TIMESTAMP(), priority = '$priority', 
                 assigned_to = '$assigned_to', resolved = $resolved, pct_completed = '$pct_completed', eta_hrs = '$eta', perform_by = '$perform_by' WHERE id = '$task_id'")) {
-            if(!empty($reply_text)) {
-                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$reply_text', 'task_reply', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, $task_id)");
-            }
+      if(!empty($reply_text)) {
+        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$reply_text', 'task_reply', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, $task_id)");
+      }
 
-            $notes_desc = null;
+      $notes_desc = null;
 
-            $task_qry = $dbconn->query("SELECT * FROM tasks WHERE id = '$task_id'");
-            $task = $task_qry->fetch_assoc();
+      $task_qry = $dbconn->query("SELECT * FROM tasks WHERE id = '$task_id'");
+      $task = $task_qry->fetch_assoc();
 
-            $task_description = nl2br($task['description']);
+      $task_description = nl2br($task['description']);
 
-            $task_initial_comment_time = date(DATE_TIME_ABBRV, $task['created']);
+      $task_initial_comment_time = date(DATE_TIME_ABBRV, $task['created']);
 
-            $desc_nl = str_ireplace("<br />", "\r\n", $task['description']);
+      $desc_nl = str_ireplace("<br />", "\r\n", $task['description']);
 
-            $notes_desc = "<strong>($created_by $task_initial_comment_time):</strong> $task_description";
+      $notes_desc = "<strong>($created_by $task_initial_comment_time):</strong> $task_description";
 
-            $addl_notes_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'task_reply' AND type_id = $task_id");
+      $addl_notes_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'task_reply' AND type_id = $task_id");
 
-            if($addl_notes_qry->num_rows > 0) {
-                while($addl_notes = $addl_notes_qry->fetch_assoc()) {
-                    $comment_time = date(DATE_TIME_ABBRV, $addl_notes['timestamp']);
+      if($addl_notes_qry->num_rows > 0) {
+        while($addl_notes = $addl_notes_qry->fetch_assoc()) {
+          $comment_time = date(DATE_TIME_ABBRV, $addl_notes['timestamp']);
 
-                    $notes_desc .= "<br /><br /><strong>({$addl_notes['name']} $comment_time):</strong> {$addl_notes['note']}";
-                }
-            }
-
-            $pfm_by_qry = $dbconn->query("SELECT * FROM user WHERE id = '$perform_by'");
-            $pfm_by = $pfm_by_qry->fetch_assoc();
-
-            $op_qry = $dbconn->query("SELECT * FROM operations WHERE responsible_dept = '{$pfm_by['default_queue']}' AND job_title = 'Honey Do'");
-            $op_info = $op_qry->fetch_assoc();
-
-            $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, notes, created) VALUES (?, ?, FALSE, FALSE, FALSE, ?, UNIX_TIMESTAMP())");
-            $stmt->bind_param("iis", $task_id, $op_info['id'], $notes_desc);
-
-            $stmt->execute();
-            $stmt->close();
-
-            echo displayToast("success", "Created operation based on task.", "Task Converted to Operation");
-            echo "<script>task_table.ajax.reload(null,false);</script>";
-        } else {
-            dbLogSQLErr($dbconn);
+          $notes_desc .= "<br /><br /><strong>({$addl_notes['name']} $comment_time):</strong> {$addl_notes['note']}";
         }
+      }
 
-        break;
-    default:
-        displayToast("error", "No action specified.", "No action.");
-        die();
+      $pfm_by_qry = $dbconn->query("SELECT * FROM user WHERE id = '$perform_by'");
+      $pfm_by = $pfm_by_qry->fetch_assoc();
+
+      $op_qry = $dbconn->query("SELECT * FROM operations WHERE responsible_dept = '{$pfm_by['default_queue']}' AND job_title = 'Honey Do'");
+      $op_info = $op_qry->fetch_assoc();
+
+      $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, notes, created) VALUES (?, ?, FALSE, FALSE, FALSE, ?, UNIX_TIMESTAMP())");
+      $stmt->bind_param("iis", $task_id, $op_info['id'], $notes_desc);
+
+      $stmt->execute();
+      $stmt->close();
+
+      echo displayToast("success", "Created operation based on task.", "Task Converted to Operation");
+      echo "<script>task_table.ajax.reload(null,false);</script>";
+    } else {
+      dbLogSQLErr($dbconn);
+    }
+
+    break;
+  default:
+    displayToast("error", "No action specified.", "No action.");
+    die();
 }
