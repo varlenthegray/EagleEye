@@ -3,82 +3,82 @@
 }
 
 body {
-  padding: 0;
-  margin: 0;
-  -webkit-print-color-adjust: exact;
+    padding: 0;
+    margin: 0;
+    -webkit-print-color-adjust: exact;
 }
 
 html {
-  font-family: 'Roboto', sans-serif;
-  font-size: 7pt;
+    font-family: 'Roboto', sans-serif;
+    font-size: 7pt;
 }
 
 table {
-  font-size: 7pt;
-  padding: 0;
-  margin: 0;
-  border-collapse: collapse;
+    font-size: 7pt;
+    padding: 0;
+    margin: 0;
+    border-collapse: collapse;
 }
 
 td {
-  vertical-align: top;
+    vertical-align: top;
 }
 
 #main_section table tr:nth-child(odd) {
-  background: #CCCCCC;
+    background: #CCCCCC;
 }
 
 h4 {
-  margin: 0;
-  padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 .excluded_bg {
-  background: #FFFFFF !important;
+    background: #FFFFFF !important;
 }
 
 #wrapper {
-  width: 8.5in;
-  height: 11in;
+    width: 8.5in;
+    height: 11in;
 }
 
 #header_container {
-  position: relative;
+    position: relative;
 }
 
 #header_left {
-  width: 50%;
-  text-align: center;
-  float: left;
+    width: 50%;
+    text-align: center;
+    float: left;
 }
 
 #logo_container {
-  top: 10px;
-  left: calc(50% - 85px);
-  position: absolute;
+    top: 10px;
+    left: calc(50% - 85px);
+    position: absolute;
 }
 
 #logo_container #company_info {
-  text-align: center;
+    text-align: center;
 }
 
 #header_right {
-  float: right;
-  width: 50%;
-  padding-top: 10px;
+    float: right;
+    width: 50%;
+    padding-top: 10px;
 }
 
 #page_type {
-  float: left;
-  padding-top: 20px;
+    float: left;
+    padding-top: 70px;
 }
 
 #page_type_header {
-  font-size: 22pt;
-  font-weight: bold;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-decoration: underline;
+    font-size: 22pt;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: underline;
 }
 
 .page_type_subhead {
@@ -86,67 +86,67 @@ h4 {
 }
 
 #page_type .definition {
-  font-size: 8pt;
+    font-size: 8pt;
 }
 
 #page_type .value {
-  font-size: 8pt;
-  font-weight: bold;
+    font-size: 8pt;
+    font-weight: bold;
 }
 
 #page_info {
-  float: right;
-  padding-top: 70px;
+    float: right;
+    padding-top: 70px;
 }
 
 #main_section {
-  padding-top: 4px;
-  clear: both;
-  margin-top: 50px;
+    padding-top: 4px;
+    clear: both;
+    margin-top: 50px;
 }
 
 #main_section table {
-  width: 100%;
+    width: 100%;
 }
 
 .text-md-right {
-  text-align: right;
+    text-align: right;
 }
 
 .text-md-center {
-  text-align: center;
+    text-align: center;
 }
 
 .text-bold {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .text-underline {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 th, .header {
-  background-color: #000000;
-  color: #FFF;
-  font-weight: bold;
-  font-size: 1.1em;
-  text-align: left;
+    background-color: #000000;
+    color: #FFF;
+    font-weight: bold;
+    font-size: 1.1em;
+    text-align: left;
 }
 
 .clearfix {
-  clear: both;
+    clear: both;
 }
 
 @media print {
-  .no-print {
-    display: none !important;
-  }
+    .no-print {
+        display: none !important;
+    }
 }
 
 .border_solid {
-  border: 1px solid #000;
+    border: 1px solid #000;
 }
 
 .center_text {
-  text-align: center;
+    text-align: center;
 }
