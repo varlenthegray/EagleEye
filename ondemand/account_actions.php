@@ -122,6 +122,23 @@ switch($_REQUEST['action']) {
 
   case 'stop_break':
     $queue->stopOp(201, '', null, null, 'Break');
+    break;
+
+  case 'get_break_btn':
+    $break_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = 201 AND active = TRUE AND active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%'");
+
+    // if they're not currently on break
+    if($break_qry->num_rows === 0) {
+      $output = array('id' => 201, 'display' => "Start Break");
+    } else {
+      $break = $break_qry->fetch_assoc();
+
+      $output = array('id' => $break['id'], 'display' => "Stop Break");
+    }
+
+    $output_json = json_encode($output, true);
+
+    echo $output_json;
 
     break;
 }

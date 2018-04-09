@@ -374,6 +374,8 @@ require 'includes/header_start.php';
     socket.on("catchQueueUpdate", function() {
       if(currentPage === 'dashboard' || currentPage === 'eng_report') {
         updateOpQueue();
+
+        updateBreakButton();
       }
 
       if(currentPage === 'workcenter') {
@@ -623,6 +625,8 @@ require 'includes/header_start.php';
             socket.emit("updateQueue");
           }
         });
+
+
 
         unsaved = false;
       })
@@ -1001,6 +1005,45 @@ require 'includes/header_start.php';
       })
       <?php } ?>
 
+      <?php if($bouncer->validate('view_break')) { ?>
+      .on("click", ".nav_break", function() {
+        var thisText = $(this).find('span');
+
+        if($(this).attr('id') === '201') {
+          $.post("/ondemand/account_actions.php?action=start_break", {id: 201, operation: 'Break'}, function(data) {
+            $('body').append(data);
+
+            socket.emit("updateQueue");
+
+            $.post("/ondemand/account_actions.php?action=get_break_btn", function(data) {
+              var result = JSON.parse(data);
+              $(".nav_break").attr('id', result.id);
+
+              thisText.html("Stop Break");
+            });
+
+            $(this).addClass('btn-success');
+          });
+        } else {
+          $.post("/ondemand/account_actions.php?action=get_break_btn", function(data) {
+            var result = JSON.parse(data);
+
+            $(this).removeClass('btn-success');
+
+            $.post("/ondemand/op_actions.php?action=complete_operation", {'opID': result.id, 'opnum': 'NB00'}, function(data) {
+              $('body').append(data);
+
+              socket.emit("updateQueue");
+
+              $(".nav_break").attr('id', '201');
+
+              thisText.html("Start Break");
+            });
+          });
+        }
+      })
+      <?php } ?>
+
       .on("click", ".post_to_cal", function(e) {
         e.stopPropagation();
       })
@@ -1009,6 +1052,8 @@ require 'includes/header_start.php';
     setInterval(function() { // stops the auto-logout
       $.post("/ondemand/session_continue.php");
     }, 600000);
+
+    updateBreakButton(); // get the break button initial state
   </script>
 
   <?php if($bouncer->validate('search')) { ?>
