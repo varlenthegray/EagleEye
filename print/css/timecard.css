@@ -138,3 +138,11 @@ th, .header {
         display: none !important;
     }
 }
+
+.border_solid {
+    border: 1px solid #000;
+}
+
+.center_text {
+    text-align: center;
+}
