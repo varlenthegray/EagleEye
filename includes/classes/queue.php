@@ -35,220 +35,13 @@ class queue {
         $changed = json_encode($changed);
 
         $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES ('{$op_queue['id']}', NULL, '$changed', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
-
-        return displayToast("success", "Successfully suspended all operations.", "Operations Suspended");
       }
     }
+
+    return displayToast("success", "Successfully suspended all operations.", "Operations Suspended");
   }
 
-  function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
-    global $dbconn;
-
-    $op_queue_qry = $dbconn->query("SELECT op_queue.id AS QID, op_queue.*, operations.* FROM op_queue LEFT JOIN operations ON op_queue.operation_id = operations.id WHERE room_id = '$roomid' AND published = TRUE AND bracket = '$bracket'");
-
-    // if the bracket is published
-    if((bool)$bracket_pub) {
-      if($op_queue_qry->num_rows > 0) {
-        while($op_queue = $op_queue_qry->fetch_assoc()) {
-          if($op_queue['operation_id'] === $operation && (bool)$op_queue['active']) {
-            // the exact operation is currently active and we cannot take any further action
-            echo displayToast("error", "Operation is active presently inside of $bracket.", "Active Operation");
-            return;
-          } else {
-            // deactivate operations
-            $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
-          }
-        }
-      }
-
-      // now that we've cleaned up the operations; it's time to get that operation flowing
-      $dbconn->query("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, partially_completed, created) 
-              VALUES ('$roomid', '$operation', FALSE, FALSE, FALSE, NULL, UNIX_TIMESTAMP())");
-    } else {
-      while($op_queue = $op_queue_qry->fetch_assoc()) {
-        $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
-      }
-    }
-  }
-
-  function autoRelease($room_qry, $op_bracket, $room_bracket, $room_id) {
-    global $dbconn;
-
-    // if the bracket is NOT published
-    if(!(bool)$room_qry[$room_bracket . '_published']) {
-      // we're going to publish the sample bracket
-      $dbconn->query("UPDATE rooms SET {$room_bracket}_published = TRUE WHERE id = $room_id");
-
-      // next, lets make sure there's an operation available in op_queue
-      $this->createOpQueue(true, $op_bracket, $room_qry[$room_bracket . '_bracket'], $room_id);
-
-      // now lets alert the user that we've released the next bracket
-      echo displayToast("info", "$room_bracket bracket has been released!", "$room_bracket Bracket Released");
-    } else {
-      echo displayToast("warning", "Unable to release $room_bracket Bracket as it's currently published!", "$room_bracket Bracket Not Released");
-    }
-  }
-
-  function wc_jobsInQueue() {
-    global $dbconn;
-
-    $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
-          rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
-              JOIN operations ON op_queue.operation_id = operations.id
-                JOIN rooms ON op_queue.room_id = rooms.id
-                  JOIN sales_order ON rooms.so_parent = sales_order.so_num
-                    WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.job_title != 'N/A'
-                      ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
-
-    $output = array();
-    $i = 0;
-
-    if($op_queue_qry->num_rows > 0) {
-      while($op_queue = $op_queue_qry->fetch_assoc()) {
-        if(!empty($op_queue['assigned_to'])) {
-          $assigned_usrs = json_decode($op_queue['assigned_to']);
-
-          $name = null;
-
-          foreach($assigned_usrs as $usr) {
-            $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$usr'");
-            $usr = $usr_qry->fetch_assoc();
-
-            $name .= $usr['name'] . ", ";
-          }
-
-          $assignee = substr($name, 0, -2);
-        } else {
-          $assignee = "&nbsp;";
-        }
-
-        if(substr($op_queue['op_id'], -2) !== '98') {
-          $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$op_queue['iteration']}";
-          $output['data'][$i][] = $op_queue['room_name'];
-          $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['responsible_dept']} <span class='tooltiptext'>{$op_queue['bracket']} Bracket</span></div>";
-          $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
-          $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['created']);
-          $output['data'][$i][] = $assignee;
-          $output['data'][$i]['DT_RowId'] = $op_queue['so_parent'];
-
-          $i += 1;
-        }
-      }
-    } else {
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '--- None Queued ---';
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '---';
-    }
-
-    return $output;
-  }
-
-  function wc_recentlyCompleted() {
-    global $dbconn;
-
-    $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
-            rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.*, op_audit_trail.end_time FROM op_queue 
-            LEFT JOIN operations ON op_queue.operation_id = operations.id
-            LEFT JOIN rooms ON op_queue.room_id = rooms.id
-            LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num
-            LEFT JOIN op_audit_trail ON op_queue.id = op_audit_trail.op_id
-            WHERE active = FALSE AND completed = TRUE AND op_audit_trail.end_time IS NOT NULL
-            ORDER BY sales_order.so_num DESC, operations.op_id DESC LIMIT 0,250;");
-
-    $output = array();
-    $i = 0;
-
-    if($op_queue_qry->num_rows > 0) {
-      while($op_queue = $op_queue_qry->fetch_assoc()) {
-        $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$op_queue['iteration']}";
-        $output['data'][$i][] = $op_queue['room_name'];
-        $output['data'][$i][] = $op_queue['bracket'];
-        $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
-
-        //$time = Carbon::createFromTimestamp($op_queue['end_time']); // grab the carbon timestamp
-        //$output['data'][$i][] = $time->diffForHumans(); // obtain the difference in readable format for humans!
-        $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['end_time']); // meh, readable format breaks the completed date
-
-        $i += 1;
-      }
-    } else {
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '--- Nothing to Show! ---';
-      $output['data'][$i][] = '---';
-    }
-
-    return $output;
-  }
-
-  function wc_activeJobs() {
-    global $dbconn;
-
-    $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
-          rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
-              JOIN operations ON op_queue.operation_id = operations.id
-                JOIN rooms ON op_queue.room_id = rooms.id
-                  JOIN sales_order ON rooms.so_parent = sales_order.so_num
-                    WHERE active = TRUE AND published = TRUE AND (completed = FALSE OR completed IS NULL)
-                      ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
-
-    $output = array();
-    $i = 0;
-
-    if($op_queue_qry->num_rows > 0) {
-      while($op_queue = $op_queue_qry->fetch_assoc()) {
-        if((bool)$op_queue['otf_created']) {
-          $tag = 'OTF';
-        } else {
-          $tag = "{$op_queue['iteration']}";
-        }
-
-        if(!empty($op_queue['subtask'])) {
-          $subtask = " ({$op_queue['subtask']})";
-        } else {
-          $subtask = NULL;
-        }
-
-        $employees = json_decode($op_queue['active_employees']);
-        $active_emp = null;
-
-        foreach($employees as $employee) {
-          $emp_qry = $dbconn->query("SELECT * FROM user WHERE id = $employee");
-          $emp = $emp_qry->fetch_assoc();
-
-          $active_emp .= $emp['name'] . ", ";
-        }
-
-        $active_emp = rtrim($active_emp, ", ");
-
-        $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-$tag";
-        $output['data'][$i][] = $op_queue['room_name'];
-        $output['data'][$i][] = $op_queue['bracket'];
-        $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'] . $subtask;
-        $output['data'][$i][] = $active_emp;
-
-        // TODO: Fix this so that the start time reflects the last activated time
-        $output['data'][$i][] = date(TIME_ONLY, $op_queue['start_time']);
-
-        $i += 1;
-      }
-    } else {
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '--- None Active ---';
-      $output['data'][$i][] = '---';
-      $output['data'][$i][] = '---';
-    }
-
-    return $output;
-  }
-
-  function startOp($id, $operation) {
+  function op_creation($id, $operation) {
     global $dbconn;
 
     $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '$id'");
@@ -309,7 +102,7 @@ class queue {
           $admin_results = $admin_qry->fetch_assoc();
 
           // determine if this person is already on break or not
-          $break_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = 201 AND active = TRUE AND active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%'");
+          $break_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = 201 AND completed != FALSE AND partially_completed != FALSE AND active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%'");
 
           // if they're not on break
           if($break_qry->num_rows === 0) {
@@ -586,6 +379,230 @@ class queue {
         }
 
         break;
+    }
+  }
+
+  function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
+    global $dbconn;
+
+    $op_queue_qry = $dbconn->query("SELECT op_queue.id AS QID, op_queue.*, operations.* FROM op_queue LEFT JOIN operations ON op_queue.operation_id = operations.id WHERE room_id = '$roomid' AND published = TRUE AND bracket = '$bracket'");
+
+    // if the bracket is published
+    if((bool)$bracket_pub) {
+      if($op_queue_qry->num_rows > 0) {
+        while($op_queue = $op_queue_qry->fetch_assoc()) {
+          if($op_queue['operation_id'] === $operation && (bool)$op_queue['active']) {
+            // the exact operation is currently active and we cannot take any further action
+            echo displayToast("error", "Operation is active presently inside of $bracket.", "Active Operation");
+            return;
+          } else {
+            // deactivate operations
+            $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
+          }
+        }
+      }
+
+      // now that we've cleaned up the operations; it's time to get that operation flowing
+      $dbconn->query("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, partially_completed, created) 
+              VALUES ('$roomid', '$operation', FALSE, FALSE, FALSE, NULL, UNIX_TIMESTAMP())");
+    } else {
+      while($op_queue = $op_queue_qry->fetch_assoc()) {
+        $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
+      }
+    }
+  }
+
+  function autoRelease($room_qry, $op_bracket, $room_bracket, $room_id) {
+    global $dbconn;
+
+    // if the bracket is NOT published
+    if(!(bool)$room_qry[$room_bracket . '_published']) {
+      // we're going to publish the sample bracket
+      $dbconn->query("UPDATE rooms SET {$room_bracket}_published = TRUE WHERE id = $room_id");
+
+      // next, lets make sure there's an operation available in op_queue
+      $this->createOpQueue(true, $op_bracket, $room_qry[$room_bracket . '_bracket'], $room_id);
+
+      // now lets alert the user that we've released the next bracket
+      echo displayToast("info", "$room_bracket bracket has been released!", "$room_bracket Bracket Released");
+    } else {
+      echo displayToast("warning", "Unable to release $room_bracket Bracket as it's currently published!", "$room_bracket Bracket Not Released");
+    }
+  }
+
+  function wc_jobsInQueue() {
+    global $dbconn;
+
+    $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
+          rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
+              JOIN operations ON op_queue.operation_id = operations.id
+                JOIN rooms ON op_queue.room_id = rooms.id
+                  JOIN sales_order ON rooms.so_parent = sales_order.so_num
+                    WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.job_title != 'N/A'
+                      ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
+
+    $output = array();
+    $i = 0;
+
+    if($op_queue_qry->num_rows > 0) {
+      while($op_queue = $op_queue_qry->fetch_assoc()) {
+        if(!empty($op_queue['assigned_to'])) {
+          $assigned_usrs = json_decode($op_queue['assigned_to']);
+
+          $name = null;
+
+          foreach($assigned_usrs as $usr) {
+            $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '$usr'");
+            $usr = $usr_qry->fetch_assoc();
+
+            $name .= $usr['name'] . ", ";
+          }
+
+          $assignee = substr($name, 0, -2);
+        } else {
+          $assignee = "&nbsp;";
+        }
+
+        if(substr($op_queue['op_id'], -2) !== '98') {
+          $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$op_queue['iteration']}";
+          $output['data'][$i][] = $op_queue['room_name'];
+          $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['responsible_dept']} <span class='tooltiptext'>{$op_queue['bracket']} Bracket</span></div>";
+          $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+          $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['created']);
+          $output['data'][$i][] = $assignee;
+          $output['data'][$i]['DT_RowId'] = $op_queue['so_parent'];
+
+          $i += 1;
+        }
+      }
+    } else {
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '--- None Queued ---';
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '---';
+    }
+
+    return $output;
+  }
+
+  function wc_recentlyCompleted() {
+    global $dbconn;
+
+    $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
+            rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.*, op_audit_trail.end_time FROM op_queue 
+            LEFT JOIN operations ON op_queue.operation_id = operations.id
+            LEFT JOIN rooms ON op_queue.room_id = rooms.id
+            LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num
+            LEFT JOIN op_audit_trail ON op_queue.id = op_audit_trail.op_id
+            WHERE active = FALSE AND completed = TRUE AND op_audit_trail.end_time IS NOT NULL
+            ORDER BY sales_order.so_num DESC, operations.op_id DESC LIMIT 0,250;");
+
+    $output = array();
+    $i = 0;
+
+    if($op_queue_qry->num_rows > 0) {
+      while($op_queue = $op_queue_qry->fetch_assoc()) {
+        $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$op_queue['iteration']}";
+        $output['data'][$i][] = $op_queue['room_name'];
+        $output['data'][$i][] = $op_queue['bracket'];
+        $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+
+        //$time = Carbon::createFromTimestamp($op_queue['end_time']); // grab the carbon timestamp
+        //$output['data'][$i][] = $time->diffForHumans(); // obtain the difference in readable format for humans!
+        $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['end_time']); // meh, readable format breaks the completed date
+
+        $i += 1;
+      }
+    } else {
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '--- Nothing to Show! ---';
+      $output['data'][$i][] = '---';
+    }
+
+    return $output;
+  }
+
+  function wc_activeJobs() {
+    global $dbconn;
+
+    $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
+          rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
+              JOIN operations ON op_queue.operation_id = operations.id
+                JOIN rooms ON op_queue.room_id = rooms.id
+                  JOIN sales_order ON rooms.so_parent = sales_order.so_num
+                    WHERE active = TRUE AND published = TRUE AND (completed = FALSE OR completed IS NULL)
+                      ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
+
+    $output = array();
+    $i = 0;
+
+    if($op_queue_qry->num_rows > 0) {
+      while($op_queue = $op_queue_qry->fetch_assoc()) {
+        if((bool)$op_queue['otf_created']) {
+          $tag = 'OTF';
+        } else {
+          $tag = "{$op_queue['iteration']}";
+        }
+
+        if(!empty($op_queue['subtask'])) {
+          $subtask = " ({$op_queue['subtask']})";
+        } else {
+          $subtask = NULL;
+        }
+
+        $employees = json_decode($op_queue['active_employees']);
+        $active_emp = null;
+
+        foreach($employees as $employee) {
+          $emp_qry = $dbconn->query("SELECT * FROM user WHERE id = $employee");
+          $emp = $emp_qry->fetch_assoc();
+
+          $active_emp .= $emp['name'] . ", ";
+        }
+
+        $active_emp = rtrim($active_emp, ", ");
+
+        $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-$tag";
+        $output['data'][$i][] = $op_queue['room_name'];
+        $output['data'][$i][] = $op_queue['bracket'];
+        $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'] . $subtask;
+        $output['data'][$i][] = $active_emp;
+
+        // TODO: Fix this so that the start time reflects the last activated time
+        $output['data'][$i][] = date(TIME_ONLY, $op_queue['start_time']);
+
+        $i += 1;
+      }
+    } else {
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '--- None Active ---';
+      $output['data'][$i][] = '---';
+      $output['data'][$i][] = '---';
+    }
+
+    return $output;
+  }
+
+  function startOp($id, $operation) {
+    global $dbconn;
+
+    // determine if this person is already on break or not
+    $break_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = 201 AND active = TRUE AND active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%'");
+
+    if($break_qry->num_rows === 0) {
+      $this->op_creation($id, $operation);
+    } elseif($id !== 201) {
+      $this->suspendOps($_SESSION['shop_user']['id']);
+
+      $this->op_creation($id, $operation);
+    } else {
+      echo displayToast("info", "You are currently on break, you cannot start another.", "Unable to Start Break");
     }
   }
 
