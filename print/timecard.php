@@ -233,6 +233,7 @@ ORDER BY c_start_time ASC;");
               'iteration' => $sub_audit['iteration'],
               'responsible_dept' => $sub_audit['responsible_dept'],
               'opID' => $sub_audit['opID'],
+              'job_title' => $sub_audit['job_title'],
               'operationID' => $sub_audit['operationID'],
               'c_start_time' => $sub_audit['c_start_time'],
               'c_end_time' => $sub_audit['c_end_time'],
