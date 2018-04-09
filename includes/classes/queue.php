@@ -963,7 +963,7 @@ class queue {
                 echo displayToast("warning", "Bracket is no longer published.", "Bracket Unpublished");
               }
             } else {
-              if($opnum !== '000') {
+              if($opnum !== 'NB00') {
                 echo displayToast("info", "Bracket is now closed.", "Bracket Closed");
               } else {
                 echo displayToast("success", "Closed out operation.", "Closed Operation");
