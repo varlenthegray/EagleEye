@@ -54,7 +54,7 @@ h4 {
 
 #logo_container {
     top: 10px;
-    left: calc(50% - 85px);
+    right: 0;
     position: absolute;
 }
 
