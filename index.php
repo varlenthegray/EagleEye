@@ -37,6 +37,8 @@ require 'includes/header_start.php';
     <!-- Modernizr js -->
     <script src="/assets/js/modernizr.min.js"></script>
 
+    <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
+
     <!-- SocketIO -->
     <script src="/server/node_modules/socket.io-client/dist/socket.io.js"></script>
 
@@ -1068,6 +1070,12 @@ require 'includes/header_start.php';
   <!-- Fancytree -->
   <script src="/assets/plugins/fancytree/jquery.fancytree.js"></script>
   <script src="/assets/plugins/fancytree/jquery.fancytree.filter.js"></script>
+  <script src="/assets/plugins/fancytree/jquery.fancytree.dnd.js"></script>
+  <script src="/assets/plugins/fancytree/jquery.fancytree.edit.js"></script>
+  <script src="/assets/plugins/fancytree/jquery.fancytree.gridnav.js"></script>
+  <script src="/assets/plugins/fancytree/jquery.fancytree.table.js"></script>
+
+  <script src="//cdn.jsdelivr.net/npm/ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
 
   <!-- Unsaved Changes -->
   <script src="/assets/js/unsaved_alert.js?v=<?php echo VERSION; ?>"></script>
