@@ -159,7 +159,7 @@ function getHMMSS($duration)
         $day_total = 0; // the day total (in seconds)
 
         $day_readable = date("l (" . DATE_DEFAULT . ")", $current_day); // format the date with DAY (DATE)
-        echo "<tr class='border_solid'><th colspan='10'><h4>$day_readable</h4></th></tr>"; // show the date with DAY (DATE)
+        echo "<tr class='border_solid'><th colspan='7'><h4>$day_readable</h4></th><th colspan='3' style='border:solid #FFF;border-width:0 0 1px 1px;text-align:center;'><h4>Payable</h4></th></tr>"; // show the date with DAY (DATE)
 
         // fkn black magic query (just kidding, it is a nested select) - Credit Brandon Christensen
         /** mq = Main Query, sq = Sub Query */
@@ -195,7 +195,7 @@ WHERE oat.start_time IS NOT NULL
 GROUP BY oat.op_id, oat.start_time
 ORDER BY c_start_time ASC;");
 
-        echo "<tr class='border_solid'><th>SO #</th><th>Department</th><th>Operation</th><th class='center_text'>Started</th><th class='center_text'>Ended</th><th class='center_text'>Op Time</th><th class='center_text'>N.P.</th><th class='center_text'>N.B.</th><th class='center_text'>B.</th><th class='center_text'>R.T.</th></tr>";
+        echo "<tr class='border_solid'><th>SO #</th><th>Department</th><th>Operation</th><th class='center_text'>Started</th><th class='center_text'>Ended</th><th class='center_text'>Op Time</th><th class='center_text'>N.P.</th><th class='center_text' style='border:solid #FFF;border-width:0 0 0 1px;'>N.B.</th><th class='center_text'>B.</th><th class='center_text'>R.T.</th></tr>";
         echo "<tr style='height:4px;' class='excluded_bg'><td colspan='6'></td></tr>";
 
         // get the timecard data specifically for that day
@@ -433,8 +433,12 @@ ORDER BY c_start_time ASC;");
           $np_total_readable = getHMMSS($non_payable_total);
           $nb_total_readable = getHMMSS($non_billable_total);
           $billable_total_readable = getHMMSS($billable_total);
+          $billable_nb_total = $non_billable_total + $billable_total;
+
+          $billable_nb_readable = getHMMSS($billable_nb_total);
 
           echo "<tr class='excluded_bg'><td colspan='5'></td><td style='text-align:right;'>Total:</td><td class='border_solid center_text'>$np_total_readable</td><td class='border_solid center_text'>$nb_total_readable</td><td class='border_solid center_text'>$billable_total_readable</td><td class='border_solid center_text' style='background-color:#000'></td></tr>";
+          echo "<tr class='excluded_bg'><td colspan='5'></td><td style='text-align:right;'>Sum:</td><td class='border_solid center_text' style='background-color:#000'></td><td colspan='2' class='border_solid center_text'>$billable_nb_readable</td><td class='border_solid center_text' style='background-color:#000'></td></tr>";
           echo "<tr class='excluded_bg' style='height:12px;'><td colspan='6'></td></tr>";
           echo "<tr class='excluded_bg'><td colspan='6'>Clocked In: $time_in_human / Clocked Out: $time_out_human</td><td colspan='3'>Day Timecard Total:</td><td class='center_text'>$length_worked_output</td></tr>";
         } else {
