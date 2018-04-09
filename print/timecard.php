@@ -107,6 +107,18 @@ function getHMMSS($duration)
           <tr>
             <td colspan="2" id="page_type_header">Timecard Report</td>
           </tr>
+          <tr class="page_type_subhead">
+            <td width="80px">Employee:</td>
+            <td><?php echo $user['name']; ?></td>
+          </tr>
+          <tr class="page_type_subhead">
+            <td>Date Range:</td>
+            <td><?php echo date(DATE_DEFAULT, $start_date) . " - " . date(DATE_DEFAULT, $end_date); ?></td>
+          </tr>
+          <tr class="page_type_subhead">
+            <td>Printed:</td>
+            <td><?php echo date(DATE_TIME_ABBRV); ?></td>
+          </tr>
         </table>
       </div>
     </div>
@@ -120,25 +132,6 @@ function getHMMSS($duration)
         Arden, NC 28704<br/>
         828.966.9000<br/>
         orders@smcm.us
-      </div>
-    </div>
-
-    <div id="header_right">
-      <div id="page_info">
-        <table>
-          <tr>
-            <td width="80px">Employee:</td>
-            <td><?php echo $user['name']; ?></td>
-          </tr>
-          <tr>
-            <td>Date Range:</td>
-            <td><?php echo date(DATE_DEFAULT, $start_date) . " - " . date(DATE_DEFAULT, $end_date); ?></td>
-          </tr>
-          <tr>
-            <td>Printed:</td>
-            <td><?php echo date(DATE_TIME_ABBRV); ?></td>
-          </tr>
-        </table>
       </div>
     </div>
 
@@ -328,7 +321,7 @@ ORDER BY c_start_time ASC;");
             $billable_time = 0;
 
             // if we're working with a non-billable item
-            if ($audit['op_id'] === 'NB00') {
+            if ($audit['op_id'] === 'NB00' && $audit['job_title'] !== 'Break') {
               $addl_op = "({$audit['subtask']})"; // get the additional operation information
             } else { // otherwise, it's not non-billable
               $addl_op = null; // don't worry about additional notes
@@ -399,6 +392,8 @@ ORDER BY c_start_time ASC;");
             $billable_readable = getHMMSS($billable_time);
             $running_readable = getHMMSS($running_total);
 
+            $week_total += $non_billable_time + $billable_time;
+
             $temp_started = substr($started, -5, 5);
             $temp_ended = substr($ended, -5, 5);
 
@@ -422,7 +417,6 @@ ORDER BY c_start_time ASC;");
 
           if ($time_out_human !== 'N/A') {
             $total_length_worked = $time_out - $time_in;
-            $week_total += $total_length_worked;
             $length_worked_output = getHMMSS($total_length_worked);
             $day_output = getHMMSS($day_total);
           } else {
