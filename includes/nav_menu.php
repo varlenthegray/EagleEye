@@ -30,6 +30,8 @@ HEREDOC;
         $nav_out .= "<li id='nav_logout'><a href='/login.php?logout=true'><i class='fa fa-sign-out m-r-5'></i>Log Out</a></li>";
     }
 
+    $nav_out .= ($bouncer->validate('view_break')) ? "<li class='nav_break'><a><i class='zmdi zmdi-hourglass-alt m-r-5'></i><span></span></a></li>" : null;
+
     $nav_out .= "<li class='nav-separator'><span></span></li>";
 
     $nav_out .= ($bouncer->validate('add_feedback')) ? "<li id='nav_feedback'><a data-toggle='modal' data-target='#feedback-page'><i class='fa fa-comment-o m-r-5'></i><span>Feedback</span></a></li>" : null;

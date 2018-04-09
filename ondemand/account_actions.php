@@ -1,5 +1,8 @@
 <?php
 require '../includes/header_start.php';
+require '../includes/classes/queue.php';
+
+$queue = new \Queue\queue();
 
 function login($result, $id) {
   global $dbconn;
@@ -22,6 +25,7 @@ function login($result, $id) {
 
 function clockOut($id, $redirect = true) {
   global $dbconn;
+  global $queue;
 
   $qry = $dbconn->query("SELECT * FROM user WHERE id = '$id'");
 
@@ -33,33 +37,7 @@ function clockOut($id, $redirect = true) {
       $timecard = $timecard_qry->fetch_assoc();
 
       if($dbconn->query("UPDATE timecards SET time_out = UNIX_TIMESTAMP() WHERE id = {$timecard['id']}")) {
-        $op_queue_qry = $dbconn->query("SELECT * FROM op_queue WHERE active = TRUE AND active_employees LIKE '%\"$id\"%'");
-
-        if($op_queue_qry->num_rows > 0) {
-          while($op_queue = $op_queue_qry->fetch_assoc()) {
-            $aemp = json_decode($op_queue['active_employees']);
-
-            if(count($aemp) > 1) {
-              $loc = array_search($user['id'], $aemp);
-              unset($aemp[$loc]);
-            } else {
-              $aemp = array();
-            }
-
-            $active_employees = json_encode(array_values($aemp));
-
-            $active = (empty($aemp)) ? 'FALSE' : 'TRUE';
-
-            $dbconn->query("UPDATE op_queue SET active = $active, active_employees = '$active_employees', partially_completed = TRUE WHERE id = '{$op_queue['id']}'");
-
-            $changed = ["Active"=>FALSE,"Active Employees"=>$active_employees,"Partially Completed"=>TRUE,"ID"=>$op_queue['id']];
-            $changed = json_encode($changed);
-
-            $dbconn->query("INSERT INTO log_cron (`desc`, time) VALUES ('$changed', UNIX_TIMESTAMP())");
-
-            $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES ('{$op_queue['id']}', NULL, '$changed', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
-          }
-        }
+        echo $queue->suspendOps($user);
 
         echo displayToast("success", "Successfully clocked out {$user['name']}.", "Clocked Out");
 
@@ -134,6 +112,33 @@ switch($_REQUEST['action']) {
     } else {
       echo displayToast("error", "Invalid Pin", "Invalid Pin");
     }
+
+    break;
+
+  case 'start_break':
+    $queue->startOp(201, 'Break');
+
+    break;
+
+  case 'stop_break':
+    $queue->stopOp(201, '', null, null, 'Break');
+    break;
+
+  case 'get_break_btn':
+    $break_qry = $dbconn->query("SELECT * FROM op_queue WHERE operation_id = 201 AND active = TRUE AND active_employees LIKE '%\"{$_SESSION['shop_user']['id']}\"%'");
+
+    // if they're not currently on break
+    if($break_qry->num_rows === 0) {
+      $output = array('id' => 201, 'display' => "Start Break");
+    } else {
+      $break = $break_qry->fetch_assoc();
+
+      $output = array('id' => $break['id'], 'display' => "Stop Break");
+    }
+
+    $output_json = json_encode($output, true);
+
+    echo $output_json;
 
     break;
 }
