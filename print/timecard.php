@@ -374,7 +374,7 @@ ORDER BY c_start_time ASC;");
               if ((int)$audit['operationID'] === 201) {
                 $non_payable_time = $audit['split_time']; // add the time to non-payable time
                 $non_payable_total += $audit['split_time']; // add the time to non-payable time
-              } elseif ($audit['opID'] === 'NB00') { // if the operation is non-billable
+              } elseif ($audit['op_id'] === 'NB00') { // if the operation is non-billable
                 $non_billable_time = $audit['split_time']; // add the time to non-billable time
                 $non_billable_total += $audit['split_time']; // add the time to non-billable time
               } else { // we've covered everything else, so now it's time to add the time to billable
