@@ -288,22 +288,6 @@ ORDER BY c_start_time ASC;");
             $op_data[$index]['split_time'] = $total_time;
             $op_data[$index]['split_time_human'] = getHMMSS($total_time);
 
-            /*# Debug visualization info
-            echo '<ul>';
-            foreach ($timeframes as $key => $timeframe) {
-              $time = $timeframe['end_time'] - $timeframe['start_time'];
-              echo '<li>';
-              echo '<strong>Timeframe '.$key.'</strong>';
-              echo '<ul>';
-              echo '<li>Time Span: '.$timeframe['start_time'].' -> '.$timeframe['end_time'].'</li>';
-              echo '<li>Open Ops: '.$timeframe['open_ops'].'</li>';
-              echo '<li>Actual time: '.$time.' seconds</li>';
-              echo '<li>Split time: '.$timeframe['actual_time'].' seconds</li>';
-              echo '</ul>';
-              echo '</li>';
-            }
-            echo '</ul>';*/
-
             $time_split_total += $total_time;
 
             $timesplit_audit = "P";
@@ -365,17 +349,17 @@ ORDER BY c_start_time ASC;");
 
               // if the operation is break
               if ((int)$audit['operationID'] === 201) {
-                $non_payable_time = $audit['split_time']; // add the time to non-payable time
-                $non_payable_total += $audit['split_time']; // add the time to non-payable time
+                $non_payable_time = (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to non-payable time
+                $non_payable_total += (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to non-payable time total
               } elseif ($audit['op_id'] === 'NB00') { // if the operation is non-billable
-                $non_billable_time = $audit['split_time']; // add the time to non-billable time
-                $non_billable_total += $audit['split_time']; // add the time to non-billable time
+                $non_billable_time = (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to non-billable time
+                $non_billable_total += (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to non-billable time total
               } else { // we've covered everything else, so now it's time to add the time to billable
-                $billable_time = $audit['split_time']; // add the time to billable time
-                $billable_total += $audit['split_time']; // add the time to billable time
+                $billable_time = (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to billable time
+                $billable_total += (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to billable time total
               }
 
-              $running_total += $audit['split_time']; // the running total can now be added in too
+              $running_total += (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // the running total can now be added in too
             } else {
               $length_worked = "<b style='color:red;'>** 0:00 **</b>"; // throw all sorts of bells and alerts that something went wrong
             }
