@@ -37,7 +37,7 @@ function clockOut($id, $redirect = true) {
       $timecard = $timecard_qry->fetch_assoc();
 
       if($dbconn->query("UPDATE timecards SET time_out = UNIX_TIMESTAMP() WHERE id = {$timecard['id']}")) {
-        echo $queue->suspendOps($user);
+        echo $queue->suspendOps($id);
 
         echo displayToast("success", "Successfully clocked out {$user['name']}.", "Clocked Out");
 
@@ -78,7 +78,7 @@ switch($_REQUEST['action']) {
 
     break;
   case 'clock_out':
-    $id = sanitizeInput($_REQUEST['user_id']);
+    $id = sanitizeInput($_REQUEST['clockout_id']);
 
     clockOut($id);
 

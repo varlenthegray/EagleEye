@@ -845,7 +845,7 @@ require 'includes/header_start.php';
 
         e.stopPropagation();
 
-        $.post("/ondemand/account_actions.php?action=clock_out", {user_id: id}, function(data) {
+        $.post("/ondemand/account_actions.php?action=clock_out", {'clockout_id': id}, function(data) {
           $("body").append(data);
         });
       })

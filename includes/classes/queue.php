@@ -29,16 +29,20 @@ class queue {
 
         $active = (empty($aemp)) ? 'FALSE' : 'TRUE';
 
-        $dbconn->query("UPDATE op_queue SET active = $active, active_employees = '$active_employees', partially_completed = TRUE WHERE id = '{$op_queue['id']}'");
+        if($dbconn->query("UPDATE op_queue SET active = $active, active_employees = '$active_employees', partially_completed = TRUE WHERE id = '{$op_queue['id']}'")) {
+          $changed = ["Active"=>FALSE,"Active Employees"=>$active_employees,"Partially Completed"=>TRUE,"ID"=>$op_queue['id']];
+          $changed = json_encode($changed);
 
-        $changed = ["Active"=>FALSE,"Active Employees"=>$active_employees,"Partially Completed"=>TRUE,"ID"=>$op_queue['id']];
-        $changed = json_encode($changed);
+          $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES ('{$op_queue['id']}', $user_id, '$changed', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
 
-        $dbconn->query("INSERT INTO op_audit_trail (op_id, shop_id, changed, timestamp, end_time) VALUES ('{$op_queue['id']}', NULL, '$changed', UNIX_TIMESTAMP(), UNIX_TIMESTAMP())");
+          return displayToast("success", "Successfully suspended all operations.", "Operations Suspended");
+        } else {
+          return displayToast("error", dbLogSQLErr($dbconn, false), "Error Occurred");
+        }
       }
+    } else {
+      return displayToast("info", "No operations available for this user.", "No Operations Logged In");
     }
-
-    return displayToast("success", "Successfully suspended all operations.", "Operations Suspended");
   }
 
   function op_creation($id, $operation) {
