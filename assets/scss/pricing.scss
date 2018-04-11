@@ -8,7 +8,6 @@
 @import "pricing_coversheet";
 /** End Coversheet CSS */
 
-// these parts are duplicate from SCSS custom
 .no-select {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -18,36 +17,11 @@
   user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
-.sticky {
-  position: sticky;
-  top: 100px;
-
-  .btn-primary-outline {
-    background-color: #FFFFFF !important;
-
-    &:hover {
-      color: #AAAAAA;
-    }
-  }
-}
-// END duplication
-
 .pricing_left_nav {
   border: 1px solid #CCC;
   border-radius: 5px;
   @extend .no-select; // implements no text selection on the entire navigation menu
-  height: 86vh;
-  overflow-y: auto;
-  background-color: #F0F0F0;
-
-  .form-control {
-    background-color: transparent;
-  }
-
-  select {
-    border-width: 0 0 1px 0;
-    border-radius: 0;
-  }
+  min-height: 85.19vh;
 
   .main_level, .sub_level, .parent {
     list-style: none;
@@ -128,27 +102,19 @@
   ul.fancytree-container {
     border:none;
   }
-
-  .nav_filter {
-    background-color: #F0F0F0;
-    top: 0;
-    z-index: 2;
-  }
-
-  .actions {
-    margin-left: 5px;
-  }
 }
 
-@media screen {
-  .pricing_table_format {
-    padding-left: 15px;
-  }
-}
-
-.fancytree-title {
+span.ws-wrap span.fancytree-title {
   white-space: normal;
-  width: 85%;
+  max-width: 90%;
+}
+
+span.ws-nowrap span.fancytree-title {
+  white-space: nowrap;
+}
+
+span.ws-pre span.fancytree-title {
+  white-space: pre;
 }
 
 .fancytree-container, span.fancytree-focused span.fancytree-title {
@@ -160,11 +126,3 @@
   border-radius:0;
 }
 
-.qty_input {
-  width: 100%;
-  background-color: transparent;
-  font-size: 10pt !important;
-  text-align: center;
-  height: 20px;
-  border: none;
-}
