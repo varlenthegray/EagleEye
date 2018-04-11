@@ -62,7 +62,7 @@ function translateVIN($segment, $key) {
     $desc = $vin['value'];
   }
 
-  return "$ikey = $desc";
+  return "$desc";
 }
 
 $note_arr = array();
@@ -84,12 +84,22 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 
 <div class="card-box">
   <div class="row">
-    <div class="col-md-2 pricing_left_nav no-print">
-      <input type="text" class="form-control fc-simple ignoreSaveAlert" id="treeFilter" placeholder="Find" >
+    <div class="col-md-2 pricing_left_nav no-print sticky">
+      <div class="form-group">
+        <label for="catalog">Catalog</label>
+        <select class="form-control" name="catalog" id="catalog"><option>SMCM, Inc.</option><option>Touchstone</option></select>
+      </div>
+      <div class="form-group">
+        <label for="treeFilter">Find</label>
+        <input type="text" class="form-control fc-simple ignoreSaveAlert" id="treeFilter" placeholder="Find" width="100%" >
+      </div>
+
+      <label for="below">Categories</label>
         <?php
-        $category_qry = $dbconn->query("SELECT * FROM pricing_categories");
+        $category_qry = $dbconn->query("SELECT id, name, parent, sort_order FROM pricing_categories");
 
         $cat_array = array();
+        $item_array = array();
         $output = null;
 
         if($category_qry->num_rows > 0) {
@@ -98,7 +108,27 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           }
         }
 
+        $item_qry = $dbconn->query("SELECT id, smc_sku, category_id FROM pricing_line_item ORDER BY smc_sku ASC");
+
+        $item_sort_id = 1;
+        $prev_item_cat = null;
+
+        if($item_qry->num_rows > 0) {
+          while($item = $item_qry->fetch_assoc()) {
+            if($prev_item_cat !== $item['category_id']) {
+              $item_sort_id = 1;
+              $prev_item_cat = $item['category_id'];
+            } else {
+              $item_sort_id++;
+            }
+
+            $item_array[$item['category_id']][$item_sort_id] = array('id' => $item['id'], 'name' => $item['smc_sku']);
+          }
+        }
+
         function makeTree($parent, $categories) {
+          global $item_array;
+
           if(isset($categories[$parent]) && count($categories[$parent])) {
             $output = '<ul>';
             ksort($categories[$parent]);
@@ -106,6 +136,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             foreach ($categories[$parent] as $category) {
               $output .= "<li class='ws-wrap'>{$category['name']}";
               $output .= makeTree($category['id'], $categories);
+              $output .= makeTree($category['id'], $item_array);
               $output .= '</li>';
             }
 
@@ -119,7 +150,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         ?>
     </div>
 
-    <div class="col-md-10">
+    <div class="col-md-10 pricing_table_format">
       <div class="row">
         <div class="col-md-12" style="margin-top:5px;">
           <table style="max-width:828px;" width="100%">
@@ -351,17 +382,23 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 </div>
 
 <script>
-  $("body").on("click", ".pricing_menu_item", function() {
-    if($(this).attr('data-parent') === 'true') {
-      if($(this).next('li').is(":visible")) {
-        $(this).next('li').hide();
-        $(this).find('i').removeClass("zmdi-chevron-down").addClass("zmdi-chevron-right");
-      } else {
-        $(this).next('li').show();
-        $(this).find('i').removeClass("zmdi-chevron-right").addClass("zmdi-chevron-down");
+  $("body")
+    .on("click", ".pricing_menu_item", function() {
+      if($(this).attr('data-parent') === 'true') {
+        if($(this).next('li').is(":visible")) {
+          $(this).next('li').hide();
+          $(this).find('i').removeClass("zmdi-chevron-down").addClass("zmdi-chevron-right");
+        } else {
+          $(this).next('li').show();
+          $(this).find('i').removeClass("zmdi-chevron-right").addClass("zmdi-chevron-down");
+        }
       }
-    }
-  });
+    })
+    .on("keyup", "#treeFilter", function() {
+      // grab this value and filter it down to the node needed
+      $(".pricing_left_nav").fancytree("getTree").filterNodes($(this).val());
+    })
+  ;
 
   var CLIPBOARD = null;
   /*
@@ -378,7 +415,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
   */
 
   $(function(){
-
     $("#tree").fancytree({
       checkbox: true,
       titlesTabbable: true,     // Add all node titles to TAB chain
@@ -633,6 +669,19 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
   });
 
   $(".pricing_left_nav").fancytree({
-    icon: false
+    icon: false,
+    extensions: ["filter"],
+    filter: {
+      autoApply: true,   // Re-apply last filter if lazy data is loaded
+      autoExpand: true, // Expand all branches that contain matches while filtered
+      counter: true,     // Show a badge with number of matching child nodes near parent icons
+      fuzzy: true,      // Match single characters in order, e.g. 'fb' will match 'FooBar'
+      hideExpandedCounter: true,  // Hide counter badge if parent is expanded
+      hideExpanders: false,       // Hide expanders if all child nodes are hidden by filter
+      highlight: true,   // Highlight matches by wrapping inside <mark> tags
+      leavesOnly: false, // Match end nodes only
+      nodata: false,      // Display a 'no data' status node if result is empty
+      mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
+    }
   });
 </script>
