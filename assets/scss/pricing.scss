@@ -1,3 +1,13 @@
+/** Coversheet CSS */
+@media print {
+  body, html, .account-pages, #topnav .topbar-main, .footer {
+    background-color: #FFFFFF !important;
+  }
+}
+
+@import "pricing_coversheet";
+/** End Coversheet CSS */
+
 .no-select {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -88,5 +98,31 @@
       filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e2e2e2', endColorstr='#c2c2c2',GradientType=0 ); /* IE6-9 */
     }
   }
+
+  ul.fancytree-container {
+    border:none;
+  }
+}
+
+span.ws-wrap span.fancytree-title {
+  white-space: normal;
+  max-width: 90%;
+}
+
+span.ws-nowrap span.fancytree-title {
+  white-space: nowrap;
+}
+
+span.ws-pre span.fancytree-title {
+  white-space: pre;
+}
+
+.fancytree-container, span.fancytree-focused span.fancytree-title {
+  outline: 0 !important;
+}
+
+.fc-simple{
+  border-width:0 0 1px 0;
+  border-radius:0;
 }
 
