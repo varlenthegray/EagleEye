@@ -1,6 +1,8 @@
 <?php
 require '../../includes/header_start.php';
 
+//ini_set('memory_limit', '512M');
+
 // TODO: Add lines from the left menu
 // TODO: Change catalog replaces the left menu
 // TODO: Cabinet list load from database
@@ -10,7 +12,6 @@ require '../../includes/header_start.php';
 // TODO: Correct header information (above coversheet)
 // TODO: Tag based on room ID #
 // TODO: Allow information on coversheet to be updated directly from page
-// TODO: Update Page Counter if more than 1 page exists (HOW?!)
 
 //outputPHPErrs();
 
@@ -98,7 +99,18 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
     <div class="col-md-2 pricing_left_nav no-print sticky">
       <div class="form-group">
         <label for="catalog">Catalog</label>
-        <select class="form-control" name="catalog" id="catalog"><option>SMCM, Inc.</option><option>Touchstone</option></select>
+        <select class="form-control" name="catalog" id="catalog">
+          <?php
+          // TODO: At some point, limit this based on user catalog mapping (so that only certain users can access certain catalogs)
+          $cat_qry = $dbconn->query("SELECT id, name FROM pricing_catalog WHERE enabled = TRUE ORDER BY sort_order ASC;");
+
+          if($cat_qry->num_rows > 0) {
+            while($cat = $cat_qry->fetch_assoc()) {
+              echo "<option id='{$cat['id']}'>{$cat['name']}</option>";
+            }
+          }
+          ?>
+        </select>
       </div>
       <div class="form-group">
         <label for="treeFilter">Search Catalog</label>
@@ -107,47 +119,52 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 
       <label for="below">Categories</label>
         <?php
-        $category_qry = $dbconn->query("SELECT id, name, parent, sort_order FROM pricing_categories WHERE catalog_id = 1");
+        $category_qry = $dbconn->query("SELECT 
+          pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku
+        FROM pricing_categories pc
+          LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id 
+        WHERE pc.catalog_id = 1 ORDER BY parent, sort_order, catID ASC");
 
         $cat_array = array();
         $item_array = array();
         $output = null;
+        $prev_cat = null;
+        $item_sort_id = 0;
 
         if($category_qry->num_rows > 0) {
           while($category = $category_qry->fetch_assoc()) {
-            $cat_array[$category['parent']][$category['sort_order']] = array('id' => $category['id'], 'name' => $category['name']);
-          }
-        }
-
-        $item_qry = $dbconn->query("SELECT id, category_id, sku FROM pricing_nomenclature WHERE catalog_id = 1");
-
-        $item_sort_id = 1;
-        $prev_item_cat = null;
-
-        if($item_qry->num_rows > 0) {
-          while($item = $item_qry->fetch_assoc()) {
-            if($prev_item_cat !== $item['category_id']) {
-              $item_sort_id = 1;
-              $prev_item_cat = $item['category_id'];
+            if($prev_cat !== $category['catID']) {
+              $item_sort_id = 0;
+              $item_array = array();
+              $prev_cat = $category['catID'];
             } else {
+              $item_array[$item_sort_id] = array('id' => $category['itemID'], 'name' => $category['sku']);
               $item_sort_id++;
             }
 
-            $item_array[$item['category_id']][$item_sort_id] = array('id' => $item['id'], 'name' => $item['sku']);
+            $cat_array[$category['parent']][$category['sort_order']] = array('id' => $category['catID'], 'name' => $category['name'], 'items' => $item_array);
           }
         }
 
-        function makeTree($parent, $categories) {
-          global $item_array;
+        $output = null;
 
-          if(isset($categories[$parent]) && count($categories[$parent])) {
+        function makeTree($parent, $categories) {
+          if(isset($categories[$parent])) {
             $output = '<ul>';
             ksort($categories[$parent]);
 
             foreach ($categories[$parent] as $category) {
               $output .= "<li class='ws-wrap'>{$category['name']}";
               $output .= makeTree($category['id'], $categories);
-              $output .= makeTree($category['id'], $item_array);
+
+              if(!empty($category['items'])) {
+                $output .= '<ul>';
+
+                foreach($category['items'] AS $item) {
+                  $output .= "<li class='ws-wrap'>{$item['name']}</li>";
+                }
+                $output .= '</ul>';
+              }
               $output .= '</li>';
             }
 
@@ -352,16 +369,26 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       <div class="row">
         <div class="col-md-12" style="margin-top:5px;">
           <h2>Cabinet List</h2>
-          <h5 class="no-print" style="margin:10px 0;"><span class="cursor-hand no-select" id="catalog_add_item"><i class="zmdi zmdi-plus-circle-o"></i> Add Item</span> <span class="cursor-hand no-select" style="margin-left:10px;display:none;" id="catalog_remove_checked"><i class="zmdi zmdi-minus-circle-outline"></i> Remove Checked Items</span></h5>
+          <h5 class="no-print" style="margin:10px 0;">
+            <span class="cursor-hand no-select" id="catalog_add_item"><i class="zmdi zmdi-plus-circle-o"></i> Add Item</span>
+            <span class="cursor-hand no-select" style="margin-left:10px;display:none;" id="catalog_remove_checked"><i class="zmdi zmdi-minus-circle-outline"></i> Remove Checked Items</span>
+          </h5>
+
+          <input type="button" class="btn-success no-print" id="cabinet_list_save" value="Save" />
+
           <table id="cabinet_list">
             <colgroup>
               <col width="30px">
               <col width="50px">
               <col width="500px">
               <col width="50px">
+              <col width="50px">
+              <col width="50px">
+              <col width="50px">
+              <col width="50px">
             </colgroup>
             <thead>
-            <tr> <th></th> <th>#</th> <th>Line Item</th> <th>Price</th></tr>
+            <tr> <th></th> <th>#</th> <th>Line Item</th> <th>Qty</th> <th>Width</th> <th>Height</th> <th>Depth</th> <th>Price</th></tr>
             </thead>
             <tbody>
             <!-- Define a row template for all invariant markup: -->
@@ -369,7 +396,11 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
               <td class="alignCenter"></td>
               <td></td>
               <td></td>
+              <td><input type="text" class="form-control qty_input" value="1" placeholder="Qty" /> </td>
               <td></td>
+              <td></td>
+              <td></td>
+              <td class="text-md-right"></td>
             </tr>
             </tbody>
           </table>
@@ -404,12 +435,18 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 
       $(this).hide();
     })
+    .on("click", "#cabinet_list_save", function() {
+      
+    })
+    .on("focus", ".qty_input", function() {
+      $(this).select();
+    })
   ;
 
   var CLIPBOARD = null;
   var cabinetList = $("#cabinet_list");
 
-  $(function(){
+  $(function() {
     cabinetList.fancytree({
       select: function(event, data) {
         // Display list of selected nodes
@@ -418,6 +455,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         var selKeys = $.map(selNodes, function(node){
           return "[" + node.key + "]: '" + node.title + "'";
         });
+
         console.log(selKeys.join(", "));
 
         if(selKeys.length > 0) {
@@ -492,7 +530,15 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         $tdList.eq(1).text(node.getIndexHier());
         // (Index #2 is rendered by fancytree)
         // Set column #3 info from node data:
-        $tdList.eq(3).text(node.data.year);
+        let price = 0;
+
+        if(node.data.price !== undefined) {
+          price = node.data.price.formatMoney();
+        } else {
+          price = node.data.price;
+        }
+
+        $tdList.eq(7).text(price);
 
         // Static markup (more efficiently defined as html row template):
         // $tdList.eq(3).html("<input type='input' value='" + "" + "'>");
