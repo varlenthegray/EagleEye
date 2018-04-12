@@ -21,8 +21,19 @@
     font-size: 7pt;
   }
 
-  body {
-    margin: 5mm 6mm 5mm 15mm;
+  // this ditches the crap at the top and bottom of the page
+  @page {
+    margin: 0;
+  }
+
+  #page_count:after {
+    counter-increment: page;
+    content: "Page " counter(page);
+  }
+
+  // this adjusts the left margin (supposed to be on body, but doesn't work)
+  .wrapper {
+    margin: 0 0 0 15mm;
   }
 
   table {
