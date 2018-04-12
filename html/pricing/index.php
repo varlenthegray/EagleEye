@@ -1,6 +1,17 @@
 <?php
 require '../../includes/header_start.php';
 
+// TODO: Add lines from the left menu
+// TODO: Change catalog replaces the left menu
+// TODO: Cabinet list load from database
+// TODO: Save cabinet list to the database
+// TODO: Display price group price based on database values
+// TODO: Import items and line items based on nomenclature
+// TODO: Correct header information (above coversheet)
+// TODO: Tag based on room ID #
+// TODO: Allow information on coversheet to be updated directly from page
+// TODO: Update Page Counter if more than 1 page exists (HOW?!)
+
 //outputPHPErrs();
 
 $room_id = 799;
@@ -90,13 +101,13 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         <select class="form-control" name="catalog" id="catalog"><option>SMCM, Inc.</option><option>Touchstone</option></select>
       </div>
       <div class="form-group">
-        <label for="treeFilter">Find</label>
+        <label for="treeFilter">Search Catalog</label>
         <input type="text" class="form-control fc-simple ignoreSaveAlert" id="treeFilter" placeholder="Find" width="100%" >
       </div>
 
       <label for="below">Categories</label>
         <?php
-        $category_qry = $dbconn->query("SELECT id, name, parent, sort_order FROM pricing_categories");
+        $category_qry = $dbconn->query("SELECT id, name, parent, sort_order FROM pricing_categories WHERE catalog_id = 1");
 
         $cat_array = array();
         $item_array = array();
@@ -108,7 +119,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           }
         }
 
-        $item_qry = $dbconn->query("SELECT id, smc_sku, category_id FROM pricing_line_item ORDER BY smc_sku ASC");
+        $item_qry = $dbconn->query("SELECT id, category_id, sku FROM pricing_nomenclature WHERE catalog_id = 1");
 
         $item_sort_id = 1;
         $prev_item_cat = null;
@@ -122,7 +133,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
               $item_sort_id++;
             }
 
-            $item_array[$item['category_id']][$item_sort_id] = array('id' => $item['id'], 'name' => $item['smc_sku']);
+            $item_array[$item['category_id']][$item_sort_id] = array('id' => $item['id'], 'name' => $item['sku']);
           }
         }
 
@@ -159,7 +170,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             </tr>
             <tr>
               <td colspan="3" width="33.3%"><h3>Quote</h3></td>
-              <td colspan="3" width="33.3%" class="text-md-center">Page 1/1</td>
+              <td colspan="3" width="33.3%" class="text-md-center" id="page_count"></td>
               <td colspan="2" width="33.3%" class="text-md-right">Production Type: Cabinet</td>
             </tr>
             <tr>
@@ -341,20 +352,16 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       <div class="row">
         <div class="col-md-12" style="margin-top:5px;">
           <h2>Cabinet List</h2>
-          <h5 class="no-print"><i class="zmdi zmdi-plus-circle-o"></i> Add Item</h5>
-          <table id="tree">
+          <h5 class="no-print" style="margin:10px 0;"><span class="cursor-hand no-select" id="catalog_add_item"><i class="zmdi zmdi-plus-circle-o"></i> Add Item</span> <span class="cursor-hand no-select" style="margin-left:10px;display:none;" id="catalog_remove_checked"><i class="zmdi zmdi-minus-circle-outline"></i> Remove Checked Items</span></h5>
+          <table id="cabinet_list">
             <colgroup>
               <col width="30px">
               <col width="50px">
-              <col width="350px">
-              <col width="50px">
-              <col width="50px">
-              <col width="30px">
-              <col width="30px">
+              <col width="500px">
               <col width="50px">
             </colgroup>
             <thead>
-            <tr> <th></th> <th>#</th> <th></th> <th>Ed1</th> <th>Ed2</th> <th>Rb1</th> <th>Rb2</th> <th>Cb</th></tr>
+            <tr> <th></th> <th>#</th> <th>Line Item</th> <th>Price</th></tr>
             </thead>
             <tbody>
             <!-- Define a row template for all invariant markup: -->
@@ -362,16 +369,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
               <td class="alignCenter"></td>
               <td></td>
               <td></td>
-              <td><input name="input1" type="input"></td>
-              <td><input name="input2" type="input"></td>
-              <td class="alignCenter"><input name="cb1" type="checkbox"></td>
-              <td class="alignCenter"><input name="cb2" type="checkbox"></td>
-              <td>
-                <select name="sel1" id="">
-                  <option value="a">A</option>
-                  <option value="b">B</option>
-                </select>
-              </td>
+              <td></td>
             </tr>
             </tbody>
           </table>
@@ -383,48 +381,60 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 
 <script>
   $("body")
-    .on("click", ".pricing_menu_item", function() {
-      if($(this).attr('data-parent') === 'true') {
-        if($(this).next('li').is(":visible")) {
-          $(this).next('li').hide();
-          $(this).find('i').removeClass("zmdi-chevron-down").addClass("zmdi-chevron-right");
-        } else {
-          $(this).next('li').show();
-          $(this).find('i').removeClass("zmdi-chevron-right").addClass("zmdi-chevron-down");
-        }
-      }
-    })
     .on("keyup", "#treeFilter", function() {
       // grab this value and filter it down to the node needed
       $(".pricing_left_nav").fancytree("getTree").filterNodes($(this).val());
     })
+    .on("click", "#catalog_add_item", function() {
+      var root = cabinetList.fancytree("getRootNode");
+      var child = root.addChildren({
+        title: "Nomenclature...",
+        tooltip: "Type your nomenclature here."
+      });
+    })
+    .on("click", "#catalog_remove_checked", function() {
+      var tree = cabinetList.fancytree("getTree"),
+        selected = tree.getSelectedNodes();
+
+      selected.forEach(function(node) {
+        node.remove();
+      });
+
+      cabinetList.fancytree("getRootNode").render(true,true);
+
+      $(this).hide();
+    })
   ;
 
   var CLIPBOARD = null;
-  /*
-    SOURCE = [
-      {title: "node 1", folder: true, expanded: true, children: [
-        {title: "node 1.1", foo: "a"},
-        {title: "node 1.2", foo: "b"}
-       ]},
-      {title: "node 2", folder: true, expanded: false, children: [
-        {title: "node 2.1", foo: "c"},
-        {title: "node 2.2", foo: "d"}
-       ]}
-    ];
-  */
+  var cabinetList = $("#cabinet_list");
 
   $(function(){
-    $("#tree").fancytree({
+    cabinetList.fancytree({
+      select: function(event, data) {
+        // Display list of selected nodes
+        var selNodes = data.tree.getSelectedNodes();
+        // convert to title/key array
+        var selKeys = $.map(selNodes, function(node){
+          return "[" + node.key + "]: '" + node.title + "'";
+        });
+        console.log(selKeys.join(", "));
+
+        if(selKeys.length > 0) {
+          $("#catalog_remove_checked").show();
+        } else {
+          $("#catalog_remove_checked").hide();
+        }
+      },
+      cookieId: "fancytree-cabList",
+      idPrefix: "fancytree-cabList-",
       checkbox: true,
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
-      // source: SOURCE,
       source: { url: "/html/pricing/ajax-tree-products.json"},
-
       extensions: ["edit", "dnd", "table", "gridnav"],
-
-      dnd: {
+      debugLevel: 0,
+      dnd: { // drag and drop
         preventVoidMoves: true,
         preventRecursiveMoves: true,
         autoExpandMS: 400,
@@ -475,16 +485,14 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         }
       },
       renderColumns: function(event, data) {
-        var node = data.node,
-          $tdList = $(node.tr).find(">td");
+        var node = data.node, $tdList = $(node.tr).find(">td");
 
         // (Index #0 is rendered by fancytree by adding the checkbox)
         // Set column #1 info from node data:
         $tdList.eq(1).text(node.getIndexHier());
         // (Index #2 is rendered by fancytree)
         // Set column #3 info from node data:
-        $tdList.eq(3).find("input").val(node.key);
-        $tdList.eq(4).find("input").val(node.data.foo);
+        $tdList.eq(3).text(node.data.year);
 
         // Static markup (more efficiently defined as html row template):
         // $tdList.eq(3).html("<input type='input' value='" + "" + "'>");
@@ -569,10 +577,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           alert("Unhandled command: " + data.cmd);
           return;
       }
-
-      // }).on("click dblclick", function(e){
-      //   console.log( e, $.ui.fancytree.eventToString(e) );
-
     }).on("keydown", function(e){
       var cmd = null;
 
@@ -621,25 +625,14 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       }
       if( cmd ){
         $(this).trigger("nodeCommand", {cmd: cmd});
-        // e.preventDefault();
-        // e.stopPropagation();
         return false;
       }
     });
 
     /*
-     * Tooltips
-     */
-    // $("#tree").tooltip({
-    //   content: function () {
-    //     return $(this).attr("title");
-    //   }
-    // });
-
-    /*
      * Context menu (https://github.com/mar10/jquery-ui-contextmenu)
      */
-    $("#tree").contextmenu({
+    cabinetList.contextmenu({
       delegate: "span.fancytree-node",
       menu: [
         {title: "Edit <kbd>[F2]</kbd>", cmd: "rename", uiIcon: "ui-icon-pencil" },
@@ -671,6 +664,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
   $(".pricing_left_nav").fancytree({
     icon: false,
     extensions: ["filter"],
+    debugLevel: 0,
     filter: {
       autoApply: true,   // Re-apply last filter if lazy data is loaded
       autoExpand: true, // Expand all branches that contain matches while filtered

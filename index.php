@@ -4,7 +4,7 @@ require 'includes/header_start.php';
 //outputPHPErrs();
 ?>
   <!DOCTYPE html>
-  <html>
+  <html moznomarginboxes mozdisallowselectionprint>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -81,7 +81,7 @@ require 'includes/header_start.php';
 
   <!-- Navigation Bar-->
   <header id="topnav">
-    <div class="custom-logo hidden-print">
+    <div class="custom-logo">
       <div id="header_container">
         <div id="header_main">EagleEye ERP <div id="header_min">www.3erp.us</div></div>
       </div>

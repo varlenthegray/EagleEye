@@ -1,5 +1,26 @@
 // This is the document that contains all custom written SCSS outside of the bounds of what's going on
-// because wtf?
+
+// turn off all printing of the header
+@media print {
+  .topbar-main {
+    display: none !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  .body {
+    font-size: .75em;
+  }
+
+  .wrapper {
+    padding-top: 5px !important;
+  }
+
+  #topnav {
+    display: none !important;
+  }
+}
+
 body {
   height: 100vh;
 }
@@ -194,19 +215,6 @@ label {
   li.ms-elem-selection {
     font-size: .9em !important;
     padding: 2px 4px !important;
-  }
-}
-
-// turn off all printing of the header
-@media print {
-  .topbar-main {
-    display: none !important;
-    margin: 0;
-    padding: 0;
-  }
-
-  .body {
-    font-size: .75em;
   }
 }
 
