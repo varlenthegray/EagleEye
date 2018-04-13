@@ -15,7 +15,7 @@ $item_sort_id = 0;
 
 if($category_qry->num_rows > 0) {
   while($category = $category_qry->fetch_assoc()) {
-    if($prev_cat !== $category['catID']) {
+    if(empty($category['sku'])) {
       $item_sort_id = 0;
       $item_array = array();
       $prev_cat = $category['catID'];
