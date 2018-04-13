@@ -97,24 +97,26 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 <div class="card-box">
   <div class="row">
     <div class="col-md-2 pricing_left_nav no-print sticky">
-      <div class="form-group">
-        <label for="catalog">Catalog</label>
-        <select class="form-control" name="catalog" id="catalog">
-          <?php
-          // TODO: At some point, limit this based on user catalog mapping (so that only certain users can access certain catalogs)
-          $cat_qry = $dbconn->query("SELECT id, name FROM pricing_catalog WHERE enabled = TRUE ORDER BY sort_order ASC;");
+      <div class="sticky nav_filter">
+        <div class="form-group">
+          <label for="catalog">Catalog</label>
+          <select class="form-control" name="catalog" id="catalog">
+            <?php
+            // TODO: At some point, limit this based on user catalog mapping (so that only certain users can access certain catalogs)
+            $cat_qry = $dbconn->query("SELECT id, name FROM pricing_catalog WHERE enabled = TRUE ORDER BY sort_order ASC;");
 
-          if($cat_qry->num_rows > 0) {
-            while($cat = $cat_qry->fetch_assoc()) {
-              echo "<option id='{$cat['id']}'>{$cat['name']}</option>";
+            if($cat_qry->num_rows > 0) {
+              while($cat = $cat_qry->fetch_assoc()) {
+                echo "<option id='{$cat['id']}'>{$cat['name']}</option>";
+              }
             }
-          }
-          ?>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="treeFilter">Search Catalog</label>
-        <input type="text" class="form-control fc-simple ignoreSaveAlert" id="treeFilter" placeholder="Find" width="100%" >
+            ?>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="treeFilter">Search Catalog</label>
+          <input type="text" class="form-control fc-simple ignoreSaveAlert" id="treeFilter" placeholder="Find" width="100%" >
+        </div>
       </div>
 
       <label for="below">Categories</label>
@@ -413,6 +415,9 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
     .on("keyup", "#treeFilter", function() {
       // grab this value and filter it down to the node needed
       $(".pricing_left_nav").fancytree("getTree").filterNodes($(this).val());
+
+      // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
+      // TODO: https://github.com/mar10/fancytree/issues/551
     })
     .on("click", "#catalog_add_item", function() {
       var root = cabinetList.fancytree("getRootNode");

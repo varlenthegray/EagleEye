@@ -5,7 +5,7 @@ $category_qry = $dbconn->query("SELECT
           pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku
         FROM pricing_categories pc
           LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id 
-        WHERE pc.catalog_id = 1 ORDER BY parent, sort_order, catID ASC");
+        WHERE pc.catalog_id = 2 ORDER BY parent, sort_order, catID ASC");
 
 $cat_array = array();
 $item_array = array();
@@ -36,7 +36,7 @@ function makeTree($parent, $categories) {
     ksort($categories[$parent]);
 
     foreach ($categories[$parent] as $category) {
-      $output .= "<li class='ws-wrap'>{$category['name']}";
+      $output .= "<li class='ws-wrap sticky'>{$category['name']}";
       $output .= makeTree($category['id'], $categories);
 
       if(!empty($category['items'])) {
