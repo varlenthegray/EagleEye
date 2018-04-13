@@ -8,6 +8,7 @@
 @import "pricing_coversheet";
 /** End Coversheet CSS */
 
+// these parts are duplicate from SCSS custom
 .no-select {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -17,11 +18,25 @@
   user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
+.sticky {
+  position: sticky;
+  top: 100px;
+
+  .btn-primary-outline {
+    background-color: #FFFFFF !important;
+
+    &:hover {
+      color: #AAAAAA;
+    }
+  }
+}
+// END duplication
+
 .pricing_left_nav {
   border: 1px solid #CCC;
   border-radius: 5px;
   @extend .no-select; // implements no text selection on the entire navigation menu
-  height: 85.19vh;
+  height: 86vh;
   overflow-y: auto;
   background-color: #F0F0F0;
 
@@ -112,6 +127,12 @@
 
   ul.fancytree-container {
     border:none;
+  }
+
+  .nav_filter {
+    background-color: #F0F0F0;
+    top: 0;
+    z-index: 2;
   }
 }
 
