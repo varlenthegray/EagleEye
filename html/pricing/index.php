@@ -123,58 +123,56 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku
         FROM pricing_categories pc
           LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id 
-        WHERE pc.catalog_id = 1 ORDER BY parent, sort_order, catID ASC");
+        WHERE pc.catalog_id = 2 ORDER BY parent, sort_order, catID ASC");
 
         $cat_array = array();
         $item_array = array();
         $output = null;
         $prev_cat = null;
-        $item_sort_id = 0;
 
+        // if there are items and/or categories in the database
         if($category_qry->num_rows > 0) {
           while($category = $category_qry->fetch_assoc()) {
-            if($prev_cat !== $category['catID']) {
-              $item_sort_id = 0;
-              $item_array = array();
-              $prev_cat = $category['catID'];
-            } else {
-              $item_array[$item_sort_id] = array('id' => $category['itemID'], 'name' => $category['sku']);
-              $item_sort_id++;
+            if($category['catID'] !== $prev_cat) { // if the previous category ID doesn't match this id
+              $item_array = array(); // reset the array (because we're starting over with a new category)
+              $prev_cat = $category['catID']; // update the previous category with the current category
             }
 
-            $cat_array[$category['parent']][$category['sort_order']] = array('id' => $category['catID'], 'name' => $category['name'], 'items' => $item_array);
+            $item_array[] = array('id' => $category['itemID'], 'name' => $category['sku']); // add items in a big array
+
+            $cat_array[$category['parent']][$category['sort_order']] = array('id' => $category['catID'], 'name' => $category['name'], 'items' => $item_array); // formalize the final array
           }
         }
 
-        $output = null;
+        $output = null; // output variable is nothing right now
 
-        function makeTree($parent, $categories) {
-          if(isset($categories[$parent])) {
-            $output = '<ul>';
-            ksort($categories[$parent]);
+        function makeTree($parent, $categories) { // this is to help loop through itself and go through as many nests as needed
+          if(isset($categories[$parent])) { // if we're starting with a parent (this starts at 0, then recurses down)
+            $output = '<ul>'; // we're putting a new main level in
+            ksort($categories[$parent]); // sort the keys in that parent array
 
-            foreach ($categories[$parent] as $category) {
-              $output .= "<li class='ws-wrap'>{$category['name']}";
-              $output .= makeTree($category['id'], $categories);
+            foreach ($categories[$parent] as $category) { // for each item in that parent array as individual categories
+              $output .= "<li class='ws-wrap'>{$category['name']}"; // create the category name and list it out
+              $output .= makeTree($category['id'], $categories); // then, recurse through the categories again
 
-              if(!empty($category['items'])) {
-                $output .= '<ul>';
+              if(!empty($category['items'])) { // if there are items
+                $output .= '<ul>'; // add this as the next level
 
-                foreach($category['items'] AS $item) {
-                  $output .= "<li class='ws-wrap'>{$item['name']}</li>";
+                foreach($category['items'] AS $item) { // for every item
+                  $output .= "<li class='ws-wrap'>{$item['name']}</li>"; // list it out
                 }
-                $output .= '</ul>';
+                $output .= '</ul>'; // terminate the item list for that category
               }
-              $output .= '</li>';
+              $output .= '</li>'; // terminate the list item for the sub-category
             }
 
-            $output .= '</ul>';
+            $output .= '</ul>'; // terminate the list item for the main category (this could be sub-categories too, thanks to recursing)
 
-            return $output;
+            return $output; // return the gigantic output!
           }
         }
 
-        echo makeTree(0, $cat_array);
+        echo makeTree(0, $cat_array); // make the UL tree with the big array of all variables
         ?>
     </div>
 
