@@ -993,3 +993,20 @@ h5 {
   margin-bottom: 5px;
   display: none;
 }
+
+// custom coloring for icons and stuff
+.primary-color {
+  color: $brand-primary;
+
+  &:hover {
+    color: lighten($brand-primary, 25%);
+  }
+}
+
+.success-color {
+  color: $brand-success;
+
+  &:hover {
+    color: darken($brand-success, 15%);
+  }
+}
