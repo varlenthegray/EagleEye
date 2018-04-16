@@ -1,10 +1,6 @@
 <?php
 require '../../includes/header_start.php';
 
-//ini_set('memory_limit', '512M');
-
-// TODO: Add lines from the left menu
-// TODO: Change catalog replaces the left menu
 // TODO: Cabinet list load from database
 // TODO: Save cabinet list to the database
 // TODO: Display price group price based on database values
@@ -26,6 +22,131 @@ $dealer_info = $dealer_qry->fetch_assoc();
 $sheen_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' AND `key` = '{$info['sheen']}'");
 $sheen = $sheen_qry->fetch_assoc();
 
+function displayVINOpts($segment, $db_col = null, $id = null) {
+  global $vin_schema;
+  global $room;
+
+  // assigns SEGMENT = VIN Schema column (panel_raise) of which there may be multiple pulled from VIN SCHEMA, DB_COL of which there is only one (panel_raise_sd, stored in ROOMS table)
+  $dblookup = (!empty($db_col)) ? $db_col : $segment;
+  $addl_id = (!empty($id)) ? "id = '$id'" : null; // for duplicate values (panel_raise vs panel_raise_sd)
+  $options = null;
+  $option_grid = null;
+
+  $prev_header = null;
+  $section_head = null;
+
+  $selected = '';
+
+  foreach($vin_schema[$segment] as $value) {
+    if(((string)$value['key'] === (string)$room[$dblookup]) && empty($selected)) {
+      $selected = "{$value['value']}";
+      $selected_img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
+      $sel_key = $value['key'];
+    }
+
+    if((bool)$value['visible']) {
+      $img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
+
+      if ($value['group'] !== $prev_header) {
+        $section_head = "<div class='header'>{$value['group']}</div>";
+        $prev_header = $value['group'];
+      } else {
+        $section_head = null;
+      }
+
+      $options .= "$section_head <div class='option' data-value='{$value['key']}'>{$value['value']} $img</div>";
+
+      if(!empty($value['subitems'])) {
+        $subitems = json_decode($value['subitems']);
+        $option_grid .= "$section_head <div class='grid_element' data-value='{$value['key']}'><div class='header'>{$value['value']}</div>$img";
+
+        foreach($subitems as $key => $item) {
+          $options .= "<div class='option sub_option' data-value='{$key}'>{$item}</div>";
+          $option_grid .= "<div class='option sub_option' data-value='{$key}'>{$item}</div>";
+        }
+
+        $option_grid .= "</div>";
+      } else {
+        $option_grid .= "$section_head <div class='grid_element option' data-value='{$value['key']}'><div class='header'>{$value['value']}</div>$img</div>";
+      }
+    }
+  }
+
+  $selected = (empty($selected)) ? "Not Selected Yet" : $selected;
+
+  echo "<div class='custom_dropdown' $addl_id>";
+  echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
+  echo "<div class='dropdown_options' data-for='$dblookup'>";
+  echo "<div class='option_list'>$options</div>";
+  echo "<div class='option_grid'>$option_grid</div>";
+  echo "</div><input type='hidden' value='$sel_key' id='{$dblookup}' name='{$dblookup}' /><div class='clearfix'></div></div>";
+}
+
+function displayFinishOpts($segment, $db_col = null, $id = null) {
+  global $vin_schema;
+  global $room;
+
+  // assigns SEGMENT = VIN Schema column (panel_raise) of which there may be multiple pulled from VIN SCHEMA, DB_COL of which there is only one (panel_raise_sd, stored in ROOMS table)
+  $dblookup = (!empty($db_col)) ? $db_col : $segment;
+  $addl_id = (!empty($id)) ? $id : $dblookup; // for duplicate values (panel_raise vs panel_raise_sd)
+  $options = null;
+  $option_grid = null;
+
+  $prev_header = null;
+  $section_head = null;
+
+  $selected = '';
+
+  foreach($vin_schema[$segment] as $value) {
+    if(((string)$value['key'] === (string)$room[$dblookup]) && empty($selected)) {
+      $selected = "{$value['value']}";
+      $selected_img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
+      $sel_key = $value['key'];
+    }
+
+    if((bool)$value['visible']) {
+      $img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
+
+      if ($value['group'] !== $prev_header) {
+        $section_head = "<div class='header'>{$value['group']}</div>";
+        $prev_header = $value['group'];
+      } else {
+        $section_head = null;
+      }
+
+      $options .= "$section_head <div class='option' data-value='{$value['key']}' data-display-text=\"{$value['value']}\">{$value['value']} $img</div>";
+
+      if(!empty($value['imagemap_coords']) && stristr($value['imagemap_coords'], '[')) {
+        $multimap = json_decode($value['imagemap_coords']);
+
+        foreach($multimap AS $map) {
+          $option_grid .= "<area shape='rect' class='option sub_option' style='display:none;' coords='$map' href='#' onclick='return false;' data-value='{$value['key']}' data-display-text=\"{$value['value']}\" />";
+        }
+      } else {
+        $option_grid .= "<area shape='rect' class='option sub_option' style='display:none;' coords='{$value['imagemap_coords']}' onclick='return false;' href='#' data-value='{$value['key']}' data-display-text=\"{$value['value']}\" />";
+      }
+    }
+  }
+
+  $selected = (empty($selected)) ? "Not Selected Yet" : $selected;
+
+  $option_grid = "<img src='/assets/images/sample_display.jpg' width='778' height='800' border='0' usemap='#{$dblookup}_map' style='max-width:800px;max-height:800px;' /><map name='{$dblookup}_map' class='grid_element'>$option_grid</map>";
+
+  echo "<div class='custom_dropdown'>";
+  echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
+  echo "<div class='dropdown_options' data-for='$dblookup'>";
+  echo "<div class='option_list'>$options</div>";
+  echo "<div class='option_grid'>$option_grid</div>";
+  echo "</div><input type='hidden' value='$sel_key' id='{$dblookup}' name='{$dblookup}' /><div class='clearfix'></div></div>";
+
+  /*echo "<div class='custom_dropdown' $addl_id>";
+  echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
+  echo "<div class='dropdown_options' data-for='$dblookup'>";
+  echo "<div class='option_list'>$options</div>";
+  echo "<div class='option_grid'>$options_grid</div>";
+  echo "</div><input type='hidden' value='$selected' id='$dblookup' name='$dblookup' /><div class='clearfix'></div></div>";*/
+}
+
 function translateVIN($segment, $key) {
   global $dbconn;
   global $info;
@@ -45,7 +166,6 @@ function translateVIN($segment, $key) {
   $mfg = '';
   $code = '';
   $name = '';
-  $ikey = '';
   $desc = '';
 
   if(!empty($info['custom_vin_info'])) {
@@ -59,18 +179,14 @@ function translateVIN($segment, $key) {
           $name = (stristr($key, 'name')) ? $value : $name;
         }
 
-        $ikey = "{$mfg}-{$code}";
         $desc = "$name";
       } else {
-        $ikey = $key;
         $desc = "Custom - " . array_values($custom_info[$segment])[0];
       }
     } else {
-      $ikey = $key;
       $desc = $vin['value'];
     }
   } else {
-    $ikey = $key;
     $desc = $vin['value'];
   }
 
@@ -92,6 +208,12 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
   $hide .= "$('#terms_acceptance').hide();";
   $hide .= "$('#sample_qty').css('margin-top', '30px');";
 }
+
+$room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$room_id' ORDER BY room, iteration ASC;");
+$room = $room_qry->fetch_assoc();
+
+$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
+$result = $result_qry->fetch_assoc();
 ?>
 
 <div class="card-box">
@@ -102,12 +224,27 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <label for="catalog">Catalog</label>
           <select class="form-control" name="catalog" id="catalog">
             <?php
+            $cat_id = 1;
+
             // TODO: At some point, limit this based on user catalog mapping (so that only certain users can access certain catalogs)
-            $cat_qry = $dbconn->query("SELECT id, name FROM pricing_catalog WHERE enabled = TRUE ORDER BY sort_order ASC;");
+            $cat_qry = $dbconn->query("SELECT id, name  FROM pricing_catalog pc WHERE enabled = TRUE ORDER BY sort_order ASC;");
 
             if($cat_qry->num_rows > 0) {
               while($cat = $cat_qry->fetch_assoc()) {
-                echo "<option id='{$cat['id']}'>{$cat['name']}</option>";
+                $room_cat_qry = $dbconn->query("SELECT catalog_id FROM pricing_cabinet_list WHERE room_id = $room_id;");
+
+                if($room_cat_qry->num_rows > 0) {
+                  $room_cat = $room_cat_qry->fetch_assoc();
+                  $cat_id = $room_cat['catalog_id'];
+                }
+
+                if($cat_id === $cat['id']) {
+                  $selected = 'selected';
+                } else {
+                  $selected = null;
+                }
+
+                echo "<option id='{$cat['id']}' $selected>{$cat['name']}</option>";
               }
             }
             ?>
@@ -120,62 +257,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       </div>
 
       <label for="below">Categories</label>
-        <?php
-        $category_qry = $dbconn->query("SELECT 
-          pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku
-        FROM pricing_categories pc
-          LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id 
-        WHERE pc.catalog_id = 2 ORDER BY parent, sort_order, catID ASC");
-
-        $cat_array = array();
-        $item_array = array();
-        $output = null;
-        $prev_cat = null;
-
-        // if there are items and/or categories in the database
-        if($category_qry->num_rows > 0) {
-          while($category = $category_qry->fetch_assoc()) {
-            if($category['catID'] !== $prev_cat) { // if the previous category ID doesn't match this id
-              $item_array = array(); // reset the array (because we're starting over with a new category)
-              $prev_cat = $category['catID']; // update the previous category with the current category
-            }
-
-            $item_array[] = array('id' => $category['itemID'], 'name' => $category['sku']); // add items in a big array
-
-            $cat_array[$category['parent']][$category['sort_order']] = array('id' => $category['catID'], 'name' => $category['name'], 'items' => $item_array); // formalize the final array
-          }
-        }
-
-        $output = null; // output variable is nothing right now
-
-        function makeTree($parent, $categories) { // this is to help loop through itself and go through as many nests as needed
-          if(isset($categories[$parent])) { // if we're starting with a parent (this starts at 0, then recurses down)
-            $output = '<ul>'; // we're putting a new main level in
-            ksort($categories[$parent]); // sort the keys in that parent array
-
-            foreach ($categories[$parent] as $category) { // for each item in that parent array as individual categories
-              $output .= "<li class='ws-wrap'>{$category['name']}"; // create the category name and list it out
-              $output .= makeTree($category['id'], $categories); // then, recurse through the categories again
-
-              if(!empty($category['items'])) { // if there are items
-                $output .= '<ul>'; // add this as the next level
-
-                foreach($category['items'] AS $item) { // for every item
-                  $output .= "<li class='ws-wrap'>{$item['name']}</li>"; // list it out
-                }
-                $output .= '</ul>'; // terminate the item list for that category
-              }
-              $output .= '</li>'; // terminate the list item for the sub-category
-            }
-
-            $output .= '</ul>'; // terminate the list item for the main category (this could be sub-categories too, thanks to recursing)
-
-            return $output; // return the gigantic output!
-          }
-        }
-
-        echo makeTree(0, $cat_array); // make the UL tree with the big array of all variables
-        ?>
+      <div id="catalog_categories"></div>
     </div>
 
     <div class="col-md-10 pricing_table_format">
@@ -219,8 +301,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
               <td colspan="2" class='gray_bg'>&nbsp;</td>
             </tr>
             <tr class="border_top">
-              <td class="border_thin_bottom" width="12%">Species/Grade:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('species_grade', $info['species_grade']); ?></td>
+              <td class="border_thin_bottom" width="12%"><label for="species_grade_<?php echo $room['id']; ?>">Species/Grade:</label></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('species_grade'); ?></td>
               <td width="3%">&nbsp;</td>
               <td class="border_thin_bottom" width="14%">Finish Code:</td>
               <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
@@ -380,27 +462,42 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             <colgroup>
               <col width="30px">
               <col width="50px">
+              <col width="50px">
               <col width="500px">
               <col width="50px">
               <col width="50px">
               <col width="50px">
               <col width="50px">
               <col width="50px">
+              <col width="75px">
             </colgroup>
             <thead>
-            <tr> <th></th> <th>#</th> <th>Line Item</th> <th>Qty</th> <th>Width</th> <th>Height</th> <th>Depth</th> <th>Price</th></tr>
+            <tr>
+              <th></th>
+              <th>#</th>
+              <th class="text-md-center">Qty</th>
+              <th>Line Item</th>
+              <th class="text-md-center">Width</th>
+              <th class="text-md-center">Height</th>
+              <th class="text-md-center">Depth</th>
+              <th class="text-md-center">Price Ea</th>
+              <th class="text-md-center">Total</th>
+              <th class="text-md-center">Catalog</th>
+            </tr>
             </thead>
             <tbody>
             <!-- Define a row template for all invariant markup: -->
             <tr>
-              <td class="alignCenter"></td>
-              <td></td>
+              <td class="text-md-center"></td>
               <td></td>
               <td><input type="text" class="form-control qty_input" value="1" placeholder="Qty" /> </td>
               <td></td>
-              <td></td>
-              <td></td>
+              <td class="text-md-center"></td>
+              <td class="text-md-center"></td>
+              <td class="text-md-center"></td>
               <td class="text-md-right"></td>
+              <td class="text-md-right"></td>
+              <td class="text-md-center"></td>
             </tr>
             </tbody>
           </table>
@@ -411,47 +508,112 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 </div>
 
 <script>
+  var total = 0; // define initial total
+
+  function delNoData() {
+    let getNegNode = cabinetList.fancytree("getTree").getNodeByKey('-1');
+
+    if(getNegNode !== null) {
+      cabinetList.fancytree("getTree").getNodeByKey('-1').remove();
+    }
+  }
+
   $("body")
-    .on("keyup", "#treeFilter", function() {
+    .on("keyup", "#treeFilter", function() { // filters per keystroke on search catalog
       // grab this value and filter it down to the node needed
-      $(".pricing_left_nav").fancytree("getTree").filterNodes($(this).val());
+      catalog.fancytree("getTree").filterNodes($(this).val());
 
       // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
       // TODO: https://github.com/mar10/fancytree/issues/551
     })
-    .on("click", "#catalog_add_item", function() {
+    .on("click", "#catalog_add_item", function() { // the click of the "Add Item" button
+      delNoData();
+
       var root = cabinetList.fancytree("getRootNode");
       var child = root.addChildren({
         title: "Nomenclature...",
         tooltip: "Type your nomenclature here."
       });
     })
-    .on("click", "#catalog_remove_checked", function() {
-      var tree = cabinetList.fancytree("getTree"),
-        selected = tree.getSelectedNodes();
+    .on("click", "#catalog_remove_checked", function() { // removes whatever is checked
+      var tree = cabinetList.fancytree("getTree"), // get the tree
+        selected = tree.getSelectedNodes(); // define what is selected
 
+      // for every selected node
       selected.forEach(function(node) {
-        node.remove();
+        node.remove(); // remove it
       });
 
+      // re-render the tree deeply so that we can recalculate the line item numbers
       cabinetList.fancytree("getRootNode").render(true,true);
 
+      // hide the remove items button, there are no items to remove now
       $(this).hide();
     })
     .on("click", "#cabinet_list_save", function() {
-      
+      var cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
+      var cat_id = $("#catalog").find(":selected").attr("id");
+
+      $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=<?php echo $room_id; ?>", {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
+        $("body").append(data);
+      });
     })
-    .on("focus", ".qty_input", function() {
-      $(this).select();
+    .on("focus", ".qty_input", function() { // when clicking or tabbing to quantity
+      $(this).select(); // auto-select the text
+    })
+    .on("keyup", ".qty_input", function() {
+      let id = $(this).attr("id");
+
+      cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
+    })
+    .on("click", ".view_item_info", function() {
+      // TODO: Implement popup for item information including description and image
+    })
+    .on("click", ".add_item_cabinet_list", function() {
+      delNoData();
+
+      var root = cabinetList.fancytree("getRootNode");
+
+      $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: $(this).attr('data-id')}, function(data) {
+        let itemInfo = JSON.parse(data);
+
+        root.addChildren({
+          qty: 1,
+          title: itemInfo.sku,
+          width: itemInfo.width,
+          height: itemInfo.height,
+          depth: itemInfo.depth,
+          itemID: itemInfo.id,
+          catalog: itemInfo.catalog
+        });
+      });
+    })
+    .on("change", "#catalog", function() {
+      let id = $(this).find(":selected").attr("id");
+
+      let catalogData = {
+        url: '/html/pricing/ajax/nav_menu.php',
+        type: 'POST',
+        data: {
+          catalog: id
+        },
+        dataType: 'json'
+      };
+
+      catalog.fancytree('getTree').reload(catalogData);
     })
   ;
 
   var CLIPBOARD = null;
   var cabinetList = $("#cabinet_list");
+  var catalog = $("#catalog_categories");
 
   $(function() {
+    /******************************************************************************
+     *  Cabinet List
+     ******************************************************************************/
     cabinetList.fancytree({
-      select: function(event, data) {
+      select: function(event, data) { // TODO: Determine if this is valuable
         // Display list of selected nodes
         var selNodes = data.tree.getSelectedNodes();
         // convert to title/key array
@@ -467,12 +629,13 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           $("#catalog_remove_checked").hide();
         }
       },
+      imagePath: "/assets/images/cabinet_icons/",
       cookieId: "fancytree-cabList",
       idPrefix: "fancytree-cabList-",
       checkbox: true,
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
-      source: { url: "/html/pricing/ajax-tree-products.json"},
+      source: { url: "/html/pricing/ajax/item_actions.php?action=getCabinetList&room_id=<?php echo $room_id; ?>" },
       extensions: ["edit", "dnd", "table", "gridnav"],
       debugLevel: 0,
       dnd: { // drag and drop
@@ -491,28 +654,27 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         }
       },
       edit: {
-        triggerStart: ["f2", "shift+click", "mac+enter"],
+        triggerStart: ["clickActive", "dblclick", "f2", "shift+click", "mac+enter"],
         close: function(event, data) {
           if( data.save && data.isNew ){
             // Quick-enter: add new nodes until we hit [enter] on an empty title
-            $("#tree").trigger("nodeCommand", {cmd: "addSibling"});
+            cabinetList.trigger("nodeCommand", {cmd: "addSibling"});
           }
         }
       },
       table: {
         indentation: 20,
-        nodeColumnIdx: 2,
+        nodeColumnIdx: 3,
         checkboxColumnIdx: 0
       },
       gridnav: {
         autofocusInput: false,
         handleCursorKeys: true
       },
-
-      lazyLoad: function(event, data) {
+      /*lazyLoad: function(event, data) { // may take advantage of this in the future
         data.result = {url: "../demo/ajax-sub2.json"};
-      },
-      createNode: function(event, data) {
+      },*/
+      /*createNode: function(event, data) {
         var node = data.node,
           $tdList = $(node.tr).find(">td");
 
@@ -524,28 +686,48 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             .prop("colspan", 6)
             .nextAll().remove();
         }
-      },
+      },*/
       renderColumns: function(event, data) {
+        // this section handles the column data itself
         var node = data.node, $tdList = $(node.tr).find(">td");
 
         // (Index #0 is rendered by fancytree by adding the checkbox)
         // Set column #1 info from node data:
         $tdList.eq(1).text(node.getIndexHier());
-        // (Index #2 is rendered by fancytree)
-        // Set column #3 info from node data:
-        let price = 0;
+        // (Index #2 is the quantity input field)
+        $tdList.eq(2).find("input").attr("id", node.key).val(node.data.qty);
+        // (Index #3 is rendered by fancytree in child table under nodeColumnIdx)
+        // (Index #4 is the width)
+        $tdList.eq(4).text(node.data.width);
+        // (Index #5 is the height)
+        $tdList.eq(5).text(node.data.height);
+        // (Index #6 is the depth)
+        $tdList.eq(6).text(node.data.depth);
+        // (Index #7 is price, calculated below)
+        let price = 0; // define price
 
-        if(node.data.price !== undefined) {
-          price = node.data.price.formatMoney();
-        } else {
-          price = node.data.price;
+        if(node.data.price !== undefined) { // if there is a price
+          price = node.data.price.formatMoney(); // format it
+
+          // add the individual node total to the running total
+          total += node.data.price; // TODO: Fix this, it doesn't add each columns data nor does it take into account quantity!
+        } else { // otherwise
+          price = node.data.price; // display whatever was there
         }
 
-        $tdList.eq(7).text(price);
+        // (Index #7)
+        $tdList.eq(7).text(price); // price column
 
-        // Static markup (more efficiently defined as html row template):
-        // $tdList.eq(3).html("<input type='input' value='" + "" + "'>");
-        // ...
+        let total_formatted = 0; // final output of total, initial definition of total_formatted
+
+        // (Index #8 is the total)
+        total_formatted = total.formatMoney(); // format it
+
+        // (Index #8)
+        $tdList.eq(8).text(total_formatted);
+
+        // (Index #9 is the catalog)
+        $tdList.eq(9).text(node.data.catalog);
       }
     }).on("nodeCommand", function(event, data){
       // Custom event handler that is triggered by keydown-handler and
@@ -678,9 +860,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       }
     });
 
-    /*
-     * Context menu (https://github.com/mar10/jquery-ui-contextmenu)
-     */
+     // Context menu (https://github.com/mar10/jquery-ui-contextmenu)
     cabinetList.contextmenu({
       delegate: "span.fancytree-node",
       menu: [
@@ -696,7 +876,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       ],
       beforeOpen: function(event, ui) {
         var node = $.ui.fancytree.getNode(ui.target);
-        $("#tree").contextmenu("enableEntry", "paste", !!CLIPBOARD);
+        cabinetList.contextmenu("enableEntry", "paste", !!CLIPBOARD);
         node.setActive();
       },
       select: function(event, ui) {
@@ -708,23 +888,28 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         }, 100);
       }
     });
-  });
 
-  $(".pricing_left_nav").fancytree({
-    icon: false,
-    extensions: ["filter"],
-    debugLevel: 0,
-    filter: {
-      autoApply: true,   // Re-apply last filter if lazy data is loaded
-      autoExpand: true, // Expand all branches that contain matches while filtered
-      counter: true,     // Show a badge with number of matching child nodes near parent icons
-      fuzzy: true,      // Match single characters in order, e.g. 'fb' will match 'FooBar'
-      hideExpandedCounter: true,  // Hide counter badge if parent is expanded
-      hideExpanders: false,       // Hide expanders if all child nodes are hidden by filter
-      highlight: true,   // Highlight matches by wrapping inside <mark> tags
-      leavesOnly: false, // Match end nodes only
-      nodata: false,      // Display a 'no data' status node if result is empty
-      mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
-    }
+    /******************************************************************************
+    *  Navigation menu
+    ******************************************************************************/
+
+    // this is the navigation menu on the left side
+    catalog.fancytree({
+      source: { url: "/html/pricing/ajax/nav_menu.php?catalog=<?php echo $cat_id; ?>" },
+      extensions: ["filter"],
+      debugLevel: 0,
+      filter: {
+        autoApply: true,   // Re-apply last filter if lazy data is loaded
+        autoExpand: true, // Expand all branches that contain matches while filtered
+        counter: true,     // Show a badge with number of matching child nodes near parent icons
+        fuzzy: true,      // Match single characters in order, e.g. 'fb' will match 'FooBar'
+        hideExpandedCounter: true,  // Hide counter badge if parent is expanded
+        hideExpanders: false,       // Hide expanders if all child nodes are hidden by filter
+        highlight: true,   // Highlight matches by wrapping inside <mark> tags
+        leavesOnly: false, // Match end nodes only
+        nodata: false,      // Display a 'no data' status node if result is empty
+        mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
+      }
+    });
   });
 </script>

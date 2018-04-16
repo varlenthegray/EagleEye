@@ -134,6 +134,10 @@
     top: 0;
     z-index: 2;
   }
+
+  .actions {
+    margin-left: 5px;
+  }
 }
 
 @media screen {
@@ -142,17 +146,9 @@
   }
 }
 
-span.ws-wrap span.fancytree-title {
+.fancytree-title {
   white-space: normal;
-  max-width: 90%;
-}
-
-span.ws-nowrap span.fancytree-title {
-  white-space: nowrap;
-}
-
-span.ws-pre span.fancytree-title {
-  white-space: pre;
+  width: 85%;
 }
 
 .fancytree-container, span.fancytree-focused span.fancytree-title {
