@@ -208,7 +208,7 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
       $left_info .= <<<HEREDOC
             <li class="active_ops_{$room['id']}" data-opnum="{$op['op_id']}" data-opid="{$op['id']}" data-roomid="{$room['id']}">
                 <input type="radio" name="{$bracket_def}" id="$op_room_id" value="{$op['id']}" $selected>
-                <label for="$op_room_id" style="color:$color;">{$op['op_id']}-{$op['job_title']}</label>
+                <label for="$op_room_id" style="color:$color;">{$op['job_title']}</label>
                 $deactivate
             </li>
 HEREDOC;
@@ -216,7 +216,7 @@ HEREDOC;
       $right_info .= <<<HEREDOC
                 <li class="inactive_ops_{$room['id']}" data-opnum="{$op['op_id']}" data-opid="{$op['id']}" data-roomid="{$room['id']}">
                     <span class="pull-left cursor-hand activate_op" style="height:18px;width:18px;" data-opid="{$op['id']}" data-roomid="{$room['id']}" data-soid="{$room['so_parent']}"> <i class="fa fa-arrow-circle-left pull-left" style="margin:5px;"></i></span>
-                    <span style="color:$color;">{$op['op_id']}-{$op['job_title']}</span>
+                    <span style="color:$color;">{$op['job_title']}</span>
                 </li>
 HEREDOC;
     }

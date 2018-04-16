@@ -293,7 +293,7 @@ $("body")
 
     var customVals = JSON.stringify(val_array);
 
-    $.post("/ondemand/room_actions.php?action=update_room&" + edit_info, {active_ops: active_ops, customVals: customVals}, function(data) {
+    $.post("/ondemand/room_actions.php?action=update_room", {active_ops: active_ops, customVals: customVals, editInfo: edit_info}, function(data) {
       $('body').append(data);
     }).done(function() {
       $(thisClick).addClass('edit_room_save');

@@ -47,7 +47,7 @@ function displayOrderQuote ($type) {
         if((bool)$_SESSION['userInfo']['dealer'] && $type === '$') {
           $sales_op_display = 'In Production';
         } else {
-          $sales_op_display = (!empty($sales_op)) ? "{$sales_op['op_id']}: {$sales_op['job_title']}" : "None";
+          $sales_op_display = (!empty($sales_op)) ? "{$sales_op['job_title']}" : "None";
         }
       } else {
         $sales_op_display = "";
@@ -60,7 +60,7 @@ function displayOrderQuote ($type) {
         if((bool)$_SESSION['userInfo']['dealer'] && $type === '$') {
           $sales_op_display = 'In Production';
         } else {
-          $sample_op_display = (!empty($sample_op)) ? "{$sample_op['op_id']}: {$sample_op['job_title']}" : "None";
+          $sample_op_display = (!empty($sample_op)) ? "{$sample_op['job_title']}" : "None";
         }
       } else {
         $sample_op_display = "";
@@ -184,7 +184,7 @@ switch($_REQUEST['action']) {
         $output['data'][$i][] = $so;
         $output['data'][$i][] = $room;
         $output['data'][$i][] = $self['responsible_dept'];
-        $output['data'][$i][] = "{$self['op_id']}: {$self['job_title']} $subtask";
+        $output['data'][$i][] = "{$self['job_title']} $subtask";
         $output['data'][$i][] = $start_time;
         $output['data'][$i][] = $time->diffForHumans(null,true); // obtain the difference in readable format for humans!
         $output['data'][$i]['DT_RowId'] = (!$zeroed) ?  $self['so_parent'] : null;
@@ -283,7 +283,7 @@ switch($_REQUEST['action']) {
           $output['data'][$i][] = "&nbsp;";
           $output['data'][$i][] = "{$usr_ops['so_parent']}{$usr_ops['room']}-{$usr_ops['iteration']}";
           $output['data'][$i][] = "{$usr_ops['room_name']}";
-          $output['data'][$i][] = "{$usr_ops['op_id']}: {$usr_ops['job_title']} $rework";
+          $output['data'][$i][] = "{$usr_ops['job_title']} $rework";
           $output['data'][$i][] = $release_date;
           $output['data'][$i][] = "&nbsp;";
           $output['data'][$i][] = "&nbsp;";
@@ -375,7 +375,7 @@ switch($_REQUEST['action']) {
           $output['data'][$i][] = "&nbsp;";
           $output['data'][$i][] = "{$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']}";
           $output['data'][$i][] = "{$op_queue['room_name']}";
-          $output['data'][$i][] = "{$op_queue['op_id']}: {$op_queue['job_title']} $rework";
+          $output['data'][$i][] = "{$op_queue['job_title']} $rework";
           $output['data'][$i][] = $release_date;
           $output['data'][$i][] = "&nbsp;";
           $output['data'][$i][] = $priority;
@@ -416,7 +416,7 @@ switch($_REQUEST['action']) {
           $output['data'][$i][] = "&nbsp;";
           $output['data'][$i][] = "{$assigned_ops['so_parent']}{$assigned_ops['room']}-{$vin['key']}{$assigned_ops['iteration']}";
           $output['data'][$i][] = "{$room['room_name']}";
-          $output['data'][$i][] = "{$assigned_ops['op_id']}: {$assigned_ops['job_title']}";
+          $output['data'][$i][] = "{$assigned_ops['job_title']}";
           $output['data'][$i][] = $release_date;
           $output['data'][$i][] = "&nbsp;";
           $output['data'][$i][] = "&nbsp;";

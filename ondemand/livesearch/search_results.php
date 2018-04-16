@@ -56,7 +56,7 @@ function getBracketInfo($bracket, $opID, $room) {
         $outline = "btn-primary-outline";
       }
 
-      return "<table class='table-custom-nb' $opacity><tr><td><button class='btn waves-effect $outline' id='manage_bracket_{$room['id']}'><i class='zmdi zmdi-filter-center-focus'></i></button></td><td style='padding-left:4px;'>({$bracket_info['op_id']}) </td><td style='padding-left:2px;line-height:1em;'>{$bracket_info['job_title']}</td></tr></table>";
+      return "<table class='table-custom-nb' $opacity><tr><td style='padding-left:2px;line-height:1em;'>{$bracket_info['job_title']}</td></tr></table>";
     }
   }
 }
@@ -101,6 +101,10 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
 
     case 'Pick & Materials':
       $bracket_def = 'pick_materials_bracket';
+      break;
+
+    case 'Edgebanding':
+      $bracket_def = 'edgebanding_bracket';
       break;
 
     default:
@@ -949,6 +953,7 @@ switch ($search) {
                       <th>SHIPPING</th>
                       <th>INSTALLATION</th>
                       <th>PICK/MATERIALS</th>
+                      <th>EDGEBANDING</th>
                     <?php } else { ?>
                       <th>&nbsp;</th>
                     <?php } ?>
@@ -1011,6 +1016,7 @@ switch ($search) {
                         $shippingColor = determineColor($room, 'shipping');
                         $installColor = determineColor($room, 'install_bracket');
                         $pickmatColor = determineColor($room, 'pick_materials');
+                        $ebColor = determineColor($room, 'edgebanding');
 
                         $sales_published_display = getBracketInfo('sales', $room['sales_bracket'], $room);
                         $sample_published_display = getBracketInfo('sample', $room['sample_bracket'], $room);
@@ -1021,6 +1027,7 @@ switch ($search) {
                         $shipping_published_display = getBracketInfo('shipping', $room['shipping_bracket'], $room);
                         $install_published_display = getBracketInfo('install_bracket', $room['install_bracket'], $room);
                         $pickmat_published_display = getBracketInfo('pick_materials', $room['pick_materials_bracket'], $room);
+                        $edgebanding_published_display = getBracketInfo('edgebanding', $room['edgebanding_bracket'], $room);
                       }
 
                       $target_dir = SITE_ROOT . "/attachments/";
@@ -1080,6 +1087,7 @@ switch ($search) {
                         echo "  <td class='$shippingColor' style='width:9%'>$shipping_published_display</td>";
                         echo "  <td class='$installColor' style='width:9%'>$install_published_display</td>";
                         echo "  <td class='$pickmatColor' style='width:9%'>$pickmat_published_display</td>";
+                        echo "  <td class='$ebColor' style='width:9%'>$edgebanding_published_display</td>";
                       } else {
                         echo "  <td style='width:81%'>&nbsp;</td>";
                       }

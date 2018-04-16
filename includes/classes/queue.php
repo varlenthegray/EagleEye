@@ -438,12 +438,12 @@ class queue {
     global $dbconn;
 
     $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
-          rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
-              JOIN operations ON op_queue.operation_id = operations.id
-                JOIN rooms ON op_queue.room_id = rooms.id
-                  JOIN sales_order ON rooms.so_parent = sales_order.so_num
-                    WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.job_title != 'N/A'
-                      ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
+    rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
+    JOIN operations ON op_queue.operation_id = operations.id
+    JOIN rooms ON op_queue.room_id = rooms.id
+    JOIN sales_order ON rooms.so_parent = sales_order.so_num
+    WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.job_title != 'N/A'
+    ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
 
     $output = array();
     $i = 0;
@@ -471,7 +471,7 @@ class queue {
           $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$op_queue['iteration']}";
           $output['data'][$i][] = $op_queue['room_name'];
           $output['data'][$i][] = "<div class='custom_tooltip'>{$op_queue['responsible_dept']} <span class='tooltiptext'>{$op_queue['bracket']} Bracket</span></div>";
-          $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+          $output['data'][$i][] = $op_queue['job_title'];
           $output['data'][$i][] = date(DATE_DEFAULT, $op_queue['created']);
           $output['data'][$i][] = $assignee;
           $output['data'][$i]['DT_RowId'] = $op_queue['so_parent'];
@@ -511,7 +511,7 @@ class queue {
         $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-{$op_queue['iteration']}";
         $output['data'][$i][] = $op_queue['room_name'];
         $output['data'][$i][] = $op_queue['bracket'];
-        $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'];
+        $output['data'][$i][] = $op_queue['job_title'];
 
         //$time = Carbon::createFromTimestamp($op_queue['end_time']); // grab the carbon timestamp
         //$output['data'][$i][] = $time->diffForHumans(); // obtain the difference in readable format for humans!
@@ -534,12 +534,12 @@ class queue {
     global $dbconn;
 
     $op_queue_qry = $dbconn->query("SELECT op_queue.id AS op_queueID, sales_order.so_num AS op_queueSOParent, 
-          rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
-              JOIN operations ON op_queue.operation_id = operations.id
-                JOIN rooms ON op_queue.room_id = rooms.id
-                  JOIN sales_order ON rooms.so_parent = sales_order.so_num
-                    WHERE active = TRUE AND published = TRUE AND (completed = FALSE OR completed IS NULL)
-                      ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
+    rooms.room AS op_queueRoom, op_queue.*, operations.*, rooms.* FROM op_queue 
+    JOIN operations ON op_queue.operation_id = operations.id
+    JOIN rooms ON op_queue.room_id = rooms.id
+    JOIN sales_order ON rooms.so_parent = sales_order.so_num
+    WHERE active = TRUE AND published = TRUE AND (completed = FALSE OR completed IS NULL)
+    ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
 
     $output = array();
     $i = 0;
@@ -573,7 +573,7 @@ class queue {
         $output['data'][$i][] = "{$op_queue['op_queueSOParent']}{$op_queue['op_queueRoom']}-$tag";
         $output['data'][$i][] = $op_queue['room_name'];
         $output['data'][$i][] = $op_queue['bracket'];
-        $output['data'][$i][] = $op_queue['op_id'] . ": " . $op_queue['job_title'] . $subtask;
+        $output['data'][$i][] = $op_queue['job_title'] . $subtask;
         $output['data'][$i][] = $active_emp;
 
         // TODO: Fix this so that the start time reflects the last activated time
@@ -867,7 +867,7 @@ class queue {
               $stmt->execute();
               $stmt->close();
 
-              echo displayToast("warning", "Flagged operation for rework!<br /> Moved to {$next_op_info['op_id']}: {$next_op_info['job_title']} in {$next_op_info['responsible_dept']}.", "Operation Scheduled for Rework");
+              echo displayToast("warning", "Flagged operation for rework!<br /> Moved to {$next_op_info['job_title']} in {$next_op_info['responsible_dept']}.", "Operation Scheduled for Rework");
             } else {
               dbLogSQLErr($dbconn);
             }
@@ -959,7 +959,7 @@ class queue {
                     $dbconn->query("UPDATE rooms SET order_status = '$' WHERE id = '$room_id'");
                   }
 
-                  echo displayToast("success", "Successfully completed operation.<br /> Moved on to {$next_op_info['op_id']}: {$next_op_info['job_title']} in {$next_op_info['responsible_dept']}.", "Operation Completed");
+                  echo displayToast("success", "Successfully completed operation.<br /> Moved on to {$next_op_info['job_title']} in {$next_op_info['responsible_dept']}.", "Operation Completed");
                 } else {
                   dbLogSQLErr($dbconn);
                 }
