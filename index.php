@@ -1069,6 +1069,9 @@ require 'includes/header_start.php';
   <script src="/assets/js/waves.js"></script>
   <script src="/assets/js/jquery.nicescroll.js"></script>
 
+  <!-- custom dropdown -->
+  <script src="/includes/js/custom_dropdown.js"></script>
+
   <!-- Toastr setup -->
   <script src="/assets/plugins/toastr/toastr.min.js"></script>
   <link href="/assets/plugins/toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
