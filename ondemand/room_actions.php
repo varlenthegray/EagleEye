@@ -560,12 +560,6 @@ HEREDOC;
     install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub', payment_deposit = '$deposit_received',
     payment_final = '$final_payment', payment_del_ptl = '$ptl_del' WHERE id = '$room_id'");
 
-      if($update_result) {
-        echo "<script>console.log('Successfully updated.');</script>";
-      } else {
-        echo "<script>console.log('Failed update. {$dbconn->error}');</script>";
-      }
-
       createOpQueue($sales_pub, 'Sales', $sales_op, $room_id);
       createOpQueue($sample_pub, 'Sample', $sample_op, $room_id);
       createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $room_id);
