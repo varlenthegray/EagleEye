@@ -273,7 +273,7 @@ HEREDOC;
     $note_type = sanitizeInput($editInfo['note_type']);
     $note_id = sanitizeInput($editInfo['note_id']);
 
-    $deposit_received = (bool)$editInfo['deposit_received'];
+    $deposit_received = (!empty($editInfo['deposit_received'])) ? (bool)$editInfo['deposit_received'] : 0;
     $final_payment = (!empty($editInfo['final_payment'])) ? (bool)$editInfo['final_payment'] : 0;
     $ptl_del = (!empty($editInfo['ptl_del'])) ? (bool)$editInfo['ptl_del'] : 0;
 
@@ -507,16 +507,16 @@ HEREDOC;
 
     $ops = $_REQUEST['active_ops'];
 
-    $sales_op = sanitizeInput($editInfo['sales_bracket']);
-    $sample_op = sanitizeInput($editInfo['sample_bracket']);
-    $preprod_op = sanitizeInput($editInfo['preproduction_bracket']);
-    $doordrawer_op = sanitizeInput($editInfo['doordrawer_bracket']);
-    $main_op = sanitizeInput($editInfo['main_bracket']);
-    $custom_op = sanitizeInput($editInfo['custom_bracket']);
-    $shipping_op = sanitizeInput($editInfo['shipping_bracket']);
-    $install_op = sanitizeInput($editInfo['install_bracket']);
-    $pickmat_op = sanitizeInput($editInfo['pick_materials_bracket']);
-    $edgebanding_op = sanitizeInput($editInfo['edgebanding_bracket']);
+    $sales_op = empty(sanitizeInput($editInfo['sales_bracket'])) ? 0 : sanitizeInput($editInfo['sales_bracket']);
+    $sample_op = empty(sanitizeInput($editInfo['sample_bracket'])) ? 0 : sanitizeInput($editInfo['sample_bracket']);
+    $preprod_op = empty(sanitizeInput($editInfo['preproduction_bracket'])) ? 0 : sanitizeInput($editInfo['preproduction_bracket']);
+    $doordrawer_op = empty(sanitizeInput($editInfo['doordrawer_bracket'])) ? 0 : sanitizeInput($editInfo['doordrawer_bracket']);
+    $main_op = empty(sanitizeInput($editInfo['main_bracket'])) ? 0 : sanitizeInput($editInfo['main_bracket']);
+    $custom_op = empty(sanitizeInput($editInfo['custom_bracket'])) ? 0 : sanitizeInput($editInfo['custom_bracket']);
+    $shipping_op = empty(sanitizeInput($editInfo['shipping_bracket'])) ? 0 : sanitizeInput($editInfo['shipping_bracket']);
+    $install_op = empty(sanitizeInput($editInfo['install_bracket'])) ? 0 : sanitizeInput($editInfo['install_bracket']);
+    $pickmat_op = empty(sanitizeInput($editInfo['pick_materials_bracket'])) ? 0 : sanitizeInput($editInfo['pick_materials_bracket']);
+    $edgebanding_op = empty(sanitizeInput($editInfo['edgebanding_bracket'])) ? 0 : sanitizeInput($editInfo['edgebanding_bracket']);
 
     $changed[] = whatChanged($sales_op, $room_info['sales_bracket'], 'Sales Bracket', false, false, true);
     $changed[] = whatChanged($sample_op, $room_info['sample_bracket'], 'Sample Bracket', false, false, true);
@@ -554,11 +554,17 @@ HEREDOC;
     $changed[] = whatChanged($ops, $room_info['individual_bracket_buildout'], 'Active Bracket Operations');
 
     if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
-      $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op', edgebanding_bracket = '$edgebanding_op',
-      custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
-      preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', edgebanding_published = '$edgebanding_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
-      install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub', payment_deposit = '$deposit_received',
-      payment_final = '$final_payment', payment_del_ptl = '$ptl_del' WHERE id = '$room_id'");
+    $update_result = $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op', edgebanding_bracket = '$edgebanding_op',
+    custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
+    preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', edgebanding_published = '$edgebanding_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
+    install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub', payment_deposit = '$deposit_received',
+    payment_final = '$final_payment', payment_del_ptl = '$ptl_del' WHERE id = '$room_id'");
+
+      if($update_result) {
+        echo "<script>console.log('Successfully updated.');</script>";
+      } else {
+        echo "<script>console.log('Failed update. {$dbconn->error}');</script>";
+      }
 
       createOpQueue($sales_pub, 'Sales', $sales_op, $room_id);
       createOpQueue($sample_pub, 'Sample', $sample_op, $room_id);
