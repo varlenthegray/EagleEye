@@ -300,7 +300,7 @@ switch($_REQUEST['action']) {
         if((bool)$_SESSION['userInfo']['dealer']) {
             $dealer = DEALER;
 
-            $dealer_where = "WHERE dealers.dealer_id LIKE '$dealer%'";
+            $dealer_where = "WHERE d.dealer_id LIKE '$dealer%'";
         } else {
             $dealer_where = null;
         }

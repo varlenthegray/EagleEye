@@ -124,24 +124,29 @@ switch($_REQUEST['action']) {
 
     $search_multiple = ltrim($search_multiple, ' AND ');
 
-    $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%$dealer_code%'");
-
-    if($dealer_qry->num_rows === 0) {
-      $dbconn->query("INSERT INTO dealers (dealer_id, multiplier, ship_zone) VALUES ('$dealer_code', '0.419', 'A')");
-
-      $dealer_id = $dbconn->insert_id;
-    } else {
+    if((int)$type === 2) {
+      // TODO: This is broken; it doesn't select the right dealer code or ID
       $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%$dealer_code%'");
-      $dealer = $dealer_qry->fetch_assoc();
 
-      $dealer_id = $dealer['id'];
+      if($dealer_qry->num_rows === 0) {
+        $dbconn->query("INSERT INTO dealers (dealer_id, multiplier, ship_zone) VALUES ('$dealer_code', '0.419', 'A')");
+
+        $dealer_id = $dbconn->insert_id;
+      } else {
+        $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%$dealer_code%'");
+        $dealer = $dealer_qry->fetch_assoc();
+
+        $dealer_id = $dealer['id'];
+      }
+    } else {
+      $dealer_id = 'NULL';
     }
 
     if($dbconn->query("UPDATE contact SET type = $type, company_name = '$company_name', first_name = '$first_name', last_name = '$last_name', email = '$email',
         cell = '$cell', line_2 = '$phone_2', shipping_first_name = '$shipping_first_name', shipping_last_name = '$shipping_last_name', shipping_addr = '$shipping_addr',
         shipping_city = '$shipping_city', shipping_state = '$shipping_state', shipping_zip = '$shipping_zip', billing_first_name = '$billing_first_name',
         billing_last_name = '$billing_last_name', billing_addr = '$billing_addr', billing_city = '$billing_city', billing_state = '$billing_state', billing_zip = '$billing_zip', 
-        dealer_id = '$dealer_id' WHERE id = $id")) {
+        dealer_id = $dealer_id WHERE id = $id")) {
       echo displayToast("success", "Updated contact $first_name $last_name", "Updated Contact");
     } else {
       dbLogSQLErr($dbconn);
