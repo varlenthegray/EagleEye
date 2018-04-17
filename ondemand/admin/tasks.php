@@ -397,8 +397,8 @@ HEREDOC;
 
       $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
 
-      if($dbconn->query("UPDATE tasks SET last_updated = UNIX_TIMESTAMP(), priority = '$priority', 
-                assigned_to = '$assigned_to', resolved = $resolved, pct_completed = '$pct_completed', eta_hrs = '$eta', perform_by = '$perform_by' WHERE id = '$task_id'")) {
+      if($dbconn->query("UPDATE tasks SET last_updated = UNIX_TIMESTAMP(), priority = '$priority', assigned_to = '$assigned_to', resolved = $resolved, 
+      pct_completed = '$pct_completed', eta_hrs = '$eta', perform_by = '$perform_by' WHERE id = '$task_id'")) {
         if(!empty($reply_text)) {
           $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$reply_text', 'task_reply', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, $task_id)");
         }
