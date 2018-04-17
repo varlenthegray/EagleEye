@@ -875,7 +875,7 @@ require 'includes/header_start.php';
       .on("click", "#submit_new_customer", function() {
         var cuData = $("#add_retail_customer").serialize();
 
-        $.post("/ondemand/so_actions.php?action=add_customer&" + cuData, {so_num: $("#so_num").val()}, function(data) {
+        $.post("/ondemand/so_actions.php?action=add_customer", {so_num: $("#so_num").val(), cu_data: cuData}, function(data) {
           $("body").append(data);
 
           $("#modalAddContact").modal('hide');
