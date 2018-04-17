@@ -701,7 +701,7 @@ require 'includes/header_start.php';
         var s_text_1 = $("#split-text-1").val();
         var s_text_2 = $("#split-text-2").val();
 
-        $.post("/ondemand/admin/tasks.php?action=update_task&" + form_info, {task_id: task_id, s_text_1: s_text_1, s_text_2: s_text_2}, function(data) {
+        $.post("/ondemand/admin/tasks.php?action=update_task", {task_id: task_id, s_text_1: s_text_1, s_text_2: s_text_2, form: form_info}, function(data) {
           $("body").append(data);
           $("#modalTaskInfo").modal('hide');
 

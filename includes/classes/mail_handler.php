@@ -10,17 +10,17 @@ namespace MailHandler;
 
 
 class mail_handler {
-    public function sendMessage($to, $from, $subject, $message, $null) {
-        global $dbconn;
+  public function sendMessage($to, $from, $subject, $message, $null) {
+    global $dbconn;
 
-        $headers = "From: EagleEye <dashboard@3erp.us>\r\n";
-        $headers .= "Reply-To: ". strip_tags($from) . "\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+    $headers = "From: EagleEye <dashboard@3erp.us>\r\n";
+    $headers .= "Reply-To: ". strip_tags($from) . "\r\n";
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
-        $message_out = '<!DOCTYPE html><html lang="en">';
+    $message_out = '<!DOCTYPE html><html lang="en">';
 
-        $message_out .= <<<HEADER
+    $message_out .= <<<HEADER
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,7 +45,7 @@ class mail_handler {
 </head>
 HEADER;
 
-        $message_out .= <<<BODY
+    $message_out .= <<<BODY
 <body>
 <div class="wrapper">
     <div class="header">
@@ -81,14 +81,13 @@ HEADER;
 </html>
 BODY;
 
-        $sms_qry = $dbconn->query("SELECT * FROM user WHERE email = '$to'");
+    // TODO: Fix this so it's based on user ID of the person sent, some people have phones but no email
+    $sms_qry = $dbconn->query("SELECT * FROM user WHERE email = '$to'");
+    $sms = $sms_qry->fetch_assoc();
 
-        if($sms_qry->num_rows === 1) {
-            $sms = $sms_qry->fetch_assoc();
+    sendText($sms['phone'], "$subject: $message");
 
-            sendText($sms['phone'], "$subject: $message");
-        }
 
-        return mail($to, $subject, $message_out, $headers);
-    }
+    return mail($to, $subject, $message_out, $headers);
+  }
 }

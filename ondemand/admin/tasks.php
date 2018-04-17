@@ -329,21 +329,23 @@ HEREDOC;
 
     break;
   case 'update_task':
+    parse_str($_REQUEST['form'], $form_details);
+
     $task_id = sanitizeInput($_REQUEST['task_id']);
 
-    $task_split = (bool)$_REQUEST['split_task_enabled'];
+    $task_split = (bool)$form_details['split_task_enabled'];
 
     $task_qry = $dbconn->query("SELECT * FROM tasks WHERE id = $task_id");
     $task = $task_qry->fetch_assoc();
 
     if($task_split) {
       $split_1_text = sanitizeInput($_REQUEST['s_text_1']);
-      $split_1_notify = sanitizeInput($_REQUEST['split_feedback_to_1']);
-      $split_1_priority = sanitizeInput($_REQUEST['split_1_priority']);
+      $split_1_notify = sanitizeInput($form_details['split_feedback_to_1']);
+      $split_1_priority = sanitizeInput($form_details['split_1_priority']);
 
       $split_2_text = sanitizeInput($_REQUEST['s_text_2']);
-      $split_2_notify = sanitizeInput($_REQUEST['split_feedback_to_2']);
-      $split_2_priority = sanitizeInput($_REQUEST['split_2_priority']);
+      $split_2_notify = sanitizeInput($form_details['split_feedback_to_2']);
+      $split_2_priority = sanitizeInput($form_details['split_2_priority']);
 
       $db_stmt = $dbconn->prepare("INSERT INTO tasks (description, created,  priority, assigned_to, submitted_by, resolved, split_by) VALUES (?, UNIX_TIMESTAMP(), ?, ?, {$task['submitted_by']}, FALSE, {$_SESSION['userInfo']['id']});");
 
@@ -386,12 +388,12 @@ HEREDOC;
 
       $db_stmt->close();
     } else {
-      $assigned_to = sanitizeInput($_REQUEST['assigned_to']);
-      $priority = sanitizeInput($_REQUEST['priority']);
-      $eta = sanitizeInput($_REQUEST['eta']);
-      $perform_by = sanitizeInput($_REQUEST['perform_by']);
-      $pct_completed = sanitizeInput($_REQUEST['pct_completed']) / 100;
-      $reply_text = sanitizeInput($_REQUEST['addl_notes']);
+      $assigned_to = (!empty($form_details['assigned_to'])) ? $form_details['assigned_to'] : 0;
+      $priority = sanitizeInput($form_details['priority']);
+      $eta = sanitizeInput($form_details['eta']);
+      $perform_by = (!empty($form_details['perform_by'])) ? $form_details['perform_by'] : 0;
+      $pct_completed = sanitizeInput($form_details['pct_completed']) / 100;
+      $reply_text = sanitizeInput($form_details['addl_notes']);
 
       $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
 
@@ -410,18 +412,20 @@ HEREDOC;
 
     break;
   case 'create_operation':
-    $task_id = sanitizeInput($_REQUEST['task_id']);
-    $assigned_to = sanitizeInput($_REQUEST['assigned_to']);
-    $priority = sanitizeInput($_REQUEST['priority']);
-    $eta = sanitizeInput($_REQUEST['eta']);
-    $perform_by = sanitizeInput($_REQUEST['perform_by']);
-    $pct_completed = sanitizeInput($_REQUEST['pct_completed']) / 100;
-    $reply_text = sanitizeInput($_REQUEST['addl_notes']);
+    parse_str($_REQUEST['form'], $form_details);
+    
+    $task_id = sanitizeInput($form_details['task_id']);
+    $assigned_to = (!empty($form_details['assigned_to'])) ? $form_details['assigned_to'] : 0;
+    $priority = sanitizeInput($form_details['priority']);
+    $eta = sanitizeInput($form_details['eta']);
+    $perform_by = (!empty($form_details['perform_by'])) ? $form_details['perform_by'] : 0;
+    $pct_completed = sanitizeInput($form_details['pct_completed']) / 100;
+    $reply_text = sanitizeInput($form_details['addl_notes']);
 
     $resolved = ((double)$pct_completed === 1.00) ? 1 : 0;
 
-    if($dbconn->query("UPDATE tasks SET last_updated = UNIX_TIMESTAMP(), priority = '$priority', 
-                assigned_to = '$assigned_to', resolved = $resolved, pct_completed = '$pct_completed', eta_hrs = '$eta', perform_by = '$perform_by' WHERE id = '$task_id'")) {
+    if($dbconn->query("UPDATE tasks SET last_updated = UNIX_TIMESTAMP(), priority = '$priority', assigned_to = $assigned_to, resolved = $resolved, 
+    pct_completed = '$pct_completed', eta_hrs = '$eta', perform_by = '$perform_by' WHERE id = '$task_id'")) {
       if(!empty($reply_text)) {
         $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$reply_text', 'task_reply', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, $task_id)");
       }
@@ -455,8 +459,8 @@ HEREDOC;
       $op_qry = $dbconn->query("SELECT * FROM operations WHERE responsible_dept = '{$pfm_by['default_queue']}' AND job_title = 'Honey Do'");
       $op_info = $op_qry->fetch_assoc();
 
-      $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, notes, created) VALUES (?, ?, FALSE, FALSE, FALSE, ?, UNIX_TIMESTAMP())");
-      $stmt->bind_param("iis", $task_id, $op_info['id'], $notes_desc);
+      $stmt = $dbconn->prepare("INSERT INTO op_queue (room_id, operation_id, active, completed, rework, created) VALUES (?, ?, FALSE, FALSE, FALSE, UNIX_TIMESTAMP())");
+      $stmt->bind_param("iis", $task_id, $op_info['id']);
 
       $stmt->execute();
       $stmt->close();
