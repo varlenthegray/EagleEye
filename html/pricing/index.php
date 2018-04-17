@@ -270,7 +270,7 @@ $result = $result_qry->fetch_assoc();
     <div class="col-md-10 pricing_table_format">
       <div class="row">
         <div class="col-md-12" style="margin-top:5px;">
-          <table style="max-width:828px;" width="100%">
+          <table style="max-width:955px;" width="100%">
             <tr>
               <td colspan="8" class="text-md-center"><h2>Pricing Program Cover Sheet</h2></td>
             </tr>
@@ -344,31 +344,31 @@ $result = $result_qry->fetch_assoc();
               <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
               <td>&nbsp;</td>
               <td class="border_thin_bottom">Glaze Technique:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('glaze_technique', $info['glaze_technique']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Short Drawer Raise:</td>
               <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
               <td>&nbsp;</td>
-              <td class="border_thin_bottom"><input type="checkbox" id="antiquing" style="margin-left:20px;" <?php echo ($info['antiquing'] !== 'A0') ? "checked" : null; ?> disabled> <label for="antiquing">Antiquing</label></td>
-              <td class="border_thin_bottom"><?php echo translateVIN('antiquing', $info['antiquing']); ?></td>
+              <td class="border_thin_bottom">Antiquing</td>
+              <td class="border_thin_bottom"><?php displayVINOpts('antiquing'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Tall Drawer Raise:</td>
               <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
               <td>&nbsp;</td>
-              <td class="border_thin_bottom"><input type="checkbox" id="worn_edges" style="margin-left:20px;" <?php echo ($info['worn_edges'] !== 'W0') ? "checked" : null; ?> disabled> <label for="worn_edges">Worn Edges</label></td>
-              <td class="border_thin_bottom"><?php echo translateVIN('worn_edges', $info['worn_edges']); ?></td>
+              <td class="border_thin_bottom">Worn Edges</td>
+              <td class="border_thin_bottom"><?php displayVINOpts('worn_edges'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Edge Profile:</td>
               <td class="border_thin_bottom"><?php displayVINOpts('edge_profile'); ?></td>
               <td>&nbsp;</td>
-              <td class="border_thin_bottom"><input type="checkbox" id="distressing" style="margin-left:20px;" <?php echo ($info['distress_level'] !== 'D0') ? "checked" : null; ?> disabled> <label for="distressing">Distressing</label></td>
-              <td class="border_thin_bottom"><?php echo translateVIN('distress_level', $info['distress_level']); ?></td>
+              <td class="border_thin_bottom">Distressing</td>
+              <td class="border_thin_bottom"><?php displayVINOpts('distress_level'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
@@ -383,7 +383,7 @@ $result = $result_qry->fetch_assoc();
               <td class="border_thin_bottom"><?php displayVINOpts('framing_options'); ?></td>
               <td>&nbsp;</td>
               <td class="border_thin_bottom"><strong>Exterior</strong> Species:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('carcass_species', $info['carcass_exterior_species']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
               <td colspan="2">&nbsp;</td>
             </tr>
             <tr>
@@ -391,45 +391,45 @@ $result = $result_qry->fetch_assoc();
               <td class="border_thin_bottom"><?php displayVINOpts('style_rail_width'); ?></td>
               <td style="border:solid #FFF;">&nbsp;</td>
               <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Finish Code:</td>
-              <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
+              <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_exterior_finish_code", "carcass_exterior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td colspan="3">&nbsp;</td>
               <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Glaze Color:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['carcass_exterior_glaze_color']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td colspan="3">&nbsp;</td>
               <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Glaze Technique:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('glaze_technique', $info['carcass_exterior_glaze_technique']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Drawer Box:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('drawer_boxes', $info['drawer_boxes']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('drawer_boxes'); ?></td>
               <td style="border:solid #FFF;">&nbsp;</td>
               <td class="border_thin_bottom"><strong>Interior</strong> Species:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('carcass_species', $info['carcass_interior_species']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td colspan="3">&nbsp;</td>
               <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Finish Code:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
+              <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_interior_finish_code", "carcass_interior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td colspan="3">&nbsp;</td>
               <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Glaze Color:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['carcass_interior_glaze_color']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td colspan="3">&nbsp;</td>
               <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Glaze Technique:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('glaze_technique', $info['carcass_interior_glaze_technique']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>

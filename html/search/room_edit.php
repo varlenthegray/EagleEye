@@ -584,8 +584,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                   </tr>
                   <tr>
                     <td><label for="carcass_interior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                    <td><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?>
-                    </td>
+                    <td><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?></td>
                   </tr>
                   <tr style="height:10px;">
                     <td colspan="2"></td>

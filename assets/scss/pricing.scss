@@ -3,6 +3,14 @@
   body, html, .account-pages, #topnav .topbar-main, .footer {
     background-color: #FFFFFF !important;
   }
+
+  @page {
+    margin: 0;
+  }
+
+  body {
+    margin: 5mm !important;
+  }
 }
 
 @import "pricing_coversheet";
