@@ -13,6 +13,13 @@ require '../../includes/header_start.php';
 
 $room_id = 799;
 
+$vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
+ FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC");
+
+while($vin = $vin_qry->fetch_assoc()) {
+  $vin_schema[$vin['segment']][] = $vin;
+}
+
 $info_qry = $dbconn->query("SELECT rooms.*, sales_order.*, rooms.order_status AS rOrderStatus FROM rooms LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num WHERE rooms.id = '$room_id'");
 $info = $info_qry->fetch_assoc();
 
@@ -305,17 +312,17 @@ $result = $result_qry->fetch_assoc();
               <td class="border_thin_bottom"><?php displayVINOpts('species_grade'); ?></td>
               <td width="3%">&nbsp;</td>
               <td class="border_thin_bottom" width="14%">Finish Code:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
+              <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
               <td width="3%">&nbsp;</td>
               <td width="16%"><strong>Ship VIA:</strong></td>
               <td><input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_via" value="<?php echo $info['vin_ship_via']; ?>"></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Construction:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('construction_method', $info['construction_method']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('construction_method'); ?></td>
               <td>&nbsp;</td>
               <td class="border_thin_bottom">Sheen:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('sheen', $info['sheen']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('sheen'); ?></td>
               <td>&nbsp;</td>
               <td><strong>Ship To:</strong></td>
               <td rowspan="3">
@@ -326,15 +333,15 @@ $result = $result_qry->fetch_assoc();
             </tr>
             <tr>
               <td class="border_thin_bottom">Door Design:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('door_design', $info['door_design']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('door_design'); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
               <td>&nbsp;</td>
               <td class="border_thin_bottom">Glaze Color:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('glaze', $info['glaze']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('glaze'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Door Panel Raise:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_door']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
               <td>&nbsp;</td>
               <td class="border_thin_bottom">Glaze Technique:</td>
               <td class="border_thin_bottom"><?php echo translateVIN('glaze_technique', $info['glaze_technique']); ?></td>
@@ -342,7 +349,7 @@ $result = $result_qry->fetch_assoc();
             </tr>
             <tr>
               <td class="border_thin_bottom">Short Drawer Raise:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_sd']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
               <td>&nbsp;</td>
               <td class="border_thin_bottom"><input type="checkbox" id="antiquing" style="margin-left:20px;" <?php echo ($info['antiquing'] !== 'A0') ? "checked" : null; ?> disabled> <label for="antiquing">Antiquing</label></td>
               <td class="border_thin_bottom"><?php echo translateVIN('antiquing', $info['antiquing']); ?></td>
@@ -350,7 +357,7 @@ $result = $result_qry->fetch_assoc();
             </tr>
             <tr>
               <td class="border_thin_bottom">Tall Drawer Raise:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_td']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
               <td>&nbsp;</td>
               <td class="border_thin_bottom"><input type="checkbox" id="worn_edges" style="margin-left:20px;" <?php echo ($info['worn_edges'] !== 'W0') ? "checked" : null; ?> disabled> <label for="worn_edges">Worn Edges</label></td>
               <td class="border_thin_bottom"><?php echo translateVIN('worn_edges', $info['worn_edges']); ?></td>
@@ -358,7 +365,7 @@ $result = $result_qry->fetch_assoc();
             </tr>
             <tr>
               <td class="border_thin_bottom">Edge Profile:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('edge_profile', $info['edge_profile']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('edge_profile'); ?></td>
               <td>&nbsp;</td>
               <td class="border_thin_bottom"><input type="checkbox" id="distressing" style="margin-left:20px;" <?php echo ($info['distress_level'] !== 'D0') ? "checked" : null; ?> disabled> <label for="distressing">Distressing</label></td>
               <td class="border_thin_bottom"><?php echo translateVIN('distress_level', $info['distress_level']); ?></td>
@@ -366,14 +373,14 @@ $result = $result_qry->fetch_assoc();
             </tr>
             <tr>
               <td class="border_thin_bottom">Framing Bead:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('framing_bead', $info['framing_bead']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('framing_bead'); ?></td>
               <td>&nbsp;</td>
               <td colspan="2" class='gray_bg border_thin_bottom'>Carcass</td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Frame Option:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('framing_options', $info['framing_options']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('framing_options'); ?></td>
               <td>&nbsp;</td>
               <td class="border_thin_bottom"><strong>Exterior</strong> Species:</td>
               <td class="border_thin_bottom"><?php echo translateVIN('carcass_species', $info['carcass_exterior_species']); ?></td>
@@ -381,10 +388,10 @@ $result = $result_qry->fetch_assoc();
             </tr>
             <tr>
               <td class="border_thin_bottom">Styles/Rails:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('style_rail_width', $info['style_rail_width']); ?></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('style_rail_width'); ?></td>
               <td style="border:solid #FFF;">&nbsp;</td>
               <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Finish Code:</td>
-              <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
+              <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
