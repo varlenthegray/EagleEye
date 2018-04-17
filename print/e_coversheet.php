@@ -595,7 +595,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                 <tr class="border_thin_bottom">
                     <td class="total_text">Multiplier:</td>
                     <td class="total_text">&nbsp;</td>
-                    <td class="text-md-right total_text"><input type="text" name="multiplier" value="0.419" maxlength="5" class="static_width" style="width:23px;"></td>
+                    <td class="text-md-right total_text"><input type="text" name="multiplier" value="<?php echo $dealer_info['multiplier']; ?>" maxlength="5" class="static_width" style="width:23px;"></td>
                 </tr>
                 <tr class="border_thin_bottom">
                     <td class="total_text">Net Price:</td>
