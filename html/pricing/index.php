@@ -382,53 +382,67 @@ $result = $result_qry->fetch_assoc();
               <td class="border_thin_bottom">Frame Option:</td>
               <td class="border_thin_bottom"><?php displayVINOpts('framing_options'); ?></td>
               <td>&nbsp;</td>
-              <td class="border_thin_bottom"><strong>Exterior</strong> Species:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
+              <!-- TODO: Implement same as door/drawer here and in interior -->
+              <td class="border_thin_bottom"><strong>Exterior:</strong></td>
+              <td class="border_thin_bottom"><div class="checkbox"><input id="ext_carcass_same" type="checkbox"><label for="ext_carcass_same"> Same as Door/Drawer</label></div></td>
               <td colspan="2">&nbsp;</td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Styles/Rails:</td>
               <td class="border_thin_bottom"><?php displayVINOpts('style_rail_width'); ?></td>
               <td style="border:solid #FFF;">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Finish Code:</td>
+              <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
+              <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr>
+              <td colspan="3">&nbsp;</td>
+              <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
               <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_exterior_finish_code", "carcass_exterior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Glaze Color:</td>
+              <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
               <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Glaze Technique:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Drawer Box:</td>
               <td class="border_thin_bottom"><?php displayVINOpts('drawer_boxes'); ?></td>
               <td style="border:solid #FFF;">&nbsp;</td>
-              <td class="border_thin_bottom"><strong>Interior</strong> Species:</td>
+              <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
+              <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
+              <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr>
+              <td colspan="3">&nbsp;</td>
+              <td class="border_thin_bottom"><strong>Interior:</strong></td>
+              <!-- TODO: Implement same as door/drawer here and in exterior -->
+              <td class="border_thin_bottom"><div class="checkbox"><input id="int_carcass_same" type="checkbox"><label for="int_carcass_same"> Same as Door/Drawer</label></div></td>
+              <td colspan="3">&nbsp;</td>
+            </tr>
+            <tr>
+              <td colspan="3">&nbsp;</td>
+              <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
               <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Finish Code:</td>
+              <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
               <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_interior_finish_code", "carcass_interior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Glaze Color:</td>
+              <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
               <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="width:20px;float:left;">&nbsp;</div>Glaze Technique:</td>
+              <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
               <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?></td>
               <td colspan="3">&nbsp;</td>
             </tr>
@@ -444,9 +458,9 @@ $result = $result_qry->fetch_assoc();
               <td colspan="2" class="gray_bg">Delivery Notes:</td>
             </tr>
             <tr id="notes_section">
-              <td colspan="3" id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_global']; ?></textarea></td>
-              <td colspan="3" id="layout_notes_title" style="border-right:1px solid #000;"><textarea name="layout_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
-              <td colspan="2" id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
+              <td colspan="3" id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_global']; ?></textarea></td>
+              <td colspan="3" id="layout_notes_title" style="border-right:1px solid #000;"><textarea name="layout_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
+              <td colspan="2" id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
             </tr>
             <tr>
               <th colspan="8">&nbsp;</th>
@@ -459,7 +473,6 @@ $result = $result_qry->fetch_assoc();
         <div class="col-md-12" style="margin-top:5px;">
           <h2>Cabinet List</h2>
           <h5 class="no-print" style="margin:10px 0;">
-            <span class="cursor-hand no-select" id="catalog_add_item"><i class="zmdi zmdi-plus-circle-o"></i> Add Item</span>
             <span class="cursor-hand no-select" style="margin-left:10px;display:none;" id="catalog_remove_checked"><i class="zmdi zmdi-minus-circle-outline"></i> Remove Checked Items</span>
           </h5>
 

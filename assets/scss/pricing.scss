@@ -9,7 +9,17 @@
   }
 
   body {
-    margin: 5mm !important;
+    padding: 5mm 5mm 5mm 10mm !important;
+  }
+
+  .custom_dropdown {
+    .dropdown_arrow {
+      display: none !important;
+    }
+
+    .selected {
+      border-width: 0 !important;
+    }
   }
 }
 
@@ -175,4 +185,17 @@
   text-align: center;
   height: 20px;
   border: none;
+}
+
+.pricing_table_format input[type="checkbox"]+label:before {
+  margin: 0.15em 0 0 -1.5em !important;
+}
+
+.pricing_table_format input[type="checkbox"]:checked+label:before {
+  content: '' !important;
+}
+
+.checkbox label {
+  line-height: normal !important;
+  padding-left: 0 !important;
 }
