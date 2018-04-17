@@ -254,23 +254,13 @@ require 'includes/header_start.php';
 
                 <div class="col-md-4">
                   <select name="feedback_to" id="feedback_to" class="form-control">
-                    <optgroup label="Office">
-                      <option value="9">Production Administrator</option>
-                      <option value="36">Shop Foreman</option>
-                      <option value="7">Robert</option>
-                      <option value="1">IT</option>
-                      <option value="15">Engineering</option>
-                      <option value="24">Brent</option>
-                      <option value="8">Accounting</option>
-                    </optgroup>
+                    <?php
+                    $usr_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE AND id != 16 ORDER BY FIELD(id, 9) DESC, name ASC;");
 
-                    <optgroup label="Shop">
-                      <option value="15">Box</option>
-                      <option value="12">Customs</option>
-                      <option value="11">Assembly</option>
-                      <option value="22">Finishing</option>
-                      <option value="11">Shipping</option>
-                    </optgroup>
+                    while($usr = $usr_qry->fetch_assoc()) {
+                      echo "<option value='{$usr['id']}'>{$usr['name']}</option>";
+                    }
+                    ?>
                   </select>
                 </div>
 
