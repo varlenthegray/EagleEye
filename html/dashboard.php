@@ -163,7 +163,7 @@ require '../includes/header_start.php';
             "order": [[0, "asc"]]
         });
 
-        $("#order_header").html("<h4>Jobs</h4>");
+        $("#order_header").html("<h4>Production</h4>");
     <?php } if($bouncer->validate('view_operation')) { ?>
 
     var active_table = $("#active_ops_global_table").DataTable({
