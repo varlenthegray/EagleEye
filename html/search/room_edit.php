@@ -338,7 +338,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
         <br />
         <?php
         //echo ($bouncer->validate('')) ? "<a id='generate_code' data-so='{$so}' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Copy Dealer URL</a><br /><br />" : null;
-        echo ($bouncer->validate('view_inset_sizing')) ? "<a href='/html/inset_sizing.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Inset Sizing</a>" : null;
+        echo ($bouncer->validate('view_inset_sizing')) ? "<a href='/html/inset_sizing.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>SMCM Door Sizing</a>" : null;
         echo ($bouncer->validate('view_preprod_checklist')) ? "<a href='/pdf/preprod_checklist.pdf' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Preproduction Checklist</a>" : null;
         echo ($bouncer->validate('view_appliance_ws')) ? "<a id='appliance_worksheets' data-roomid='{$room['id']}' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Appliance Worksheets</a>" : null;
         ?>
