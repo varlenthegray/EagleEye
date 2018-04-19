@@ -546,15 +546,6 @@ $result = $result_qry->fetch_assoc();
       // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
       // TODO: https://github.com/mar10/fancytree/issues/551
     })
-    .on("click", "#catalog_add_item", function() { // the click of the "Add Item" button
-      delNoData();
-
-      var root = cabinetList.fancytree("getRootNode");
-      var child = root.addChildren({
-        title: "Nomenclature...",
-        tooltip: "Type your nomenclature here."
-      });
-    })
     .on("click", "#catalog_remove_checked", function() { // removes whatever is checked
       var tree = cabinetList.fancytree("getTree"), // get the tree
         selected = tree.getSelectedNodes(); // define what is selected
@@ -604,7 +595,8 @@ $result = $result_qry->fetch_assoc();
           height: itemInfo.height,
           depth: itemInfo.depth,
           itemID: itemInfo.id,
-          catalog: itemInfo.catalog
+          catalog: itemInfo.catalog,
+          price: itemInfo.price
         });
       });
     })
