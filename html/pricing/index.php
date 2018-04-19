@@ -557,6 +557,101 @@ $result = $result_qry->fetch_assoc();
 
       // re-render the tree deeply so that we can recalculate the line item numbers
       cabinetList.fancytree("getRootNode").render(true,true);
+  </div>
+</div>
+
+<script>
+  var total = 0; // define initial total
+
+  function delNoData() {
+    let getNegNode = cabinetList.fancytree("getTree").getNodeByKey('-1');
+
+    if(getNegNode !== null) {
+      cabinetList.fancytree("getTree").getNodeByKey('-1').remove();
+    }
+  }
+
+  $("body")
+    .on("keyup", "#treeFilter", function() { // filters per keystroke on search catalog
+      // grab this value and filter it down to the node needed
+      catalog.fancytree("getTree").filterNodes($(this).val());
+
+      // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
+      // TODO: https://github.com/mar10/fancytree/issues/551
+    })
+    .on("click", "#catalog_add_item", function() { // the click of the "Add Item" button
+      delNoData();
+
+      var root = cabinetList.fancytree("getRootNode");
+      var child = root.addChildren({
+        title: "Nomenclature...",
+        tooltip: "Type your nomenclature here."
+      });
+    })
+    .on("click", "#catalog_remove_checked", function() { // removes whatever is checked
+      var tree = cabinetList.fancytree("getTree"), // get the tree
+        selected = tree.getSelectedNodes(); // define what is selected
+
+      // for every selected node
+      selected.forEach(function(node) {
+        node.remove(); // remove it
+      });
+
+      // re-render the tree deeply so that we can recalculate the line item numbers
+      cabinetList.fancytree("getRootNode").render(true,true);
+
+      // hide the remove items button, there are no items to remove now
+      $(this).hide();
+    })
+    .on("click", "#cabinet_list_save", function() {
+      var cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
+      var cat_id = $("#catalog").find(":selected").attr("id");
+
+      $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=<?php echo $room_id; ?>", {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
+        $("body").append(data);
+      });
+    })
+    .on("focus", ".qty_input", function() { // when clicking or tabbing to quantity
+      $(this).select(); // auto-select the text
+    })
+    .on("keyup", ".qty_input", function() {
+      let id = $(this).attr("id");
+
+      cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
+    })
+    .on("click", ".view_item_info", function() {
+      // TODO: Implement popup for item information including description and image
+    })
+    .on("click", ".add_item_cabinet_list", function() {
+      delNoData();
+
+      var root = cabinetList.fancytree("getRootNode");
+
+      $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: $(this).attr('data-id')}, function(data) {
+        let itemInfo = JSON.parse(data);
+
+        root.addChildren({
+          qty: 1,
+          title: itemInfo.sku,
+          width: itemInfo.width,
+          height: itemInfo.height,
+          depth: itemInfo.depth,
+          itemID: itemInfo.id,
+          catalog: itemInfo.catalog
+        });
+      });
+    })
+    .on("change", "#catalog", function() {
+      let id = $(this).find(":selected").attr("id");
+
+      let catalogData = {
+        url: '/html/pricing/ajax/nav_menu.php',
+        type: 'POST',
+        data: {
+          catalog: id
+        },
+        dataType: 'json'
+      };
 
       // hide the remove items button, there are no items to remove now
       $(this).hide();
@@ -612,6 +707,13 @@ $result = $result_qry->fetch_assoc();
         dataType: 'json'
       };
 
+      catalog.fancytree('getTree').reload(catalogData);
+    })
+  ;
+
+  var CLIPBOARD = null;
+  var cabinetList = $("#cabinet_list");
+  var catalog = $("#catalog_categories");
       catalog.fancytree('getTree').reload(catalogData);
     })
   ;

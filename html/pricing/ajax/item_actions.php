@@ -18,6 +18,7 @@ switch($_REQUEST['action']) {
     }
 
     break;
+
   case 'saveCatalog':
     $room_id = sanitizeInput($_REQUEST['room_id']);
     $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
@@ -40,6 +41,7 @@ switch($_REQUEST['action']) {
     }
 
     break;
+
   case 'getCabinetList':
     $room_id = sanitizeInput($_REQUEST['room_id']);
 
