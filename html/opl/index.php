@@ -22,12 +22,12 @@ outputPHPErrs();
           <col width="150px">
           <col width="80px">
           <col width="80px">
-          <col width="80px">
-          <col width="80px">
+          <!--<col width="80px">
+          <col width="80px">-->
         </colgroup>
         <thead class="sticky">
         <tr>
-          <td colspan="4" style="padding-bottom:5px;">
+          <td colspan="3" style="padding-bottom:5px;">
             <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
             <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
             <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
@@ -35,7 +35,7 @@ outputPHPErrs();
             <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
           </td>
           <td><h4 id="viewing"></h4></td>
-          <td colspan="2">
+          <td colspan="1">
             <label for="user">User: </label>
             <select class="custom-select" id="user_id" style="width:80%;">
               <?php
@@ -59,8 +59,8 @@ outputPHPErrs();
           <th class="text-md-center">Created</th>
           <th class="text-md-center">Time Left</th>
           <th class="text-md-center">Due Date</th>
-          <th>Relies On</th>
-          <th>Visibility</th>
+          <!--<th>Relies On</th>
+          <th>Visibility</th>-->
         </tr>
         </thead>
         <tbody>
@@ -73,7 +73,7 @@ outputPHPErrs();
             <i class="fa fa-info-circle primary-color view_task_info" title="Task Information"></i>
             <i class="fa fa-plus-circle primary-color add_subtask" title="Add Subtask"></i>
             <i class="fa fa-check-circle primary-color complete_task" title="Complete Task"></i>
-            <i class="fa fa-exclamation-triangle primary-color task_alerts" title="Alerts"></i>
+            <!--<i class="fa fa-exclamation-triangle primary-color task_alerts" title="Alerts"></i>-->
           </td>
           <td class="text-md-center"></td>
           <td class="alignCenter">
@@ -88,14 +88,14 @@ outputPHPErrs();
             </select>
           </td>
           <td class="alignCenter"><input type="text" class="due_date" value="" placeholder="Empty" /></td>
-          <td class="pad-l5">RG, BB</td>
-          <td>
+          <!--<td class="pad-l5">RG, BB</td>-->
+          <!--<td>
             <select>
               <option value="public">Public</option>
               <option value="management">Management</option>
               <option value="private">Private</option>
             </select>
-          </td>
+          </td>-->
         </tr>
         </tbody>
       </table>
@@ -263,6 +263,7 @@ outputPHPErrs();
 
       calcDueDate($(this));
     })
+    .on("change", "")
     .on("click", "#saveOPL", function() {
       // capture the OPL tree completely
       let opl_list = JSON.stringify(opl.fancytree("getTree").toDict(true));
