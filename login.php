@@ -15,7 +15,7 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
       $_SESSION['valid'] = true; // set the session as valid
       $_SESSION['userInfo'] = $result;
 
-      $perm_qry = $dbconn->query("SELECT * FROM permissions WHERE user_id = {$result['id']}");
+      $perm_qry = $dbconn->query("SELECT pg.* FROM user u LEFT JOIN permission_groups pg on u.permission_id = pg.id WHERE u.id = {$result['id']}");
 
       if($perm_qry->num_rows === 1) {
         $perm = $perm_qry->fetch_assoc();

@@ -11,12 +11,12 @@
 HEREDOC;
     }
 
-    $nav_out .= ($bouncer->validate('view_contacts')) ? "<li class='nav_add_contact'><a><i class='zmdi zmdi-collection-plus m-r-5'></i><span>New Contact</span></a></li>" : null;
-    $nav_out .= ($bouncer->validate('add_so')) ? "<li id='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add SO</span></a></li><li class='nav-separator'><span></span></li>" : null;
-    $nav_out .= ($bouncer->validate('add_project')) ? "<li id='nav_add_project'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add Project</span></a></li><li class='nav-separator'><span></span></li>" : null;
+    $nav_out .= $bouncer->validate('view_contacts') ? "<li class='nav_add_contact'><a><i class='zmdi zmdi-collection-plus m-r-5'></i><span>New Contact</span></a></li>" : null;
+    $nav_out .= $bouncer->validate('add_so') ? "<li id='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add SO</span></a></li><li class='nav-separator'><span></span></li>" : null;
+    $nav_out .= $bouncer->validate('add_project') ? "<li id='nav_add_project'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>Add Project</span></a></li><li class='nav-separator'><span></span></li>" : null;
     $nav_out .= "<li id='nav_dashboard'><a href='/index.php'><i class='zmdi zmdi-view-dashboard m-r-5'></i><span>Dashboard</span></a></li>";
 
-    if($bouncer->validate("clock_out")) {
+    if($bouncer->validate('clock_out')) {
         $nav_out .= <<<HEREDOC
 <li class='has-submenu'>
     <a><i class='zmdi zmdi-account'></i>Account</a>
@@ -30,36 +30,35 @@ HEREDOC;
         $nav_out .= "<li id='nav_logout'><a href='/login.php?logout=true'><i class='fa fa-sign-out m-r-5'></i>Log Out</a></li>";
     }
 
-    $nav_out .= ($bouncer->validate('view_break')) ? "<li class='nav_break'><a><i class='zmdi zmdi-hourglass-alt m-r-5'></i><span></span></a></li>" : null;
+    $nav_out .= $bouncer->validate('view_break') ? "<li class='nav_break'><a><i class='zmdi zmdi-hourglass-alt m-r-5'></i><span></span></a></li>" : null;
 
     $nav_out .= "<li class='nav-separator'><span></span></li>";
 
-    $nav_out .= ($bouncer->validate('add_feedback')) ? "<li id='nav_feedback'><a data-toggle='modal' data-target='#feedback-page'><i class='fa fa-comment-o m-r-5'></i><span>Feedback</span></a></li>" : null;
-    $nav_out .= ($bouncer->validate('view_tasks')) ? "<li id='nav_tasks'><a onclick='unloadPage(\"tasks\")'><i class='zmdi zmdi-check-circle-u m-r-5'></i><span>Tasks</span></a></li>" : null;
+    $nav_out .= $bouncer->validate('add_feedback') ? "<li id='nav_feedback'><a data-toggle='modal' data-target='#feedback-page'><i class='fa fa-comment-o m-r-5'></i><span>Feedback</span></a></li>" : null;
+    $nav_out .= $bouncer->validate('view_tasks') ? "<li id='nav_tasks'><a onclick='unloadPage(\"tasks\")'><i class='zmdi zmdi-check-circle-u m-r-5'></i><span>Tasks</span></a></li>" : null;
+    $nav_out .= $bouncer->validate('view_opl') ? "<li id='nav_opl'><a onclick='unloadPage(\"opl/index\")'><i class='zmdi zmdi-collection-text m-r-5'></i><span>OPL</span></a></li>" : null;
 
     if($bouncer->validate('add_feedback') || $bouncer->validate('view_tasks')) {
         $nav_out .= "<li class='nav-separator'><span></span></li>";
     }
 
-    $nav_out .= ($bouncer->validate('view_contacts')) ? "<li id='nav_contacts'><a onclick='unloadPage(\"display_contacts\")'><i class='zmdi zmdi-account-box-mail m-r-5'></i>Contacts</a></li>" : null;
+    $nav_out .= $bouncer->validate('view_contacts') ? "<li id='nav_contacts'><a onclick='unloadPage(\"display_contacts\")'><i class='zmdi zmdi-account-box-mail m-r-5'></i>Contacts</a></li>" : null;
 
     if($bouncer->validate('view_workcenter') || $bouncer->validate('view_so_list') || $bouncer->validate('view_sales_list') || $bouncer->validate('view_timecards')) {
         $nav_out .= "<li class='has-submenu'>
                         <a><i class='zmdi zmdi-assignment'></i>Reports</a>
                         <ul class='submenu'>";
 
-        $nav_out .= ($bouncer->validate('view_workcenter')) ? "<li id='nav_workcenter'><a onclick='unloadPage(\"workcenter\")'><i class='zmdi zmdi-receipt m-r-5'></i>Workcenter</a></li>" : null;
-        $nav_out .= ($bouncer->validate('view_so_list')) ? "<li id='nav_so_list'><a onclick='unloadPage(\"so_list\")'><i class='zmdi zmdi-accounts-list m-r-5'></i>SO List</a></li>" : null;
-        $nav_out .= ($bouncer->validate('view_sales_list')) ? "<li id='nav_sales_list'><a onclick='unloadPage(\"sales_list\")'><i class='zmdi zmdi-accounts-list m-r-5'></i>Sales List</a></li>" : null;
-        $nav_out .= ($bouncer->validate('view_timecards')) ? "<li id='nav_timecard'><a><i class='zmdi zmdi-time m-r-5'></i>Timecards</a></li>" : null;
+        $nav_out .= $bouncer->validate('view_workcenter') ? "<li id='nav_workcenter'><a onclick='unloadPage(\"workcenter\")'><i class='zmdi zmdi-receipt m-r-5'></i>Workcenter</a></li>" : null;
+        $nav_out .= $bouncer->validate('view_so_list') ? "<li id='nav_so_list'><a onclick='unloadPage(\"so_list\")'><i class='zmdi zmdi-accounts-list m-r-5'></i>SO List</a></li>" : null;
+        $nav_out .= $bouncer->validate('view_sales_list') ? "<li id='nav_sales_list'><a onclick='unloadPage(\"sales_list\")'><i class='zmdi zmdi-accounts-list m-r-5'></i>Sales List</a></li>" : null;
+        $nav_out .= $bouncer->validate('view_timecards') ? "<li id='nav_timecard'><a><i class='zmdi zmdi-time m-r-5'></i>Timecards</a></li>" : null;
 
         $nav_out .= "</ul></li>";
     }
 
-    $nav_out .= ($bouncer->validate('view_employees')) ? "<li id='nav_employees'><a href='employees.php'><i class='zmdi zmdi-account-circle m-r-5'></i><span>Employees</span></a></li>" : null;
-    $nav_out .= ($bouncer->validate('view_employee_ops')) ? "<li id='nav_employee_ops'><a href='?page=user_op_mgmt'><i class='zmdi zmdi-assignment-account m-r-5'></i><span>Employee Ops</span></a></li>" : null;
-
-
+    $nav_out .= $bouncer->validate('view_employees') ? "<li id='nav_employees'><a href='employees.php'><i class='zmdi zmdi-account-circle m-r-5'></i><span>Employees</span></a></li>" : null;
+    $nav_out .= $bouncer->validate('view_employee_ops') ? "<li id='nav_employee_ops'><a href='?page=user_op_mgmt'><i class='zmdi zmdi-assignment-account m-r-5'></i><span>Employee Ops</span></a></li>" : null;
 
     echo $nav_out;
     ?>

@@ -14,7 +14,7 @@ class bouncer {
         global $dbconn;
 
         if(!empty($_SESSION['userInfo'])) {
-            $perm_qry = $dbconn->query("SELECT * FROM permissions WHERE user_id = {$_SESSION['userInfo']['id']}");
+            $perm_qry = $dbconn->query("SELECT pg.* FROM user u LEFT JOIN permission_groups pg on u.permission_id = pg.id WHERE u.id = {$_SESSION['userInfo']['id']}");
             $perm = $perm_qry->fetch_assoc();
 
             $_SESSION['permissions'] = $perm;

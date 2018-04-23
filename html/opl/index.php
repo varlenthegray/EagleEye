@@ -256,6 +256,8 @@ outputPHPErrs();
         // now, update tree based on new saved data
         updateOPLTree();
       });
+
+      unsaved = false;
     })
     .on("keyup", "#findOPL", function() {
       opl.fancytree("getTree").filterNodes($(this).val());
@@ -370,6 +372,8 @@ outputPHPErrs();
       $.post("/html/opl/ajax/actions.php?action=saveOPLRowInfo", {unique_id: unique_id, note: note, user_id: opl_usr}, function(data) {
         $("body").append(data);
       });
+
+      unsaved = false;
     })
   ;
 
