@@ -63,7 +63,7 @@ require 'includes/header_start.php';
     if($server[0] === 'dev') {
       echo "<style>body, html, .account-pages, #topnav .topbar-main, .footer {background-color: #750909 !important; }</style>";
     } else {
-      echo "<script>$.fn.dataTable.ext.errMode = 'throw';</script>";
+//      echo "<script>$.fn.dataTable.ext.errMode = 'throw';</script>";
     }
 
     if(stristr($_SERVER["REQUEST_URI"],  'inset_sizing.php')) {
