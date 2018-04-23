@@ -320,6 +320,7 @@ require 'includes/header_start.php';
     var indv_auto_interval; // used on functions.js
     var wc_auto_interval; // used on functions.js
     var dash_auto_interval; // used on functions.js
+    var oplUpdater; // used on html/opl/index.php
 
     var userID;
 

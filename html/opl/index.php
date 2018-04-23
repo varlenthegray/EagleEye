@@ -8,6 +8,8 @@ outputPHPErrs();
 
 <div class="card-box">
   <div class="row">
+    <div id="opl_warning"></div>
+
     <h1>Open Point List</h1>
 
     <div class="col-md-8">
@@ -30,6 +32,7 @@ outputPHPErrs();
             <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
             <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
             <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
+            <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
           </td>
           <td><h4 id="viewing"></h4></td>
           <td colspan="2">
@@ -150,6 +153,8 @@ outputPHPErrs();
   var opl_usr = null; // the user that the OPL is loaded for, initially none, overwritten on document load
   var disabled = false;
 
+  var curOpl = null;
+
   // this generates unique keys, put in a function because it's going to be done multiple times, may be updated later
   function generateUniqueKey() {
     return new Date().getTime();
@@ -225,7 +230,20 @@ outputPHPErrs();
     // update the tree based on that user's information
     opl.fancytree('getTree').reload({url: '/html/opl/ajax/actions.php?action=getOPL&user_id=' + opl_usr});
     opl_history.fancytree('getTree').reload({url: "/html/opl/ajax/actions.php?action=getOPLHistory&user_id=" + opl_usr});
+
+    curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
   }
+
+  oplUpdater = setInterval(function() {
+    let changedOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
+
+    if(changedOpl === curOpl) {
+      $("#opl_warning").html('');
+      updateOPLTree();
+    } else {
+      $("#opl_warning").html('<div class="alert alert-danger" role="alert"><strong>Warning!</strong> You have made changes since the last reload and this may not be the latest version!</div>');
+    }
+  }, 60000);
 
   $("body")
     .on("change", ".task_length", function() {
@@ -375,6 +393,9 @@ outputPHPErrs();
 
       unsaved = false;
     })
+    .on("click", "#oplRefresh", function() {
+      updateOPLTree();
+    })
   ;
 
   $(function() {
@@ -483,7 +504,10 @@ outputPHPErrs();
         // calculate the due date color
         calcDueDate($(this));
       },
-      debugLevel: 0
+      debugLevel: 0,
+      init: function(event, data) {
+        curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
+      }
     }).on("nodeCommand", function(event, data){
       // Custom event handler that is triggered by keydown-handler and
       // context menu:
@@ -668,9 +692,5 @@ outputPHPErrs();
         $tdList.eq(3).find("i").attr("id", node.data.id);
       }
     });
-
-    setTimeout(function() {
-      // $("#saveOPL").trigger("click");
-    }, 30000);
   });
 </script>

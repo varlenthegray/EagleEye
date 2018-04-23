@@ -51,6 +51,10 @@ function clearIntervals() {
   if(dash_auto_interval !== undefined) {
     clearInterval(dash_auto_interval);
   }
+
+  if(oplUpdater !== undefined) {
+    clearInterval(oplUpdater);
+  }
 }
 
 function backFromSearch() {
