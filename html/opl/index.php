@@ -274,6 +274,7 @@ outputPHPErrs();
       }).done(function() {
         // now, update tree based on new saved data
         updateOPLTree();
+        $("#opl_warning").html('');
       });
 
       unsaved = false;
