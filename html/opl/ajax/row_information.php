@@ -42,7 +42,9 @@ $title = $_REQUEST['title'];
                 $initials .= substr($name_part, 0, 1);
               }
 
-              echo "<div class='opl_note'>$time $initials: {$row['note']}</div>";
+              $note = str_replace("  ", "&nbsp;&nbsp;", nl2br($row['note']));
+
+              echo "<div class='opl_note'>$time $initials: $note</div>";
             }
 
             echo '</section>';
