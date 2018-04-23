@@ -44,7 +44,8 @@ $title = $_REQUEST['title'];
 
               $note = str_replace("  ", "&nbsp;&nbsp;", nl2br($row['note']));
 
-              echo "<div class='opl_note'>$time $initials: $note</div>";
+              // TODO: Set this up in classes
+              echo "<div class='opl_note'><div style='float:left;'>$time $initials: </div><div style='float:left;padding-left:5px;'>$note</div><div class='clearfix'></div></div>";
             }
 
             echo '</section>';
