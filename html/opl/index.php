@@ -241,7 +241,7 @@ outputPHPErrs();
       $("#opl_warning").html('');
       updateOPLTree();
     } else {
-      $("#opl_warning").html('<div class="alert alert-danger" role="alert"><strong>Warning!</strong> You have made changes since the last reload and this may not be the latest version!</div>');
+      $("#opl_warning").html('<div class="alert alert-warning" role="alert"><strong>Note!</strong> You have unsaved changes since the last refresh of the page and this may not be the latest version!</div>');
     }
   }, 60000);
 
