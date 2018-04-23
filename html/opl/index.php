@@ -17,8 +17,9 @@ outputPHPErrs();
         <colgroup>
           <col width="20px">
           <col width="50px">
+          <col width="50px">
           <col width="450px">
-          <col width="80px">
+          <col width="50px">
           <col width="150px">
           <col width="80px">
           <col width="80px">
@@ -27,7 +28,7 @@ outputPHPErrs();
         </colgroup>
         <thead class="sticky">
         <tr>
-          <td colspan="3" style="padding-bottom:5px;">
+          <td colspan="4" style="padding-bottom:5px;">
             <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
             <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
             <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
@@ -54,6 +55,7 @@ outputPHPErrs();
         <tr>
           <th></th>
           <th class="text-md-center">#</th>
+          <th class="text-md-center">Priority</th>
           <th>Open Points</th>
           <th class="text-md-center">Actions</th>
           <th class="text-md-center">Created</th>
@@ -68,6 +70,7 @@ outputPHPErrs();
         <tr>
           <td class="alignCenter"></td>
           <td class="pad-l5"></td>
+          <td><input type="text" class="OPLPriority" value="" placeholder="" /></td>
           <td></td>
           <td class="text-md-center task_actions">
             <i class="fa fa-info-circle primary-color view_task_info" title="Task Information"></i>
@@ -307,7 +310,7 @@ outputPHPErrs();
       },
       table: {
         indentation: 20,
-        nodeColumnIdx: 2,
+        nodeColumnIdx: 3,
         checkboxColumnIdx: 0
       },
       gridnav: {
@@ -324,24 +327,35 @@ outputPHPErrs();
 
         // (Index #0 is rendered by fancytree by adding the checkbox)
         // Set column #1 info from node data:
+
+        // (Index #1 is the index heir level)
         $tdList.eq(1).text(node.getIndexHier());
-        // (Index #2 is rendered by fancytree)
 
-        // (Index #3 is the actions column)
-        $tdList.eq(3).find(".view_task_info").attr("data-uid", node.key).attr("data-indexHeir", node.getIndexHier()).attr("data-title", node.title);
+        // (Index #2 is the priority textbox)
+        let priorityTextbox = $tdList.eq(2).find("input");
+        priorityTextbox.val(node.data.priority);
 
-        // (Index #4 is the creation date of that element)
-        $tdList.eq(4).text(node.data.creation_date);
+        if(node.data.priority.length > 0) {
+          priorityTextbox.addClass("white_black");
+        }
 
-        // (Index #5 is the time left select box)
-        $tdList.eq(5).find("select").val(node.data.time_left);
+        // (Index #3 is rendered by fancytree)
 
-        calcDueDate($tdList.eq(5).find("select"));
+        // (Index #4 is the actions column)
+        $tdList.eq(4).find(".view_task_info").attr("data-uid", node.key).attr("data-indexHeir", node.getIndexHier()).attr("data-title", node.title);
 
-        // (Index #6 is the due date text box)
-        $tdList.eq(6).find("input").val(node.data.due_date);
+        // (Index #5 is the creation date of that element)
+        $tdList.eq(5).text(node.data.creation_date);
 
-        calcDueDate($tdList.eq(6).find("input"));
+        // (Index #6 is the time left select box)
+        $tdList.eq(6).find("select").val(node.data.time_left);
+
+        calcDueDate($tdList.eq(6).find("select"));
+
+        // (Index #7 is the due date text box)
+        $tdList.eq(7).find("input").val(node.data.due_date);
+
+        calcDueDate($tdList.eq(7).find("input"));
 
         // enable the datepicker for due date
         $(".due_date").datepicker({

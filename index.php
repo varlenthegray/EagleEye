@@ -597,6 +597,17 @@ require 'includes/header_start.php';
         updateOPLTree();
         $("#opl_warning").html('');
       })
+      .on("change", ".OPLPriority", function() {
+        if($(this).val().length > 0) {
+          $(this).addClass("white_black");
+        } else {
+          $(this).removeClass("white_black");
+        }
+
+        let node = opl.fancytree("getActiveNode");
+
+        node.data.priority = $(this).val();
+      })
       // end of OPL functions
 
       <?php if($bouncer->validate('view_timecards')) { ?>
