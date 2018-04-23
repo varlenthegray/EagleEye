@@ -1,0 +1,109 @@
+@import "pricing_coversheet";
+@import "page_setup";
+
+.task_actions {
+  i {
+    cursor: pointer;
+  }
+}
+
+.length_red {
+  background-color: #FF0000;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+.length_green {
+  background-color: #00FF00;
+  color: #000000;
+}
+
+.length_yellow {
+  background-color: yellow;
+  color: #000000;
+}
+
+.length_black {
+  background-color: #000000;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.due_date {
+  background-color: transparent;
+  outline: none;
+  border: none;
+  font-size: 10pt !important;
+  text-align: center;
+  width: 100%;
+}
+
+textarea {
+  background: transparent;
+  outline: none;
+}
+
+.pricing_table_format {
+  width: 100%;
+
+  input[type='text'] {
+    font-size: inherit;
+  }
+
+  .opl_filter {
+    width: 100%;
+    border: solid #CCC !important;
+    border-width: 0 0 1px 0 !important;
+    outline: none;
+  }
+}
+
+#opl_history {
+  .fancytree-expander {
+    display: none !important;
+  }
+}
+
+.pad-l5 {
+  padding-left: 5px;
+}
+
+
+
+.opl_notes_section {
+  border-bottom: 1px solid #CCC;
+  padding-bottom: 5px;
+  max-height: 72vh;
+  overflow-y: auto;
+
+  .opl_note {
+    padding: 5px;
+    border-bottom: 1px solid #CCC;
+
+    &:first-child {
+      padding: 0 5px 5px 5px;
+    }
+
+    &:last-child {
+      border-bottom: none;
+      padding: 5px 5px 0 5px;
+    }
+  }
+
+  .date_block {
+    border: 1px solid #CCC;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 0 0 5px 0;
+
+    &:last-child {
+      margin: 0;
+    }
+
+    .date {
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+  }
+}
+

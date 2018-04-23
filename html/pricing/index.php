@@ -223,6 +223,8 @@ $result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['
 $result = $result_qry->fetch_assoc();
 ?>
 
+<link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
+
 <div class="card-box">
   <div class="row">
     <div class="col-md-2 pricing_left_nav no-print sticky">
@@ -546,39 +548,6 @@ $result = $result_qry->fetch_assoc();
       // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
       // TODO: https://github.com/mar10/fancytree/issues/551
     })
-    .on("click", "#catalog_remove_checked", function() { // removes whatever is checked
-      var tree = cabinetList.fancytree("getTree"), // get the tree
-        selected = tree.getSelectedNodes(); // define what is selected
-
-      // for every selected node
-      selected.forEach(function(node) {
-        node.remove(); // remove it
-      });
-
-      // re-render the tree deeply so that we can recalculate the line item numbers
-      cabinetList.fancytree("getRootNode").render(true,true);
-  </div>
-</div>
-
-<script>
-  var total = 0; // define initial total
-
-  function delNoData() {
-    let getNegNode = cabinetList.fancytree("getTree").getNodeByKey('-1');
-
-    if(getNegNode !== null) {
-      cabinetList.fancytree("getTree").getNodeByKey('-1').remove();
-    }
-  }
-
-  $("body")
-    .on("keyup", "#treeFilter", function() { // filters per keystroke on search catalog
-      // grab this value and filter it down to the node needed
-      catalog.fancytree("getTree").filterNodes($(this).val());
-
-      // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
-      // TODO: https://github.com/mar10/fancytree/issues/551
-    })
     .on("click", "#catalog_add_item", function() { // the click of the "Add Item" button
       delNoData();
 
@@ -711,12 +680,6 @@ $result = $result_qry->fetch_assoc();
     })
   ;
 
-  var CLIPBOARD = null;
-  var cabinetList = $("#cabinet_list");
-  var catalog = $("#catalog_categories");
-      catalog.fancytree('getTree').reload(catalogData);
-    })
-  ;
 
   var CLIPBOARD = null;
   var cabinetList = $("#cabinet_list");

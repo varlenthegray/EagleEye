@@ -1,0 +1,75 @@
+@import "variables";
+
+/** Coversheet CSS */
+@media print {
+  body, html, .account-pages, #topnav .topbar-main, .footer {
+    background-color: #FFFFFF !important;
+  }
+
+  @page {
+    margin: 0;
+  }
+
+  body {
+    padding: 5mm 5mm 5mm 10mm !important;
+  }
+
+  .custom_dropdown {
+    .dropdown_arrow {
+      display: none !important;
+    }
+
+    .selected {
+      border-width: 0 !important;
+    }
+  }
+}
+/** End Coversheet CSS */
+
+.no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+.sticky {
+  position: sticky;
+  top: 100px;
+
+  .btn-primary-outline {
+    background-color: #FFFFFF !important;
+
+    &:hover {
+      color: #AAAAAA;
+    }
+  }
+}
+
+/** Custom select dropdown box */
+.custom-select {
+  margin: 0;
+  padding: 0 0 0 5px;
+  border: solid #CCC;
+  border-width: 0 0 1px 0;
+  background-color: transparent;
+  outline: none;
+  min-height: 19px;
+
+  optgroup[label] {
+    font-weight: bold;
+    font-size: 1.2em;
+    background-color: $brand-primary;
+    color: #FFFFFF;
+
+    option {
+      background-color: #FFFFFF;
+      color: $brand-primary;
+      font-size: 1rem;
+      font-weight: normal;
+      border: none;
+    }
+  }
+}

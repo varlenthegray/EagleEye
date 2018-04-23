@@ -37,8 +37,6 @@ require 'includes/header_start.php';
     <!-- Modernizr js -->
     <script src="/assets/js/modernizr.min.js"></script>
 
-    <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
-
     <!-- SocketIO -->
     <script src="/server/node_modules/socket.io-client/dist/socket.io.js"></script>
 

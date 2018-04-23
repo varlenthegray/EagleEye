@@ -1,54 +1,5 @@
-/** Coversheet CSS */
-@media print {
-  body, html, .account-pages, #topnav .topbar-main, .footer {
-    background-color: #FFFFFF !important;
-  }
-
-  @page {
-    margin: 0;
-  }
-
-  body {
-    padding: 5mm 5mm 5mm 10mm !important;
-  }
-
-  .custom_dropdown {
-    .dropdown_arrow {
-      display: none !important;
-    }
-
-    .selected {
-      border-width: 0 !important;
-    }
-  }
-}
-
 @import "pricing_coversheet";
-/** End Coversheet CSS */
-
-// these parts are duplicate from SCSS custom
-.no-select {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
-}
-
-.sticky {
-  position: sticky;
-  top: 100px;
-
-  .btn-primary-outline {
-    background-color: #FFFFFF !important;
-
-    &:hover {
-      color: #AAAAAA;
-    }
-  }
-}
-// END duplication
+@import "page_setup";
 
 .pricing_left_nav {
   border: 1px solid #CCC;
