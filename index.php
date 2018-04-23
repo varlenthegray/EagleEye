@@ -444,8 +444,162 @@ require 'includes/header_start.php';
       <?php }?>
     });
 
-    $("body")
-    <?php if($bouncer->validate('view_timecards')) { ?>
+    $("body") // start of OPL functions
+      .on("change", ".task_length", function() {
+        $(this).removeClass("length_red length_green length_yellow length_black");
+        $(this).addClass($(this).find(":selected").attr("class"));
+
+        let node = opl.fancytree("getActiveNode");
+
+        node.data.time_left = $(this).find(":selected").val();
+
+        calcDueDate($(this));
+      })
+      .on("change", ".due_date", function() {
+        let node = opl.fancytree("getActiveNode");
+
+        node.data.due_date = $(this).val();
+
+        calcDueDate($(this));
+      })
+      .on("click", "#saveOPL", function() {
+        // capture the OPL tree completely
+        let opl_list = JSON.stringify(opl.fancytree("getTree").toDict(true));
+
+        // send it over to the save PHP section
+        $.post("/html/opl/ajax/actions.php?action=save", {opl: opl_list, user: opl_usr}, function(data) {
+          $("body").append(data); // return a value based on what happened with save
+        }).done(function() {
+          // now, update tree based on new saved data
+          updateOPLTree();
+          $("#opl_warning").html('');
+        });
+
+        unsaved = false;
+      })
+      .on("keyup", "#findOPL", function() {
+        opl.fancytree("getTree").filterNodes($(this).val());
+      })
+      .on("click", "#addOPLFolder", function() {
+        let creationPoint = null;
+
+        if(opl.fancytree("getActiveNode") !== null) {
+          creationPoint = opl.fancytree("getActiveNode");
+        } else {
+          creationPoint = opl.fancytree("getRootNode");
+        }
+
+        creationPoint.editCreateNode("child", {
+          title: "New Folder...",
+          folder: true,
+          creation_date: new Date().toLocaleString(),
+          time_left: '???',
+          key: generateUniqueKey()
+        });
+      })
+      .on("click", "#addOPLTask, .add_subtask", function() {
+        if(!disabled) opl.fancytree("getActiveNode").editCreateNode("child", {
+          title: "New Task...",
+          creation_date: new Date().toLocaleString(),
+          time_left: '???',
+          key: generateUniqueKey()
+        });
+      })
+      .on("click", "#completeOPLNodes", function() {
+        var tree = opl.fancytree("getTree"), // get the tree
+          selected = tree.getSelectedNodes(true); // define what is selected
+
+        $.map(selected, function (node) {
+          if(node !== null) {
+            var parent = node.parent;
+
+            if(parent) {
+              parent.fixSelection3FromEndNodes();
+            }
+
+            node.remove();
+          }
+        });
+
+        // re-render the tree deeply so that we can recalculate the line item numbers
+        opl.fancytree("getRootNode").render(true,true);
+
+        // hide the remove items button, there are no items to remove now
+        $(this).hide();
+      })
+      .on("change", "#user_id", function() {
+        // we're changing the user, time to update the OPL user for the global scope
+        opl_usr = $(this).find(":selected").val();
+
+        updateOPLTree();
+      })
+      .on("click", ".view_history", function() {
+        let history_id = $(this).attr('id');
+        let history_text = $(this).parent().parent().find("td:nth-child(2)").text();
+
+        opl.fancytree('getTree').reload({url: '/html/opl/ajax/actions.php?action=viewOPLHistorical&id=' + history_id + "&user_id=" + opl_usr});
+
+        if($(this).attr('id') !== 'live') {
+          $(".opl_action").prop("disabled", true);
+          disabled = true;
+          $("#viewing").text(history_text);
+        } else {
+          $(".opl_action").prop("disabled", false);
+          disabled = false;
+          $("#viewing").text("");
+        }
+      })
+      .on("click", ".complete_task", function() {
+        if(!disabled) {
+          opl.fancytree("getActiveNode").remove();
+
+          // re-render the tree deeply so that we can recalculate the line item numbers
+          opl.fancytree("getRootNode").render(true,true);
+        }
+      })
+      .on("click", ".view_task_info", function() {
+        let unique_id = $(this).attr("data-uid");
+        let indexHeir = $(this).attr("data-indexHeir");
+        let title = $(this).attr("data-title");
+
+        $.post("/html/opl/ajax/row_information.php", {unique_id: unique_id, user_id: opl_usr, indexHeir: indexHeir, title: title}, function(data) {
+          $("#modalOPLInfo").html(data).modal('show');
+        });
+      })
+      .on("keyup", "#oplTaskNewNotes", function(e) {
+        // this handles auto-display of the save button on the modal popup
+        let button = $("#oplTaskInfoSave");
+
+        // keycode chart: https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
+        if((e.which >= 48 && e.which <= 90) || (e.which >= 96 && e.which <= 111) || (e.which >= 186 && e.which <= 222) || e.which === 32) {
+          if(button.is(":visible") && $(this).val().length === 0) {
+            button.hide();
+          } else {
+            button.show();
+          }
+        } else {
+          if(button.is(":visible") && $(this).val().length === 0) {
+            button.hide();
+          }
+        }
+      })
+      .on("click", "#oplTaskInfoSave", function() {
+        let unique_id = $(this).attr("data-unique-id");
+        let note = $("#oplTaskNewNotes").val();
+
+        $.post("/html/opl/ajax/actions.php?action=saveOPLRowInfo", {unique_id: unique_id, note: note, user_id: opl_usr}, function(data) {
+          $("body").append(data);
+        });
+
+        unsaved = false;
+      })
+      .on("click", "#oplRefresh", function() {
+        updateOPLTree();
+        $("#opl_warning").html('');
+      })
+      // end of OPL functions
+
+      <?php if($bouncer->validate('view_timecards')) { ?>
     // -- Navigation --
       .on("click", "#nav_timecard", function() {
         var start = Math.round(new Date().getTime()/1000);
