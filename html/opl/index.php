@@ -75,7 +75,7 @@ outputPHPErrs();
           <td class="text-md-center task_actions">
             <i class="fa fa-info-circle primary-color view_task_info" title="Task Information"></i>
             <i class="fa fa-plus-circle primary-color add_subtask" title="Add Subtask"></i>
-            <i class="fa fa-check-circle primary-color complete_task" title="Complete Task"></i>
+            <i class="fa fa-minus-circle danger-color complete_task" title="Complete Task"></i>
             <!--<i class="fa fa-exclamation-triangle primary-color task_alerts" title="Alerts"></i>-->
           </td>
           <td class="text-md-center"></td>
@@ -335,8 +335,10 @@ outputPHPErrs();
         let priorityTextbox = $tdList.eq(2).find("input");
         priorityTextbox.val(node.data.priority);
 
-        if(node.data.priority.length > 0) {
-          priorityTextbox.addClass("white_black");
+        if(node.data.priority !== undefined) {
+          if(node.data.priority.length > 0) {
+            priorityTextbox.addClass("white_black");
+          }
         }
 
         // (Index #3 is rendered by fancytree)
@@ -418,10 +420,15 @@ outputPHPErrs();
           }
           break;
         case "addChild":
-          node.editCreateNode("child", "");
+          $("#addOPLTask").trigger("click");
           break;
         case "addSibling":
-          node.editCreateNode("after", "");
+          node.editCreateNode("after", {
+            title: "New Task...",
+            creation_date: new Date().toLocaleString(),
+            time_left: '???',
+            key: generateUniqueKey()
+          });
           break;
         case "cut":
           CLIPBOARD = {mode: data.cmd, data: node};
@@ -450,6 +457,39 @@ outputPHPErrs();
           if(node !== null)
             node.setActive(false);
           break;
+        case "completeTask":
+          if(!disabled) {
+            $.confirm({
+              title: "Are you sure you want to complete this task?",
+              content: "You are about to remove task " + node.getIndexHier() + ": " + node.title + ". Are you sure?",
+              type: 'red',
+              buttons: {
+                yes: function() {
+                  node.remove();
+
+                  // re-render the tree deeply so that we can recalculate the line item numbers
+                  opl.fancytree("getRootNode").render(true,true);
+                },
+                no: function() {}
+              }
+            });
+          }
+          break;
+        case "addSubFolder":
+          $("#addOPLFolder").trigger("click");
+          break;
+        case "addFolder":
+          node.editCreateNode("after", {
+            title: "New Folder...",
+            folder: true,
+            creation_date: new Date().toLocaleString(),
+            time_left: '???',
+            key: generateUniqueKey()
+          });
+          break;
+        case "save":
+          $("#saveOPL").trigger('click');
+          break;
         default:
           alert("Unhandled command: " + data.cmd);
           return;
@@ -457,11 +497,28 @@ outputPHPErrs();
     }).on("keydown", function(e){
       var cmd = null;
 
-      // console.log($.ui.fancytree.eventToString(e));
+      console.log($.ui.fancytree.eventToString(e));
 
       switch( $.ui.fancytree.eventToString(e) ) {
         case "ctrl+shift+n":
         case "meta+shift+n": // mac: cmd+shift+n
+          cmd = "addChild";
+          break;
+        case "ctrl+shift+e":
+        case "meta+shift+e":
+          cmd = "addSibling";
+          break;
+        case "ctrl+shift+f":
+        case "meta+shift+f":
+          cmd = "addFolder";
+          break;
+        case "ctrl+f":
+        case "meta+f":
+          e.preventDefault();
+          cmd = "addSubFolder";
+          break;
+        case "ctrl+e":
+        case "meta+e":
           cmd = "addChild";
           break;
         case "ctrl+c":
@@ -476,16 +533,20 @@ outputPHPErrs();
         case "meta+x": // mac
           cmd = "cut";
           break;
-        case "ctrl+n":
-        case "meta+n": // mac
-          cmd = "addSibling";
+        case "ctrl+s":
+        case "meta+s":
+          e.preventDefault();
+          cmd = "save";
           break;
-        case "del":
-        case "meta+backspace": // mac
+        case "ctrl+o":
+        case "meta+o":
+          // TODO: Assign an SO # to lines, we're gonna show operations and edit SO's from here
           break;
+        case "ctrl+shift+up":
         case "ctrl+up":
           cmd = "moveUp";
           break;
+        case "ctrl+shift+down":
         case "ctrl+down":
           cmd = "moveDown";
           break;
@@ -513,11 +574,18 @@ outputPHPErrs();
       delegate: "span.fancytree-node",
       menu: [
         {title: "Edit <kbd>[F2]</kbd>", cmd: "rename", uiIcon: "ui-icon-pencil" },
+        {title: "Save <kbd>[Ctrl+S]</kbd>", cmd: "save", uiIcon: "ui-icon-disk" },
+        // {title: "Undo <kbd>[Ctrl+Z]</kbd>", uiIcon: "ui-icon-arrowreturnthick-1-w" },
         {title: "----"},
-        {title: "New task <kbd>[Ctrl+N]</kbd>", cmd: "addSibling", uiIcon: "ui-icon-plus" },
-        {title: "New sub-task <kbd>[Ctrl+Shift+N]</kbd>", cmd: "addChild", uiIcon: "ui-icon-arrowreturn-1-e" },
+        {title: "Modify SO <kbd>[Ctrl+O]</kbd>", cmd: "editSO", uiIcon: "ui-icon-extlink" },
         {title: "----"},
-        {title: "Complete Task <kbd>[Ctrl-M]</kbd>",  uiIcon: "ui-icon-check"}
+        {title: "New task <kbd>[Ctrl+Shift+E]</kbd>", cmd: "addSibling", uiIcon: "ui-icon-plus" },
+        {title: "New sub-task <kbd>[Ctrl+E]</kbd>", cmd: "addChild", uiIcon: "ui-icon-arrowreturn-1-e" },
+        {title: "----"},
+        {title: "New Same Level Folder <kbd>[Ctrl+Shift+F]</kbd>", cmd: "addFolder", uiIcon: "ui-icon-folder-collapsed"},
+        {title: "New Sub-Folder <kbd>[Ctrl+F]</kbd>", cmd: "addSubFolder", uiIcon: "ui-icon-folder-open"},
+        {title: "----"},
+        {title: "Complete Task", cmd: "completeTask", uiIcon: "ui-icon-circle-minus"}
       ],
       beforeOpen: function(event, ui) {
         var node = $.ui.fancytree.getNode(ui.target);

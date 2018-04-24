@@ -1,5 +1,6 @@
 @import "pricing_coversheet";
 @import "page_setup";
+@import "custom";
 
 .task_actions {
   i {
@@ -112,3 +113,12 @@ textarea {
   background-color: #000000 !important;
   font-weight: bold;
 }
+
+.task_actions {
+  font-size: 1.22em;
+
+  .danger-color {
+    color: #FF0000;
+  }
+}
+

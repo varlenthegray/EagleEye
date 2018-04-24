@@ -1,4 +1,5 @@
 // This is the document that contains all custom written SCSS outside of the bounds of what's going on
+@import "variables";
 
 // turn off all printing of the header
 @media print {
@@ -1008,5 +1009,13 @@ h5 {
 
   &:hover {
     color: darken($brand-success, 15%);
+  }
+}
+
+.dabger-color {
+  color: $brand-danger;
+
+  &:hover {
+    color: darken($brand-danger, 15%);
   }
 }

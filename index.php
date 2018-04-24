@@ -470,8 +470,7 @@ require 'includes/header_start.php';
         $.post("/html/opl/ajax/actions.php?action=save", {opl: opl_list, user: opl_usr}, function(data) {
           $("body").append(data); // return a value based on what happened with save
         }).done(function() {
-          // now, update tree based on new saved data
-          updateOPLTree();
+          // remove the warning message
           $("#opl_warning").html('');
         });
 
@@ -507,25 +506,46 @@ require 'includes/header_start.php';
       })
       .on("click", "#completeOPLNodes", function() {
         var tree = opl.fancytree("getTree"), // get the tree
-          selected = tree.getSelectedNodes(true); // define what is selected
+          selected = tree.getSelectedNodes(true); // define what is selected, true allows flag for selection type 3
 
-        $.map(selected, function (node) {
-          if(node !== null) {
-            var parent = node.parent;
+        // part of plural/singular words
+        let plural = "";
+        let multiple = "this";
 
-            if(parent) {
-              parent.fixSelection3FromEndNodes();
-            }
+        // setting up the plural and singular versions of the sentence
+        if(selected.length > 1) {
+          plural = "s";
+          multiple = "these";
+        } else {
+          plural = "";
+          multiple = "this";
+        }
 
-            node.remove();
+        $.confirm({ // a confirmation box to ensure they are intending to complete tasks
+          title: "Are you sure you want to complete " + multiple + " task" + plural + "?",
+          content: "You are about to remove " + selected.length + " task" + plural + ". Are you sure?",
+          type: 'red',
+          buttons: {
+            yes: function() {
+              $.map(selected, function (node) { // get all selected notes
+                var parent = node.parent; // set the parent node
+
+                if(parent) { // if there is a parent, we're gonna fix the selection count
+                  parent.fixSelection3FromEndNodes();
+                }
+
+                node.remove(); // remove the node
+              });
+
+              // re-render the tree deeply so that we can recalculate the line item numbers
+              opl.fancytree("getRootNode").render(true,true);
+
+              // hide the remove items button, there are no items to remove now
+              $(this).hide();
+            },
+            no: function() {} // we're not doing anything
           }
         });
-
-        // re-render the tree deeply so that we can recalculate the line item numbers
-        opl.fancytree("getRootNode").render(true,true);
-
-        // hide the remove items button, there are no items to remove now
-        $(this).hide();
       })
       .on("change", "#user_id", function() {
         // we're changing the user, time to update the OPL user for the global scope
@@ -550,11 +570,23 @@ require 'includes/header_start.php';
         }
       })
       .on("click", ".complete_task", function() {
-        if(!disabled) {
-          opl.fancytree("getActiveNode").remove();
+        let node = opl.fancytree("getActiveNode");
 
-          // re-render the tree deeply so that we can recalculate the line item numbers
-          opl.fancytree("getRootNode").render(true,true);
+        if(!disabled) {
+          $.confirm({
+            title: "Are you sure you want to complete this task?",
+            content: "You are about to remove task " + node.getIndexHier() + ": " + node.title + ". Are you sure?",
+            type: 'red',
+            buttons: {
+              yes: function() {
+                node.remove();
+
+                // re-render the tree deeply so that we can recalculate the line item numbers
+                opl.fancytree("getRootNode").render(true,true);
+              },
+              no: function() {}
+            }
+          });
         }
       })
       .on("click", ".view_task_info", function() {
