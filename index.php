@@ -625,6 +625,11 @@ require 'includes/header_start.php';
           $("body").append(data);
         });
 
+        opl.fancytree("getTree").getNodeByKey(unique_id).data.hasInfo = true; // update that specific key to now have notes (on the table)
+        $(opl.fancytree("getTree").getNodeByKey(unique_id).tr).find(">td").eq(2).find(".view_task_info").removeClass("no-info").addClass("has-info"); // set the icon as active
+
+        $("#opl_warning").html('<div class="alert alert-warning" role="alert"><strong>Note!</strong> You have unsaved changes! <i>This may not be the latest version; please check History!</i></div>');
+
         unsaved = false;
       })
       .on("click", "#oplRefresh", function() {

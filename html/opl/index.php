@@ -8,17 +8,17 @@ outputPHPErrs();
 
 <div class="card-box">
   <div class="row">
-    <div id="opl_warning"></div>
+    <div class="no-print" id="opl_warning"></div>
 
     <h1>Open Point List</h1>
 
     <div class="col-md-8">
       <table id="opl" class="pricing_table_format">
         <colgroup>
-          <col width="20px">
-          <col width="50px">
+          <col width="20px" class="no-print">
           <col width="50px">
           <col width="50px" class="no-print">
+          <col width="50px">
           <col width="450px">
           <col width="150px" class="no-print">
           <col width="80px">
@@ -56,7 +56,7 @@ outputPHPErrs();
           <td colspan="2" class="no-print"><input type="text" class="opl_filter" id="findOPL" placeholder="Find..."></td>
         </tr>
         <tr>
-          <th></th>
+          <th class="no-print"></th>
           <th class="text-md-center">#</th>
           <th class="text-md-center no-print">Actions</th>
           <th class="text-md-center">Priority</th>
@@ -71,17 +71,17 @@ outputPHPErrs();
         <tbody>
         <!-- Define a row template for all invariant markup: -->
         <tr>
-          <td class="alignCenter"></td>
+          <td class="alignCenter no-print"></td>
           <td class="pad-l5"></td>
           <td class="text-md-center task_actions no-print">
-            <i class="fa fa-info-circle primary-color view_task_info" title="Task Information"></i>
+            <i class="fa fa-info-circle no-info view_task_info" title="Task Information"></i>
             <i class="fa fa-plus-circle primary-color add_subtask" title="Add Subtask"></i>
             <i class="fa fa-minus-circle danger-color complete_task" title="Complete Task"></i>
             <!--<i class="fa fa-exclamation-triangle primary-color task_alerts" title="Alerts"></i>-->
           </td>
-          <td class="text-md-center no-print"></td>
+          <td class="text-md-center"></td>
           <td><input type="text" class="OPLPriority" value="" placeholder="" /></td>
-          <td></td>
+          <td class="pad-l5 no-print"></td>
           <td class="alignCenter">
             <select class="custom-select task_length" style="width: 100%;">
               <option value="???">???</option>
@@ -352,6 +352,10 @@ outputPHPErrs();
 
         // (Index #4 is the actions column)
         $tdList.eq(2).find(".view_task_info").attr("data-uid", node.key).attr("data-indexHeir", node.getIndexHier()).attr("data-title", node.title);
+
+        if(node.data.hasInfo === true) {
+          $tdList.eq(2).find(".view_task_info").removeClass("no-info").addClass("has-info");
+        }
 
         // (Index #5 is the creation date of that element)
         $tdList.eq(5).text(node.data.creation_date);
