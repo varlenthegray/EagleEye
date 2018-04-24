@@ -372,6 +372,7 @@ outputPHPErrs();
       debugLevel: 0,
       init: function(event, data) {
         curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
+        $(".fancytree-container").addClass("fancytree-connectors");
       }
     }).on("nodeCommand", function(event, data){
       // Custom event handler that is triggered by keydown-handler and
