@@ -322,6 +322,8 @@ require 'includes/header_start.php';
     var dash_auto_interval; // used on functions.js
     var oplUpdater; // used on html/opl/index.php
 
+    var oplFiltered = false;
+
     var userID;
 
     // -- Dashboard --
@@ -639,6 +641,22 @@ require 'includes/header_start.php';
         let node = opl.fancytree("getActiveNode");
 
         node.data.priority = $(this).val();
+      })
+      .on("click", "#oplPrint", function() {
+        opl.fancytree("getTree").filterNodes(function(node) {
+          return node.isSelected();
+        });
+
+        window.print();
+
+        opl.fancytree("getTree").clearFilter();
+      })
+      .on("click", "#oplClearSelected", function() {
+        opl.fancytree("getTree").visit(function(node){
+            node.setSelected(false);
+          });
+
+        return false;
       })
       // end of OPL functions
 

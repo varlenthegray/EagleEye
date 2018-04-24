@@ -19,8 +19,8 @@ outputPHPErrs();
           <col width="50px">
           <col width="50px">
           <col width="450px">
-          <col width="50px">
-          <col width="150px">
+          <col width="50px" class="no-print">
+          <col width="150px" class="no-print">
           <col width="80px">
           <col width="80px">
           <!--<col width="80px">
@@ -28,15 +28,17 @@ outputPHPErrs();
         </colgroup>
         <thead class="sticky">
         <tr>
-          <td colspan="4" style="padding-bottom:5px;">
+          <td colspan="4" class="no-print" style="padding-bottom:5px;">
             <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
             <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
+            <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" style="display:none;" value="Print" />
+            <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
             <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
             <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
             <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
           </td>
           <td><h4 id="viewing"></h4></td>
-          <td colspan="1">
+          <td colspan="1" class="no-print">
             <label for="user">User: </label>
             <select class="custom-select" id="user_id" style="width:80%;">
               <?php
@@ -50,15 +52,15 @@ outputPHPErrs();
               ?>
             </select>
           </td>
-          <td colspan="2"><input type="text" class="opl_filter" id="findOPL" placeholder="Find..."></td>
+          <td colspan="2" class="no-print"><input type="text" class="opl_filter" id="findOPL" placeholder="Find..."></td>
         </tr>
         <tr>
           <th></th>
           <th class="text-md-center">#</th>
           <th class="text-md-center">Priority</th>
           <th>Open Points</th>
-          <th class="text-md-center">Actions</th>
-          <th class="text-md-center">Created</th>
+          <th class="text-md-center no-print">Actions</th>
+          <th class="text-md-center no-print">Created</th>
           <th class="text-md-center">Time Left</th>
           <th class="text-md-center">Due Date</th>
           <!--<th>Relies On</th>
@@ -72,13 +74,13 @@ outputPHPErrs();
           <td class="pad-l5"></td>
           <td><input type="text" class="OPLPriority" value="" placeholder="" /></td>
           <td></td>
-          <td class="text-md-center task_actions">
+          <td class="text-md-center task_actions no-print">
             <i class="fa fa-info-circle primary-color view_task_info" title="Task Information"></i>
             <i class="fa fa-plus-circle primary-color add_subtask" title="Add Subtask"></i>
             <i class="fa fa-minus-circle danger-color complete_task" title="Complete Task"></i>
             <!--<i class="fa fa-exclamation-triangle primary-color task_alerts" title="Alerts"></i>-->
           </td>
-          <td class="text-md-center"></td>
+          <td class="text-md-center  no-print"></td>
           <td class="alignCenter">
             <select class="custom-select task_length" style="width: 100%;">
               <option value="???">???</option>
@@ -265,8 +267,12 @@ outputPHPErrs();
 
         if(selKeys.length > 0) {
           $("#completeOPLNodes").show();
+          $("#oplPrint").show();
+          $("#oplClearSelected").show();
         } else {
           $("#completeOPLNodes").hide();
+          $("#oplPrint").hide();
+          $("#oplClearSelected").hide();
         }
       },
       checkbox: true,
