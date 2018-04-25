@@ -680,7 +680,6 @@ $result = $result_qry->fetch_assoc();
     })
   ;
 
-
   var CLIPBOARD = null;
   var cabinetList = $("#cabinet_list");
   var catalog = $("#catalog_categories");

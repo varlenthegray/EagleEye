@@ -6,6 +6,83 @@ outputPHPErrs();
 
 <link href="/assets/css/opl.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
 
+<style>
+  table.fancytree-container.fancytree-ext-fixed tbody tr {
+    height: 22px;
+  }
+
+  table.fancytree-container.fancytree-ext-fixed tbody tr td:nth-child(1) {
+    width: 22px;
+  }
+
+  table.fancytree-ext-table tbody tr.fancytree-ext-fixed-hover {
+    border-color: inherit;
+    background: #f8fcfe;
+    color: inherit;
+    background: -moz-linear-gradient(top, #f8fcfe 0%, #eff9fe 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f8fcfe), color-stop(100%, #eff9fe));
+    background: -webkit-linear-gradient(top, #f8fcfe 0%, #eff9fe 100%);
+    background: -o-linear-gradient(top, #f8fcfe 0%, #eff9fe 100%);
+    background: -ms-linear-gradient(top, #f8fcfe 0%, #eff9fe 100%);
+    background: linear-gradient(to bottom, #f8fcfe 0%, #eff9fe 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f8fcfe', endColorstr='#eff9fe', GradientType=0);
+    outline: 1px solid #d8f0fa;
+  }
+
+  table.fancytree-ext-table tbody tr.fancytree-active.fancytree-ext-fixed-hover,
+  table.fancytree-ext-table tbody tr.fancytree-selected.fancytree-ext-fixed-hover {
+    border-color: inherit;
+    background: #f2f9fd;
+    color: inherit;
+    background: -moz-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f2f9fd), color-stop(100%, #c4e8fa));
+    background: -webkit-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: -o-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: -ms-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: linear-gradient(to bottom, #f2f9fd 0%, #c4e8fa 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f2f9fd', endColorstr='#c4e8fa', GradientType=0);
+    outline: 1px solid #B6E6FB;
+  }
+
+  table.fancytree-ext-table {
+    width: 100%;
+  }
+
+  table.fancytree-ext-table tbody tr.fancytree-active.fancytree-ext-fixed-hover,
+  table.fancytree-ext-table tbody tr.fancytree-selected.fancytree-ext-fixed-hover {
+    border-color: inherit;
+    background: #f2f9fd;
+    color: inherit;
+    background: -moz-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f2f9fd), color-stop(100%, #c4e8fa));
+    background: -webkit-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: -o-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: -ms-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: linear-gradient(to bottom, #f2f9fd 0%, #c4e8fa 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f2f9fd', endColorstr='#c4e8fa', GradientType=0);
+    outline: 1px solid #B6E6FB;
+  }
+
+  table.fancytree-ext-table {
+    width: 100%;
+  }
+
+  table.fancytree-ext-table tbody tr.fancytree-active.fancytree-ext-fixed-hover,
+  table.fancytree-ext-table tbody tr.fancytree-selected.fancytree-ext-fixed-hover {
+    border-color: inherit;
+    background: #f2f9fd;
+    color: inherit;
+    background: -moz-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f2f9fd), color-stop(100%, #c4e8fa));
+    background: -webkit-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: -o-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: -ms-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
+    background: linear-gradient(to bottom, #f2f9fd 0%, #c4e8fa 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f2f9fd', endColorstr='#c4e8fa', GradientType=0);
+    outline: 1px solid #B6E6FB;
+  }
+</style>
+
 <div class="card-box">
   <div class="row">
     <div class="no-print" id="opl_warning"></div>
@@ -13,98 +90,101 @@ outputPHPErrs();
     <h1>Open Point List</h1>
 
     <div class="col-md-8">
-      <table id="opl" class="pricing_table_format">
-        <colgroup>
-          <col width="20px" class="no-print">
-          <col width="50px">
-          <col width="50px" class="no-print">
-          <col width="50px">
-          <col width="450px">
-          <col width="150px" class="no-print">
-          <col width="80px">
-          <col width="80px">
-          <!--<col width="80px">
-          <col width="80px">-->
-        </colgroup>
-        <thead class="sticky">
-        <tr>
-          <td colspan="5" class="no-print" style="padding-bottom:5px;">
-            <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
-            <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
-            <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" style="display:none;" value="Print" />
-            <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
-            <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
-            <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
-            <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
+      <div style="height:70vh;width:100%;overflow:hidden;position:relative;">
+        <table id="opl" class="pricing_table_format">
+          <colgroup>
+            <col width="20px" class="no-print">
+            <col width="50px">
+            <col width="50px" class="no-print">
+            <col width="50px">
+            <col width="450px">
+            <col width="150px" class="no-print">
+            <col width="80px">
+            <col width="80px">
+            <!--<col width="80px">
+            <col width="80px">-->
+          </colgroup>
+          <thead class="sticky">
+          <tr>
+            <td colspan="5" class="no-print" style="padding-bottom:5px;">
+              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
+              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
+              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" style="display:none;" value="Print" />
+              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
+              <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
+              <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
+              <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
 
-            <h4 class="pull-right" id="viewing"></h4>
-          </td>
-          <td colspan="1" class="no-print">
-            <label for="user">User: </label>
-            <select class="custom-select" id="user_id" style="width:80%;">
-              <?php
-              $usr_qry = $dbconn->query('SELECT * FROM user WHERE account_status = TRUE AND id != 16 ORDER BY name ASC');
+              <h4 class="pull-right" id="viewing"></h4>
+            </td>
+            <td colspan="1" class="no-print">
+              <label for="user">User: </label>
+              <select class="custom-select" id="user_id" style="width:80%;">
+                <?php
+                $usr_qry = $dbconn->query('SELECT * FROM user WHERE account_status = TRUE AND id != 16 ORDER BY name ASC');
 
-              while($usr = $usr_qry->fetch_assoc()) {
-                $selected = ($usr['id'] === $_SESSION['shop_user']['id']) ? 'selected' : null;
+                while($usr = $usr_qry->fetch_assoc()) {
+                  $selected = ($usr['id'] === $_SESSION['shop_user']['id']) ? 'selected' : null;
 
-                echo "<option value='{$usr['id']}' $selected>{$usr['name']}</option>";
-              }
-              ?>
-            </select>
-          </td>
-          <td colspan="2" class="no-print"><input type="text" class="opl_filter" id="findOPL" placeholder="Find..."></td>
-        </tr>
-        <tr>
-          <th class="no-print"></th>
-          <th class="text-md-center">#</th>
-          <th class="text-md-center no-print">Actions</th>
-          <th class="text-md-center">Priority</th>
-          <th>Open Points</th>
-          <th class="text-md-center no-print">Created</th>
-          <th class="text-md-center">Time Left</th>
-          <th class="text-md-center">Due Date</th>
-          <!--<th>Relies On</th>
-          <th>Visibility</th>-->
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Define a row template for all invariant markup: -->
-        <tr>
-          <td class="alignCenter no-print"></td>
-          <td class="pad-l5"></td>
-          <td class="text-md-center task_actions no-print">
-            <i class="fa fa-info-circle no-info view_task_info" title="Task Information"></i>
-            <i class="fa fa-plus-circle primary-color add_subtask" title="Add Subtask"></i>
-            <i class="fa fa-minus-circle danger-color complete_task" title="Complete Task"></i>
-            <!--<i class="fa fa-exclamation-triangle primary-color task_alerts" title="Alerts"></i>-->
-          </td>
-          <td class="text-md-center"></td>
-          <td><input type="text" class="OPLPriority" value="" placeholder="" /></td>
-          <td class="pad-l5 no-print"></td>
-          <td class="alignCenter">
-            <select class="custom-select task_length" style="width: 100%;">
-              <option value="???">???</option>
-              <option value="< 1 Hr" class="length_green">< 1 Hr</option>
-              <option value="1-3 Hrs" class="length_green">1-3 Hrs</option>
-              <option value="3-6 Hrs" class="length_yellow">3-6 Hrs</option>
-              <option value="1 Day" class="length_yellow">1 Day</option>
-              <option value="2-3 Days" class="length_black">2-3 Days</option>
-              <option value="3+ Days" class="length_black">3+ Days</option>
-            </select>
-          </td>
-          <td class="alignCenter"><input type="text" class="due_date" value="" placeholder="Empty" /></td>
-          <!--<td class="pad-l5">RG, BB</td>-->
-          <!--<td>
-            <select>
-              <option value="public">Public</option>
-              <option value="management">Management</option>
-              <option value="private">Private</option>
-            </select>
-          </td>-->
-        </tr>
-        </tbody>
-      </table>
+                  echo "<option value='{$usr['id']}' $selected>{$usr['name']}</option>";
+                }
+                ?>
+              </select>
+            </td>
+            <td colspan="2" class="no-print"><input type="text" class="opl_filter" id="findOPL" placeholder="Find..."></td>
+          </tr>
+          <tr>
+            <th class="no-print"></th>
+            <th class="text-md-center">#</th>
+            <th class="text-md-center no-print">Actions</th>
+            <th class="text-md-center">Priority</th>
+            <th>Open Points</th>
+            <th class="text-md-center no-print">Created</th>
+            <th class="text-md-center">Time Left</th>
+            <th class="text-md-center">Due Date</th>
+            <!--<th>Relies On</th>
+            <th>Visibility</th>-->
+          </tr>
+          </thead>
+          <tbody>
+          <!-- Define a row template for all invariant markup: -->
+          <tr>
+            <td class="alignCenter no-print"></td>
+            <td class="pad-l5"></td>
+            <td class="text-md-center task_actions no-print">
+              <i class="fa fa-info-circle no-info view_task_info" title="Task Information"></i>
+              <i class="fa fa-plus-circle primary-color add_subtask" title="Add Subtask"></i>
+              <i class="fa fa-minus-circle danger-color complete_task" title="Complete Task"></i>
+              <!--<i class="fa fa-exclamation-triangle primary-color task_alerts" title="Alerts"></i>-->
+            </td>
+            <td class="text-md-center"></td>
+            <td><input type="text" class="OPLPriority" value="" placeholder="" /></td>
+            <td class="pad-l5 no-print"></td>
+            <td class="alignCenter">
+              <select class="custom-select task_length" style="width: 100%;">
+                <option value="???">???</option>
+                <option value="< 1 Hr" class="length_green">< 1 Hr</option>
+                <option value="1-3 Hrs" class="length_green">1-3 Hrs</option>
+                <option value="3-6 Hrs" class="length_yellow">3-6 Hrs</option>
+                <option value="1 Day" class="length_yellow">1 Day</option>
+                <option value="2-3 Days" class="length_black">2-3 Days</option>
+                <option value="3+ Days" class="length_black">3+ Days</option>
+              </select>
+            </td>
+            <td class="alignCenter"><input type="text" class="due_date" value="" placeholder="Empty" /></td>
+            <!--<td class="pad-l5">RG, BB</td>-->
+            <!--<td>
+              <select>
+                <option value="public">Public</option>
+                <option value="management">Management</option>
+                <option value="private">Private</option>
+              </select>
+            </td>-->
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
 
     <div class="col-md-2 col-md-offset-1 no-print">
