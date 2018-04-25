@@ -385,6 +385,21 @@ require 'includes/header_start.php';
     socket.on("catchRefresh", function() {
       location.reload();
     });
+
+    socket.on("oplEditLock", function(data) {
+      let cur_usr = '<?php echo $_SESSION['userInfo']['name']; ?>';
+
+      if(data.initiator !== cur_usr) {
+        let warningBox = $("#opl_warning");
+
+        $(".opl_action").prop("disabled", true);
+        disabled = true;
+
+        if(warningBox.html() === '') {
+          warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unable to Save!</strong> ' + data.initiator +' has edited this table since the last time you refreshed. <strong><a href="">Reload?</a></strong></div>');
+        }
+      }
+    });
     // -- End of Socket Handling --
 
     $(function() {
@@ -446,6 +461,16 @@ require 'includes/header_start.php';
       <?php }?>
     });
 
+    /** @var tree - the FancyTree to take in and convert into a minified version */
+    function getMiniTree(tree) {
+      // return the getTree from FancyTree with the toDict (no root node) excluding the following
+      return tree.fancytree("getTree").toDict(false, function(node) {
+        delete node.expanded; // remove expanded
+        delete node.selected; // remove selected
+        delete node.partsel; // remove partially selected
+      });
+    }
+
     $("body") // start of OPL functions
       .on("change", ".task_length", function() {
         $(this).removeClass("length_red length_green length_yellow length_black");
@@ -465,8 +490,10 @@ require 'includes/header_start.php';
         calcDueDate($(this));
       })
       .on("click", "#saveOPL", function() {
+        let opl_mini = getMiniTree(opl);
+
         // capture the OPL tree completely
-        let opl_list = JSON.stringify(opl.fancytree("getTree").toDict(true));
+        let opl_list = JSON.stringify(opl_mini);
 
         // send it over to the save PHP section
         $.post("/html/opl/ajax/actions.php?action=save", {opl: opl_list, user: opl_usr}, function(data) {
@@ -1335,6 +1362,7 @@ require 'includes/header_start.php';
   <script src="/assets/plugins/fancytree/jquery.fancytree.edit.js"></script>
   <script src="/assets/plugins/fancytree/jquery.fancytree.gridnav.js"></script>
   <script src="/assets/plugins/fancytree/jquery.fancytree.table.js"></script>
+  <script src="/assets/plugins/fancytree/jquery.fancytree.persist.js"></script>
 
   <script src="//cdn.jsdelivr.net/npm/ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
 

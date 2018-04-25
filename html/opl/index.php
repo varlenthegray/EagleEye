@@ -13,41 +13,40 @@ outputPHPErrs();
     <h1>Open Point List</h1>
 
     <div class="col-md-8">
-      <div style="height:70vh;width:100%;overflow:hidden;position:relative;">
-        <table id="opl" class="pricing_table_format">
-          <colgroup>
-            <col width="20px" class="no-print">
-            <col width="50px">
-            <col width="50px" class="no-print">
-            <col width="50px">
-            <col width="450px">
-            <col width="150px" class="no-print">
-            <col width="80px">
-            <col width="80px">
-            <!--<col width="80px">
-            <col width="80px">-->
-          </colgroup>
-          <thead class="sticky">
-          <tr>
-            <td colspan="5" class="no-print" style="padding-bottom:5px;">
-              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
-              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
-              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" value="Print" />
-              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
-              <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
-              <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
-              <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
+      <table id="opl" class="pricing_table_format">
+      <colgroup>
+        <col width="20px" class="no-print">
+        <col width="50px">
+        <col width="50px" class="no-print">
+        <col width="50px">
+        <col width="450px">
+        <col width="150px" class="no-print">
+        <col width="80px">
+        <col width="80px">
+        <!--<col width="80px">
+        <col width="80px">-->
+      </colgroup>
+      <thead class="sticky">
+      <tr>
+        <td colspan="5" class="no-print" style="padding-bottom:5px;">
+          <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
+          <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
+          <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" value="Print" />
+          <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
+          <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
+          <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
+          <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
 
-              <h4 class="pull-right" id="viewing"></h4>
-            </td>
-            <td colspan="1" class="no-print">
-              <label for="user">User: </label>
-              <select class="custom-select" id="user_id" style="width:80%;">
-                <?php
-                $usr_qry = $dbconn->query('SELECT * FROM user WHERE account_status = TRUE AND id != 16 ORDER BY name ASC');
+          <h4 class="pull-right" id="viewing"></h4>
+        </td>
+        <td colspan="1" class="no-print">
+          <label for="user">User: </label>
+          <select class="custom-select" id="user_id" style="width:80%;">
+            <?php
+            $usr_qry = $dbconn->query('SELECT * FROM user WHERE account_status = TRUE AND id != 16 ORDER BY name ASC');
 
-                while($usr = $usr_qry->fetch_assoc()) {
-                  $selected = ($usr['id'] === $_SESSION['shop_user']['id']) ? 'selected' : null;
+            while($usr = $usr_qry->fetch_assoc()) {
+              $selected = ($usr['id'] === $_SESSION['shop_user']['id']) ? 'selected' : null;
 
                   echo "<option value='{$usr['id']}' $selected>{$usr['name']}</option>";
                 }
@@ -107,7 +106,7 @@ outputPHPErrs();
           </tbody>
         </table>
       </div>
-    </div>
+
 
     <div class="col-md-2 col-md-offset-1 no-print">
       <h4>History</h4>
@@ -244,7 +243,7 @@ outputPHPErrs();
 
   //TODO: Fix this!
   oplUpdater = setInterval(function() {
-    let changedOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
+    /*let changedOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
 
     if(changedOpl === curOpl) {
       $("#opl_warning").html('');
@@ -252,7 +251,7 @@ outputPHPErrs();
     } else {
       $("#opl_warning").html('<div class="alert alert-warning" role="alert"><strong>Note!</strong> You have unsaved changes! <i>This may not be the latest version; please check History!</i></div>');
       opl_history.fancytree('getTree').reload({url: "/html/opl/ajax/actions.php?action=getOPLHistory&user_id=" + opl_usr});
-    }
+    }*/
   }, 15000);
 
   $(function() {
@@ -288,7 +287,7 @@ outputPHPErrs();
       quicksearch: true,        // Jump to nodes when pressing first character
       source: { url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + opl_usr},
       // source: { url: "/html/opl/all.php"},
-      extensions: ["edit", "dnd", "table", "gridnav", "filter"],
+      extensions: ["edit", "dnd", "table", "gridnav", "filter", "persist"],
       dnd: {
         preventVoidMoves: true,
         preventRecursiveMoves: true,
@@ -307,7 +306,19 @@ outputPHPErrs();
       edit: {
         triggerStart: ["f2", "shift+click", "mac+enter"],
         edit: function(event, data) {
+          let warningBox = $("#opl_warning");
+
           data.input.select();
+
+          // we're now editing a new line, it's time to alert the system that an edit is taking place
+          socket.emit("oplEditing", {opl_usr: opl_usr, initiator: '<?php echo $_SESSION['userInfo']['name']; ?>'});
+
+          // TODO: Finish this, it's currently not locking out some of the Right Click options and it's not disabling edit
+          // TODO: Also, how is coming into the page DURING changes going to be impacted by this? Will this still transfer?
+
+          if(warningBox.html() === '') {
+            warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unsaved Changes!</strong> This table is currently locked for editing by you as you have unsaved changes. <strong><a href="">Save</a></strong> or <strong><a href="">Discard</a></strong> your changes?</div>');
+          }
         },
         close: function(event, data) {
           if( data.save && data.isNew ){
