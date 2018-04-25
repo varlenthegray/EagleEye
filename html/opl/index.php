@@ -287,6 +287,7 @@ outputPHPErrs();
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
       source: { url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + opl_usr},
+      // source: { url: "/html/opl/all.php"},
       extensions: ["edit", "dnd", "table", "gridnav", "filter"],
       dnd: {
         preventVoidMoves: true,
@@ -509,7 +510,7 @@ outputPHPErrs();
     }).on("keydown", function(e){
       var cmd = null;
 
-      console.log($.ui.fancytree.eventToString(e));
+      // console.log($.ui.fancytree.eventToString(e));
 
       switch( $.ui.fancytree.eventToString(e) ) {
         case "ctrl+shift+n":
@@ -523,6 +524,12 @@ outputPHPErrs();
         case "ctrl+shift+f":
         case "meta+shift+f":
           cmd = "addFolder";
+          break;
+        case "ctrl+r": // beacause this is refresh and I lost my changes :(
+        case "meta+r":
+        case "ctrl+shift+r":
+        case "meta+shift+r":
+          e.preventDefault();
           break;
         case "ctrl+f":
         case "meta+f":
