@@ -245,19 +245,6 @@ outputPHPErrs();
     socket.emit("oplSaved", opl_usr);
   });
 
-  //TODO: Fix this!
-  oplUpdater = setInterval(function() {
-    /*let changedOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
-
-    if(changedOpl === curOpl) {
-      $("#opl_warning").html('');
-      //updateOPLTree();
-    } else {
-      $("#opl_warning").html('<div class="alert alert-warning" role="alert"><strong>Note!</strong> You have unsaved changes! <i>This may not be the latest version; please check History!</i></div>');
-      opl_history.fancytree('getTree').reload({url: "/html/opl/ajax/actions.php?action=getOPLHistory&user_id=" + opl_usr});
-    }*/
-  }, 15000);
-
   $(function() {
     opl_usr = $("#user_id").find(":selected").val(); // set the user ID
 
