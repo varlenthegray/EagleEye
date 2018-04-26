@@ -60,6 +60,7 @@ var socket = require('socket.io').listen(server); // setup socketio connection
  * Begin global variable declaration
  *****************************************/
 var conn = {}; // storage for everything, expanding and contracting as needed
+var oplEditing = {}; // information on what is currently being edited for the Open Point List
 
 /******************************************
  * End global variable declaration
@@ -76,6 +77,9 @@ function reportErr(client, e) {
  * End function declaration
  * ----------------------------------------
  * Begin socket handling
+ * ----------------------------------------
+ * @var socket = announce to entire connection pool
+ * @var client = announce to that single client connection
  *****************************************/
 socket.on('connect', function (client) {
   // Create an empty object DIRECTLY related to the client.id (socket connection for that individual) called user object
@@ -143,11 +147,32 @@ socket.on('connect', function (client) {
   // reception that someone is editing the OPL
   client.on("oplEditing", function(data) {
     try {
-      console.log(data);
+      // assign the server editing variable to opl_usr, we're going to delete upon save
+      oplEditing[data.opl_usr] = data;
 
-      socket.emit("oplEditLock", data);
+      socket.emit("refreshOPLEditStatus");
     } catch(e) {
       console.log("oplEditing Error: " + e);
+    }
+  });
+
+  // done editing the OPL for a specific user
+  client.on("oplSaved", function(usr) {
+    try {
+      delete oplEditing[usr];
+
+      socket.emit("refreshOPLEditStatus");
+    } catch(e) {
+      console.log("oplSaved Error: " + e);
+    }
+  });
+
+  // get the current status of OPL editing
+  client.on("getOPLEditingStatus", function(list) {
+    try {
+      client.emit("OPLEditStatusUpdate", oplEditing[list]);
+    } catch(e) {
+      console.log("getOPLEditingStatus Error: " + e);
     }
   });
 });

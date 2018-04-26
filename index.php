@@ -320,7 +320,6 @@ require 'includes/header_start.php';
     var wc_auto_interval; // used on functions.js
     var dash_auto_interval; // used on functions.js
     var oplUpdater; // used on html/opl/index.php
-    var oplEditContainer; // used on html/opl/index.php
 
     var oplFiltered = false;
 
@@ -354,6 +353,7 @@ require 'includes/header_start.php';
       $("#server_failure").hide();
     });
 
+    // if there's an unhandled error
     socket.on("err", function(e) {
       $.alert({
         title: 'An error has occurred!',
@@ -364,6 +364,7 @@ require 'includes/header_start.php';
       });
     });
 
+    // if there's a queue update
     socket.on("catchQueueUpdate", function() {
       if(currentPage === 'dashboard' || currentPage === 'eng_report') {
         updateOpQueue();
@@ -378,27 +379,48 @@ require 'includes/header_start.php';
       }
     });
 
+    // when disconnecting from the socket
     socket.on("disconnect", function() {
       $("#server_failure").show();
     });
 
+    // global function to refresh (and interrupt) everyone
     socket.on("catchRefresh", function() {
       location.reload();
     });
 
-    socket.on("oplEditLock", function(data) {
-      let cur_usr = '<?php echo $_SESSION['userInfo']['name']; ?>';
+    // an update has been done related to the OPL Edit Status, get the latest update from the server
+    socket.on("refreshOPLEditStatus", function() {
+      socket.emit("getOPLEditingStatus", opl_usr);
+    });
 
-      if(data.initiator !== cur_usr) {
+    // when requesting the current status of all OPL edits
+    socket.on("OPLEditStatusUpdate", function(data) {
+      if(data !== null) {
+        let cur_usr = '<?php echo $_SESSION['userInfo']['name']; ?>';
         let warningBox = $("#opl_warning");
 
-        $(".opl_action").prop("disabled", true);
-        disabled = true;
+        if(data.initiator !== cur_usr) {
+          $(".opl_action").prop("disabled", true);
+          disabled = true;
 
-        if(warningBox.html() === '') {
-          warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unable to Save!</strong> ' + data.initiator +' has edited this table since the last time you refreshed. <strong><a href="">Reload?</a></strong></div>');
+          let editStarted = new Date(data.timestamp).toLocaleString();
+
+          warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unable to Save!</strong> ' + data.initiator +' is editing this report as of ' + editStarted +'.');
+        } else {
+          $(".opl_action").prop("disabled", false);
+          disabled = false;
+
+          warningBox.html('<div class="alert alert-danger" role="alert"><strong>Unsaved Changes!</strong> This table is currently locked for editing by you due to unsaved changes. <strong><a href="#" onclick="$(\'#saveOPL\').trigger(\'click\');">Save</a></strong> or <strong><a href="#" onclick="$(\'#oplRefresh\').trigger(\'click\');">Discard</a></strong> your changes?</div>');
         }
+      } else {
+        $(".opl_action").prop("disabled", false);
+        disabled = false;
+
+        $("#opl_warning").html('');
       }
+
+      opl_history.fancytree('getTree').reload({url: "/html/opl/ajax/actions.php?action=getOPLHistory&user_id=" + opl_usr});
     });
     // -- End of Socket Handling --
 
@@ -501,6 +523,7 @@ require 'includes/header_start.php';
         }).done(function() {
           // remove the warning message
           $("#opl_warning").html('');
+          socket.emit("oplSaved", opl_usr);
         });
 
         unsaved = false;
@@ -581,6 +604,8 @@ require 'includes/header_start.php';
         opl_usr = $(this).find(":selected").val();
 
         updateOPLTree();
+
+        socket.emit("getOPLEditingStatus", opl_usr);
       })
       .on("click", ".view_history", function() {
         let history_id = $(this).attr('id');
@@ -661,6 +686,7 @@ require 'includes/header_start.php';
       })
       .on("click", "#oplRefresh", function() {
         updateOPLTree();
+        socket.emit("oplSaved", opl_usr);
         $("#opl_warning").html('');
       })
       .on("change", ".OPLPriority", function() {

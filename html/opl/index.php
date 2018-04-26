@@ -241,6 +241,10 @@ outputPHPErrs();
     curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
   }
 
+  $(window).unload(function() {
+    socket.emit("oplSaved", opl_usr);
+  });
+
   //TODO: Fix this!
   oplUpdater = setInterval(function() {
     /*let changedOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
@@ -653,5 +657,7 @@ outputPHPErrs();
         $tdList.eq(3).find("i").attr("id", node.data.id);
       }
     });
+
+    socket.emit("getOPLEditingStatus", opl_usr);
   });
 </script>
