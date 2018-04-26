@@ -2,6 +2,12 @@
 @import "page_setup";
 @import "custom";
 
+@media print {
+  table.fancytree-ext-table.fancytree-treefocus tbody tr.fancytree-selected {
+    background-color: transparent !important;
+  }
+}
+
 .task_actions {
   i {
     cursor: pointer;
