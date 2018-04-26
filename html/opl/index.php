@@ -6,83 +6,6 @@ outputPHPErrs();
 
 <link href="/assets/css/opl.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
 
-<style>
-  table.fancytree-container.fancytree-ext-fixed tbody tr {
-    height: 22px;
-  }
-
-  table.fancytree-container.fancytree-ext-fixed tbody tr td:nth-child(1) {
-    width: 22px;
-  }
-
-  table.fancytree-ext-table tbody tr.fancytree-ext-fixed-hover {
-    border-color: inherit;
-    background: #f8fcfe;
-    color: inherit;
-    background: -moz-linear-gradient(top, #f8fcfe 0%, #eff9fe 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f8fcfe), color-stop(100%, #eff9fe));
-    background: -webkit-linear-gradient(top, #f8fcfe 0%, #eff9fe 100%);
-    background: -o-linear-gradient(top, #f8fcfe 0%, #eff9fe 100%);
-    background: -ms-linear-gradient(top, #f8fcfe 0%, #eff9fe 100%);
-    background: linear-gradient(to bottom, #f8fcfe 0%, #eff9fe 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f8fcfe', endColorstr='#eff9fe', GradientType=0);
-    outline: 1px solid #d8f0fa;
-  }
-
-  table.fancytree-ext-table tbody tr.fancytree-active.fancytree-ext-fixed-hover,
-  table.fancytree-ext-table tbody tr.fancytree-selected.fancytree-ext-fixed-hover {
-    border-color: inherit;
-    background: #f2f9fd;
-    color: inherit;
-    background: -moz-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f2f9fd), color-stop(100%, #c4e8fa));
-    background: -webkit-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: -o-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: -ms-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: linear-gradient(to bottom, #f2f9fd 0%, #c4e8fa 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f2f9fd', endColorstr='#c4e8fa', GradientType=0);
-    outline: 1px solid #B6E6FB;
-  }
-
-  table.fancytree-ext-table {
-    width: 100%;
-  }
-
-  table.fancytree-ext-table tbody tr.fancytree-active.fancytree-ext-fixed-hover,
-  table.fancytree-ext-table tbody tr.fancytree-selected.fancytree-ext-fixed-hover {
-    border-color: inherit;
-    background: #f2f9fd;
-    color: inherit;
-    background: -moz-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f2f9fd), color-stop(100%, #c4e8fa));
-    background: -webkit-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: -o-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: -ms-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: linear-gradient(to bottom, #f2f9fd 0%, #c4e8fa 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f2f9fd', endColorstr='#c4e8fa', GradientType=0);
-    outline: 1px solid #B6E6FB;
-  }
-
-  table.fancytree-ext-table {
-    width: 100%;
-  }
-
-  table.fancytree-ext-table tbody tr.fancytree-active.fancytree-ext-fixed-hover,
-  table.fancytree-ext-table tbody tr.fancytree-selected.fancytree-ext-fixed-hover {
-    border-color: inherit;
-    background: #f2f9fd;
-    color: inherit;
-    background: -moz-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #f2f9fd), color-stop(100%, #c4e8fa));
-    background: -webkit-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: -o-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: -ms-linear-gradient(top, #f2f9fd 0%, #c4e8fa 100%);
-    background: linear-gradient(to bottom, #f2f9fd 0%, #c4e8fa 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f2f9fd', endColorstr='#c4e8fa', GradientType=0);
-    outline: 1px solid #B6E6FB;
-  }
-</style>
-
 <div class="card-box">
   <div class="row">
     <div class="no-print" id="opl_warning"></div>
@@ -157,8 +80,8 @@ outputPHPErrs();
               <i class="fa fa-minus-circle danger-color complete_task" title="Complete Task"></i>
               <!--<i class="fa fa-exclamation-triangle primary-color task_alerts" title="Alerts"></i>-->
             </td>
-            <td class="text-md-center"></td>
-            <td><input type="text" class="OPLPriority" value="" placeholder="" /></td>
+            <td class="text-md-center"><input type="text" class="OPLPriority" value="" placeholder="" /></td>
+            <td></td>
             <td class="pad-l5 no-print"></td>
             <td class="alignCenter">
               <select class="custom-select task_length" style="width: 100%;">
@@ -184,7 +107,6 @@ outputPHPErrs();
           </tbody>
         </table>
       </div>
-
     </div>
 
     <div class="col-md-2 col-md-offset-1 no-print">
