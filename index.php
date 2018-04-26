@@ -648,9 +648,7 @@ require 'includes/header_start.php';
         node.data.priority = $(this).val();
       })
       .on("click", "#oplPrint", function() {
-        console.log(opl.fancytree("getTree").getSelectedNodes.length);
-
-        if(opl.fancytree("getTree").getSelectedNodes.length > 1) {
+        if(opl.fancytree("getTree").getSelectedNodes().length > 1) {
           opl.fancytree("getTree").filterNodes(function(node) {
             return node.isSelected();
           });
