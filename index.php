@@ -312,7 +312,6 @@ require 'includes/header_start.php';
     $usr = $usr_qry->fetch_assoc();
     ?>
 
-
     var currentPage = '<?php echo $usr['default_dashboard']; ?>';
     var scrollPosition = 0;
 
@@ -321,6 +320,7 @@ require 'includes/header_start.php';
     var wc_auto_interval; // used on functions.js
     var dash_auto_interval; // used on functions.js
     var oplUpdater; // used on html/opl/index.php
+    var oplEditContainer; // used on html/opl/index.php
 
     var oplFiltered = false;
 
