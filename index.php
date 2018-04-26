@@ -493,6 +493,10 @@ require 'includes/header_start.php';
       });
     }
 
+    function sendOPLEdit(opl_usr) {
+      socket.emit("oplEditing", {opl_usr: opl_usr, initiator: '<?php echo $_SESSION['userInfo']['name']; ?>', timestamp: new Date().getTime()});
+    }
+
     $("body") // start of OPL functions
       .on("change", ".task_length", function() {
         $(this).removeClass("length_red length_green length_yellow length_black");
@@ -503,6 +507,7 @@ require 'includes/header_start.php';
         node.data.time_left = $(this).find(":selected").val();
 
         calcDueDate($(this));
+        sendOPLEdit(opl_usr);
       })
       .on("change", ".due_date", function() {
         let node = opl.fancytree("getActiveNode");
@@ -510,6 +515,7 @@ require 'includes/header_start.php';
         node.data.due_date = $(this).val();
 
         calcDueDate($(this));
+        sendOPLEdit(opl_usr);
       })
       .on("click", "#saveOPL", function() {
         let opl_mini = getMiniTree(opl);
@@ -547,6 +553,8 @@ require 'includes/header_start.php';
           time_left: '???',
           key: generateUniqueKey()
         });
+
+        sendOPLEdit(opl_usr);
       })
       .on("click", "#addOPLTask, .add_subtask", function() {
         if(!disabled) opl.fancytree("getActiveNode").editCreateNode("child", {
@@ -555,6 +563,8 @@ require 'includes/header_start.php';
           time_left: '???',
           key: generateUniqueKey()
         });
+
+        sendOPLEdit(opl_usr);
       })
       .on("click", "#completeOPLNodes", function() {
         var tree = opl.fancytree("getTree"), // get the tree
@@ -637,6 +647,8 @@ require 'includes/header_start.php';
 
                 // re-render the tree deeply so that we can recalculate the line item numbers
                 opl.fancytree("getRootNode").render(true,true);
+
+                sendOPLEdit(opl_usr);
               },
               no: function() {}
             }

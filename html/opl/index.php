@@ -261,9 +261,11 @@ outputPHPErrs();
         if(selKeys.length > 0) {
           $("#completeOPLNodes").show();
           $("#oplClearSelected").show();
+          sendOPLEdit(opl_usr);
         } else {
           $("#completeOPLNodes").hide();
           $("#oplClearSelected").hide();
+          socket.emit("oplSaved", opl_usr);
         }
       },
       checkbox: true,
@@ -302,7 +304,7 @@ outputPHPErrs();
           data.input.select();
 
           // we're now editing a new line, it's time to alert the system that an edit is taking place
-          socket.emit("oplEditing", {opl_usr: opl_usr, initiator: '<?php echo $_SESSION['userInfo']['name']; ?>', timestamp: new Date().getTime()});
+          sendOPLEdit(opl_usr);
 
           // TODO: Finish this, it's currently not locking out some of the Right Click options and it's not disabling edit
           // TODO: Also, how is coming into the page DURING changes going to be impacted by this? Will this still transfer?
