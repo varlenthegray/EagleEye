@@ -648,13 +648,19 @@ require 'includes/header_start.php';
         node.data.priority = $(this).val();
       })
       .on("click", "#oplPrint", function() {
-        opl.fancytree("getTree").filterNodes(function(node) {
-          return node.isSelected();
-        });
+        console.log(opl.fancytree("getTree").getSelectedNodes.length);
 
-        window.print();
+        if(opl.fancytree("getTree").getSelectedNodes.length > 1) {
+          opl.fancytree("getTree").filterNodes(function(node) {
+            return node.isSelected();
+          });
 
-        opl.fancytree("getTree").clearFilter();
+          window.print();
+
+          opl.fancytree("getTree").clearFilter();
+        } else {
+          window.print();
+        }
       })
       .on("click", "#oplClearSelected", function() {
         opl.fancytree("getTree").visit(function(node){

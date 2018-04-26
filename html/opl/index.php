@@ -32,7 +32,7 @@ outputPHPErrs();
             <td colspan="5" class="no-print" style="padding-bottom:5px;">
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
-              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" style="display:none;" value="Print" />
+              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" value="Print" />
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
               <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
               <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
@@ -270,11 +270,9 @@ outputPHPErrs();
 
         if(selKeys.length > 0) {
           $("#completeOPLNodes").show();
-          $("#oplPrint").show();
           $("#oplClearSelected").show();
         } else {
           $("#completeOPLNodes").hide();
-          $("#oplPrint").hide();
           $("#oplClearSelected").hide();
         }
       },
