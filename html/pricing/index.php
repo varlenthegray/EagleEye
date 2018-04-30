@@ -230,36 +230,6 @@ $result = $result_qry->fetch_assoc();
     <div class="col-md-2 pricing_left_nav no-print sticky">
       <div class="sticky nav_filter">
         <div class="form-group">
-          <label for="catalog">Catalog</label>
-          <select class="form-control" name="catalog" id="catalog">
-            <?php
-            $cat_id = 1;
-
-            // TODO: At some point, limit this based on user catalog mapping (so that only certain users can access certain catalogs)
-            $cat_qry = $dbconn->query("SELECT id, name  FROM pricing_catalog pc WHERE enabled = TRUE ORDER BY sort_order ASC;");
-
-            if($cat_qry->num_rows > 0) {
-              while($cat = $cat_qry->fetch_assoc()) {
-                $room_cat_qry = $dbconn->query("SELECT catalog_id FROM pricing_cabinet_list WHERE room_id = $room_id;");
-
-                if($room_cat_qry->num_rows > 0) {
-                  $room_cat = $room_cat_qry->fetch_assoc();
-                  $cat_id = $room_cat['catalog_id'];
-                }
-
-                if($cat_id === $cat['id']) {
-                  $selected = 'selected';
-                } else {
-                  $selected = null;
-                }
-
-                echo "<option id='{$cat['id']}' $selected>{$cat['name']}</option>";
-              }
-            }
-            ?>
-          </select>
-        </div>
-        <div class="form-group">
           <label for="treeFilter">Search Catalog</label>
           <input type="text" class="form-control fc-simple ignoreSaveAlert" id="treeFilter" placeholder="Find" width="100%" >
         </div>
@@ -747,22 +717,6 @@ $result = $result_qry->fetch_assoc();
         autofocusInput: false,
         handleCursorKeys: true
       },
-      /*lazyLoad: function(event, data) { // may take advantage of this in the future
-        data.result = {url: "../demo/ajax-sub2.json"};
-      },*/
-      /*createNode: function(event, data) {
-        var node = data.node,
-          $tdList = $(node.tr).find(">td");
-
-        // Span the remaining columns if it's a folder.
-        // We can do this in createNode instead of renderColumns, because
-        // the `isFolder` status is unlikely to change later
-        if( node.isFolder() ) {
-          $tdList.eq(2)
-            .prop("colspan", 6)
-            .nextAll().remove();
-        }
-      },*/
       renderColumns: function(event, data) {
         // this section handles the column data itself
         var node = data.node, $tdList = $(node.tr).find(">td");
@@ -971,7 +925,7 @@ $result = $result_qry->fetch_assoc();
 
     // this is the navigation menu on the left side
     catalog.fancytree({
-      source: { url: "/html/pricing/ajax/nav_menu.php?catalog=<?php echo $cat_id; ?>" },
+      source: { url: "/html/pricing/ajax/nav_menu.php" },
       extensions: ["filter"],
       debugLevel: 0,
       filter: {
