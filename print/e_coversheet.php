@@ -626,8 +626,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <td class="text-md-right total_text">$<span id="final_freight"></span></td>
         </tr>
         <tr class="border_thin_bottom">
-          <td class="total_text"><input type="checkbox" id="final_jobsite_check" class="no-print"> <label for="final_jobsite_check">Jobsite Delivery:</label></td>
-          <td class="total_text">&nbsp;</td>
+          <td class="total_text" colspan="2"><input type="checkbox" id="final_jobsite_check" class="no-print"> <label for="final_jobsite_check" style="padding-right:15px;">Jobsite Delivery</label> <input type="checkbox" id="final_cust_pickup" class="no-print"> <label for="final_cust_pickup" style="padding-right:15px;">Pickup</label> <input type="checkbox" id="final_multi_so" class="no-print"> <label for="final_multi_so">Multi-room SO</label></td>
           <td class="text-md-right total_text">$<span id="final_jobsite"></span></td>
         </tr>
         <tr class="border_thin_bottom">
