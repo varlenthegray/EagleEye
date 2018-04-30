@@ -14,14 +14,13 @@ require '../../../includes/header_start.php';
 
         <table id="category_management" class="pricing_table_format">
           <colgroup>
-            <col width="20px" class="no-print">
             <col width="50px">
             <col width="50px" class="no-print">
             <col width="450px">
           </colgroup>
           <thead class="sticky">
           <tr>
-            <td colspan="4" class="no-print" style="padding-bottom:5px;">
+            <td colspan="3" class="no-print" style="padding-bottom:5px;">
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Category" />
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" value="Print" />
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
@@ -32,7 +31,6 @@ require '../../../includes/header_start.php';
             </td>
           </tr>
           <tr>
-            <th class="no-print"></th>
             <th class="pad-l5">#</th>
             <th class="text-md-center no-print">Actions</th>
             <th class="pad-l5">Category</th>
@@ -41,7 +39,6 @@ require '../../../includes/header_start.php';
           <tbody>
           <!-- Define a row template for all invariant markup: -->
           <tr>
-            <td class="alignCenter no-print"></td>
             <td class="pad-l5"></td>
             <td class="text-md-center task_actions no-print"></td>
             <td></td>
@@ -67,7 +64,6 @@ require '../../../includes/header_start.php';
 
       // console.log(selKeys.join(", "));
     },
-    checkbox: true,
     selectMode: 2,
     titlesTabbable: true,     // Add all node titles to TAB chain
     quicksearch: true,        // Jump to nodes when pressing first character
@@ -99,8 +95,7 @@ require '../../../includes/header_start.php';
     },
     table: {
       indentation: 20,
-      nodeColumnIdx: 3,
-      checkboxColumnIdx: 0
+      nodeColumnIdx: 2
     },
     gridnav: {
       autofocusInput: false,
@@ -118,7 +113,7 @@ require '../../../includes/header_start.php';
       // Set column #1 info from node data:
 
       // (Index #1 is the index heir level)
-      $tdList.eq(1).text(node.getIndexHier());
+      $tdList.eq(0).text(node.getIndexHier());
 
       // (Index #3 is rendered by fancytree)
 
