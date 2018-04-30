@@ -534,7 +534,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
                 <td class="text-md-right">$<span id="sample_block_price"></span></td>
               </tr>
               <tr>
-                <td colspan="3" style="padding-left:16px;">5 1/4" x 6 1/8"</td>
+                <td colspan="3" style="padding-left:16px;">3" x 6"</td>
               </tr>
               <tr>
                 <td><input type="checkbox" id="door_only"> <label for="door_only">Door Only</label></td>
@@ -750,7 +750,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           }
 
           if($info['sample_block_ordered'] > 0) {
-            displaySampleStatus('Sample Block (5 1/4" x 6 1/8")', 'sample_block_ordered');
+            displaySampleStatus('Sample Block (3" x 6")', 'sample_block_ordered');
           }
 
           if($info['door_only_ordered'] > 0) {
