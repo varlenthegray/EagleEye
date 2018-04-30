@@ -1,0 +1,46 @@
+@import "page_setup";
+@import "custom";
+
+.nav_panel {
+  .cell {
+    position: relative;
+    width: 20vh;
+    height: 20vh;
+    border-radius: 14px;
+    border: 5px solid #3b3b3b;
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#b5bdc8+0,828c95+36,28343b+100 */
+    background: #b5bdc8; /* Old browsers */
+    background: -moz-radial-gradient(center, ellipse cover, #b5bdc8 0%, #828c95 36%, #28343b 100%); /* FF3.6-15 */
+    background: -webkit-radial-gradient(center, ellipse cover, #b5bdc8 0%,#828c95 36%,#28343b 100%); /* Chrome10-25,Safari5.1-6 */
+    background: radial-gradient(ellipse at center, #b5bdc8 0%,#828c95 36%,#28343b 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b5bdc8', endColorstr='#28343b',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+    float: left;
+    font-size: 14vh;
+    text-align: center;
+    color: #FFFFFF;
+    transition: opacity 250ms ease-in-out;
+    -moz-transition: opacity 250ms ease-in-out;
+    -webkit-transition: opacity 250ms ease-in-out;
+
+    .inside {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+
+      div {
+        font-size: 12px;
+        position: absolute;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+      }
+    }
+
+    &:hover {
+      opacity: .85;
+      cursor: pointer;
+    }
+  }
+}
