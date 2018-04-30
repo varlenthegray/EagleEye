@@ -5,8 +5,6 @@ switch($_REQUEST['action']) {
   case 'getCategoryList':
     //outputPHPErrs();
 
-    $catalog_id = (!empty(sanitizeInput($_REQUEST['catalog']))) ? sanitizeInput($_REQUEST['catalog']) : 1;
-
     // Brandon Christensen 4/14/2018
     $result = array();
 
@@ -14,7 +12,7 @@ switch($_REQUEST['action']) {
       pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku
     FROM pricing_categories pc
       LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id 
-    WHERE pc.catalog_id = $catalog_id AND parent = ? ORDER BY parent, sort_order, catID ASC");
+    WHERE pc.catalog_id = 1 AND parent = ? ORDER BY parent, sort_order, catID ASC");
 
     function makeTree($parent_id) {
       global $parent_qry;
