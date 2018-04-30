@@ -22,11 +22,9 @@ require '../../../includes/header_start.php';
           <thead class="sticky">
           <tr>
             <td colspan="4" class="no-print" style="padding-bottom:5px;">
-              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
-              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
+              <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Category" />
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" value="Print" />
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
-              <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
               <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
               <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
 
@@ -56,7 +54,10 @@ require '../../../includes/header_start.php';
 </div>
 
 <script>
-  $("#category_management").fancytree({
+  var CLIPBOARD = null;
+  var cat_mgmt = $("#category_management");
+
+  cat_mgmt.fancytree({
     select: function(event, data) {
       var selNodes = data.tree.getSelectedNodes();
       // convert to title/key array
@@ -70,7 +71,7 @@ require '../../../includes/header_start.php';
     selectMode: 2,
     titlesTabbable: true,     // Add all node titles to TAB chain
     quicksearch: true,        // Jump to nodes when pressing first character
-    source: { url: "/html/opl/all.php"},
+    source: { url: "/html/pricing/ajax/admin/category_actions.php?action=getCategoryList"},
     extensions: ["edit", "dnd", "table", "gridnav", "filter", "persist"],
     dnd: {
       preventVoidMoves: true,
@@ -92,7 +93,7 @@ require '../../../includes/header_start.php';
       close: function(event, data) {
         if( data.save && data.isNew ){
           // Quick-enter: add new nodes until we hit [enter] on an empty title
-          $("#category_management").trigger("nodeCommand", {cmd: "addSibling"});
+          cat_mgmt.trigger("nodeCommand", {cmd: "addSibling"});
         }
       }
     },
@@ -335,7 +336,7 @@ require '../../../includes/header_start.php';
   });
 
   /* Context menu (https://github.com/mar10/jquery-ui-contextmenu) */
-  $("#category_management").contextmenu({
+  cat_mgmt.contextmenu({
     delegate: "span.fancytree-node",
     menu: [
       {title: "Edit <kbd>[F2]</kbd>", cmd: "rename", uiIcon: "ui-icon-pencil" },
@@ -354,7 +355,7 @@ require '../../../includes/header_start.php';
     ],
     beforeOpen: function(event, ui) {
       var node = $.ui.fancytree.getNode(ui.target);
-      $("#tree").contextmenu("enableEntry", "paste", !!CLIPBOARD);
+      cat_mgmt.contextmenu("enableEntry", "paste", !!CLIPBOARD);
       node.setActive();
     },
     select: function(event, ui) {
