@@ -45,7 +45,7 @@ function makeTree($parent_id) {
     foreach($data as $item) {
       if (!empty($item['sku'])) {
         if (!isset($sku_items[$item['item_catID']])) {
-          $object = array('key' => $item['catID'], 'title' => $item['name'], 'children' => array());
+          $object = array('key' => $item['catID'], 'title' => $item['name'], 'folder' => true, 'children' => array());
           $sku_items[$item['item_catID']] = $object;
           $ret[] = &$sku_items[$item['item_catID']];
         }
@@ -60,7 +60,7 @@ function makeTree($parent_id) {
           $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $title, 'is_item' => true);
         }
       } else {
-        $object = array('key' => $item['catID'], 'title' => $item['name']);
+        $object = array('key' => $item['catID'], 'folder' => true, 'title' => $item['name']);
 
         $children = makeTree($item['catID']);
 
