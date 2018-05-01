@@ -40,7 +40,7 @@ switch($_REQUEST['action']) {
   case 'getOPL':
     $user = sanitizeInput($_REQUEST['user_id']);
 
-    $opl_qry = $dbconn->query("SELECT opl FROM opl_users WHERE user_id = $user");
+    $opl_qry = $dbconn->query("SELECT opl FROM opl_users WHERE user_id = 42");
 
     if($opl_qry->num_rows !== 0) {
       $opl = $opl_qry->fetch_assoc();
