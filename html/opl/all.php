@@ -6,15 +6,19 @@ outputPHPErrs();
 $output = array();
 $i = 0;
 
-$opl_qry = $dbconn->query('SELECT ou.opl, u.name FROM opl_users ou LEFT JOIN user u on ou.user_id = u.id;');
+$opl_qry = $dbconn->query('SELECT ou.opl, u.name, u.id FROM opl_users ou LEFT JOIN user u on ou.user_id = u.id;');
 
 while($opl = $opl_qry->fetch_assoc()) {
+  $children = json_decode($opl['opl'], true);
+
   $output[$i]['title'] = $opl['name'];
-  $output[$i]['children'] = $opl['opl'];
+  $output[$i]['children'] = $children;
+//  $output[$i]['lazy'] = true;
   $output[$i]['folder'] = true;
+  $output[$i]['user_id'] = $opl['id'];
 
   $i++;
-
-  echo $opl['opl'];
 }
+
+echo json_encode($output, true);
 

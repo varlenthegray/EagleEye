@@ -1,7 +1,7 @@
 <?php
 require '../../includes/header_start.php';
 
-outputPHPErrs();
+//outputPHPErrs();
 ?>
 
 <link href="/assets/css/opl.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
@@ -278,8 +278,11 @@ outputPHPErrs();
       selectMode: 3,
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
-      source: { url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + opl_usr},
-      // source: { url: "/html/opl/all.php"},
+      <?php if($_REQUEST['flip'] === 'true') {
+        echo 'source: { url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + opl_usr},';
+      } else {
+        echo 'source: { url: "/html/opl/all.php"},';
+      } ?>
       extensions: ["edit", "dnd", "table", "gridnav", "filter", "persist"],
       dnd: {
         preventVoidMoves: true,
@@ -389,6 +392,15 @@ outputPHPErrs();
       init: function(event, data) {
         curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
         $(".fancytree-container").addClass("fancytree-connectors");
+      },
+      lazyLoad: function(event, data) {
+        var node = data.node;
+
+        // return children or any other node source
+        data.result = {url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + node.data.user_id};
+      },
+      persist: {
+        expandLazy: true
       }
     }).on("nodeCommand", function(event, data){
       // Custom event handler that is triggered by keydown-handler and
