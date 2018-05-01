@@ -287,19 +287,12 @@ require '../../includes/header_start.php';
         edit: {
           triggerStart: ["f2", "shift+click", "mac+enter"],
           edit: function(event, data) {
-            let warningBox = $("#opl_warning");
-
             data.input.select();
 
             // we're now editing a new line, it's time to alert the system that an edit is taking place
             sendOPLEdit(opl_usr);
 
-            // TODO: Finish this, it's currently not locking out some of the Right Click options and it's not disabling edit
-            // TODO: Also, how is coming into the page DURING changes going to be impacted by this? Will this still transfer?
-
-            if(warningBox.html() === '') {
-              warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unsaved Changes!</strong> This table is currently locked for editing by you due to unsaved changes. <strong><a href="">Save</a></strong> or <strong><a href="">Discard</a></strong> your changes?</div>');
-            }
+            socket.emit("getOPLEditingStatus");
           },
           close: function(event, data) {
             if( data.save && data.isNew ){

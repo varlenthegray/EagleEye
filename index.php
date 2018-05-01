@@ -417,7 +417,7 @@ require 'includes/header_start.php';
         $(".opl_action").prop("disabled", false);
         disabled = false;
 
-        $("#opl_warning").html('');
+        $("#opl_warning").html('<div class="alert alert-success" role="alert">You are on the most current version of the OPL. <strong><a href="#" id="OPLCheckout">Checkout</a></strong>?');
       }
 
       opl_history.fancytree('getTree').reload({url: "/html/opl/ajax/actions.php?action=getOPLHistory"});
@@ -494,8 +494,6 @@ require 'includes/header_start.php';
     }
 
     function sendOPLEdit() {
-      // FIXME: Can easily over-ride who is editing; for now used this to my advantage
-
       socket.emit("oplEditing", {initiator: '<?php echo $_SESSION['userInfo']['name']; ?>', timestamp: new Date().getTime()});
     }
 
@@ -737,7 +735,9 @@ require 'includes/header_start.php';
         return false;
       })
       .on("click", "#OPLForceOverride", function() {
-        // FIXME: Can easily over-ride who is editing; for now used this to my advantage REF other FIXME
+        sendOPLEdit();
+      })
+      .on("click", "#OPLCheckout", function() {
         sendOPLEdit();
       })
       // end of OPL functions

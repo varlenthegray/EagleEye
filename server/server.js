@@ -148,9 +148,10 @@ socket.on('connect', function (client) {
   client.on("oplEditing", function(data) {
     try {
       // assign the server editing variable to opl_usr, we're going to delete upon save
-      oplEditing = data;
-
-      socket.emit("refreshOPLEditStatus");
+      if(oplEditing === null) {
+        oplEditing = data;
+        socket.emit("refreshOPLEditStatus");
+      }
     } catch(e) {
       console.log("oplEditing Error: " + e);
     }
