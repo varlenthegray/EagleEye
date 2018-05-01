@@ -265,7 +265,7 @@ require '../../includes/header_start.php';
       selectMode: 3,
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
-      source: { url: "/html/opl/ajax/actions.php?action=getOPL},
+      source: { url: "/html/opl/ajax/actions.php?action=getOPL"},
         extensions: ["edit", "dnd", "table", "gridnav", "filter", "persist"],
         dnd: {
           preventVoidMoves: true,
