@@ -278,7 +278,7 @@ require '../../includes/header_start.php';
           },
           dragDrop: function(node, data) {
             data.otherNode.moveTo(node, data.hitMode);
-            socket.emit("oplEditing");
+            sendOPLEdit();
           },
           draggable: {
             scroll: true
@@ -432,9 +432,11 @@ require '../../includes/header_start.php';
           if( refNode ) {
             refNode.setActive();
           }
+          sendOPLEdit();
           break;
         case "addChild":
           $("#addOPLTask").trigger("click");
+          sendOPLEdit();
           break;
         case "addSibling":
           node.editCreateNode("after", {
@@ -443,6 +445,7 @@ require '../../includes/header_start.php';
             time_left: '???',
             key: generateUniqueKey()
           });
+          sendOPLEdit();
           break;
         case "cut":
           CLIPBOARD = {mode: data.cmd, data: node};
@@ -463,8 +466,10 @@ require '../../includes/header_start.php';
             // refNode = node.getPrevSibling();
             CLIPBOARD.data.moveTo(node, "child");
             CLIPBOARD.data.setActive();
+            sendOPLEdit();
           } else if( CLIPBOARD.mode === "copy" ) {
             node.addChildren(CLIPBOARD.data).setActive();
+            sendOPLEdit();
           }
           break;
         case "deselect":
@@ -483,6 +488,8 @@ require '../../includes/header_start.php';
 
                   // re-render the tree deeply so that we can recalculate the line item numbers
                   opl.fancytree("getRootNode").render(true,true);
+
+                  sendOPLEdit();
                 },
                 no: function() {}
               }
@@ -491,6 +498,7 @@ require '../../includes/header_start.php';
           break;
         case "addSubFolder":
           $("#addOPLFolder").trigger("click");
+          sendOPLEdit();
           break;
         case "addFolder":
           node.editCreateNode("after", {
@@ -500,9 +508,11 @@ require '../../includes/header_start.php';
             time_left: '???',
             key: generateUniqueKey()
           });
+          sendOPLEdit();
           break;
         case "save":
           $("#saveOPL").trigger('click');
+          sendOPLEdit();
           break;
         default:
           alert("Unhandled command: " + data.cmd);
