@@ -109,7 +109,7 @@ switch($_REQUEST['action']) {
         echo $flash_back['opl'];
       }
     } else {
-      $current_qry = $dbconn->query("SELECT opl FROM opl_users WHERE user_id = $user_id");
+      $current_qry = $dbconn->query("SELECT opl FROM opl_users WHERE user_id = 42");
       $current = $current_qry->fetch_assoc();
 
       echo $current['opl'];
