@@ -14,98 +14,85 @@ require '../../includes/header_start.php';
 
     <div class="col-md-8">
       <table id="opl" class="pricing_table_format">
-      <colgroup>
-        <col width="20px" class="no-print">
-        <col width="50px">
-        <col width="50px" class="no-print">
-        <col width="50px">
-        <col width="450px">
-        <col width="150px" class="no-print">
-        <col width="80px">
-        <col width="80px">
-        <!--<col width="80px">
-        <col width="80px">-->
-      </colgroup>
-      <thead class="sticky">
-      <tr>
-        <td colspan="5" class="no-print" style="padding-bottom:5px;">
-          <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
-          <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
-          <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" value="Print" />
-          <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
-          <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
-          <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
-          <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
+        <colgroup>
+          <col width="20px" class="no-print">
+          <col width="50px">
+          <col width="50px" class="no-print">
+          <col width="50px">
+          <col width="450px">
+          <col width="150px" class="no-print">
+          <col width="80px">
+          <col width="80px">
+          <!--<col width="80px">
+          <col width="80px">-->
+        </colgroup>
+        <thead class="sticky">
+        <tr>
+          <td colspan="5" class="no-print" style="padding-bottom:5px;">
+            <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
+            <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
+            <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" value="Print" />
+            <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
+            <input type="button" class="btn btn-danger waves-effect waves-light opl_action" id="completeOPLNodes" style="display:none;" value="Complete" />
+            <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
+            <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
 
-          <h4 class="pull-right" id="viewing"></h4>
-        </td>
-        <td colspan="1" class="no-print">
-          <label for="user">User: </label>
-          <select class="custom-select" id="user_id" style="width:80%;">
-            <?php
-            $usr_qry = $dbconn->query('SELECT * FROM user WHERE account_status = TRUE AND id != 16 ORDER BY name ASC');
-
-            while($usr = $usr_qry->fetch_assoc()) {
-              $selected = ($usr['id'] === $_SESSION['shop_user']['id']) ? 'selected' : null;
-
-                  echo "<option value='{$usr['id']}' $selected>{$usr['name']}</option>";
-                }
-                ?>
-              </select>
-            </td>
-            <td colspan="2" class="no-print"><input type="text" class="opl_filter" id="findOPL" placeholder="Find..."></td>
-          </tr>
-          <tr>
-            <th class="no-print"></th>
-            <th class="text-md-center">#</th>
-            <th class="text-md-center no-print">Actions</th>
-            <th class="text-md-center">Priority</th>
-            <th>Open Points</th>
-            <th class="text-md-center no-print">Created</th>
-            <th class="text-md-center">Time Left</th>
-            <th class="text-md-center">Due Date</th>
-            <!--<th>Relies On</th>
-            <th>Visibility</th>-->
-          </tr>
-          </thead>
-          <tbody>
-          <!-- Define a row template for all invariant markup: -->
-          <tr>
-            <td class="alignCenter no-print"></td>
-            <td class="pad-l5"></td>
-            <td class="text-md-center task_actions no-print">
-              <i class="fa fa-info-circle no-info view_task_info" title="Task Information"></i>
-              <i class="fa fa-plus-circle primary-color add_subtask" title="Add Subtask"></i>
-              <i class="fa fa-minus-circle danger-color complete_task" title="Complete Task"></i>
-              <!--<i class="fa fa-exclamation-triangle primary-color task_alerts" title="Alerts"></i>-->
-            </td>
-            <td class="text-md-center"><input type="text" class="OPLPriority" value="" placeholder="" /></td>
-            <td></td>
-            <td class="pad-l5 no-print"></td>
-            <td class="alignCenter">
-              <select class="custom-select task_length" style="width: 100%;">
-                <option value="???">???</option>
-                <option value="< 1 Hr" class="length_green">< 1 Hr</option>
-                <option value="1-3 Hrs" class="length_green">1-3 Hrs</option>
-                <option value="3-6 Hrs" class="length_yellow">3-6 Hrs</option>
-                <option value="1 Day" class="length_yellow">1 Day</option>
-                <option value="2-3 Days" class="length_black">2-3 Days</option>
-                <option value="3+ Days" class="length_black">3+ Days</option>
-              </select>
-            </td>
-            <td class="alignCenter"><input type="text" class="due_date" value="" placeholder="Empty" /></td>
-            <!--<td class="pad-l5">RG, BB</td>-->
-            <!--<td>
-              <select>
-                <option value="public">Public</option>
-                <option value="management">Management</option>
-                <option value="private">Private</option>
-              </select>
-            </td>-->
-          </tr>
-          </tbody>
-        </table>
-      </div>
+            <h4 class="pull-right" id="viewing"></h4>
+          </td>
+          <td colspan="1" class="no-print">
+          <td colspan="2" class="no-print"><input type="text" class="opl_filter" id="findOPL" placeholder="Find..."></td>
+        </tr>
+        <tr>
+          <th class="no-print"></th>
+          <th class="text-md-center">#</th>
+          <th class="text-md-center no-print">Actions</th>
+          <th class="text-md-center">Priority</th>
+          <th>Open Points</th>
+          <th class="text-md-center no-print">Created</th>
+          <th class="text-md-center">Time Left</th>
+          <th class="text-md-center">Due Date</th>
+          <!--<th>Relies On</th>
+          <th>Visibility</th>-->
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Define a row template for all invariant markup: -->
+        <tr>
+          <td class="alignCenter no-print"></td>
+          <td class="pad-l5"></td>
+          <td class="text-md-center task_actions no-print">
+            <i class="fa fa-info-circle no-info view_task_info" title="Task Information"></i>
+            <i class="fa fa-plus-circle primary-color add_subtask" title="Add Subtask"></i>
+            <i class="fa fa-minus-circle danger-color complete_task" title="Complete Task"></i>
+            <!--<i class="fa fa-exclamation-triangle primary-color task_alerts" title="Alerts"></i>-->
+          </td>
+          <td class="text-md-center"><input type="text" class="OPLPriority" value="" placeholder="" /></td>
+          <td></td>
+          <td class="pad-l5 no-print"></td>
+          <td class="alignCenter">
+            <select class="custom-select task_length" style="width: 100%;">
+              <option value="???">???</option>
+              <option value="< 1 Hr" class="length_green">< 1 Hr</option>
+              <option value="1-3 Hrs" class="length_green">1-3 Hrs</option>
+              <option value="3-6 Hrs" class="length_yellow">3-6 Hrs</option>
+              <option value="1 Day" class="length_yellow">1 Day</option>
+              <option value="2-3 Days" class="length_black">2-3 Days</option>
+              <option value="3+ Days" class="length_black">3+ Days</option>
+            </select>
+          </td>
+          <td class="alignCenter"><input type="text" class="due_date" value="" placeholder="Empty" /></td>
+          <!--<td class="pad-l5">RG, BB</td>-->
+          <!--<td>
+            <select>
+              <option value="public">Public</option>
+              <option value="management">Management</option>
+              <option value="private">Private</option>
+            </select>
+          </td>-->
+        </tr>
+        </tbody>
+      </table>
+    </div>
 
 
     <div class="col-md-2 col-md-offset-1 no-print">
@@ -278,131 +265,127 @@ require '../../includes/header_start.php';
       selectMode: 3,
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
-      <?php if($_REQUEST['flip'] === 'true') {
-        echo 'source: { url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + opl_usr},';
-      } else {
-        echo 'source: { url: "/html/opl/all.php"},';
-      } ?>
-      extensions: ["edit", "dnd", "table", "gridnav", "filter", "persist"],
-      dnd: {
-        preventVoidMoves: true,
-        preventRecursiveMoves: true,
-        autoExpandMS: 400,
-        dragStart: function(node, data) {
-          return true;
-        },
-        dragEnter: function(node, data) {
-          // return ["before", "after"];
-          return true;
-        },
-        dragDrop: function(node, data) {
-          data.otherNode.moveTo(node, data.hitMode);
-        }
-      },
-      edit: {
-        triggerStart: ["f2", "shift+click", "mac+enter"],
-        edit: function(event, data) {
-          let warningBox = $("#opl_warning");
-
-          data.input.select();
-
-          // we're now editing a new line, it's time to alert the system that an edit is taking place
-          sendOPLEdit(opl_usr);
-
-          // TODO: Finish this, it's currently not locking out some of the Right Click options and it's not disabling edit
-          // TODO: Also, how is coming into the page DURING changes going to be impacted by this? Will this still transfer?
-
-          if(warningBox.html() === '') {
-            warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unsaved Changes!</strong> This table is currently locked for editing by you due to unsaved changes. <strong><a href="">Save</a></strong> or <strong><a href="">Discard</a></strong> your changes?</div>');
+      source: { url: "/html/opl/ajax/actions.php?action=getOPL},
+        extensions: ["edit", "dnd", "table", "gridnav", "filter", "persist"],
+        dnd: {
+          preventVoidMoves: true,
+          preventRecursiveMoves: true,
+          autoExpandMS: 400,
+          dragStart: function(node, data) {
+            return true;
+          },
+          dragEnter: function(node, data) {
+            // return ["before", "after"];
+            return true;
+          },
+          dragDrop: function(node, data) {
+            data.otherNode.moveTo(node, data.hitMode);
           }
         },
-        close: function(event, data) {
-          if( data.save && data.isNew ){
-            // Quick-enter: add new nodes until we hit [enter] on an empty title
-            $("#tree").trigger("nodeCommand", {cmd: "addSibling"});
+        edit: {
+          triggerStart: ["f2", "shift+click", "mac+enter"],
+          edit: function(event, data) {
+            let warningBox = $("#opl_warning");
+
+            data.input.select();
+
+            // we're now editing a new line, it's time to alert the system that an edit is taking place
+            sendOPLEdit(opl_usr);
+
+            // TODO: Finish this, it's currently not locking out some of the Right Click options and it's not disabling edit
+            // TODO: Also, how is coming into the page DURING changes going to be impacted by this? Will this still transfer?
+
+            if(warningBox.html() === '') {
+              warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unsaved Changes!</strong> This table is currently locked for editing by you due to unsaved changes. <strong><a href="">Save</a></strong> or <strong><a href="">Discard</a></strong> your changes?</div>');
+            }
+          },
+          close: function(event, data) {
+            if( data.save && data.isNew ){
+              // Quick-enter: add new nodes until we hit [enter] on an empty title
+              $("#tree").trigger("nodeCommand", {cmd: "addSibling"});
+            }
           }
-        }
-      },
-      table: {
-        indentation: 20,
-        nodeColumnIdx: 4,
-        checkboxColumnIdx: 0
-      },
-      gridnav: {
-        autofocusInput: false,
-        handleCursorKeys: true
-      },
-      filter: {
-        autoExpand: true,
-        mode: 'hide'
-      },
-      renderColumns: function(event, data) {
-        var node = data.node,
-          $tdList = $(node.tr).find(">td");
+        },
+        table: {
+          indentation: 20,
+          nodeColumnIdx: 4,
+          checkboxColumnIdx: 0
+        },
+        gridnav: {
+          autofocusInput: false,
+          handleCursorKeys: true
+        },
+        filter: {
+          autoExpand: true,
+          mode: 'hide'
+        },
+        renderColumns: function(event, data) {
+          var node = data.node,
+            $tdList = $(node.tr).find(">td");
 
-        // (Index #0 is rendered by fancytree by adding the checkbox)
-        // Set column #1 info from node data:
+          // (Index #0 is rendered by fancytree by adding the checkbox)
+          // Set column #1 info from node data:
 
-        // (Index #1 is the index heir level)
-        $tdList.eq(1).text(node.getIndexHier());
+          // (Index #1 is the index heir level)
+          $tdList.eq(1).text(node.getIndexHier());
 
-        // (Index #2 is the priority textbox)
-        let priorityTextbox = $tdList.eq(3).find("input");
-        priorityTextbox.val(node.data.priority);
+          // (Index #2 is the priority textbox)
+          let priorityTextbox = $tdList.eq(3).find("input");
+          priorityTextbox.val(node.data.priority);
 
-        if(node.data.priority !== undefined) {
-          if(node.data.priority.length > 0) {
-            priorityTextbox.addClass("white_black");
+          if(node.data.priority !== undefined) {
+            if(node.data.priority.length > 0) {
+              priorityTextbox.addClass("white_black");
+            }
           }
+
+          // (Index #3 is rendered by fancytree)
+
+          // (Index #4 is the actions column)
+          $tdList.eq(2).find(".view_task_info").attr("data-uid", node.key).attr("data-indexHeir", node.getIndexHier()).attr("data-title", node.title);
+
+          if(node.data.hasInfo === true) {
+            $tdList.eq(2).find(".view_task_info").removeClass("no-info").addClass("has-info");
+          }
+
+          // (Index #5 is the creation date of that element)
+          $tdList.eq(5).text(node.data.creation_date);
+
+          // (Index #6 is the time left select box)
+          $tdList.eq(6).find("select").val(node.data.time_left);
+
+          calcDueDate($tdList.eq(6).find("select"));
+
+          // (Index #7 is the due date text box)
+          $tdList.eq(7).find("input").val(node.data.due_date);
+
+          calcDueDate($tdList.eq(7).find("input"));
+
+          // enable the datepicker for due date
+          $(".due_date").datepicker({
+            autoclose: true,
+            startDate: new Date(),
+            daysOfWeekDisabled: [0,6]
+          });
+
+          // calculate the due date color
+          calcDueDate($(this));
+        },
+        debugLevel: 0,
+        init: function(event, data) {
+          curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
+          $(".fancytree-container").addClass("fancytree-connectors");
+        },
+        lazyLoad: function(event, data) {
+          var node = data.node;
+
+          // return children or any other node source
+          data.result = {url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + node.data.user_id};
+        },
+        persist: {
+          expandLazy: true
         }
-
-        // (Index #3 is rendered by fancytree)
-
-        // (Index #4 is the actions column)
-        $tdList.eq(2).find(".view_task_info").attr("data-uid", node.key).attr("data-indexHeir", node.getIndexHier()).attr("data-title", node.title);
-
-        if(node.data.hasInfo === true) {
-          $tdList.eq(2).find(".view_task_info").removeClass("no-info").addClass("has-info");
-        }
-
-        // (Index #5 is the creation date of that element)
-        $tdList.eq(5).text(node.data.creation_date);
-
-        // (Index #6 is the time left select box)
-        $tdList.eq(6).find("select").val(node.data.time_left);
-
-        calcDueDate($tdList.eq(6).find("select"));
-
-        // (Index #7 is the due date text box)
-        $tdList.eq(7).find("input").val(node.data.due_date);
-
-        calcDueDate($tdList.eq(7).find("input"));
-
-        // enable the datepicker for due date
-        $(".due_date").datepicker({
-          autoclose: true,
-          startDate: new Date(),
-          daysOfWeekDisabled: [0,6]
-        });
-
-        // calculate the due date color
-        calcDueDate($(this));
-      },
-      debugLevel: 0,
-      init: function(event, data) {
-        curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
-        $(".fancytree-container").addClass("fancytree-connectors");
-      },
-      lazyLoad: function(event, data) {
-        var node = data.node;
-
-        // return children or any other node source
-        data.result = {url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + node.data.user_id};
-      },
-      persist: {
-        expandLazy: true
-      }
-    }).on("nodeCommand", function(event, data){
+      }).on("nodeCommand", function(event, data){
       // Custom event handler that is triggered by keydown-handler and
       // context menu:
       var refNode, moveMode,

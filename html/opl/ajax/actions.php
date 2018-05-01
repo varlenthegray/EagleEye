@@ -38,8 +38,6 @@ switch($_REQUEST['action']) {
 
     break;
   case 'getOPL':
-    $user = sanitizeInput($_REQUEST['user_id']);
-
     $opl_qry = $dbconn->query("SELECT opl FROM opl_users WHERE user_id = 42");
 
     if($opl_qry->num_rows !== 0) {
