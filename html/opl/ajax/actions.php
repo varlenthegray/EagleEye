@@ -68,12 +68,11 @@ switch($_REQUEST['action']) {
 
     break;
   case 'getOPLHistory':
-    $user = sanitizeInput($_REQUEST['user_id']);
     $history_array = array();
 
     $i = 1;
 
-    $current_qry = $dbconn->query("SELECT JSON_LENGTH(opl) -2 AS oplLength, u.name AS lastModifiedBy FROM opl_users oplu LEFT JOIN user u on oplu.last_modified_by = u.id WHERE user_id = $user");
+    $current_qry = $dbconn->query("SELECT JSON_LENGTH(opl) -2 AS oplLength, u.name AS lastModifiedBy FROM opl_users oplu LEFT JOIN user u on oplu.last_modified_by = u.id WHERE user_id = 42");
     $current = $current_qry->fetch_assoc();
 
     $history_array[0]['title'] = 'Current';
