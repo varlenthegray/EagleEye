@@ -700,8 +700,7 @@ require 'includes/header_start.php';
       })
       .on("click", "#oplRefresh", function() {
         updateOPLTree();
-        socket.emit("oplSaved");
-        $("#opl_warning").html('');
+        socket.emit("getOPLEditingStatus");
       })
       .on("change", ".OPLPriority", function() {
         if($(this).val().length > 0) {
