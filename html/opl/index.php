@@ -228,10 +228,6 @@ require '../../includes/header_start.php';
     curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
   }
 
-  $(window).unload(function() {
-    socket.emit("oplSaved");
-  });
-
   $(function() {
     opl.fancytree({
       select: function(event, data) {

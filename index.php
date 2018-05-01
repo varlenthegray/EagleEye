@@ -406,7 +406,7 @@ require 'includes/header_start.php';
 
           let editStarted = new Date(data.timestamp).toLocaleString();
 
-          warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unable to Save!</strong> ' + data.initiator +' is editing this report as of ' + editStarted +'.');
+          warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unable to Save!</strong> ' + data.initiator +' is editing this report as of ' + editStarted +'. <?php echo ($bouncer->validate('opl_save_override')) ? '<strong><a href="#" id="OPLForceOverride">Override?</a></strong>' : null; ?>');
         } else {
           $(".opl_action").prop("disabled", false);
           disabled = false;
@@ -494,6 +494,8 @@ require 'includes/header_start.php';
     }
 
     function sendOPLEdit() {
+      // FIXME: Can easily over-ride who is editing; for now used this to my advantage
+
       socket.emit("oplEditing", {initiator: '<?php echo $_SESSION['userInfo']['name']; ?>', timestamp: new Date().getTime()});
     }
 
@@ -733,6 +735,10 @@ require 'includes/header_start.php';
           });
 
         return false;
+      })
+      .on("click", "#OPLForceOverride", function() {
+        // FIXME: Can easily over-ride who is editing; for now used this to my advantage REF other FIXME
+        sendOPLEdit();
       })
       // end of OPL functions
 
