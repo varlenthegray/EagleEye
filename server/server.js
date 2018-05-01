@@ -60,7 +60,7 @@ var socket = require('socket.io').listen(server); // setup socketio connection
  * Begin global variable declaration
  *****************************************/
 var conn = {}; // storage for everything, expanding and contracting as needed
-var oplEditing = {}; // information on what is currently being edited for the Open Point List
+var oplEditing = null; // information on what is currently being edited for the Open Point List
 
 /******************************************
  * End global variable declaration
@@ -148,7 +148,7 @@ socket.on('connect', function (client) {
   client.on("oplEditing", function(data) {
     try {
       // assign the server editing variable to opl_usr, we're going to delete upon save
-      oplEditing[data.opl_usr] = data;
+      oplEditing = data;
 
       socket.emit("refreshOPLEditStatus");
     } catch(e) {
@@ -157,9 +157,9 @@ socket.on('connect', function (client) {
   });
 
   // done editing the OPL for a specific user
-  client.on("oplSaved", function(usr) {
+  client.on("oplSaved", function() {
     try {
-      delete oplEditing[usr];
+      oplEditing = null;
 
       socket.emit("refreshOPLEditStatus");
     } catch(e) {
@@ -168,9 +168,9 @@ socket.on('connect', function (client) {
   });
 
   // get the current status of OPL editing
-  client.on("getOPLEditingStatus", function(list) {
+  client.on("getOPLEditingStatus", function() {
     try {
-      client.emit("OPLEditStatusUpdate", oplEditing[list]);
+      client.emit("OPLEditStatusUpdate", oplEditing);
     } catch(e) {
       console.log("getOPLEditingStatus Error: " + e);
     }

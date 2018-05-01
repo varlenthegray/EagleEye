@@ -222,19 +222,17 @@ require '../../includes/header_start.php';
 
   function updateOPLTree() {
     // update the tree based on that user's information
-    opl.fancytree('getTree').reload({url: '/html/opl/ajax/actions.php?action=getOPL&user_id=' + opl_usr});
-    opl_history.fancytree('getTree').reload({url: "/html/opl/ajax/actions.php?action=getOPLHistory&user_id=" + opl_usr});
+    opl.fancytree('getTree').reload({url: '/html/opl/ajax/actions.php?action=getOPL'});
+    opl_history.fancytree('getTree').reload({url: "/html/opl/ajax/actions.php?action=getOPLHistory"});
 
     curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
   }
 
   $(window).unload(function() {
-    socket.emit("oplSaved", opl_usr);
+    socket.emit("oplSaved");
   });
 
   $(function() {
-    opl_usr = $("#user_id").find(":selected").val(); // set the user ID
-
     opl.fancytree({
       select: function(event, data) {
         var selNodes = data.tree.getSelectedNodes();
@@ -252,7 +250,7 @@ require '../../includes/header_start.php';
         } else {
           $("#completeOPLNodes").hide();
           $("#oplClearSelected").hide();
-          socket.emit("oplSaved", opl_usr);
+          socket.emit("oplSaved");
         }
       },
       checkbox: true,
@@ -302,7 +300,7 @@ require '../../includes/header_start.php';
           close: function(event, data) {
             if( data.save && data.isNew ){
               // Quick-enter: add new nodes until we hit [enter] on an empty title
-              $("#tree").trigger("nodeCommand", {cmd: "addSibling"});
+              opl.trigger("nodeCommand", {cmd: "addSibling"});
             }
           }
         },
@@ -623,12 +621,8 @@ require '../../includes/header_start.php';
     opl_history.fancytree({
       extensions: ["table"],
       icon: false,
-      table: {
-        nodeColumnIdx: 1     // render the node title into the 2nd column
-      },
-      source: {
-        url: "/html/opl/ajax/actions.php?action=getOPLHistory&user_id=" + opl_usr
-      },
+      table: { nodeColumnIdx: 1 },     // render the node title into the 2nd column
+      source: { url: "/html/opl/ajax/actions.php?action=getOPLHistory" },
       renderColumns: function(event, data) {
         var node = data.node,
           $tdList = $(node.tr).find(">td");
@@ -642,6 +636,6 @@ require '../../includes/header_start.php';
       }
     });
 
-    socket.emit("getOPLEditingStatus", opl_usr);
+    socket.emit("getOPLEditingStatus");
   });
 </script>
