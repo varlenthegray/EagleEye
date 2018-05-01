@@ -5,7 +5,7 @@ require '../../../includes/header_start.php';
 
 switch($_REQUEST['action']) {
   case 'save':
-    $user = sanitizeInput($_REQUEST['user']);
+    $user = 42;
     $opl = $_REQUEST['opl'];
 
     $opl_qry = $dbconn->query("SELECT oplu.id, oplu.opl, u.name FROM opl_users oplu LEFT JOIN user u on oplu.user_id = u.id WHERE user_id = $user");
