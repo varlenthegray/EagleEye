@@ -80,7 +80,7 @@ switch($_REQUEST['action']) {
     $history_array[0]['updated_by'] = $current['lastModifiedBy'];
     $history_array[0]['id'] = 'live';
 
-    $history_qry = $dbconn->query("SELECT oplh.id, JSON_LENGTH(opl) - 2 AS oplLength, timestamp, u.name AS lastModifiedBy FROM opl_history oplh LEFT JOIN user u on oplh.updated_by = u.id WHERE user_id = $user ORDER BY timestamp DESC LIMIT 0, 20");
+    $history_qry = $dbconn->query("SELECT oplh.id, JSON_LENGTH(opl) - 2 AS oplLength, timestamp, u.name AS lastModifiedBy FROM opl_history oplh LEFT JOIN user u on oplh.updated_by = u.id WHERE user_id = 42 ORDER BY timestamp DESC LIMIT 0, 20");
 
     if($history_qry->num_rows > 0) {
       while($history = $history_qry->fetch_assoc()) {
