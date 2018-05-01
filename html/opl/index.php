@@ -8,7 +8,7 @@ require '../../includes/header_start.php';
 
 <div class="card-box">
   <div class="row">
-    <div class="no-print" id="opl_warning"></div>
+    <div class="no-print sticky" id="opl_warning"></div>
 
     <h1>Open Point List</h1>
 
@@ -26,9 +26,9 @@ require '../../includes/header_start.php';
           <!--<col width="80px">
           <col width="80px">-->
         </colgroup>
-        <thead class="sticky">
+        <thead>
         <tr>
-          <td colspan="5" class="no-print" style="padding-bottom:5px;">
+          <td colspan="5" class="no-print" style="padding:5px 0;">
             <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Folder" />
             <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLTask" style="display:none;" value="Add Sub-task" />
             <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" value="Print" />
@@ -370,6 +370,11 @@ require '../../includes/header_start.php';
         init: function(event, data) {
           curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
           $(".fancytree-container").addClass("fancytree-connectors");
+
+          opl.floatThead({
+            position: 'auto',
+            top: 134
+          });
         },
         lazyLoad: function(event, data) {
           var node = data.node;

@@ -1410,6 +1410,9 @@ require 'includes/header_start.php';
   <script src="/assets/plugins/fancytree/jquery.fancytree.table.js"></script>
   <script src="/assets/plugins/fancytree/jquery.fancytree.persist.js"></script>
 
+  <!-- Float TableHead -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/floatthead/2.1.2/jquery.floatThead.min.js"></script>
+
   <script src="//cdn.jsdelivr.net/npm/ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
 
   <!-- Unsaved Changes -->
