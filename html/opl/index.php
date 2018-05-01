@@ -264,16 +264,24 @@ require '../../includes/header_start.php';
         dnd: {
           preventVoidMoves: true,
           preventRecursiveMoves: true,
-          autoExpandMS: 400,
+          autoExpandMS: 550,
           dragStart: function(node, data) {
-            return true;
+            if(!disabled) {
+              return true;
+            }
           },
           dragEnter: function(node, data) {
             // return ["before", "after"];
-            return true;
+            if(!disabled) {
+              return true;
+            }
           },
           dragDrop: function(node, data) {
             data.otherNode.moveTo(node, data.hitMode);
+            socket.emit("oplEditing");
+          },
+          draggable: {
+            scroll: true
           }
         },
         edit: {
@@ -601,7 +609,7 @@ require '../../includes/header_start.php';
       ],
       beforeOpen: function(event, ui) {
         var node = $.ui.fancytree.getNode(ui.target);
-        $("#tree").contextmenu("enableEntry", "paste", !!CLIPBOARD);
+        opl.contextmenu("enableEntry", "paste", !!CLIPBOARD);
         node.setActive();
       },
       select: function(event, ui) {
