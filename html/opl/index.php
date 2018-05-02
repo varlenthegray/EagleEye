@@ -295,10 +295,7 @@ require '../../includes/header_start.php';
             socket.emit("getOPLEditingStatus");
           },
           close: function(event, data) {
-            if( data.save && data.isNew ){
-              // Quick-enter: add new nodes until we hit [enter] on an empty title
-              opl.trigger("nodeCommand", {cmd: "addSibling"});
-            }
+            // after finishing editing
           }
         },
         table: {
