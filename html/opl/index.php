@@ -1,7 +1,7 @@
 <?php
 require '../../includes/header_start.php';
 
-//outputPHPErrs();
+outputPHPErrs();
 ?>
 
 <link href="/assets/css/opl.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
@@ -392,15 +392,6 @@ require '../../includes/header_start.php';
       init: function(event, data) {
         curOpl = JSON.stringify(opl.fancytree("getTree").toDict(true));
         $(".fancytree-container").addClass("fancytree-connectors");
-      },
-      lazyLoad: function(event, data) {
-        var node = data.node;
-
-        // return children or any other node source
-        data.result = {url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + node.data.user_id};
-      },
-      persist: {
-        expandLazy: true
       }
     }).on("nodeCommand", function(event, data){
       // Custom event handler that is triggered by keydown-handler and
