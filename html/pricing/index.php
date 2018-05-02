@@ -461,7 +461,6 @@ $result = $result_qry->fetch_assoc();
               <col width="50px">
               <col width="50px">
               <col width="50px">
-              <col width="75px">
             </colgroup>
             <thead>
             <tr>
@@ -474,7 +473,6 @@ $result = $result_qry->fetch_assoc();
               <th class="text-md-center">Depth</th>
               <th class="text-md-center">Price Ea</th>
               <th class="text-md-center">Total</th>
-              <th class="text-md-center">Catalog</th>
             </tr>
             </thead>
             <tbody>
@@ -489,7 +487,6 @@ $result = $result_qry->fetch_assoc();
               <td class="text-md-center"></td>
               <td class="text-md-right"></td>
               <td class="text-md-right"></td>
-              <td class="text-md-center"></td>
             </tr>
             </tbody>
           </table>
@@ -755,9 +752,6 @@ $result = $result_qry->fetch_assoc();
 
         // (Index #8)
         $tdList.eq(8).text(total_formatted);
-
-        // (Index #9 is the catalog)
-        $tdList.eq(9).text(node.data.catalog);
       }
     }).on("nodeCommand", function(event, data){
       // Custom event handler that is triggered by keydown-handler and
