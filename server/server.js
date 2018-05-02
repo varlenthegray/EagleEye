@@ -99,10 +99,12 @@ socket.on('connect', function (client) {
 
   // updating and fetching user information, uk allows us to safely identify the user without someone being able to change to another user
   /** @var string - uk - unique user key that identifies that user in the database */
-  client.on("updateUK", function(uk) {
+  client.on("setUK", function(uk) {
     try {
       // update the user object for the unique key
       conn[client.id].uk = uk;
+
+      console.log(conn[client.id].uk);
 
       // grab the database information
       db.query("SELECT * FROM user WHERE unique_key = ?", [conn[client.id].uk], function(err, r) {
@@ -113,8 +115,17 @@ socket.on('connect', function (client) {
           reportErr(client, "Failed to obtain user profile from server. Please report this error to IT.");
         }
       });
+
+      db.query("SELECT * FROM permission_groups WHERE id = ?", [conn[client.id].userInfo[permission_id]], function(err, r) {
+        conn[client.id].permissions = r;
+
+        if(err) {
+          // report the error to the console, ignore the results of e for now - output to server console if error occurs
+          reportErr(client, "Failed to obtain user permissions from server. Please report this error to IT.");
+        }
+      });
     } catch(e) {
-      console.log("updateUK Error: " + e); // log an error
+      console.log("setUK Error: " + e); // log an error
     }
   });
 

@@ -329,13 +329,16 @@ require 'includes/header_start.php';
     <?php
     echo (isset($_SESSION['userInfo']['default_queue']) || !empty($_SESSION['userInfo']['default_queue'])) ? "var queue = '{$_SESSION['userInfo']['default_queue']}';" : "var queue = '{$_SESSION['shop_user']['default_queue']}';";
 
-    $unique_key = hash("sha256", microtime() + rand(1,999999999));
+    $unique_key = hash("md5", microtime() + rand(1,999999999));
 
-    $dbconn->query("UPDATE user SET unique_key = '$unique_key' WHERE id = '{$_SESSION['userInfo']['id']}'");
+    if(!$dbconn->query("UPDATE user SET unique_key = '$unique_key' WHERE id = '{$_SESSION['userInfo']['id']}'")) {
+      dbLogSQLErr($dbconn);
+    }
 
     $_SESSION['userInfo']['unique_key'] = $unique_key;
 
     echo "var unique_key = '$unique_key';";
+    echo 'socket.emit("setUK", unique_key);';
     ?>
 
     var op_id;
@@ -348,8 +351,6 @@ require 'includes/header_start.php';
 
     // -- Socket Handling --
     socket.on("connect", function() {
-      socket.emit("setUK", unique_key);
-
       $("#server_failure").hide();
     });
 
@@ -468,19 +469,6 @@ require 'includes/header_start.php';
       $(".modal").draggable({
         handle: ".modal-header"
       });
-
-      <?php if($_SESSION['userInfo']['id'] !== '16') { ?>
-      // TODO: Alerts disabled due to clicking users out of the box
-      /*$.post("/ondemand/alerts.php?action=update_alerts", function(data) {
-          $("#notification_list").html(data);
-      });
-
-      setInterval(function() {
-          $.post("/ondemand/alerts.php?action=update_alerts", function(data) {
-              $("#notification_list").html(data);
-          });
-      }, 10000);*/
-      <?php }?>
     });
 
     /** @var tree - the FancyTree to take in and convert into a minified version */
