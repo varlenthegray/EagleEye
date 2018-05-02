@@ -349,8 +349,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
           <td class="border_thin_bottom gray_bg">&nbsp;</td>
           <td class="border_thin_bottom gray_bg">&nbsp;</td>
-          <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="finish_code_pct" id="finish_code_pct" value="0.00" maxlength="4">%</td>
-          <td class="text-md-right border_thin_bottom subtotal">$<span id="finish_code_subtotal"></span></td>
+          <td class="text-md-center border_thin_bottom pct_value gray_bg"></td>
+          <td class="text-md-right border_thin_bottom subtotal">$<input type="text" name="finish_code_amount" id="finish_code_amount" value="0.00" maxlength="8"><span id="finish_code_subtotal"></span></td>
         </tr>
         <tr>
           <td>&nbsp;</td>
@@ -432,8 +432,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_exterior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
             <td class="border_thin_bottom gray_bg">&nbsp;</td>
             <td class="border_thin_bottom gray_bg">&nbsp;</td>
-            <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="exterior_finish_code_pct" id="exterior_finish_code_pct" value="0.00" maxlength="4">%</td>
-            <td class="text-md-right border_thin_bottom subtotal">$<span id="ext_finish_code_subtotal"></span></td>
+            <td class="text-md-center border_thin_bottom pct_value gray_bg">&nbsp;</td>
+            <td class="text-md-right border_thin_bottom subtotal">$<input type="text" name="ext_finish_code_amount" id="ext_finish_code_amount" value="0.00" maxlength="8"><span id="ext_finish_code_subtotal"></span></td>
           </tr>
           <tr>
             <td>&nbsp;</td>
@@ -472,8 +472,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             <td class="border_thin_bottom"><?php echo translateVIN('finish_code', $info['carcass_interior_finish_code']); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
             <td class="border_thin_bottom gray_bg">&nbsp;</td>
             <td class="border_thin_bottom gray_bg">&nbsp;</td>
-            <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="interior_finish_code_pct" id="interior_finish_code_pct" value="0.00" maxlength="4">%</td>
-            <td class="text-md-right border_thin_bottom subtotal">$<span id="int_finish_code_subtotal"></span></td>
+            <td class="text-md-center border_thin_bottom pct_value gray_bg">&nbsp;</td>
+            <td class="text-md-right border_thin_bottom subtotal">$<input type="text" name="interior_finish_code_amount" id="interior_finish_code_amount" value="0.00" maxlength="8"><span id="int_finish_code_subtotal"></span></td>
           </tr>
           <tr>
             <td>&nbsp;</td>
@@ -900,10 +900,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
   $("#sheen_subtotal").html(sheen_subtotal.toFixed(2));
   $("#construction_subtotal").html(construction_subtotal.toFixed(2));
   $("#ext_species_subtotal").html(ext_species_subtotal.toFixed(2));
-  $("#ext_finish_code_subtotal").html(ext_finish_code_subtotal.toFixed(2));
   $("#ext_glaze_tech_subtotal").html(ext_glaze_tech_subtotal.toFixed(2));
   $("#int_species_subtotal").html(int_species_subtotal.toFixed(2));
-  $("#int_finish_code_subtotal").html(int_finish_code_subtotal.toFixed(2));
   $("#int_glaze_tech_subtotal").html(int_glaze_tech_subtotal.toFixed(2));
   $("#dd_species_subtotal").html(dd_species_subtotal.toFixed(2));
   $("#dd_grade_subtotal").html(dd_grade_subtotal.toFixed(2));
@@ -917,7 +915,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
   $("#dd_distressing_subtotal").html(dd_distressing_subtotal.toFixed(2));
   $("#dd_worn_edges_subtotal").html(dd_worn_edges_subtotal.toFixed(2));
   $("#dd_drawer_box_subtotal").html(dd_drawer_box_subtotal.toFixed(2));
-  $("#finish_code_subtotal").html(finish_code_subtotal.toFixed(2));
   /** End Attribute Subtotals */
 
   /** Percent Fields */
@@ -925,10 +922,10 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
   var sheen_pct = $("#sheen_pct").val();
   var construction_pct = $("#construction_pct").val();
   var exterior_species_pct = $("#exterior_species_pct").val();
-  var exterior_finish_code_pct = $("#exterior_finish_code_pct").val();
+  var ext_finish_code_amount = $("#ext_finish_code_amount").val();
   var ext_glaze_tech_pct = $("#ext_glaze_tech_pct").val();
   var interior_species_pct = $("#interior_species_pct").val();
-  var interior_finish_code_pct = $("#interior_finish_code_pct").val();
+  var interior_finish_code_amount = $("#interior_finish_code_amount").val();
   var interior_glaze_tech_pct = $("#interior_glaze_tech_pct").val();
   var dd_species_pct = $("#dd_species_pct").val();
   var dd_design_pct = $("#dd_design_pct").val();
@@ -936,7 +933,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
   var distressing_pct = $("#distressing_pct").val();
   var worn_edges_pct = $("#worn_edges_pct").val();
   var drawer_boxes_pct = $("#drawer_boxes_pct").val();
-  var finish_code_pct = $("#finish_code_pct").val();
+  var finish_code_amount = $("#finish_code_amount").val();
   /** End Percent Fields */
 
   /** Qty Fields */
@@ -1062,10 +1059,10 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       sheen_pct = $("input[name='sheen_pct'").val();
       construction_pct = $("input[name='construction_pct'").val();
       exterior_species_pct = $("input[name='exterior_species_pct'").val();
-      exterior_finish_code_pct = $("input[name='exterior_finish_code_pct'").val();
+      ext_finish_code_amount = $("input[name='ext_finish_code_amount'").val();
       ext_glaze_tech_pct = $("input[name='ext_glaze_tech_pct'").val();
       interior_species_pct = $("input[name='interior_species_pct'").val();
-      interior_finish_code_pct = $("input[name='interior_finish_code_pct'").val();
+      interior_finish_code_amount = $("input[name='interior_finish_code_amount'").val();
       interior_glaze_tech_pct = $("input[name='interior_glaze_tech_pct'").val();
       dd_species_pct = $("input[name='dd_species_pct'").val();
       dd_design_pct = $("input[name='dd_design_pct'").val();
@@ -1073,7 +1070,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       distressing_pct = $("input[name='distressing_pct'").val();
       worn_edges_pct = $("input[name='worn_edges_pct'").val();
       drawer_boxes_pct = $("input[name='drawer_boxes_pct'").val();
-      finish_code_pct = $("input[name='finish_code_pct'").val();
+      finish_code_amount = $("input[name='finish_code_amount'").val();
       /** End Percent Fields */
 
       /** Qty Fields */
@@ -1089,10 +1086,10 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       sheen_subtotal = (!emptyOrZero(sheen_pct)) ? (sheen_pct / 100) * cabinet_list_price : 0;
       construction_subtotal = (!emptyOrZero(construction_pct)) ? (construction_pct / 100) * cabinet_list_price : 0;
       ext_species_subtotal = (!emptyOrZero(exterior_species_pct)) ? (exterior_species_pct / 100) * cabinet_list_price : 0;
-      ext_finish_code_subtotal = (!emptyOrZero(exterior_finish_code_pct)) ? (exterior_finish_code_pct / 100) * cabinet_list_price : 0;
+      ext_finish_code_subtotal = (!emptyOrZero(ext_finish_code_amount)) ? parseFloat(ext_finish_code_amount) : 0;
       ext_glaze_tech_subtotal = (!emptyOrZero(ext_glaze_tech_pct)) ? (ext_glaze_tech_pct / 100) * cabinet_list_price : 0;
       int_species_subtotal = (!emptyOrZero(interior_species_pct)) ? (interior_species_pct / 100) * cabinet_list_price : 0;
-      int_finish_code_subtotal = (!emptyOrZero(interior_finish_code_pct)) ? (interior_finish_code_pct / 100) * cabinet_list_price : 0;
+      int_finish_code_subtotal = (!emptyOrZero(interior_finish_code_amount)) ? parseFloat(interior_finish_code_amount) : 0;
       int_glaze_tech_subtotal = (!emptyOrZero(interior_glaze_tech_pct)) ? (interior_glaze_tech_pct / 100) * cabinet_list_price : 0;
       dd_species_subtotal = (!emptyOrZero(dd_species_pct)) ? (dd_species_pct / 100) * cabinet_list_price : 0;
       dd_deign_subtotal = (!emptyOrZero(dd_design_pct)) ? (dd_design_pct / 100) * cabinet_list_price : 0;
@@ -1105,16 +1102,16 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       dd_distressing_subtotal = (!emptyOrZero(distressing_pct)) ? (distressing_pct / 100) * cabinet_list_price : 0;
       dd_worn_edges_subtotal = (!emptyOrZero(worn_edges_pct)) ? (worn_edges_pct / 100) * cabinet_list_price : 0;
       dd_drawer_box_subtotal = (!emptyOrZero(drawer_boxes_pct)) ? (drawer_boxes_pct / 100) * cabinet_list_price : 0;
-      finish_code_subtotal = (!emptyOrZero(finish_code_pct)) ? (finish_code_pct / 100) * cabinet_list_price : 0;
+      finish_code_subtotal = (!emptyOrZero(finish_code_amount)) ? parseFloat(finish_code_amount) : 0;
 
       $("#glaze_tech_subtotal").html(addCommas(glaze_tech_subtotal.toFixed(2)));
       $("#sheen_subtotal").html(addCommas(sheen_subtotal.toFixed(2)));
       $("#construction_subtotal").html(addCommas(construction_subtotal.toFixed(2)));
       $("#ext_species_subtotal").html(addCommas(ext_species_subtotal.toFixed(2)));
-      $("#ext_finish_code_subtotal").html(addCommas(ext_finish_code_subtotal.toFixed(2)));
+      $("#ext_finish_code_amount").val(addCommas(ext_finish_code_subtotal.toFixed(2)));
       $("#ext_glaze_tech_subtotal").html(addCommas(ext_glaze_tech_subtotal.toFixed(2)));
       $("#int_species_subtotal").html(addCommas(int_species_subtotal.toFixed(2)));
-      $("#int_finish_code_subtotal").html(addCommas(int_finish_code_subtotal.toFixed(2)));
+      $("#interior_finish_code_amount").val(addCommas(int_finish_code_subtotal.toFixed(2)));
       $("#int_glaze_tech_subtotal").html(addCommas(int_glaze_tech_subtotal.toFixed(2)));
       $("#dd_species_subtotal").html(addCommas(dd_species_subtotal.toFixed(2)));
       $("#dd_deign_subtotal").html(addCommas(dd_deign_subtotal.toFixed(2)));
@@ -1127,7 +1124,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       $("#dd_distressing_subtotal").html(addCommas(dd_distressing_subtotal.toFixed(2)));
       $("#dd_worn_edges_subtotal").html(addCommas(dd_worn_edges_subtotal.toFixed(2)));
       $("#dd_drawer_box_subtotal").html(addCommas(dd_drawer_box_subtotal.toFixed(2)));
-      $("#finish_code_subtotal").html(addCommas(finish_code_subtotal.toFixed(2)));
+      $("#finish_code_subtotal").val(addCommas(finish_code_subtotal.toFixed(2)));
       /** End Attribute Subtotals */
 
       /** Charge Summary */
@@ -1261,7 +1258,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         $("#deposit_line").show();
       }
 
-      $("#final_upcharges").html(addCommas(final_upcharges.toFixed(2)));
+      $("#final_upcharges").html(addCommas(parseFloat(final_upcharges).toFixed(2)));
       $("#final_leadtime").html(addCommas(final_leadtime.toFixed(2)));
       $("#final_subtotal").html(addCommas(final_subtotal.toFixed(2)));
       $("#final_net").html(addCommas(final_net.toFixed(2)));
