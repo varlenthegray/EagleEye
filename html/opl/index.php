@@ -134,13 +134,6 @@ require '../../includes/header_start.php';
 <!-- /.modal -->
 
 <script>
-  // TODO: Figure out how to make it so that externally saved changes by someone else are not overwritten
-  /*
-  * Upon load of the OPL, we should be able to save the entire thing to a variable
-  * Once saved to a variable, when clicking the save button check to see if the database OPL matches what is in the variable
-  * If it doesn't match, alert the user, if it does match, save the new OPL
-   */
-
   var opl = $("#opl");
   var opl_history = $("#opl_history");
   var CLIPBOARD = null;
@@ -259,7 +252,7 @@ require '../../includes/header_start.php';
       selectMode: 3,
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
-      source: { url: "/html/opl/ajax/actions.php?action=getOPL"},
+      source: { url: "/html/opl/ajax/actions.php?action=getOPL" },
         extensions: ["edit", "dnd", "table", "gridnav", "filter", "persist"],
         dnd: {
           preventVoidMoves: true,
@@ -296,6 +289,9 @@ require '../../includes/header_start.php';
           },
           close: function(event, data) {
             // after finishing editing
+            let tree = getMiniTree(opl);
+
+            socket.emit("commitOPLChanges", tree);
           }
         },
         table: {
@@ -372,12 +368,6 @@ require '../../includes/header_start.php';
             position: 'auto',
             top: 134
           });
-        },
-        lazyLoad: function(event, data) {
-          var node = data.node;
-
-          // return children or any other node source
-          data.result = {url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + node.data.user_id};
         },
         persist: {
           expandLazy: true

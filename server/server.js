@@ -15,7 +15,7 @@ var port; // port for the server
 // if we're receiving the console command that we're launching dev environment
 if(scriptArgs[2] === 'dev') {
   // set the SQL data for dev
-  sqlLoc = {host:'dev.3erp.us',user:'dev_remote.dev',password:'o4J4G91@uvw%&ptkMOwZ',database:'3erp_dev'};
+  sqlLoc = {host:'dev.3erp.us',user:'remote.3erp',password:'o4J4G91@uvw%&ptkMOwZ',database:'3erp_dev'};
 
   // setup the dev server for HTTPS
   server = https.createServer({
@@ -107,7 +107,7 @@ socket.on('connect', function (client) {
       console.log(conn[client.id].uk);
 
       // grab the database information
-      db.query("SELECT * FROM user WHERE unique_key = ?", [conn[client.id].uk], function(err, r) {
+      /*db.query("SELECT * FROM user WHERE unique_key = ?", [conn[client.id].uk], function(err, r) {
         conn[client.id].userInfo = r;
 
         if(err) {
@@ -123,7 +123,7 @@ socket.on('connect', function (client) {
           // report the error to the console, ignore the results of e for now - output to server console if error occurs
           reportErr(client, "Failed to obtain user permissions from server. Please report this error to IT.");
         }
-      });
+      });*/
     } catch(e) {
       console.log("setUK Error: " + e); // log an error
     }
@@ -186,6 +186,17 @@ socket.on('connect', function (client) {
     } catch(e) {
       console.log("getOPLEditingStatus Error: " + e);
     }
+  });
+
+  client.on("commitOPLChanges", function(tree) {
+    socket.emit("pullOPLChanges", tree);
+
+    /*db.query("UPDATE opl_users SET opl = ? WHERE user_id = 42", tree, function(err) {
+      if(err) {
+        // report the error to the console, ignore the results of e for now - output to server console if error occurs
+        reportErr(client, "Failed to update OPL. " + err);
+      }
+    });*/
   });
 });
 

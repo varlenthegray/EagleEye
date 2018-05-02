@@ -416,12 +416,17 @@ require 'includes/header_start.php';
         }
       } else {
         $(".opl_action").prop("disabled", false);
+        opl.fancytree('getTree').reload({url: '/html/opl/ajax/actions.php?action=getOPL'});
         disabled = false;
 
         $("#opl_warning").html('<div class="alert alert-success" role="alert">You are on the most current version of the OPL. <strong><a href="#" id="OPLCheckout">Checkout</a></strong>?');
       }
 
       opl_history.fancytree('getTree').reload({url: "/html/opl/ajax/actions.php?action=getOPLHistory"});
+    });
+
+    socket.on("pullOPLChanges", function(tree) {
+      opl.fancytree('getTree').reload(tree);
     });
     // -- End of Socket Handling --
 
@@ -515,9 +520,8 @@ require 'includes/header_start.php';
         $.post("/html/opl/ajax/actions.php?action=save", {opl: opl_list, user: opl_usr}, function(data) {
           $("body").append(data); // return a value based on what happened with save
         }).done(function() {
-          // remove the warning message
-          $("#opl_warning").html('');
           socket.emit("oplSaved");
+          socket.emit("getOPLEditingStatus");
         });
 
         unsaved = false;
