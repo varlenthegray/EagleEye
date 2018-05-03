@@ -329,13 +329,16 @@ require 'includes/header_start.php';
     <?php
     echo (isset($_SESSION['userInfo']['default_queue']) || !empty($_SESSION['userInfo']['default_queue'])) ? "var queue = '{$_SESSION['userInfo']['default_queue']}';" : "var queue = '{$_SESSION['shop_user']['default_queue']}';";
 
-    $unique_key = hash("sha256", microtime() + rand(1,999999999));
+    $unique_key = hash("md5", microtime() + rand(1,999999999));
 
-    $dbconn->query("UPDATE user SET unique_key = '$unique_key' WHERE id = '{$_SESSION['userInfo']['id']}'");
+    if(!$dbconn->query("UPDATE user SET unique_key = '$unique_key' WHERE id = '{$_SESSION['userInfo']['id']}'")) {
+      dbLogSQLErr($dbconn);
+    }
 
     $_SESSION['userInfo']['unique_key'] = $unique_key;
 
     echo "var unique_key = '$unique_key';";
+    echo 'socket.emit("setUK", unique_key);';
     ?>
 
     var op_id;
@@ -348,8 +351,6 @@ require 'includes/header_start.php';
 
     // -- Socket Handling --
     socket.on("connect", function() {
-      socket.emit("setUK", unique_key);
-
       $("#server_failure").hide();
     });
 
@@ -391,7 +392,7 @@ require 'includes/header_start.php';
 
     // an update has been done related to the OPL Edit Status, get the latest update from the server
     socket.on("refreshOPLEditStatus", function() {
-      socket.emit("getOPLEditingStatus", opl_usr);
+      socket.emit("getOPLEditingStatus");
     });
 
     // when requesting the current status of all OPL edits
@@ -406,7 +407,7 @@ require 'includes/header_start.php';
 
           let editStarted = new Date(data.timestamp).toLocaleString();
 
-          warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unable to Save!</strong> ' + data.initiator +' is editing this report as of ' + editStarted +'.');
+          warningBox.html('<div class="alert alert-warning" role="alert"><strong>Unable to Save!</strong> ' + data.initiator +' is editing this report as of ' + editStarted +'. <?php echo ($bouncer->validate('opl_save_override')) ? '<strong><a href="#" id="OPLForceOverride">Override?</a></strong>' : null; ?>');
         } else {
           $(".opl_action").prop("disabled", false);
           disabled = false;
@@ -415,12 +416,17 @@ require 'includes/header_start.php';
         }
       } else {
         $(".opl_action").prop("disabled", false);
+        opl.fancytree('getTree').reload({url: '/html/opl/ajax/actions.php?action=getOPL'});
         disabled = false;
 
-        $("#opl_warning").html('');
+        $("#opl_warning").html('<div class="alert alert-success" role="alert">You are on the most current version of the OPL. <strong><a href="#" id="OPLCheckout">Checkout</a></strong>?');
       }
 
-      opl_history.fancytree('getTree').reload({url: "/html/opl/ajax/actions.php?action=getOPLHistory&user_id=" + opl_usr});
+      opl_history.fancytree('getTree').reload({url: "/html/opl/ajax/actions.php?action=getOPLHistory"});
+    });
+
+    socket.on("pullOPLChanges", function(tree) {
+      opl.fancytree('getTree').reload(tree);
     });
     // -- End of Socket Handling --
 
@@ -468,19 +474,6 @@ require 'includes/header_start.php';
       $(".modal").draggable({
         handle: ".modal-header"
       });
-
-      <?php if($_SESSION['userInfo']['id'] !== '16') { ?>
-      // TODO: Alerts disabled due to clicking users out of the box
-      /*$.post("/ondemand/alerts.php?action=update_alerts", function(data) {
-          $("#notification_list").html(data);
-      });
-
-      setInterval(function() {
-          $.post("/ondemand/alerts.php?action=update_alerts", function(data) {
-              $("#notification_list").html(data);
-          });
-      }, 10000);*/
-      <?php }?>
     });
 
     /** @var tree - the FancyTree to take in and convert into a minified version */
@@ -493,8 +486,8 @@ require 'includes/header_start.php';
       });
     }
 
-    function sendOPLEdit(opl_usr) {
-      socket.emit("oplEditing", {opl_usr: opl_usr, initiator: '<?php echo $_SESSION['userInfo']['name']; ?>', timestamp: new Date().getTime()});
+    function sendOPLEdit() {
+      socket.emit("oplEditing", {initiator: '<?php echo $_SESSION['userInfo']['name']; ?>', timestamp: new Date().getTime()});
     }
 
     $("body") // start of OPL functions
@@ -507,7 +500,7 @@ require 'includes/header_start.php';
         node.data.time_left = $(this).find(":selected").val();
 
         calcDueDate($(this));
-        sendOPLEdit(opl_usr);
+        sendOPLEdit();
       })
       .on("change", ".due_date", function() {
         let node = opl.fancytree("getActiveNode");
@@ -515,7 +508,7 @@ require 'includes/header_start.php';
         node.data.due_date = $(this).val();
 
         calcDueDate($(this));
-        sendOPLEdit(opl_usr);
+        sendOPLEdit();
       })
       .on("click", "#saveOPL", function() {
         let opl_mini = getMiniTree(opl);
@@ -527,9 +520,8 @@ require 'includes/header_start.php';
         $.post("/html/opl/ajax/actions.php?action=save", {opl: opl_list, user: opl_usr}, function(data) {
           $("body").append(data); // return a value based on what happened with save
         }).done(function() {
-          // remove the warning message
-          $("#opl_warning").html('');
-          socket.emit("oplSaved", opl_usr);
+          socket.emit("oplSaved");
+          socket.emit("getOPLEditingStatus");
         });
 
         unsaved = false;
@@ -554,7 +546,7 @@ require 'includes/header_start.php';
           key: generateUniqueKey()
         });
 
-        sendOPLEdit(opl_usr);
+        sendOPLEdit();
       })
       .on("click", "#addOPLTask, .add_subtask", function() {
         if(!disabled) opl.fancytree("getActiveNode").editCreateNode("child", {
@@ -564,7 +556,7 @@ require 'includes/header_start.php';
           key: generateUniqueKey()
         });
 
-        sendOPLEdit(opl_usr);
+        sendOPLEdit();
       })
       .on("click", "#completeOPLNodes", function() {
         var tree = opl.fancytree("getTree"), // get the tree
@@ -597,6 +589,8 @@ require 'includes/header_start.php';
                 }
 
                 node.remove(); // remove the node
+
+                sendOPLEdit();
               });
 
               // re-render the tree deeply so that we can recalculate the line item numbers
@@ -615,13 +609,13 @@ require 'includes/header_start.php';
 
         updateOPLTree();
 
-        socket.emit("getOPLEditingStatus", opl_usr);
+        socket.emit("getOPLEditingStatus");
       })
       .on("click", ".view_history", function() {
         let history_id = $(this).attr('id');
         let history_text = $(this).parent().parent().find("td:nth-child(2)").text();
 
-        opl.fancytree('getTree').reload({url: '/html/opl/ajax/actions.php?action=viewOPLHistorical&id=' + history_id + "&user_id=" + opl_usr});
+        opl.fancytree('getTree').reload({url: '/html/opl/ajax/actions.php?action=viewOPLHistorical&id=' + history_id});
 
         if($(this).attr('id') !== 'live') {
           $(".opl_action").prop("disabled", true);
@@ -648,7 +642,7 @@ require 'includes/header_start.php';
                 // re-render the tree deeply so that we can recalculate the line item numbers
                 opl.fancytree("getRootNode").render(true,true);
 
-                sendOPLEdit(opl_usr);
+                sendOPLEdit();
               },
               no: function() {}
             }
@@ -692,14 +686,13 @@ require 'includes/header_start.php';
         opl.fancytree("getTree").getNodeByKey(unique_id).data.hasInfo = true; // update that specific key to now have notes (on the table)
         $(opl.fancytree("getTree").getNodeByKey(unique_id).tr).find(">td").eq(2).find(".view_task_info").removeClass("no-info").addClass("has-info"); // set the icon as active
 
-        sendOPLEdit(opl_usr);
+        sendOPLEdit();
 
         unsaved = false;
       })
       .on("click", "#oplRefresh", function() {
         updateOPLTree();
-        socket.emit("oplSaved", opl_usr);
-        $("#opl_warning").html('');
+        socket.emit("getOPLEditingStatus");
       })
       .on("change", ".OPLPriority", function() {
         if($(this).val().length > 0) {
@@ -731,6 +724,12 @@ require 'includes/header_start.php';
           });
 
         return false;
+      })
+      .on("click", "#OPLForceOverride", function() {
+        sendOPLEdit();
+      })
+      .on("click", "#OPLCheckout", function() {
+        sendOPLEdit();
       })
       // end of OPL functions
 
@@ -1401,6 +1400,9 @@ require 'includes/header_start.php';
   <script src="/assets/plugins/fancytree/jquery.fancytree.gridnav.js"></script>
   <script src="/assets/plugins/fancytree/jquery.fancytree.table.js"></script>
   <script src="/assets/plugins/fancytree/jquery.fancytree.persist.js"></script>
+
+  <!-- Float TableHead -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/floatthead/2.1.2/jquery.floatThead.min.js"></script>
 
   <script src="//cdn.jsdelivr.net/npm/ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
 

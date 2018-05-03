@@ -5,7 +5,7 @@ require '../../../includes/header_start.php';
 
 switch($_REQUEST['action']) {
   case 'save':
-    $user = sanitizeInput($_REQUEST['user']);
+    $user = 42;
     $opl = $_REQUEST['opl'];
 
     $opl_qry = $dbconn->query("SELECT oplu.id, oplu.opl, u.name FROM opl_users oplu LEFT JOIN user u on oplu.user_id = u.id WHERE user_id = $user");
@@ -38,9 +38,7 @@ switch($_REQUEST['action']) {
 
     break;
   case 'getOPL':
-    $user = sanitizeInput($_REQUEST['user_id']);
-
-    $opl_qry = $dbconn->query("SELECT opl FROM opl_users WHERE user_id = $user");
+    $opl_qry = $dbconn->query("SELECT opl FROM opl_users WHERE user_id = 42");
 
     if($opl_qry->num_rows !== 0) {
       $opl = $opl_qry->fetch_assoc();
@@ -70,12 +68,11 @@ switch($_REQUEST['action']) {
 
     break;
   case 'getOPLHistory':
-    $user = sanitizeInput($_REQUEST['user_id']);
     $history_array = array();
 
     $i = 1;
 
-    $current_qry = $dbconn->query("SELECT JSON_LENGTH(opl) -2 AS oplLength, u.name AS lastModifiedBy FROM opl_users oplu LEFT JOIN user u on oplu.last_modified_by = u.id WHERE user_id = $user");
+    $current_qry = $dbconn->query("SELECT JSON_LENGTH(opl) -2 AS oplLength, u.name AS lastModifiedBy FROM opl_users oplu LEFT JOIN user u on oplu.last_modified_by = u.id WHERE user_id = 42");
     $current = $current_qry->fetch_assoc();
 
     $history_array[0]['title'] = 'Current';
@@ -83,7 +80,7 @@ switch($_REQUEST['action']) {
     $history_array[0]['updated_by'] = $current['lastModifiedBy'];
     $history_array[0]['id'] = 'live';
 
-    $history_qry = $dbconn->query("SELECT oplh.id, JSON_LENGTH(opl) - 2 AS oplLength, timestamp, u.name AS lastModifiedBy FROM opl_history oplh LEFT JOIN user u on oplh.updated_by = u.id WHERE user_id = $user ORDER BY timestamp DESC LIMIT 0, 20");
+    $history_qry = $dbconn->query("SELECT oplh.id, JSON_LENGTH(opl) - 2 AS oplLength, timestamp, u.name AS lastModifiedBy FROM opl_history oplh LEFT JOIN user u on oplh.updated_by = u.id WHERE user_id = 42 ORDER BY timestamp DESC LIMIT 0, 20");
 
     if($history_qry->num_rows > 0) {
       while($history = $history_qry->fetch_assoc()) {
@@ -112,7 +109,7 @@ switch($_REQUEST['action']) {
         echo $flash_back['opl'];
       }
     } else {
-      $current_qry = $dbconn->query("SELECT opl FROM opl_users WHERE user_id = $user_id");
+      $current_qry = $dbconn->query("SELECT opl FROM opl_users WHERE user_id = 42");
       $current = $current_qry->fetch_assoc();
 
       echo $current['opl'];

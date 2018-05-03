@@ -15,7 +15,7 @@ var port; // port for the server
 // if we're receiving the console command that we're launching dev environment
 if(scriptArgs[2] === 'dev') {
   // set the SQL data for dev
-  sqlLoc = {host:'dev.3erp.us',user:'dev_remote.dev',password:'o4J4G91@uvw%&ptkMOwZ',database:'3erp_dev'};
+  sqlLoc = {host:'dev.3erp.us',user:'remote.3erp',password:'o4J4G91@uvw%&ptkMOwZ',database:'3erp_dev'};
 
   // setup the dev server for HTTPS
   server = https.createServer({
@@ -60,7 +60,7 @@ var socket = require('socket.io').listen(server); // setup socketio connection
  * Begin global variable declaration
  *****************************************/
 var conn = {}; // storage for everything, expanding and contracting as needed
-var oplEditing = {}; // information on what is currently being edited for the Open Point List
+var oplEditing = null; // information on what is currently being edited for the Open Point List
 
 /******************************************
  * End global variable declaration
@@ -99,13 +99,15 @@ socket.on('connect', function (client) {
 
   // updating and fetching user information, uk allows us to safely identify the user without someone being able to change to another user
   /** @var string - uk - unique user key that identifies that user in the database */
-  client.on("updateUK", function(uk) {
+  client.on("setUK", function(uk) {
     try {
       // update the user object for the unique key
       conn[client.id].uk = uk;
 
+      console.log(conn[client.id].uk);
+
       // grab the database information
-      db.query("SELECT * FROM user WHERE unique_key = ?", [conn[client.id].uk], function(err, r) {
+      /*db.query("SELECT * FROM user WHERE unique_key = ?", [conn[client.id].uk], function(err, r) {
         conn[client.id].userInfo = r;
 
         if(err) {
@@ -113,8 +115,17 @@ socket.on('connect', function (client) {
           reportErr(client, "Failed to obtain user profile from server. Please report this error to IT.");
         }
       });
+
+      db.query("SELECT * FROM permission_groups WHERE id = ?", [conn[client.id].userInfo[permission_id]], function(err, r) {
+        conn[client.id].permissions = r;
+
+        if(err) {
+          // report the error to the console, ignore the results of e for now - output to server console if error occurs
+          reportErr(client, "Failed to obtain user permissions from server. Please report this error to IT.");
+        }
+      });*/
     } catch(e) {
-      console.log("updateUK Error: " + e); // log an error
+      console.log("setUK Error: " + e); // log an error
     }
   });
 
@@ -148,18 +159,19 @@ socket.on('connect', function (client) {
   client.on("oplEditing", function(data) {
     try {
       // assign the server editing variable to opl_usr, we're going to delete upon save
-      oplEditing[data.opl_usr] = data;
-
-      socket.emit("refreshOPLEditStatus");
+      if(oplEditing === null) {
+        oplEditing = data;
+        socket.emit("refreshOPLEditStatus");
+      }
     } catch(e) {
       console.log("oplEditing Error: " + e);
     }
   });
 
   // done editing the OPL for a specific user
-  client.on("oplSaved", function(usr) {
+  client.on("oplSaved", function() {
     try {
-      delete oplEditing[usr];
+      oplEditing = null;
 
       socket.emit("refreshOPLEditStatus");
     } catch(e) {
@@ -168,12 +180,23 @@ socket.on('connect', function (client) {
   });
 
   // get the current status of OPL editing
-  client.on("getOPLEditingStatus", function(list) {
+  client.on("getOPLEditingStatus", function() {
     try {
-      client.emit("OPLEditStatusUpdate", oplEditing[list]);
+      client.emit("OPLEditStatusUpdate", oplEditing);
     } catch(e) {
       console.log("getOPLEditingStatus Error: " + e);
     }
+  });
+
+  client.on("commitOPLChanges", function(tree) {
+    socket.emit("pullOPLChanges", tree);
+
+    /*db.query("UPDATE opl_users SET opl = ? WHERE user_id = 42", tree, function(err) {
+      if(err) {
+        // report the error to the console, ignore the results of e for now - output to server console if error occurs
+        reportErr(client, "Failed to update OPL. " + err);
+      }
+    });*/
   });
 });
 
