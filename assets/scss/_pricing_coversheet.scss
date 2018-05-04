@@ -12,21 +12,6 @@
     color: transparent;
   }
 
-  html {
-    margin: 0;
-    font-size: 7pt;
-  }
-
-  // this ditches the crap at the top and bottom of the page
-  @page {
-    //margin: 0;
-  }
-
-  // this adjusts the left margin (supposed to be on body, but doesn't work)
-  body {
-    margin: 10mm 10mm 10mm 15mm;
-  }
-
   table {
     font-size: 7pt;
   }

@@ -3,4 +3,4 @@
 //echo password_hash("MI0509", PASSWORD_DEFAULT);
 //echo password_hash("2147", PASSWORD_DEFAULT);
 //echo password_hash("CB2018!!", PASSWORD_DEFAULT);
-echo password_hash("QK!51RdCv2Q1%5xW", PASSWORD_DEFAULT);
+echo password_hash("63qj2LB2sdzm", PASSWORD_DEFAULT);
