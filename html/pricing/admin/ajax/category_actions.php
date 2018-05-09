@@ -81,4 +81,8 @@ switch($_REQUEST['action']) {
     echo json_encode($result);
 
     break;
+  case 'saveCategoryList':
+
+
+    break;
 }

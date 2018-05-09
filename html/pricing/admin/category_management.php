@@ -24,7 +24,7 @@ require '../../../includes/header_start.php';
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="addOPLFolder" value="Add Category" />
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplPrint" value="Print" />
               <input type="button" class="btn btn-primary waves-effect waves-light opl_action" id="oplClearSelected" style="display:none;" value="Clear Checked" />
-              <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveOPL" value="Save" />
+              <input type="button" class="btn btn-success waves-effect waves-light opl_action" id="saveCategories" value="Save" />
               <input type="button" class="btn btn-secondary waves-effect waves-light opl_action" id="oplRefresh" value="Refresh" />
 
               <input type="text" class="opl_filter pull-right" id="findOPL" placeholder="Find...">
@@ -54,6 +54,18 @@ require '../../../includes/header_start.php';
   var CLIPBOARD = null;
   var cat_mgmt = $("#category_management");
 
+  function getTree(tree) {
+    return JSON.stringify(tree.fancytree("getTree").toDict());
+  }
+
+  $("body")
+    .on("click", "#saveCategories", function() {
+      $.post("/html/pricing/admin/ajax/category_actions.php?action=saveCategoryList", {cats: getTree(cat_mgmt)}, function(data) {
+        $("body").append(data);
+      });
+    })
+  ;
+
   cat_mgmt.fancytree({
     select: function(event, data) {
       var selNodes = data.tree.getSelectedNodes();
@@ -67,7 +79,7 @@ require '../../../includes/header_start.php';
     selectMode: 2,
     titlesTabbable: true,     // Add all node titles to TAB chain
     quicksearch: true,        // Jump to nodes when pressing first character
-    source: { url: "/html/pricing/ajax/admin/category_actions.php?action=getCategoryList"},
+    source: { url: "/html/pricing/admin/ajax/category_actions.php?action=getCategoryList"},
     extensions: ["edit", "dnd", "table", "gridnav", "filter", "persist"],
     dnd: {
       preventVoidMoves: true,
@@ -94,7 +106,7 @@ require '../../../includes/header_start.php';
       }
     },
     table: {
-      indentation: 20,
+      indentation: 30,
       nodeColumnIdx: 2
     },
     gridnav: {

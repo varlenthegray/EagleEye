@@ -498,6 +498,7 @@ $result = $result_qry->fetch_assoc();
 
 <script>
   var total = 0; // define initial total
+  <?php echo "var roomID = $room_id;"; ?>
 
   function delNoData() {
     let getNegNode = cabinetList.fancytree("getTree").getNodeByKey('-1');
@@ -563,8 +564,10 @@ $result = $result_qry->fetch_assoc();
 
       var root = cabinetList.fancytree("getRootNode");
 
-      $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: $(this).attr('data-id')}, function(data) {
+      $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: $(this).attr('data-id'), room_id: roomID}, function(data) {
         let itemInfo = JSON.parse(data);
+
+        let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
 
         root.addChildren({
           qty: 1,
@@ -573,7 +576,7 @@ $result = $result_qry->fetch_assoc();
           height: itemInfo.height,
           depth: itemInfo.depth,
           itemID: itemInfo.id,
-          catalog: itemInfo.catalog
+          price: fixedPrice
         });
       });
     })
@@ -610,26 +613,6 @@ $result = $result_qry->fetch_assoc();
     })
     .on("click", ".view_item_info", function() {
       // TODO: Implement popup for item information including description and image
-    })
-    .on("click", ".add_item_cabinet_list", function() {
-      delNoData();
-
-      var root = cabinetList.fancytree("getRootNode");
-
-      $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: $(this).attr('data-id')}, function(data) {
-        let itemInfo = JSON.parse(data);
-
-        root.addChildren({
-          qty: 1,
-          title: itemInfo.sku,
-          width: itemInfo.width,
-          height: itemInfo.height,
-          depth: itemInfo.depth,
-          itemID: itemInfo.id,
-          catalog: itemInfo.catalog,
-          price: itemInfo.price
-        });
-      });
     })
     .on("change", "#catalog", function() {
       let id = $(this).find(":selected").attr("id");
@@ -734,10 +717,12 @@ $result = $result_qry->fetch_assoc();
         let price = 0; // define price
 
         if(node.data.price !== undefined) { // if there is a price
-          price = node.data.price.formatMoney(); // format it
-
           // add the individual node total to the running total
           total += node.data.price; // TODO: Fix this, it doesn't add each columns data nor does it take into account quantity!
+
+          let priceOutput = parseFloat(node.data.price);
+
+          price = priceOutput.formatMoney(); // format it
         } else { // otherwise
           price = node.data.price; // display whatever was there
         }
@@ -748,7 +733,7 @@ $result = $result_qry->fetch_assoc();
         let total_formatted = 0; // final output of total, initial definition of total_formatted
 
         // (Index #8 is the total)
-        total_formatted = total.formatMoney(); // format it
+        total_formatted = parseFloat(total).formatMoney(); // format it
 
         // (Index #8)
         $tdList.eq(8).text(total_formatted);
