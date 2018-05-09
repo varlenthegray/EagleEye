@@ -3,7 +3,7 @@ require '../../../includes/header_start.php';
 
 //outputPHPErrs();
 
-$catalog_id = (!empty(sanitizeInput($_REQUEST['catalog']))) ? sanitizeInput($_REQUEST['catalog']) : 2;
+$catalog_id = (!empty(sanitizeInput($_REQUEST['catalog']))) ? sanitizeInput($_REQUEST['catalog']) : 1;
 
 // Brandon Christensen 4/14/2018
 $result = array();
@@ -60,8 +60,7 @@ function makeTree($parent_id) {
           $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $title, 'is_item' => true);
         }
       } else {
-//        $object = array('key' => $item['catID'], 'folder' => true, 'title' => "{$item['name']} ({$item['catID']})");
-        $object = array('key' => $item['catID'], 'folder' => true, 'title' => "{$item['name']}");
+        $object = array('key' => $item['catID'], 'folder' => true, 'title' => $item['name']);
 
         $children = makeTree($item['catID']);
 

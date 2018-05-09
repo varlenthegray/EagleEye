@@ -7,7 +7,11 @@
   }
 
   @page {
-    margin: 5mm 5mm 5mm 10mm;
+    margin: 0;
+  }
+
+  body {
+    padding: 5mm 5mm 5mm 10mm !important;
   }
 
   .custom_dropdown {
@@ -71,7 +75,8 @@
 }
 /** End custom select dropdown box */
 
-/** Modification to alert color */
-.alert-success {
-  color: #10705c !important;
+/** Custom definitions */
+.pad-l5 {
+  padding-left: 5px;
 }
+/** End custom definitions */
