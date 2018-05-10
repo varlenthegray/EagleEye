@@ -11,7 +11,7 @@ require '../../includes/header_start.php';
 
 //outputPHPErrs();
 
-$room_id = 799;
+$room_id = 890;
 
 $vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
  FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC");
@@ -448,8 +448,6 @@ $result = $result_qry->fetch_assoc();
             <span class="cursor-hand no-select" style="margin-left:10px;display:none;" id="catalog_remove_checked"><i class="zmdi zmdi-minus-circle-outline"></i> Remove Checked Items</span>
           </h5>
 
-          <input type="button" class="btn-success no-print" id="cabinet_list_save" value="Save" />
-
           <table id="cabinet_list">
             <colgroup>
               <col width="30px">
@@ -463,6 +461,9 @@ $result = $result_qry->fetch_assoc();
               <col width="50px">
             </colgroup>
             <thead>
+            <tr>
+              <td colspan="9" style="padding-bottom:5px;"><input type="button" class="btn btn-success waves-effect waves-light no-print" id="cabinet_list_save" value="Save" /></td>
+            </tr>
             <tr>
               <th></th>
               <th>#</th>
@@ -495,6 +496,8 @@ $result = $result_qry->fetch_assoc();
     </div>
   </div>
 </div>
+
+<div class='info-popup'></div>
 
 <script>
   var total = 0; // define initial total
@@ -612,7 +615,19 @@ $result = $result_qry->fetch_assoc();
       cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
     })
     .on("click", ".view_item_info", function() {
-      // TODO: Implement popup for item information including description and image
+      let info = "";
+      let thisEle = $(this);
+
+      $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: thisEle.data('id'), room_id: roomID}, function(data) {
+        let result = JSON.parse(data);
+
+        info += "<div class='image'><img src='/html/pricing/images/" + result.image + "' /></div>";
+        info += "<div class='right_content'><div class='header'><h4>" + result.title + "</h4></div>";
+        info += "<div class='description'>" + result.description + "</div></div>";
+      }).done(function() {
+        // FIXME: When displaying the popup, we need to check to see if the box is going to overflow the page, if it is, flip it vertical
+        $(".info-popup").css(thisEle.offset()).show().html(info);
+      });
     })
     .on("change", "#catalog", function() {
       let id = $(this).find(":selected").attr("id");
@@ -627,6 +642,11 @@ $result = $result_qry->fetch_assoc();
       };
 
       catalog.fancytree('getTree').reload(catalogData);
+    })
+    .on("click", ".wrapper", function() {
+      if($(".info-popup").is(":visible")) {
+        $(".info-popup").fadeOut();
+      }
     })
   ;
 
@@ -701,6 +721,11 @@ $result = $result_qry->fetch_assoc();
         // this section handles the column data itself
         var node = data.node, $tdList = $(node.tr).find(">td");
 
+        // lets begin by getting the quantity and the total and multiplying them
+        let qty = parseInt(node.data.qty);
+        let price = parseFloat(node.data.price);
+        let line_total = qty * price;
+
         // (Index #0 is rendered by fancytree by adding the checkbox)
         // Set column #1 info from node data:
         $tdList.eq(1).text(node.getIndexHier());
@@ -714,29 +739,12 @@ $result = $result_qry->fetch_assoc();
         // (Index #6 is the depth)
         $tdList.eq(6).text(node.data.depth);
         // (Index #7 is price, calculated below)
-        let price = 0; // define price
-
-        if(node.data.price !== undefined) { // if there is a price
-          // add the individual node total to the running total
-          total += node.data.price; // TODO: Fix this, it doesn't add each columns data nor does it take into account quantity!
-
-          let priceOutput = parseFloat(node.data.price);
-
-          price = priceOutput.formatMoney(); // format it
-        } else { // otherwise
-          price = node.data.price; // display whatever was there
-        }
 
         // (Index #7)
-        $tdList.eq(7).text(price); // price column
-
-        let total_formatted = 0; // final output of total, initial definition of total_formatted
-
-        // (Index #8 is the total)
-        total_formatted = parseFloat(total).formatMoney(); // format it
+        $tdList.eq(7).text(price.formatMoney()); // price column
 
         // (Index #8)
-        $tdList.eq(8).text(total_formatted);
+        $tdList.eq(8).text(parseFloat(line_total).formatMoney());
       }
     }).on("nodeCommand", function(event, data){
       // Custom event handler that is triggered by keydown-handler and

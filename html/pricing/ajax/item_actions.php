@@ -1,7 +1,7 @@
 <?php
 require '../../../includes/header_start.php';
 
-outputPHPErrs();
+//outputPHPErrs();
 
 switch($_REQUEST['action']) {
   case 'getItemInfo':
@@ -9,9 +9,10 @@ switch($_REQUEST['action']) {
     $room_id = sanitizeInput($_REQUEST['room_id']);
 
     $item_qry = $dbconn->query("SELECT 
-      pn.sku, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog
+      pn.sku, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog, detail.image_path AS image, detail.title, detail.description
     FROM pricing_nomenclature pn
       LEFT JOIN pricing_catalog catalog on pn.catalog_id = catalog.id
+      LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
     WHERE pn.id = $id");
 
     $room_qry = $dbconn->query("SELECT 
@@ -36,6 +37,7 @@ switch($_REQUEST['action']) {
     if($item_qry->num_rows === 1) {
       $item = $item_qry->fetch_assoc();
 
+      $item['description'] = nl2br($item['description']);
       $item['price'] = $price;
 
       echo json_encode($item, true);
@@ -45,7 +47,7 @@ switch($_REQUEST['action']) {
   case 'saveCatalog':
     $room_id = sanitizeInput($_REQUEST['room_id']);
     $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
-    $catalog_id = sanitizeInput($_REQUEST['catalog_id']);
+    $catalog_id = 2;
 
     $existing_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
 

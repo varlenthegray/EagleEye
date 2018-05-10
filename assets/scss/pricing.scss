@@ -117,7 +117,7 @@
 
 .fancytree-title {
   white-space: normal;
-  width: 85%;
+  width: 80%;
 }
 
 .fancytree-container, span.fancytree-focused span.fancytree-title {
@@ -149,4 +149,31 @@
 .checkbox label {
   line-height: normal !important;
   padding-left: 0 !important;
+}
+
+.info_container {
+  display: inline;
+  position: relative;
+}
+
+.info-popup {
+  position: absolute;
+  background-color: #FFF;
+  border: 1px solid #000;
+  border-radius: 0 5px 5px 5px;
+  z-index: 2;
+  padding: 4px;
+  display: none;
+  transform: translate(5px, -46%);
+  box-shadow: 5px 5px 15px #AAA;
+
+  .image {
+    float: left;
+  }
+
+  .right_content {
+    float: left;
+    max-width: 300px;
+    word-wrap: break-word;
+  }
 }
