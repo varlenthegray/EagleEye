@@ -9,9 +9,10 @@ $catalog_id = (!empty(sanitizeInput($_REQUEST['catalog']))) ? sanitizeInput($_RE
 $result = array();
 
 $parent_qry = $dbconn->prepare("SELECT 
-  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku
+  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path
 FROM pricing_categories pc
-  LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id 
+  LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
+  LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
 WHERE pc.catalog_id = $catalog_id AND parent = ? ORDER BY parent, sort_order, catID ASC");
 
 function makeTree($parent_id) {
@@ -62,9 +63,10 @@ function makeTree($parent_id) {
 
       $children = makeTree($item['catID']);
 
-      if (!empty($children)) {
+      if(!empty($children)) {
         $object['children'] = $children;
       }
+
       $ret[] = $object;
     }
   }

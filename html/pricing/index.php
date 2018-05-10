@@ -216,11 +216,14 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
   $hide .= "$('#sample_qty').css('margin-top', '30px');";
 }
 
-$room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$room_id' ORDER BY room, iteration ASC;");
+$room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id ORDER BY room, iteration ASC;");
 $room = $room_qry->fetch_assoc();
 
-$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
+$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = {$room['so_parent']}");
 $result = $result_qry->fetch_assoc();
+
+$dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$result['dealer_code']}'");
+$dealer = $dealer_qry->fetch_assoc();
 ?>
 
 <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
@@ -244,27 +247,27 @@ $result = $result_qry->fetch_assoc();
         <div class="col-md-12" style="margin-top:5px;">
           <table style="max-width:955px;" width="100%">
             <tr>
-              <td colspan="8" class="text-md-center"><h2>Pricing Program Cover Sheet</h2></td>
+              <td colspan="8" class="text-md-center"><h2>Item List</h2></td>
             </tr>
             <tr>
-              <td colspan="3" width="33.3%"><h3>Quote</h3></td>
+              <td colspan="3" width="33.3%" style="text-decoration: underline;"><h3>Quote</h3></td>
               <td colspan="3" width="33.3%" class="text-md-center" id="page_count"></td>
-              <td colspan="2" width="33.3%" class="text-md-right">Production Type: Cabinet</td>
+              <td colspan="2" width="33.3%" class="text-md-right">Production Type: <?php echo translateVIN('product_type', $room['product_type']); ?></td>
             </tr>
             <tr>
-              <td colspan="3"><h4>RTWard_Taylor - Kitchen Perimiter</h4></td>
+              <td colspan="3"><h4><?php echo $result['project_name'] . " - " . $room['room_name']; ?></h4></td>
+              <td colspan="3" class="text-md-center">(828) 966.9000</td>
+              <td colspan="2" class="text-md-right">Production Status: <?php echo translateVIN('days_to_ship', $room['days_to_ship']); ?></td>
+            </tr>
+            <tr>
+              <td colspan="3"><?php echo $dealer['dealer_id'] . "_" . $dealer['dealer_name'] . " - " . $dealer['contact']; ?></td>
+              <td colspan="3" class="text-md-center"><a href="mailto:orders@smcm.us">orders@smcm.us</a></td>
+              <td colspan="2" class="text-md-right">Ship Date: ---</td>
+            </tr>
+            <tr>
+              <td colspan="3">Sales Order #: <strong><?php echo "{$room['so_parent']}{$room['room']}-{$room['iteration']}"; ?></strong></td>
               <td colspan="3" class="text-md-center">Printed <?php echo date(DATE_DEFAULT); ?></td>
-              <td colspan="2" class="text-md-right">Production Status: Green</td>
-            </tr>
-            <tr>
-              <td colspan="3">Sales Order #: <strong>667A-1.01</strong></td>
-              <td colspan="3">&nbsp;</td>
-              <td colspan="2" class="text-md-right">Ship Date: 4/1/2018</td>
-            </tr>
-            <tr>
-              <td colspan="3">&nbsp;</td>
-              <td colspan="3">&nbsp;</td>
-              <td colspan="2" class="text-md-right">Delivery Date: ---</td>
+              <td colspan="2" class="text-md-right">Delivery Date: <?php echo date(DATE_DEFAULT, $room['delivery_date']); ?></td>
             </tr>
             <tr>
               <td colspan="8">&nbsp;</td>
@@ -347,7 +350,7 @@ $result = $result_qry->fetch_assoc();
               <td class="border_thin_bottom">Framing Bead:</td>
               <td class="border_thin_bottom"><?php displayVINOpts('framing_bead'); ?></td>
               <td>&nbsp;</td>
-              <td colspan="2" class='gray_bg border_thin_bottom'>Carcass</td>
+              <td colspan="2" class='gray_bg border_thin_bottom'>Carcass<div class="text-mini">Default is UV2 Maple unless otherwise modified as a line item below.</div></td>
               <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
