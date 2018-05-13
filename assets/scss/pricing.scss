@@ -161,10 +161,10 @@
   background-color: #FFF;
   border: 1px solid #000;
   border-radius: 0 5px 5px 5px;
-  z-index: 2;
+  z-index: 1051;
   padding: 4px;
   display: none;
-  transform: translate(5px, -46%);
+  transform: translate(5px, 0);
   box-shadow: 5px 5px 15px #AAA;
 
   .image {
@@ -182,4 +182,22 @@
   font-size: .75em;
   text-align: center;
   line-height: 10px;
+}
+
+#cabinet_list {
+  .cab-price {
+    padding: 0 5px;
+  }
+
+  .cab-total {
+    background-color: rgba(63, 191, 127, 0.5);
+    border: solid #000;
+    border-width: 0 0 1px 2px;
+  }
+}
+
+#item_modifications {
+  span.fancytree-custom-icon {
+    display: none !important;
+  }
 }

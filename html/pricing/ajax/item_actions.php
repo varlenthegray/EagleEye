@@ -37,6 +37,10 @@ switch($_REQUEST['action']) {
     if($item_qry->num_rows === 1) {
       $item = $item_qry->fetch_assoc();
 
+      $img = !empty($item['image']) ? "/html/pricing/images/{$item['image']}" : 'fa fa-magic';
+
+      $item['icon'] = $img;
+
       $item['description'] = nl2br($item['description']);
       $item['price'] = $price;
 

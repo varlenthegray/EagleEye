@@ -132,20 +132,21 @@ function calcVin(room_id) {
 
 function loadPage(page) {
   var mainBody = $("#main_body");
+  var explodedPage = page.split("?");
 
   $(".js_loading").show();
 
   if(mainBody.length > 0) {
     clearIntervals();
 
-    mainBody.load("/html/" + page + ".php", function() {
+    mainBody.load("/html/" + explodedPage[0] + ".php?" + explodedPage[1], function() {
       $(".js_loading").hide();
-      $("#main_display").attr("data-showing", page);
+      $("#main_display").attr("data-showing", explodedPage[0]);
     });
 
     backFromSearch();
   } else {
-    window.location.replace("index.php?page=" + page);
+    window.location.replace("index.php?page=" + explodedPage[0]);
   }
 
 }

@@ -11,7 +11,12 @@
   }
 
   body {
-    padding: 5mm 5mm 5mm 10mm !important;
+    padding: 5mm 5mm 5mm 15mm !important;
+    color: #000 !important;
+
+    a {
+      color: #000 !important;
+    }
   }
 
   .custom_dropdown {
@@ -22,6 +27,11 @@
     .selected {
       border-width: 0 !important;
     }
+  }
+
+  table.fancytree-ext-table.fancytree-treefocus tbody tr.fancytree-active {
+    background-color: transparent;
+    outline: none !important;
   }
 }
 /** End Coversheet CSS */

@@ -11,7 +11,7 @@ require '../../includes/header_start.php';
 
 //outputPHPErrs();
 
-$room_id = 890;
+$room_id = sanitizeInput($_REQUEST['room_id']);
 
 $vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
  FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC");
@@ -94,8 +94,8 @@ function displayFinishOpts($segment, $db_col = null, $id = null) {
   global $room;
 
   // assigns SEGMENT = VIN Schema column (panel_raise) of which there may be multiple pulled from VIN SCHEMA, DB_COL of which there is only one (panel_raise_sd, stored in ROOMS table)
-  $dblookup = (!empty($db_col)) ? $db_col : $segment;
-  $addl_id = (!empty($id)) ? $id : $dblookup; // for duplicate values (panel_raise vs panel_raise_sd)
+  $dblookup = !empty($db_col) ? $db_col : $segment;
+  $addl_id = !empty($id) ? $id : $dblookup; // for duplicate values (panel_raise vs panel_raise_sd)
   $options = null;
   $option_grid = null;
 
@@ -106,13 +106,13 @@ function displayFinishOpts($segment, $db_col = null, $id = null) {
 
   foreach($vin_schema[$segment] as $value) {
     if(((string)$value['key'] === (string)$room[$dblookup]) && empty($selected)) {
-      $selected = "{$value['value']}";
-      $selected_img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
+      $selected = $value['value'];
+      $selected_img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
       $sel_key = $value['key'];
     }
 
     if((bool)$value['visible']) {
-      $img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
+      $img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
 
       if ($value['group'] !== $prev_header) {
         $section_head = "<div class='header'>{$value['group']}</div>";
@@ -135,7 +135,7 @@ function displayFinishOpts($segment, $db_col = null, $id = null) {
     }
   }
 
-  $selected = (empty($selected)) ? "Not Selected Yet" : $selected;
+  $selected = empty($selected) ? 'Not Selected Yet' : $selected;
 
   $option_grid = "<img src='/assets/images/sample_display.jpg' width='778' height='800' border='0' usemap='#{$dblookup}_map' style='max-width:800px;max-height:800px;' /><map name='{$dblookup}_map' class='grid_element'>$option_grid</map>";
 
@@ -181,14 +181,14 @@ function translateVIN($segment, $key) {
 
       if(count($custom_info[$segment]) > 1) {
         foreach($custom_info[$segment] as $key => $value) {
-          $mfg = (stristr($key, 'mfg')) ? $value : $mfg;
-          $code = (stristr($key, 'code')) ? $value : $code;
-          $name = (stristr($key, 'name')) ? $value : $name;
+          $mfg = stristr($key, 'mfg') ? $value : $mfg;
+          $code = stristr($key, 'code') ? $value : $code;
+          $name = stristr($key, 'name') ? $value : $name;
         }
 
-        $desc = "$name";
+        $desc = $name;
       } else {
-        $desc = "Custom - " . array_values($custom_info[$segment])[0];
+        $desc = 'Custom - ' . array_values($custom_info[$segment])[0];
       }
     } else {
       $desc = $vin['value'];
@@ -197,7 +197,7 @@ function translateVIN($segment, $key) {
     $desc = $vin['value'];
   }
 
-  return "$desc";
+  return (string)$desc;
 }
 
 $note_arr = array();
@@ -428,9 +428,9 @@ $dealer = $dealer_qry->fetch_assoc();
               <th colspan="8">Notes</th>
             </tr>
             <tr>
-              <td colspan="3" style="border-right:1px solid #000;" class="gray_bg">Global Notes:</td>
-              <td colspan="3" class="gray_bg" style="border-right:1px solid #000;">Finishing/Sample Notes:</td>
-              <td colspan="2" class="gray_bg">Delivery Notes:</td>
+              <td colspan="3" style="border-right:1px solid #000;" class="gray_bg">&nbsp;Global Notes:</td>
+              <td colspan="3" class="gray_bg" style="border-right:1px solid #000;">&nbsp;Finishing/Sample Notes:</td>
+              <td colspan="2" class="gray_bg">&nbsp;Delivery Notes:</td>
             </tr>
             <tr id="notes_section">
               <td colspan="3" id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_global']; ?></textarea></td>
@@ -447,9 +447,6 @@ $dealer = $dealer_qry->fetch_assoc();
       <div class="row">
         <div class="col-md-12" style="margin-top:5px;">
           <h2>Cabinet List</h2>
-          <h5 class="no-print" style="margin:10px 0;">
-            <span class="cursor-hand no-select" style="margin-left:10px;display:none;" id="catalog_remove_checked"><i class="zmdi zmdi-minus-circle-outline"></i> Remove Checked Items</span>
-          </h5>
 
           <table id="cabinet_list">
             <colgroup>
@@ -462,10 +459,16 @@ $dealer = $dealer_qry->fetch_assoc();
               <col width="50px">
               <col width="50px">
               <col width="50px">
+              <col width="50px">
+              <col width="50px">
             </colgroup>
             <thead>
             <tr>
-              <td colspan="9" style="padding-bottom:5px;"><input type="button" class="btn btn-success waves-effect waves-light no-print" id="cabinet_list_save" value="Save" /></td>
+              <td colspan="11" style="padding-bottom:5px;">
+                <input type="button" class="btn btn-primary waves-effect waves-light no-print" id="cabinet_list_save" value="Save" />
+                <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" />
+                <input type="button" class="btn btn-success waves-effect waves-light no-print pull-right" id="submit_quote" value="Submit Quote" />
+              </td>
             </tr>
             <tr>
               <th></th>
@@ -475,6 +478,8 @@ $dealer = $dealer_qry->fetch_assoc();
               <th class="text-md-center">Width</th>
               <th class="text-md-center">Height</th>
               <th class="text-md-center">Depth</th>
+              <th class="text-md-center">Hinge</th>
+              <th class="text-md-center">Finish</th>
               <th class="text-md-center">Price Ea</th>
               <th class="text-md-center">Total</th>
             </tr>
@@ -489,8 +494,26 @@ $dealer = $dealer_qry->fetch_assoc();
               <td class="text-md-center"></td>
               <td class="text-md-center"></td>
               <td class="text-md-center"></td>
-              <td class="text-md-right"></td>
-              <td class="text-md-right"></td>
+              <td class="text-md-center">
+                <select class="item_hinge">
+                  <option value="L">Left</option>
+                  <option value="R">Right</option>
+                  <option value="P">Pair</option>
+                  <option value="N" selected>None</option>
+                </select>
+              </td>
+              <td class="text-md-center">
+                <select class="item_finish">
+                  <option value="L">Left</option>
+                  <option value="R">Right</option>
+                  <option value="B">Back</option>
+                  <option value="F">Front</option>
+                  <option value="M">Multiple</option>
+                  <option value="N" selected>None</option>
+                </select>
+              </td>
+              <td class="text-md-right cab-price"></td>
+              <td class="text-md-right cab-price cab-total"></td>
             </tr>
             </tbody>
           </table>
@@ -501,6 +524,34 @@ $dealer = $dealer_qry->fetch_assoc();
 </div>
 
 <div class='info-popup'></div>
+
+<!-- modal -->
+<div id="modalAddModification" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddModificationLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Add Modifications</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="modificationsFilter">Search Modifications</label>
+              <input type="text" class="form-control fc-simple ignoreSaveAlert" id="modificationsFilter" placeholder="Find" width="100%" >
+            </div>
+
+            <div id="item_modifications"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light" id="modificationAddSelected">Add Selected</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <script>
   var total = 0; // define initial total
@@ -514,10 +565,47 @@ $dealer = $dealer_qry->fetch_assoc();
     }
   }
 
+  function recalcTotal() {
+    let totalTree = cabinetList.fancytree("getTree");
+    let newTotal = 0.00;
+
+    totalTree.visit(function(line) {
+      let qty = parseInt(line.data.qty);
+      let price = parseFloat(line.data.price);
+      let lineTotal = qty * price;
+
+      newTotal += parseFloat(lineTotal);
+
+      let node = cabinetList.fancytree("getTree").getNodeByKey(line.key), $tdList = $(node.tr).find(">td");
+
+      console.log("Updated " + node.key + " with total: " + newTotal);
+
+      // update the line item quantity?
+
+      // update the total column with the correct total
+      node.data.total = newTotal.formatMoney();
+      $tdList.eq(10).text(newTotal.formatMoney());
+    });
+  }
+
+  var mouseX, mouseY;
+
+  $(document).mousemove(function(e) {
+    mouseX = e.pageX;
+    mouseY = e.pageY;
+  })
+
   $("body")
     .on("keyup", "#treeFilter", function() { // filters per keystroke on search catalog
       // grab this value and filter it down to the node needed
       catalog.fancytree("getTree").filterNodes($(this).val());
+
+      // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
+      // TODO: https://github.com/mar10/fancytree/issues/551
+    })
+    .on("keyup", "#modificationsFilter", function() { // filters per keystroke on search catalog
+      // grab this value and filter it down to the node needed
+      itemModifications.fancytree("getTree").filterNodes($(this).val());
 
       // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
       // TODO: https://github.com/mar10/fancytree/issues/551
@@ -545,9 +633,12 @@ $dealer = $dealer_qry->fetch_assoc();
 
       // hide the remove items button, there are no items to remove now
       $(this).hide();
+
+      recalcTotal();
     })
     .on("click", "#cabinet_list_save", function() {
-      var cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
+      // var cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
+      var cab_list = JSON.stringify(getMiniTree(cabinetList));
       var cat_id = $("#catalog").find(":selected").attr("id");
 
       $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=<?php echo $room_id; ?>", {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
@@ -562,13 +653,14 @@ $dealer = $dealer_qry->fetch_assoc();
 
       cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
     })
-    .on("click", ".view_item_info", function() {
-      // TODO: Implement popup for item information including description and image
+    .on("change", ".qty_input", function() {
+      recalcTotal();
     })
     .on("click", ".add_item_cabinet_list", function() {
       delNoData();
 
       var root = cabinetList.fancytree("getRootNode");
+      let $tdList = $(root.tr).find(">td");
 
       $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: $(this).attr('data-id'), room_id: roomID}, function(data) {
         let itemInfo = JSON.parse(data);
@@ -582,8 +674,12 @@ $dealer = $dealer_qry->fetch_assoc();
           height: itemInfo.height,
           depth: itemInfo.depth,
           itemID: itemInfo.id,
-          price: fixedPrice
+          price: fixedPrice,
+          key: new Date().getTime() * Math.random(999),
+          icon: itemInfo.icon
         });
+
+        recalcTotal();
       });
     })
     .on("change", "#catalog", function() {
@@ -617,20 +713,28 @@ $dealer = $dealer_qry->fetch_assoc();
 
       cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
     })
-    .on("click", ".view_item_info", function() {
+    .on("mouseenter", ".view_item_info", function() {
+      // FIXME: Change this so the data isn't loaded on hover, omg queries... should be able to JSON this data into memory
+
       let info = "";
       let thisEle = $(this);
 
       $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: thisEle.data('id'), room_id: roomID}, function(data) {
         let result = JSON.parse(data);
 
-        info += "<div class='image'><img src='/html/pricing/images/" + result.image + "' /></div>";
+        if(result.image !== null) {
+          info += "<div class='image'><img src='/html/pricing/images/" + result.image + "' /></div>";
+        }
+
         info += "<div class='right_content'><div class='header'><h4>" + result.title + "</h4></div>";
         info += "<div class='description'>" + result.description + "</div></div>";
       }).done(function() {
         // FIXME: When displaying the popup, we need to check to see if the box is going to overflow the page, if it is, flip it vertical
-        $(".info-popup").css(thisEle.offset()).show().html(info);
+        $(".info-popup").css({"top": mouseY - 91, "left": mouseX}).fadeIn(250).html(info);
       });
+    })
+    .on("mouseleave", ".view_item_info", function() {
+      $(".info-popup").fadeOut(250);
     })
     .on("change", "#catalog", function() {
       let id = $(this).find(":selected").attr("id");
@@ -651,11 +755,32 @@ $dealer = $dealer_qry->fetch_assoc();
         $(".info-popup").fadeOut();
       }
     })
+    .on("change", ".item_hinge", function() {
+      let node = cabinetList.fancytree("getActiveNode");
+
+      node.data.hinge = $(this).find(":selected").val();
+    })
+    .on("change", ".item_finish", function() {
+      let node = cabinetList.fancytree("getActiveNode");
+
+      node.data.finish = $(this).find(":selected").val();
+    })
+    .on("click", "#modificationAddSelected", function() {
+      let modifications = itemModifications.fancytree("getTree").getSelectedNodes();
+
+      cabinetList.fancytree("getTree").getActiveNode().addChildren(modifications);
+    })
   ;
 
   var CLIPBOARD = null;
   var cabinetList = $("#cabinet_list");
   var catalog = $("#catalog_categories");
+  var itemModifications = $("#item_modifications");
+
+  $("#modalAddModification").on("hidden.bs.modal", function() {
+    $("#modificationsFilter").val('');
+    itemModifications.fancytree("getTree").clearFilter();
+  });
 
   $(function() {
     /******************************************************************************
@@ -670,7 +795,7 @@ $dealer = $dealer_qry->fetch_assoc();
           return "[" + node.key + "]: '" + node.title + "'";
         });
 
-        console.log(selKeys.join(", "));
+        // console.log(selKeys.join(", "));
 
         if(selKeys.length > 0) {
           $("#catalog_remove_checked").show();
@@ -685,7 +810,7 @@ $dealer = $dealer_qry->fetch_assoc();
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
       source: { url: "/html/pricing/ajax/item_actions.php?action=getCabinetList&room_id=<?php echo $room_id; ?>" },
-      extensions: ["edit", "dnd", "table", "gridnav"],
+      extensions: ["edit", "dnd", "table", "gridnav", "persist"],
       debugLevel: 0,
       dnd: { // drag and drop
         preventVoidMoves: true,
@@ -703,7 +828,7 @@ $dealer = $dealer_qry->fetch_assoc();
         }
       },
       edit: {
-        triggerStart: ["clickActive", "dblclick", "f2", "shift+click", "mac+enter"],
+        triggerStart: ["clickActive", "f2", "shift+click", "mac+enter"],
         close: function(event, data) {
           if( data.save && data.isNew ){
             // Quick-enter: add new nodes until we hit [enter] on an empty title
@@ -743,11 +868,22 @@ $dealer = $dealer_qry->fetch_assoc();
         $tdList.eq(6).text(node.data.depth);
         // (Index #7 is price, calculated below)
 
+        if(node.data.hinge !== undefined) {
+          $tdList.eq(7).find(".item_hinge").val(node.data.hinge);
+        }
+
+        if(node.data.finish !== undefined) {
+          $tdList.eq(8).find(".item_finish").val(node.data.finish);
+        }
+
         // (Index #7)
-        $tdList.eq(7).text(price.formatMoney()); // price column
+        $tdList.eq(9).text(price.formatMoney()); // price column
 
         // (Index #8)
-        $tdList.eq(8).text(parseFloat(line_total).formatMoney());
+        $tdList.eq(10).text(node.data.total);
+      },
+      modifyChild: function(event, data) {
+        recalcTotal();
       }
     }).on("nodeCommand", function(event, data){
       // Custom event handler that is triggered by keydown-handler and
@@ -795,11 +931,8 @@ $dealer = $dealer_qry->fetch_assoc();
             refNode.setActive();
           }
           break;
-        case "addChild":
-          node.editCreateNode("child", "");
-          break;
-        case "addSibling":
-          node.editCreateNode("after", "");
+        case "addModifications":
+          $("#modalAddModification").modal('show');
           break;
         case "cut":
           CLIPBOARD = {mode: data.cmd, data: node};
@@ -884,15 +1017,13 @@ $dealer = $dealer_qry->fetch_assoc();
     cabinetList.contextmenu({
       delegate: "span.fancytree-node",
       menu: [
-        {title: "Edit <kbd>[F2]</kbd>", cmd: "rename", uiIcon: "ui-icon-pencil" },
         {title: "Delete <kbd>[Del]</kbd>", cmd: "remove", uiIcon: "ui-icon-trash" },
         {title: "----"},
-        {title: "New sibling <kbd>[Ctrl+N]</kbd>", cmd: "addSibling", uiIcon: "ui-icon-plus" },
-        {title: "New child <kbd>[Ctrl+Shift+N]</kbd>", cmd: "addChild", uiIcon: "ui-icon-arrowreturn-1-e" },
+        {title: "Add Modifications <kbd>[Ctrl+M]</kbd>", cmd: "addModifications", uiIcon: "ui-icon-plus" },
         {title: "----"},
         {title: "Cut <kbd>Ctrl+X</kbd>", cmd: "cut", uiIcon: "ui-icon-scissors"},
         {title: "Copy <kbd>Ctrl-C</kbd>", cmd: "copy", uiIcon: "ui-icon-copy"},
-        {title: "Paste as child<kbd>Ctrl+V</kbd>", cmd: "paste", uiIcon: "ui-icon-clipboard", disabled: true }
+        {title: "Paste<kbd>Ctrl+V</kbd>", cmd: "paste", uiIcon: "ui-icon-clipboard", disabled: true }
       ],
       beforeOpen: function(event, ui) {
         var node = $.ui.fancytree.getNode(ui.target);
@@ -928,6 +1059,25 @@ $dealer = $dealer_qry->fetch_assoc();
         highlight: true,   // Highlight matches by wrapping inside <mark> tags
         leavesOnly: false, // Match end nodes only
         nodata: false,      // Display a 'no data' status node if result is empty
+        mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
+      }
+    });
+
+    // this is the modifications modal popup
+    itemModifications.fancytree({
+      source: { url: "/html/pricing/ajax/modifications.php" },
+      extensions: ["filter"],
+      debugLevel: 0,
+      filter: {
+        autoApply: true,   // Re-apply last filter if lazy data is loaded
+        autoExpand: true, // Expand all branches that contain matches while filtered
+        counter: true,     // Show a badge with number of matching child nodes near parent icons
+        fuzzy: true,      // Match single characters in order, e.g. 'fb' will match 'FooBar'
+        hideExpandedCounter: true,  // Hide counter badge if parent is expanded
+        hideExpanders: false,       // Hide expanders if all child nodes are hidden by filter
+        highlight: true,   // Highlight matches by wrapping inside <mark> tags
+        leavesOnly: false, // Match end nodes only
+        nodata: true,      // Display a 'no data' status node if result is empty
         mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
       }
     });

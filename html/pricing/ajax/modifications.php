@@ -13,7 +13,7 @@ $parent_qry = $dbconn->prepare("SELECT
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
-WHERE pc.catalog_id = $catalog_id AND parent = ? ORDER BY parent, sort_order, catID ASC");
+WHERE pc.catalog_id = $catalog_id AND parent = ? AND pc.id BETWEEN 258 AND 280 ORDER BY parent, sort_order, catID ASC");
 
 function makeTree($parent_id) {
   global $parent_qry;
@@ -55,12 +55,11 @@ function makeTree($parent_id) {
       $title = $item['sku'];
       $title .= " <span class='actions'>
             <div class='info_container'><i class='fa fa-info-circle primary-color view_item_info' data-id='{$item['itemID']}'></i></div>
-            <i class='fa fa-plus-circle success-color add_item_cabinet_list' data-id='{$item['itemID']}' title='Add To Cabinet List'></i>
           </span>";
 
       $img = !empty($item['image_path']) ? "/html/pricing/images/{$item['image_path']}" : 'fa fa-magic';
 
-      $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'],'icon' => $img, 'title' => $title, 'is_item' => true, 'qty' => 1);
+      $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $title, 'is_item' => true, 'checkbox' => true, 'icon' => $img, 'qty' => 1, 'price' => 0.00);
     } else {
       $object = array('key' => $item['catID'], 'folder' => true, 'title' => $item['name']);
 
@@ -77,6 +76,6 @@ function makeTree($parent_id) {
   return $ret;
 }
 
-$result = makeTree(0);
+$result = makeTree(258);
 
 echo json_encode($result);

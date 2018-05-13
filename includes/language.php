@@ -4,7 +4,7 @@
  */
 // Release Date
 define('RELEASE_DATE', '5/10/18');
-define('VERSION', '2.3.612');
+define('VERSION', '2.3.616');
 
 // Global definitions
 define('LOGO_TEXT', 'Stone Mountain Cabinetry'); // The logo text displayed
