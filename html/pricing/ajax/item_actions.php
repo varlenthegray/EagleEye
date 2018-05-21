@@ -3,6 +3,38 @@ require '../../../includes/header_start.php';
 
 //outputPHPErrs();
 
+function saveCatalog($roomID, $cabinet_list) {
+  global $dbconn;
+
+  $room_id = sanitizeInput($_REQUEST['room_id']);
+  $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
+  $catalog_id = 2;
+  $out_id = null;
+
+  $existing_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
+
+  if($existing_qry->num_rows > 0) {
+    $existing = $existing_qry->fetch_assoc();
+
+    $result = $dbconn->query("UPDATE pricing_cabinet_list SET cabinet_list = '$cab_list', catalog_id = $catalog_id WHERE id = {$existing['id']}");
+
+    $out_id = $existing['id'];
+  } else {
+    $result = $dbconn->query("INSERT INTO pricing_cabinet_list (room_id, user_id, catalog_id, cabinet_list) VALUES ($room_id, {$_SESSION['shop_user']['id']}, $catalog_id, '$cab_list')");
+
+    $out_id = $dbconn->insert_id;
+
+  }
+
+  if($result) {
+    echo displayToast('success', 'Successfully updated the cabinet list.', 'Cabinet List Updated');
+  } else {
+    dbLogSQLErr($dbconn);
+  }
+
+  return $out_id;
+}
+
 switch($_REQUEST['action']) {
   case 'getItemInfo':
     $id = sanitizeInput($_REQUEST['id']);
@@ -51,23 +83,8 @@ switch($_REQUEST['action']) {
   case 'saveCatalog':
     $room_id = sanitizeInput($_REQUEST['room_id']);
     $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
-    $catalog_id = 2;
 
-    $existing_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
-
-    if($existing_qry->num_rows > 0) {
-      $existing = $existing_qry->fetch_assoc();
-
-      $result = $dbconn->query("UPDATE pricing_cabinet_list SET cabinet_list = '$cab_list', catalog_id = $catalog_id WHERE id = {$existing['id']}");
-    } else {
-      $result = $dbconn->query("INSERT INTO pricing_cabinet_list (room_id, user_id, catalog_id, cabinet_list) VALUES ($room_id, {$_SESSION['shop_user']['id']}, $catalog_id, '$cab_list')");
-    }
-
-    if($result) {
-      echo displayToast("success", "Successfully updated the cabinet list.", "Cabinet List Updated");
-    } else {
-      dbLogSQLErr($dbconn);
-    }
+    saveCatalog($room_id, $cab_list);
 
     break;
   case 'getCabinetList':
@@ -87,6 +104,21 @@ switch($_REQUEST['action']) {
 
 
       echo json_encode($children);
+    }
+
+    break;
+  case 'submitQuote':
+    $room_id = sanitizeInput($_REQUEST['room_id']);
+    $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
+
+    $quote_id = saveCatalog($room_id, $cab_list);
+
+    echo "<script>console.log('Quote ID: $quote_id');</script>";
+
+    if($dbconn->query("UPDATE pricing_cabinet_list SET quote_submission = UNIX_TIMESTAMP() WHERE id = $quote_id")) {
+      echo displayToast('success', 'Successfully submitted the quote for review!', 'Quote Submitted');
+    } else {
+      dbLogSQLErr($dbconn);
     }
 
     break;

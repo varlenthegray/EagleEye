@@ -1,14 +1,6 @@
 <?php
 require '../../includes/header_start.php';
 
-// TODO: Cabinet list load from database
-// TODO: Save cabinet list to the database
-// TODO: Display price group price based on database values
-// TODO: Import items and line items based on nomenclature
-// TODO: Correct header information (above coversheet)
-// TODO: Tag based on room ID #
-// TODO: Allow information on coversheet to be updated directly from page
-
 //outputPHPErrs();
 
 $room_id = sanitizeInput($_REQUEST['room_id']);
@@ -224,6 +216,12 @@ $result = $result_qry->fetch_assoc();
 
 $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$result['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();
+
+$existing_quote_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
+
+if($existing_quote_qry->num_rows === 1) {
+  $existing_quote = $existing_quote_qry->fetch_assoc();
+}
 ?>
 
 <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
@@ -255,171 +253,170 @@ $dealer = $dealer_qry->fetch_assoc();
               <td colspan="2" width="33.3%" class="text-md-right">Production Type: <?php echo translateVIN('product_type', $room['product_type']); ?></td>
             </tr>
             <tr>
-              <td colspan="3"><h4><?php echo $result['project_name'] . " - " . $room['room_name']; ?></h4></td>
-              <td colspan="3" class="text-md-center">(828) 966.9000</td>
+              <td colspan="3"><h5><?php echo $result['project_name'] . " - " . $room['room_name']; ?></h5></td>
+              <td colspan="3" class="text-md-center">&nbsp;</td>
               <td colspan="2" class="text-md-right">Production Status: <?php echo translateVIN('days_to_ship', $room['days_to_ship']); ?></td>
             </tr>
             <tr>
               <td colspan="3"><?php echo $dealer['dealer_id'] . "_" . $dealer['dealer_name'] . " - " . $dealer['contact']; ?></td>
-              <td colspan="3" class="text-md-center"><a href="mailto:orders@smcm.us">orders@smcm.us</a></td>
+              <td colspan="3" class="text-md-center">&nbsp;</td>
               <td colspan="2" class="text-md-right">Ship Date: ---</td>
             </tr>
             <tr>
-              <td colspan="3">Sales Order #: <strong><?php echo "{$room['so_parent']}{$room['room']}-{$room['iteration']}"; ?></strong></td>
-              <td colspan="3" class="text-md-center">Printed <?php echo date(DATE_DEFAULT); ?></td>
+              <td colspan="3">&nbsp;</td>
+              <td colspan="3" class="text-md-center">&nbsp;</td>
               <td colspan="2" class="text-md-right">Delivery Date: <?php echo date(DATE_DEFAULT, $room['delivery_date']); ?></td>
             </tr>
             <tr>
               <td colspan="8">&nbsp;</td>
             </tr>
             <tr>
-              <th colspan="3">Design</th>
-              <th colspan="3">Finish</th>
-              <th colspan="2">Delivery</th>
-            </tr>
-            <tr>
-              <td colspan="3" class='gray_bg'><?php echo ($info['construction_method'] !== 'L') ? "Door/Drawer Head" : null; ?></td>
-              <td colspan="3" class='gray_bg'>Door/Drawer</td>
-              <td colspan="2" class='gray_bg'>&nbsp;</td>
-            </tr>
-            <tr class="border_top">
-              <td class="border_thin_bottom" width="12%"><label for="species_grade_<?php echo $room['id']; ?>">Species/Grade:</label></td>
-              <td class="border_thin_bottom"><?php displayVINOpts('species_grade'); ?></td>
-              <td width="3%">&nbsp;</td>
-              <td class="border_thin_bottom" width="14%">Finish Code:</td>
-              <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
-              <td width="3%">&nbsp;</td>
-              <td width="16%"><strong>Ship VIA:</strong></td>
-              <td><input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_via" value="<?php echo $info['vin_ship_via']; ?>"></td>
-            </tr>
-            <tr>
-              <td class="border_thin_bottom">Construction:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('construction_method'); ?></td>
-              <td>&nbsp;</td>
-              <td class="border_thin_bottom">Sheen:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('sheen'); ?></td>
-              <td>&nbsp;</td>
-              <td><strong>Ship To:</strong></td>
-              <td rowspan="3">
-                <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
-                <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
-                <input type="text" style="width:76px;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:30px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+              <td colspan="8">
+                <table class="pull-left" style="width:33%;margin-left:0.3%;">
+                  <tr><th colspan="2" style="padding-left:5px;">Design</th></tr>
+                  <tr><td colspan="2" class='gray_bg' style="padding-left:5px;"><?php echo ($info['construction_method'] !== 'L') ? "Door/Drawer Head" : null; ?></td></tr>
+                  <tr class="border_top">
+                    <td class="border_thin_bottom" width="40%"><label for="species_grade_<?php echo $room['id']; ?>">Species/Grade:</label></td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('species_grade'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Construction:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('construction_method'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Door Design:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('door_design'); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Door Panel Raise:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Short Drawer Raise:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Tall Drawer Raise:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Edge Profile:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('edge_profile'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Framing Bead:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('framing_bead'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Frame Option:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('framing_options'); ?></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Drawer Box:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('drawer_boxes'); ?></td>
+                  </tr>
+                </table>
+
+                <table class="pull-left" style="width:33%;margin-left:0.3%;">
+                  <tr><th colspan="3" style="padding-left:5px;">Finish</th></tr>
+                  <tr><td colspan="3" class='gray_bg' style="padding-left:5px;">Door/Drawer</td></tr>
+                  <tr class="border_top">
+                    <td class="border_thin_bottom" width="40%">Finish Code:</td>
+                    <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Sheen:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('sheen'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Glaze Color:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('glaze'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Glaze Technique:</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Antiquing</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('antiquing'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Worn Edges</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('worn_edges'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Distressing</td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('distress_level'); ?></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" class='gray_bg border_thin_bottom'>Carcass<div class="text-mini">Default is UV2 Maple unless otherwise modified as a line item below.</div></td>
+                    <td colspan="3">&nbsp;</td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom"><strong>Exterior:</strong></td>
+                    <td class="border_thin_bottom"><div class="checkbox"><input id="ext_carcass_same" type="checkbox"><label for="ext_carcass_same"> Same as Door/Drawer</label></div></td>
+                  </tr>
+                  <tr class="ext_finish_block">
+                    <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
+                  </tr>
+                  <tr class="ext_finish_block">
+                    <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
+                    <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_exterior_finish_code", "carcass_exterior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
+                  </tr>
+                  <tr class="ext_finish_block">
+                    <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
+                  </tr>
+                  <tr class="ext_finish_block">
+                    <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom"><strong>Interior:</strong></td>
+                    <td class="border_thin_bottom"><div class="checkbox"><input id="int_carcass_same" type="checkbox"><label for="int_carcass_same"> Same as Door/Drawer</label></div></td>
+                  </tr>
+                  <tr class="int_finish_block">
+                    <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
+                  </tr>
+                  <tr class="int_finish_block">
+                    <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
+                    <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_interior_finish_code", "carcass_interior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
+                  </tr>
+                  <tr class="int_finish_block">
+                    <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
+                  </tr>
+                  <tr class="int_finish_block">
+                    <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
+                    <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?></td>
+                  </tr>
+                </table>
+
+                <table class="pull-left" style="width:33%;margin-left:0.3%;">
+                  <tr><th colspan="2" style="padding-left:5px;">Delivery</th></tr>
+                  <tr><td colspan="2" class='gray_bg' style="padding-left:5px;">&nbsp;</td></tr>
+                  <tr class="border_top">
+                    <td width="30%"><strong>Ship VIA:</strong></td>
+                    <td><input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_via" value="<?php echo $info['vin_ship_via']; ?>"></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Ship To:</strong></td>
+                    <td rowspan="3">
+                      <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
+                      <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
+                      <input type="text" style="width:76px;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:30px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+                    </td>
+                  </tr>
+                </table>
               </td>
-            </tr>
-            <tr>
-              <td class="border_thin_bottom">Door Design:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('door_design'); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
-              <td>&nbsp;</td>
-              <td class="border_thin_bottom">Glaze Color:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('glaze'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td class="border_thin_bottom">Door Panel Raise:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
-              <td>&nbsp;</td>
-              <td class="border_thin_bottom">Glaze Technique:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td class="border_thin_bottom">Short Drawer Raise:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
-              <td>&nbsp;</td>
-              <td class="border_thin_bottom">Antiquing</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('antiquing'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td class="border_thin_bottom">Tall Drawer Raise:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
-              <td>&nbsp;</td>
-              <td class="border_thin_bottom">Worn Edges</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('worn_edges'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td class="border_thin_bottom">Edge Profile:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('edge_profile'); ?></td>
-              <td>&nbsp;</td>
-              <td class="border_thin_bottom">Distressing</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('distress_level'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td class="border_thin_bottom">Framing Bead:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('framing_bead'); ?></td>
-              <td>&nbsp;</td>
-              <td colspan="2" class='gray_bg border_thin_bottom'>Carcass<div class="text-mini">Default is UV2 Maple unless otherwise modified as a line item below.</div></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td class="border_thin_bottom">Frame Option:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('framing_options'); ?></td>
-              <td>&nbsp;</td>
-              <!-- TODO: Implement same as door/drawer here and in interior -->
-              <td class="border_thin_bottom"><strong>Exterior:</strong></td>
-              <td class="border_thin_bottom"><div class="checkbox"><input id="ext_carcass_same" type="checkbox"><label for="ext_carcass_same"> Same as Door/Drawer</label></div></td>
-              <td colspan="2">&nbsp;</td>
-            </tr>
-            <tr>
-              <td class="border_thin_bottom">Styles/Rails:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('style_rail_width'); ?></td>
-              <td style="border:solid #FFF;">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
-              <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
-              <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_exterior_finish_code", "carcass_exterior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
-              <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td class="border_thin_bottom">Drawer Box:</td>
-              <td class="border_thin_bottom"><?php displayVINOpts('drawer_boxes'); ?></td>
-              <td style="border:solid #FFF;">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
-              <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><strong>Interior:</strong></td>
-              <!-- TODO: Implement same as door/drawer here and in exterior -->
-              <td class="border_thin_bottom"><div class="checkbox"><input id="int_carcass_same" type="checkbox"><label for="int_carcass_same"> Same as Door/Drawer</label></div></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
-              <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
-              <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_interior_finish_code", "carcass_interior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
-              <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
-              <td colspan="3">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="3">&nbsp;</td>
-              <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
-              <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?></td>
-              <td colspan="3">&nbsp;</td>
             </tr>
             <tr>
               <td colspan="8">&nbsp;</td>
@@ -464,10 +461,28 @@ $dealer = $dealer_qry->fetch_assoc();
             </colgroup>
             <thead>
             <tr>
+              <?php
+              if(!empty($existing_quote)) {
+                // FIXME: This was lazy.
+
+                $submit_disabled = 'disabled';
+
+                $submitted_time = date(DATE_TIME_ABBRV, $existing_quote['quote_submission']);
+                $submitted = "<h5 style='line-height:22px;' class='pull-right'>Submitted: $submitted_time</h5>";
+              } else {
+                $submit_disabled = null;
+              }
+              ?>
+
               <td colspan="11" style="padding-bottom:5px;">
-                <input type="button" class="btn btn-primary waves-effect waves-light no-print" id="cabinet_list_save" value="Save" />
-                <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" />
-                <input type="button" class="btn btn-success waves-effect waves-light no-print pull-right" id="submit_quote" value="Submit Quote" />
+                <input type="button" class="btn btn-primary waves-effect waves-light no-print" id="cabinet_list_save" value="Save" <?php echo $submit_disabled; ?> />
+                <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" <?php echo $submit_disabled; ?> />
+                <input type="button" class="btn btn-success waves-effect waves-light no-print pull-right" id="submit_for_quote" value="Submit Quote" <?php echo $submit_disabled; ?> />
+
+                <?php
+                  // FIXME: Other part of lazy code
+                  echo $submitted;
+                ?>
               </td>
             </tr>
             <tr>
@@ -495,7 +510,7 @@ $dealer = $dealer_qry->fetch_assoc();
               <td class="text-md-center"></td>
               <td class="text-md-center"></td>
               <td class="text-md-center">
-                <select class="item_hinge">
+                <select class="item_hinge custom-select">
                   <option value="L">Left</option>
                   <option value="R">Right</option>
                   <option value="P">Pair</option>
@@ -503,7 +518,7 @@ $dealer = $dealer_qry->fetch_assoc();
                 </select>
               </td>
               <td class="text-md-center">
-                <select class="item_finish">
+                <select class="item_finish custom-select">
                   <option value="L">Left</option>
                   <option value="R">Right</option>
                   <option value="B">Back</option>
@@ -554,6 +569,15 @@ $dealer = $dealer_qry->fetch_assoc();
 </div><!-- /.modal -->
 
 <script>
+  jQuery.expr.filters.offscreen = function(el) {
+    var rect = el.getBoundingClientRect();
+    return (
+      (rect.x + rect.width) < 0
+      || (rect.y + rect.height) < 0
+      || (rect.x > window.innerWidth || rect.y > window.innerHeight)
+    );
+  };
+
   var total = 0; // define initial total
   <?php echo "var roomID = $room_id;"; ?>
 
@@ -593,7 +617,7 @@ $dealer = $dealer_qry->fetch_assoc();
   $(document).mousemove(function(e) {
     mouseX = e.pageX;
     mouseY = e.pageY;
-  })
+  });
 
   $("body")
     .on("keyup", "#treeFilter", function() { // filters per keystroke on search catalog
@@ -698,8 +722,8 @@ $dealer = $dealer_qry->fetch_assoc();
       $(this).hide();
     })
     .on("click", "#cabinet_list_save", function() {
-      var cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
-      var cat_id = $("#catalog").find(":selected").attr("id");
+      let cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
+      let cat_id = $("#catalog").find(":selected").attr("id");
 
       $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=<?php echo $room_id; ?>", {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
         $("body").append(data);
@@ -714,10 +738,12 @@ $dealer = $dealer_qry->fetch_assoc();
       cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
     })
     .on("mouseenter", ".view_item_info", function() {
-      // FIXME: Change this so the data isn't loaded on hover, omg queries... should be able to JSON this data into memory
+      // FIXME: Change this so the data isn't loaded on hover
+      // FIXME: omg queries... should be able to JSON this data into memory quite easily
 
       let info = "";
       let thisEle = $(this);
+      let infoPopup = $(".info-popup");
 
       $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: thisEle.data('id'), room_id: roomID}, function(data) {
         let result = JSON.parse(data);
@@ -729,8 +755,18 @@ $dealer = $dealer_qry->fetch_assoc();
         info += "<div class='right_content'><div class='header'><h4>" + result.title + "</h4></div>";
         info += "<div class='description'>" + result.description + "</div></div>";
       }).done(function() {
-        // FIXME: When displaying the popup, we need to check to see if the box is going to overflow the page, if it is, flip it vertical
-        $(".info-popup").css({"top": mouseY - 91, "left": mouseX}).fadeIn(250).html(info);
+        let infoHeight = infoPopup.height();
+        let infoTop = mouseY - 91;
+        let windowOverflow = $(window).scrollTop() + $(window).height();
+
+        if((infoHeight + infoTop + 100) > windowOverflow) {
+          infoPopup.css({"bottom": 0, "top": "inherit", "left" : mouseX});
+        } else {
+          infoPopup.css({"top": infoTop, "bottom": "inherit", "left": mouseX});
+        }
+
+        infoPopup.fadeIn(250).html(info);
+
       });
     })
     .on("mouseleave", ".view_item_info", function() {
@@ -769,6 +805,40 @@ $dealer = $dealer_qry->fetch_assoc();
       let modifications = itemModifications.fancytree("getTree").getSelectedNodes();
 
       cabinetList.fancytree("getTree").getActiveNode().addChildren(modifications);
+    })
+    .on("change", "#ext_carcass_same", function() {
+      if($(this).is(":checked")) {
+        $(".ext_finish_block").hide();
+      } else {
+        $(".ext_finish_block").show();
+      }
+    })
+    .on("change", "#int_carcass_same", function() {
+      if($(this).is(":checked")) {
+        $(".int_finish_block").hide();
+      } else {
+        $(".int_finish_block").show();
+      }
+    })
+    .on("click", "#submit_for_quote", function() {
+      let button = $(this);
+      let cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
+
+      $.confirm({ // a confirmation box to ensure they are intending to complete tasks
+        title: "Are you sure you want to submit the quote?",
+        content: "You are about to submit this quote. Once submitted you will be <strong>unable</strong> to modify the line items. Are you sure you would like to submit?",
+        type: 'red',
+        buttons: {
+          yes: function() {
+            $.post("/html/pricing/ajax/item_actions.php?action=submitQuote&room_id=" + "<?php echo $room_id; ?>", {cabinet_list: cab_list}, function(data) {
+              $("body").append(data);
+            }).done(function() {
+              button.val("Submitted").prop("disabled", true);
+            });
+          },
+          no: function() {} // we're not doing anything
+        }
+      });
     })
   ;
 
@@ -1081,5 +1151,28 @@ $dealer = $dealer_qry->fetch_assoc();
         mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
       }
     });
+
+    if($("#ext_carcass_same").is(":checked")) {
+      $(".ext_finish_block").hide();
+    } else {
+      $(".ext_finish_block").show();
+    }
+
+    if($("#int_carcass_same").is(":checked")) {
+      $(".int_finish_block").hide();
+    } else {
+      $(".int_finish_block").show();
+    }
+
+    if($("#submit_for_quote").prop("disabled")) {
+      $.confirm({
+        title: "Item List Submitted.",
+        content: "You are unable to save this form. It has already been submitted. Please check with your representative if you require any modifications.",
+        type: 'red',
+        buttons: {
+          ok: function() {}
+        }
+      });
+    }
   });
 </script>
