@@ -172,10 +172,10 @@ function translateVIN($segment, $key) {
       $custom_info = json_decode($info['custom_vin_info'], true);
 
       if(count($custom_info[$segment]) > 1) {
-        foreach($custom_info[$segment] as $key => $value) {
-          $mfg = stristr($key, 'mfg') ? $value : $mfg;
-          $code = stristr($key, 'code') ? $value : $code;
-          $name = stristr($key, 'name') ? $value : $name;
+        foreach($custom_info[$segment] as $key2 => $value) {
+          $mfg = stristr($key2, 'mfg') ? $value : $mfg;
+          $code = stristr($key2, 'code') ? $value : $code;
+          $name = stristr($key2, 'name') ? $value : $name;
         }
 
         $desc = $name;
@@ -221,6 +221,8 @@ $existing_quote_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE r
 
 if($existing_quote_qry->num_rows === 1) {
   $existing_quote = $existing_quote_qry->fetch_assoc();
+} else {
+  $existing_quote = null;
 }
 ?>
 
@@ -422,6 +424,11 @@ if($existing_quote_qry->num_rows === 1) {
               <td colspan="8">&nbsp;</td>
             </tr>
             <tr>
+              <td colspan="8">
+                <input type="button" class="btn btn-primary waves-effect waves-light no-print" id="save_globals" value="Save" />
+              </td>
+            </tr>
+            <tr>
               <th colspan="8">Notes</th>
             </tr>
             <tr>
@@ -433,6 +440,9 @@ if($existing_quote_qry->num_rows === 1) {
               <td colspan="3" id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_global']; ?></textarea></td>
               <td colspan="3" id="layout_notes_title" style="border-right:1px solid #000;"><textarea name="layout_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
               <td colspan="2" id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
+            </tr>
+            <tr>
+              <th colspan="8">&nbsp;</th>
             </tr>
             <tr>
               <th colspan="8">&nbsp;</th>
@@ -462,7 +472,7 @@ if($existing_quote_qry->num_rows === 1) {
             <thead>
             <tr>
               <?php
-              if(!empty($existing_quote)) {
+              if(!empty($existing_quote['quote_submission'])) {
                 // FIXME: This was lazy.
 
                 $submit_disabled = 'disabled';
