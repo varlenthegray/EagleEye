@@ -269,7 +269,7 @@ $result = $result_qry->fetch_assoc();
 
 $so = $room['so_parent'];
 
-$delivery_date = (!empty($room['delivery_date'])) ? date("m/d/Y", $room['delivery_date']) : "";
+$delivery_date = !empty($room['delivery_date']) ? date('m/d/Y', $room['delivery_date']) : '';
 
 $individual_bracket = json_decode($room['individual_bracket_buildout']);
 ?>
@@ -286,12 +286,12 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
         <?php
         echo ($bouncer->validate('submit_quote') && empty($room['quote_submission'])) ? "<a id='submit_quote' class='btn btn-success-outline btn-block waves-effect waves-light w-xs'>Submit Quote</a>" : null;
-        echo ($bouncer->validate('print_sample')) ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=sample_req' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Sample Request</a>" : null;
-        echo ($bouncer->validate('print_coversheet')) ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Coversheet</a>" : null;
-        echo ($bouncer->validate('print_exec_coversheet')) ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=arh' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Executive Coversheet</a>" : null;
-        echo ($bouncer->validate('print_shop_coversheet')) ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=no_totals' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Shop Coversheet</a>" : null;
-        echo ($bouncer->validate('print_sample_label')) ? "<a href='/print/sample_label.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Sample Label</a>" : null;
-        echo ($bouncer->validate('add_attachment')) ? "<br /><br /><a id='add_attachment' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Add Attachments</a>" : null;
+        echo $bouncer->validate('print_sample') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=sample_req' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Sample Request</a>" : null;
+        echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Coversheet</a>" : null;
+        echo $bouncer->validate('print_exec_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=arh' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Executive Coversheet</a>" : null;
+        echo $bouncer->validate('print_shop_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=no_totals' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Shop Coversheet</a>" : null;
+        echo $bouncer->validate('print_sample_label') ? "<a href='/print/sample_label.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Sample Label</a>" : null;
+        echo $bouncer->validate('add_attachment') ? "<br /><br /><a id='add_attachment' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Add Attachments</a>" : null;
 
         $other_rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so'");
 
@@ -338,9 +338,9 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
         <br />
         <?php
         //echo ($bouncer->validate('')) ? "<a id='generate_code' data-so='{$so}' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Copy Dealer URL</a><br /><br />" : null;
-        echo ($bouncer->validate('view_inset_sizing')) ? "<a href='/html/inset_sizing.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>SMCM Door Sizing</a>" : null;
-        echo ($bouncer->validate('view_preprod_checklist')) ? "<a href='/pdf/preprod_checklist.pdf' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Preproduction Checklist</a>" : null;
-        echo ($bouncer->validate('view_appliance_ws')) ? "<a id='appliance_worksheets' data-roomid='{$room['id']}' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Appliance Worksheets</a>" : null;
+        echo $bouncer->validate('view_inset_sizing') ? "<a href='/html/inset_sizing.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>SMCM Door Sizing</a>" : null;
+        echo $bouncer->validate('view_preprod_checklist') ? "<a href='/pdf/preprod_checklist.pdf' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Preproduction Checklist</a>" : null;
+        echo $bouncer->validate('view_appliance_ws') ? "<a id='appliance_worksheets' data-roomid='{$room['id']}' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Appliance Worksheets</a>" : null;
         ?>
 
       </div>
@@ -436,7 +436,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                       </td>
                     </tr>
                   <?php } else { ?>
-                    <input type="hidden" value="<?php echo (!empty($room['delivery_date'])) ? date("m/d/Y", $room['delivery_date']) : ""; ?>" name="delivery_date" />
+                    <input type="hidden" value="<?php echo !empty($room['delivery_date']) ? date("m/d/Y", $room['delivery_date']) : ""; ?>" name="delivery_date" />
                   <?php } ?>
                   <tr style="height:10px;">
                     <td colspan="2"></td>
@@ -675,7 +675,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                     $inquiry_replies = null;
                   }
 
-                  $notes = str_replace("  ", "&nbsp;&nbsp;", $so_inquiry['note']);
+                  $notes = str_replace('  ', '&nbsp;&nbsp;', $so_inquiry['note']);
                   $notes = nl2br($notes);
 
                   echo "<tr>";
@@ -768,10 +768,15 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
           <div class="col-md-4">
             <div class="row">
-              <div class="col-md-4"><input type="radio" name="note_type" id="note_room" class="ignoreSaveAlert" value="room_note" checked> <label for="note_room">Room Note</label></div>
-              <div class="col-md-4"><input type="radio" name="note_type" id="note_delivery" class="ignoreSaveAlert" value="delivery_note"> <label for="note_delivery">Delivery Note</label></div>
-              <div class="col-md-4"><input type="radio" name="note_type" id="note_global" class="ignoreSaveAlert" value="global_note"> <label for="note_global">Global Note</label></div>
-              <div class="col-md-4"><input type="radio" name="note_type" id="note_fin_sample" class="ignoreSaveAlert" value="fin_sample_note"> <label for="note_fin_sample">Finish/Sample Note</label></div>
+              <div class="col-md-4">
+                <input type="radio" name="note_type" id="note_room" class="ignoreSaveAlert" value="room_note" checked> <label for="note_room">Internal Note</label>
+              </div>
+
+              <div class="col-md-8">
+                <div class="col-md-12"><input type="radio" name="note_type" id="note_global" class="ignoreSaveAlert" value="global_note"> <label for="note_global">Room Note</label></div>
+                <div class="col-md-12"><input type="radio" name="note_type" id="note_delivery" class="ignoreSaveAlert" value="delivery_note"> <label for="note_delivery">Delivery Note</label></div>
+                <div class="col-md-12"><input type="radio" name="note_type" id="note_fin_sample" class="ignoreSaveAlert" value="fin_sample_note"> <label for="note_fin_sample">Finish/Sample Note</label></div>
+              </div>
             </div>
 
             <input type="hidden" name="note_id" id="note_id" value="">
@@ -781,7 +786,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
             <?php if(!empty($_SESSION['userInfo'])) { ?>
               <input type="text" name="room_inquiry_followup_date" id="room_inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
               <label for="room_inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
-              <select name="room_inquiry_requested_of" id="room_inquiry_requested_of" class="form-control" style="width:50%;float:left;">
+              <select name="room_inquiry_requested_of" id="room_inquiry_requested_of" class="form-control" style="width:45%;float:right;">
                 <option value="null" selected disabled></option>
                 <?php
                 $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC");
@@ -962,7 +967,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
   $(".room_note_log").hide();
 
-  <?php echo (!empty($room['custom_vin_info'])) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}')": null; ?>
+  <?php echo !empty($room['custom_vin_info']) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}')": null; ?>
 
   $(function() {
     productTypeSwitch();

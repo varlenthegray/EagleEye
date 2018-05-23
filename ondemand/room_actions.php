@@ -83,77 +83,79 @@ function whatChanged($new, $old, $title, $date = false, $bool = false, $bracket_
 
 switch($_REQUEST['action']) {
   case 'create_room':
-    $so_num = sanitizeInput($_REQUEST['sonum']);
-    $room = sanitizeInput($_REQUEST['room']);
-    $room_id = sanitizeInput($_REQUEST['roomid']);
+    parse_str($_REQUEST['editInfo'], $editInfo);
+    
+    $so_num = sanitizeInput($editInfo['sonum']);
+    $room = sanitizeInput($editInfo['room']);
+    $room_id = sanitizeInput($editInfo['roomid']);
 
-    $delivery_date = sanitizeInput($_REQUEST['delivery_date']);
-    $product_type = sanitizeInput($_REQUEST['product_type']);
-    $iteration = sanitizeInput($_REQUEST['iteration']);
-    $order_status = sanitizeInput(html_entity_decode($_REQUEST['order_status']));
-    $days_to_ship = sanitizeInput($_REQUEST['days_to_ship']);
-    $room_name = sanitizeInput($_REQUEST['room_name']);
-    $notes = sanitizeInput($_REQUEST['room_inquiry']);
-    $followup_date = sanitizeInput($_REQUEST['room_inquiry_followup_date']);
-    $followup_individual = sanitizeInput($_REQUEST['room_inquiry_requested_of']);
+    $delivery_date = sanitizeInput($editInfo['delivery_date']);
+    $product_type = sanitizeInput($editInfo['product_type']);
+    $iteration = sanitizeInput($editInfo['iteration']);
+    $order_status = sanitizeInput(html_entity_decode($editInfo['order_status']));
+    $days_to_ship = sanitizeInput($editInfo['days_to_ship']);
+    $room_name = sanitizeInput($editInfo['room_name']);
+    $notes = sanitizeInput($editInfo['room_inquiry']);
+    $followup_date = sanitizeInput($editInfo['room_inquiry_followup_date']);
+    $followup_individual = sanitizeInput($editInfo['room_inquiry_requested_of']);
     $inquiry_id = null;
 
-    $species_grade = sanitizeInput($_REQUEST['species_grade']);
-    $construction_method = sanitizeInput($_REQUEST['construction_method']);
-    $door_design = sanitizeInput($_REQUEST['door_design']);
-    $panel_raise_door = sanitizeInput($_REQUEST['panel_raise_door']);
-    $panel_raise_sd = sanitizeInput($_REQUEST['panel_raise_sd']);
-    $panel_raise_td = sanitizeInput($_REQUEST['panel_raise_td']);
-    $edge_profile = sanitizeInput($_REQUEST['edge_profile']);
-    $framing_bead = sanitizeInput($_REQUEST['framing_bead']);
-    $framing_options = sanitizeInput($_REQUEST['framing_options']);
-    $style_rail_width = sanitizeInput($_REQUEST['style_rail_width']);
-    $finish_code = sanitizeInput($_REQUEST['finish_code']);
-    $sheen = sanitizeInput($_REQUEST['sheen']);
-    $glaze = sanitizeInput($_REQUEST['glaze']);
-    $glaze_technique = sanitizeInput($_REQUEST['glaze_technique']);
-    $antiquing = sanitizeInput($_REQUEST['antiquing']);
-    $worn_edges = sanitizeInput($_REQUEST['worn_edges']);
-    $distress_level = sanitizeInput($_REQUEST['distress_level']);
-    $carcass_exterior_species = sanitizeInput($_REQUEST['carcass_exterior_species']);
-    $carcass_exterior_finish_code = sanitizeInput($_REQUEST['carcass_exterior_finish_code']);
-    $carcass_exterior_glaze_color = sanitizeInput($_REQUEST['carcass_exterior_glaze_color']);
-    $carcass_exterior_glaze_technique = sanitizeInput($_REQUEST['carcass_exterior_glaze_technique']);
-    $carcass_interior_species = sanitizeInput($_REQUEST['carcass_interior_species']);
-    $carcass_interior_finish_code = sanitizeInput($_REQUEST['carcass_interior_finish_code']);
-    $carcass_interior_glaze_color = sanitizeInput($_REQUEST['carcass_interior_glaze_color']);
-    $carcass_interior_glaze_technique = sanitizeInput($_REQUEST['carcass_interior_glaze_technique']);
-    $drawer_boxes = sanitizeInput($_REQUEST['drawer_boxes']);
+    $species_grade = sanitizeInput($editInfo['species_grade']);
+    $construction_method = sanitizeInput($editInfo['construction_method']);
+    $door_design = sanitizeInput($editInfo['door_design']);
+    $panel_raise_door = sanitizeInput($editInfo['panel_raise_door']);
+    $panel_raise_sd = sanitizeInput($editInfo['panel_raise_sd']);
+    $panel_raise_td = sanitizeInput($editInfo['panel_raise_td']);
+    $edge_profile = sanitizeInput($editInfo['edge_profile']);
+    $framing_bead = sanitizeInput($editInfo['framing_bead']);
+    $framing_options = sanitizeInput($editInfo['framing_options']);
+    $style_rail_width = sanitizeInput($editInfo['style_rail_width']);
+    $finish_code = sanitizeInput($editInfo['finish_code']);
+    $sheen = sanitizeInput($editInfo['sheen']);
+    $glaze = sanitizeInput($editInfo['glaze']);
+    $glaze_technique = sanitizeInput($editInfo['glaze_technique']);
+    $antiquing = sanitizeInput($editInfo['antiquing']);
+    $worn_edges = sanitizeInput($editInfo['worn_edges']);
+    $distress_level = sanitizeInput($editInfo['distress_level']);
+    $carcass_exterior_species = sanitizeInput($editInfo['carcass_exterior_species']);
+    $carcass_exterior_finish_code = sanitizeInput($editInfo['carcass_exterior_finish_code']);
+    $carcass_exterior_glaze_color = sanitizeInput($editInfo['carcass_exterior_glaze_color']);
+    $carcass_exterior_glaze_technique = sanitizeInput($editInfo['carcass_exterior_glaze_technique']);
+    $carcass_interior_species = sanitizeInput($editInfo['carcass_interior_species']);
+    $carcass_interior_finish_code = sanitizeInput($editInfo['carcass_interior_finish_code']);
+    $carcass_interior_glaze_color = sanitizeInput($editInfo['carcass_interior_glaze_color']);
+    $carcass_interior_glaze_technique = sanitizeInput($editInfo['carcass_interior_glaze_technique']);
+    $drawer_boxes = sanitizeInput($editInfo['drawer_boxes']);
 
-    $vin_final = sanitizeInput($_REQUEST['vin_code_' . $room_id]);
+    $vin_final = sanitizeInput($editInfo['vin_code_' . $room_id]);
 
-    $sample_block_ordered = sanitizeInput($_REQUEST['sample_block_' . $room_id]);
-    $door_only_ordered = sanitizeInput($_REQUEST['door_only_' . $room_id]);
-    $door_drawer_ordered = sanitizeInput($_REQUEST['door_drawer_' . $room_id]);
-    $inset_square_ordered = sanitizeInput($_REQUEST['inset_square_' . $room_id]);
-    $inset_beaded_ordered = sanitizeInput($_REQUEST['inset_beaded_' . $room_id]);
+    $sample_block_ordered = sanitizeInput($editInfo['sample_block_' . $room_id]);
+    $door_only_ordered = sanitizeInput($editInfo['door_only_' . $room_id]);
+    $door_drawer_ordered = sanitizeInput($editInfo['door_drawer_' . $room_id]);
+    $inset_square_ordered = sanitizeInput($editInfo['inset_square_' . $room_id]);
+    $inset_beaded_ordered = sanitizeInput($editInfo['inset_beaded_' . $room_id]);
 
     $ops = $_REQUEST['active_ops'];
 
-    $sales_op = sanitizeInput($_REQUEST['sales_bracket']);
-    $sample_op = sanitizeInput($_REQUEST['sample_bracket']);
-    $preprod_op = sanitizeInput($_REQUEST['preproduction_bracket']);
-    $doordrawer_op = sanitizeInput($_REQUEST['doordrawer_bracket']);
-    $main_op = sanitizeInput($_REQUEST['main_bracket']);
-    $custom_op = sanitizeInput($_REQUEST['custom_bracket']);
-    $shipping_op = sanitizeInput($_REQUEST['shipping_bracket']);
-    $install_op = sanitizeInput($_REQUEST['install_bracket']);
-    $pickmat_op = sanitizeInput($_REQUEST['pick_materials_bracket']);
+    $sales_op = sanitizeInput($editInfo['sales_bracket']);
+    $sample_op = sanitizeInput($editInfo['sample_bracket']);
+    $preprod_op = sanitizeInput($editInfo['preproduction_bracket']);
+    $doordrawer_op = sanitizeInput($editInfo['doordrawer_bracket']);
+    $main_op = sanitizeInput($editInfo['main_bracket']);
+    $custom_op = sanitizeInput($editInfo['custom_bracket']);
+    $shipping_op = sanitizeInput($editInfo['shipping_bracket']);
+    $install_op = sanitizeInput($editInfo['install_bracket']);
+    $pickmat_op = sanitizeInput($editInfo['pick_materials_bracket']);
 
-    $sales_pub = (!empty($_REQUEST['sales_published'])) ? sanitizeInput($_REQUEST['sales_published']) : 0;
-    $sample_pub = (!empty($_REQUEST['sample_published'])) ? sanitizeInput($_REQUEST['sample_published']) : 0;
-    $preprod_pub = (!empty($_REQUEST['preprod_published'])) ? sanitizeInput($_REQUEST['preprod_published']) : 0;
-    $doordrawer_pub = (!empty($_REQUEST['doordrawer_published'])) ? sanitizeInput($_REQUEST['doordrawer_published']) : 0;
-    $main_pub = (!empty($_REQUEST['main_published'])) ? sanitizeInput($_REQUEST['main_published']) : 0;
-    $custom_pub = (!empty($_REQUEST['custom_published'])) ? sanitizeInput($_REQUEST['custom_published']) : 0;
-    $shipping_pub = (!empty($_REQUEST['shipping_published'])) ? sanitizeInput($_REQUEST['shipping_published']) : 0;
-    $install_pub = (!empty($_REQUEST['install_published'])) ? sanitizeInput($_REQUEST['install_published']) : 0;
-    $pickmat_pub = (!empty($_REQUEST['pickmat_published'])) ? sanitizeInput($_REQUEST['pickmat_published']) : 0;
+    $sales_pub = !empty($editInfo['sales_published']) ? sanitizeInput($editInfo['sales_published']) : 0;
+    $sample_pub = !empty($editInfo['sample_published']) ? sanitizeInput($editInfo['sample_published']) : 0;
+    $preprod_pub = !empty($editInfo['preprod_published']) ? sanitizeInput($editInfo['preprod_published']) : 0;
+    $doordrawer_pub = !empty($editInfo['doordrawer_published']) ? sanitizeInput($editInfo['doordrawer_published']) : 0;
+    $main_pub = !empty($editInfo['main_published']) ? sanitizeInput($editInfo['main_published']) : 0;
+    $custom_pub = !empty($editInfo['custom_published']) ? sanitizeInput($editInfo['custom_published']) : 0;
+    $shipping_pub = !empty($editInfo['shipping_published']) ? sanitizeInput($editInfo['shipping_published']) : 0;
+    $install_pub = !empty($editInfo['install_published']) ? sanitizeInput($editInfo['install_published']) : 0;
+    $pickmat_pub = !empty($editInfo['pickmat_published']) ? sanitizeInput($editInfo['pickmat_published']) : 0;
 
     $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' AND room = '$room' AND iteration = '$iteration'");
 
@@ -239,20 +241,20 @@ HEREDOC;
           }
         }
 
-        $c_note = "<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-        $c_note .= "Created room.";
+        $c_note = '<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        $c_note .= 'Created room.';
 
         $stmt = $dbconn->prepare("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES (?, 'room_note_log', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, ?);");
-        $stmt->bind_param("si", $c_note, $room_id);
+        $stmt->bind_param('si', $c_note, $room_id);
         $stmt->execute();
         $stmt->close();
 
-        echo displayToast("success", "Room added successfully.", "Room Added");
+        echo displayToast('success', 'Room added successfully.', 'Room Added');
       } else {
         dbLogSQLErr($dbconn);
       }
     } else {
-      echo displayToast("warning", "Room already exists within the system.", "Room Exists");
+      echo displayToast('warning', 'Room already exists within the system.', 'Room Exists');
     }
 
     break;
