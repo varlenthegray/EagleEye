@@ -8,12 +8,12 @@ $catalog_id = !empty(sanitizeInput($_REQUEST['catalog'])) ? sanitizeInput($_REQU
 // Brandon Christensen 4/14/2018
 $result = array();
 
-$parent_qry = $dbconn->prepare("SELECT 
-  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path
+$parent_qry = $dbconn->prepare('SELECT 
+  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, pc.catalog_id
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
-WHERE pc.catalog_id = $catalog_id AND parent = ? ORDER BY parent, sort_order, catID ASC");
+WHERE parent = ? ORDER BY pc.catalog_id, parent, sort_order, catID ASC');
 
 function makeTree($parent_id) {
   global $parent_qry;
@@ -21,13 +21,20 @@ function makeTree($parent_id) {
   $ret = array();
 
   $parent_qry->bind_param('i', $parent_id);
-  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image);
+  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $catalog_id);
   $parent_qry->execute();
   $parent_qry->store_result();
 
   $data = array();
 
   while ($parent_qry->fetch()) {
+
+    if($catalog_id === 1) {
+      $cat_name = 'SMCM';
+    } else {
+      $cat_name = 'TS';
+    }
+
     $data[] = array(
       'catID' => $catID,
       'itemID' => $itemID,
@@ -36,7 +43,8 @@ function makeTree($parent_id) {
       'sort_order' => $sort_order,
       'item_catID' => $item_catID,
       'sku' => $sku,
-      'image_path' => $image
+      'image_path' => $image,
+      'catalog_id' => $cat_name
     );
   }
 
@@ -62,7 +70,7 @@ function makeTree($parent_id) {
 
       $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'],'icon' => $img, 'title' => $title, 'is_item' => true, 'qty' => 1);
     } else {
-      $object = array('key' => $item['catID'], 'folder' => true, 'title' => $item['name']);
+      $object = array('key' => $item['catID'], 'folder' => true, 'title' => "{$item['name']} ({$item['catalog_id']})");
 
       $children = makeTree($item['catID']);
 

@@ -26,8 +26,8 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
   global $room;
 
   // assigns SEGMENT = VIN Schema column (panel_raise) of which there may be multiple pulled from VIN SCHEMA, DB_COL of which there is only one (panel_raise_sd, stored in ROOMS table)
-  $dblookup = (!empty($db_col)) ? $db_col : $segment;
-  $addl_id = (!empty($id)) ? "id = '$id'" : null; // for duplicate values (panel_raise vs panel_raise_sd)
+  $dblookup = !empty($db_col) ? $db_col : $segment;
+  $addl_id = !empty($id) ? "id = '$id'" : null; // for duplicate values (panel_raise vs panel_raise_sd)
   $options = null;
   $option_grid = null;
 
@@ -39,7 +39,7 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
   foreach($vin_schema[$segment] as $value) {
     if(((string)$value['key'] === (string)$room[$dblookup]) && empty($selected)) {
       $selected = "{$value['value']}";
-      $selected_img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
+      $selected_img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
       $sel_key = $value['key'];
     }
 
@@ -546,6 +546,10 @@ if($existing_quote_qry->num_rows === 1) {
       </div>
     </div>
   </div>
+
+  <div class="row print-only" id="no_global_info">
+    <div class="col-md-12"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>No global attributes have been entered in for this quote.<br />Any price displayed above is not a reflection of the final price until <strong>all</strong> attributes have been properly updated.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
+  </div>
 </div>
 
 <div class='info-popup'></div>
@@ -956,8 +960,19 @@ if($existing_quote_qry->num_rows === 1) {
           $tdList.eq(8).find(".item_finish").val(node.data.finish);
         }
 
-        // (Index #7)
-        $tdList.eq(9).text(price.formatMoney()); // price column
+        if(!isNaN(price)) {
+          // (Index #7)
+          $tdList.eq(9).text(price.formatMoney()).removeAttr("style title"); // price column
+
+          $("#no_global_info").css("display", "none");
+        } else {
+          $tdList.eq(9).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
+          $tdList.eq(10).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to properly calculate total.");
+
+          $("#submit_for_quote").attr("disabled", "true").attr("title", "Unknown global attributes, unable to submit.");
+
+          $("#no_global_info").css("display", "block");
+        }
 
         // (Index #8)
         $tdList.eq(10).text(node.data.total);

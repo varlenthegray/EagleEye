@@ -201,3 +201,22 @@
     display: none !important;
   }
 }
+
+#no_global_info {
+  position: relative;
+
+  i {
+    font-size: 2em;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    &:first-of-type {
+      left: 1%;
+    }
+
+    &:last-of-type {
+      right: 1%;
+    }
+  }
+}

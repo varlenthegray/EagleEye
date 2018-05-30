@@ -56,15 +56,19 @@ switch($_REQUEST['action']) {
 
     $room = $room_qry->fetch_assoc();
 
-    $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$room['door_design_id']} AND species_id = {$room['species_grade_id']}");
+    if($room['door_design_id'] !== '1544' && $room['species_grade_id'] !== '11') {
+      $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$room['door_design_id']} AND species_id = {$room['species_grade_id']}");
 //    $price_group_qry = $dbconn->query("SELECT price_group_id FROM pricing_price_group_map WHERE door_style_id = 41 AND species_id = 27;");
-    $price_group = $price_group_qry->fetch_assoc();
-    $price_group = $price_group['price_group_id'];
+      $price_group = $price_group_qry->fetch_assoc();
+      $price_group = $price_group['price_group_id'];
 
-    $price_qry = $dbconn->query("SELECT price FROM pricing_price_map map WHERE map.price_group_id = $price_group AND map.nomenclature_id = $id;");
-    $price = $price_qry->fetch_assoc();
+      $price_qry = $dbconn->query("SELECT price FROM pricing_price_map map WHERE map.price_group_id = $price_group AND map.nomenclature_id = $id;");
+      $price = $price_qry->fetch_assoc();
 
-    $price = $price['price'];
+      $price = $price['price'];
+    } else {
+      $price = 'N/A';
+    }
 
     if($item_qry->num_rows === 1) {
       $item = $item_qry->fetch_assoc();
