@@ -1252,12 +1252,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       final_total = parseFloat(final_last_subtotal);
       final_deposit = parseFloat(final_total) * .5;
 
-      if(parseFloat(final_last_subtotal) < 500) {
-        $("#deposit_line").hide();
-      } else {
-        $("#deposit_line").show();
-      }
-
       $("#final_upcharges").html(addCommas(parseFloat(final_upcharges).toFixed(2)));
       $("#final_leadtime").html(addCommas(final_leadtime.toFixed(2)));
       $("#final_subtotal").html(addCommas(final_subtotal.toFixed(2)));
