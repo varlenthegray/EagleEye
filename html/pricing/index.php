@@ -425,8 +425,11 @@ if($existing_quote_qry->num_rows === 1) {
             </tr>
             <tr>
               <td colspan="8">
-                <input type="button" class="btn btn-primary waves-effect waves-light no-print" id="save_globals" value="Save" />
+                <input type="button" class="btn btn-secondary waves-effect waves-light no-print" id="save_globals" value="Update Global Attributes" />
               </td>
+            </tr>
+            <tr>
+              <td colspan="8">&nbsp;</td>
             </tr>
             <tr>
               <th colspan="8">Notes</th>
@@ -445,7 +448,7 @@ if($existing_quote_qry->num_rows === 1) {
               <th colspan="8">&nbsp;</th>
             </tr>
             <tr>
-              <th colspan="8">&nbsp;</th>
+              <td colspan="8">&nbsp;</td>
             </tr>
           </table>
         </div>
@@ -547,7 +550,7 @@ if($existing_quote_qry->num_rows === 1) {
     </div>
   </div>
 
-  <div class="row print-only" id="no_global_info">
+  <div class="row" id="no_global_info">
     <div class="col-md-12"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>No global attributes have been entered in for this quote.<br />Any price displayed above is not a reflection of the final price until <strong>all</strong> attributes have been properly updated.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
   </div>
 </div>
@@ -861,9 +864,19 @@ if($existing_quote_qry->num_rows === 1) {
   var catalog = $("#catalog_categories");
   var itemModifications = $("#item_modifications");
 
-  $("#modalAddModification").on("hidden.bs.modal", function() {
+  $("#modalAddModification").on("show.bs.modal", function() {
     $("#modificationsFilter").val('');
     itemModifications.fancytree("getTree").clearFilter();
+
+    let modificationTree = {
+      url: "/html/pricing/ajax/modifications.php?itemID=" + cabinetList.fancytree("getTree").getActiveNode().data.itemID,
+      type: "POST",
+      dataType: 'json'
+    };
+
+    itemModifications.fancytree("getTree").reload(modificationTree);
+
+    console.log("Forced: /html/pricing/ajax/modifications.php?itemID=" + cabinetList.fancytree("getTree").getActiveNode().data.itemID);
   });
 
   $(function() {

@@ -30,9 +30,9 @@ function makeTree($parent_id) {
   while ($parent_qry->fetch()) {
 
     if($catalog_id === 1) {
-      $cat_name = 'SMCM';
+      $cat_bg = 'rgba(0,255,0,.25)';
     } else {
-      $cat_name = 'TS';
+      $cat_bg = 'rgba(255,165,0,.25)';
     }
 
     $data[] = array(
@@ -44,7 +44,7 @@ function makeTree($parent_id) {
       'item_catID' => $item_catID,
       'sku' => $sku,
       'image_path' => $image,
-      'catalog_id' => $cat_name
+      'cat_bg' => $cat_bg
     );
   }
 
@@ -70,7 +70,7 @@ function makeTree($parent_id) {
 
       $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'],'icon' => $img, 'title' => $title, 'is_item' => true, 'qty' => 1);
     } else {
-      $object = array('key' => $item['catID'], 'folder' => true, 'title' => "{$item['name']} ({$item['catalog_id']})");
+      $object = array('key' => $item['catID'], 'folder' => true, 'title' => "<span style='background-color:{$item['cat_bg']};'>{$item['name']}</span>");
 
       $children = makeTree($item['catID']);
 

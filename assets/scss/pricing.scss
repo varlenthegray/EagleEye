@@ -205,6 +205,13 @@
 #no_global_info {
   position: relative;
 
+  margin-top: 15px;
+  text-align: center;
+
+  color: #FF0000;
+  font-weight: bold;
+  border: 2px solid #FF0000;
+
   i {
     font-size: 2em;
     position: absolute;
@@ -218,5 +225,11 @@
     &:last-of-type {
       right: 1%;
     }
+  }
+}
+
+@media screen {
+  #no_global_info {
+    margin: 15px 20%;
   }
 }

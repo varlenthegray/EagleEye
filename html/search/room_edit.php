@@ -286,7 +286,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
         <?php
         echo ($bouncer->validate('submit_quote') && empty($room['quote_submission'])) ? "<a id='submit_quote' class='btn btn-success-outline btn-block waves-effect waves-light w-xs'>Submit Quote</a>" : null;
-        echo $bouncer->validate('pricing_program') ? "<a id='pricing_program' onclick='unloadPage(\"pricing/index?room_id={$room['id']}\")' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Pricing Program</a>" : null;
+        echo $bouncer->validate('pricing_program') ? "<a id='pricing_program' onclick='unloadPage(\"pricing/index?room_id={$room['id']}\")' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Item List</a>" : null;
         echo $bouncer->validate('print_sample') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=sample_req' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Sample Request</a>" : null;
         echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Coversheet</a>" : null;
         echo $bouncer->validate('print_exec_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=arh' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Print Executive Coversheet</a>" : null;
