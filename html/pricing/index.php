@@ -243,6 +243,10 @@ if($existing_quote_qry->num_rows === 1) {
     </div>
 
     <div class="col-md-10 pricing_table_format">
+      <div class="row no_global_info">
+        <div class="col-md-12"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>Unable to price with the current global attributes.<br />Any price displayed above is not a reflection of the final price until a final price has been returned.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
+      </div>
+
       <div class="row">
         <div class="col-md-12" style="margin-top:5px;">
           <table style="max-width:955px;" width="100%">
@@ -461,9 +465,10 @@ if($existing_quote_qry->num_rows === 1) {
           <table id="cabinet_list">
             <colgroup>
               <col width="30px">
-              <col width="50px">
-              <col width="50px">
-              <col width="500px">
+              <col width="30px">
+              <col width="30px">
+              <col width="150px">
+              <col width="350px">
               <col width="50px">
               <col width="50px">
               <col width="50px">
@@ -487,7 +492,7 @@ if($existing_quote_qry->num_rows === 1) {
               }
               ?>
 
-              <td colspan="11" style="padding-bottom:5px;">
+              <td colspan="12" style="padding-bottom:5px;">
                 <input type="button" class="btn btn-primary waves-effect waves-light no-print" id="cabinet_list_save" value="Save" <?php echo $submit_disabled; ?> />
                 <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" <?php echo $submit_disabled; ?> />
                 <input type="button" class="btn btn-success waves-effect waves-light no-print pull-right" id="submit_for_quote" value="Submit Quote" <?php echo $submit_disabled; ?> />
@@ -502,7 +507,8 @@ if($existing_quote_qry->num_rows === 1) {
               <th></th>
               <th>#</th>
               <th class="text-md-center">Qty</th>
-              <th>Line Item</th>
+              <th>Nomenclature</th>
+              <th>Description</th>
               <th class="text-md-center">Width</th>
               <th class="text-md-center">Height</th>
               <th class="text-md-center">Depth</th>
@@ -518,6 +524,7 @@ if($existing_quote_qry->num_rows === 1) {
               <td class="text-md-center"></td>
               <td></td>
               <td><input type="text" class="form-control qty_input" value="1" placeholder="Qty" /> </td>
+              <td style="white-space:nowrap;"></td>
               <td></td>
               <td class="text-md-center"></td>
               <td class="text-md-center"></td>
@@ -547,11 +554,11 @@ if($existing_quote_qry->num_rows === 1) {
           </table>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="row" id="no_global_info">
-    <div class="col-md-12"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>No global attributes have been entered in for this quote.<br />Any price displayed above is not a reflection of the final price until <strong>all</strong> attributes have been properly updated.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
+      <div class="row no_global_info">
+        <div class="col-md-12"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>Unable to price with the current global attributes.<br />Any price displayed above is not a reflection of the final price until a final price has been returned.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -717,7 +724,8 @@ if($existing_quote_qry->num_rows === 1) {
           itemID: itemInfo.id,
           price: fixedPrice,
           key: new Date().getTime() * Math.random(999),
-          icon: itemInfo.icon
+          icon: itemInfo.icon,
+          name: itemInfo.title
         });
 
         recalcTotal();
@@ -958,37 +966,40 @@ if($existing_quote_qry->num_rows === 1) {
         $tdList.eq(2).find("input").attr("id", node.key).val(node.data.qty);
         // (Index #3 is rendered by fancytree in child table under nodeColumnIdx)
         // (Index #4 is the width)
-        $tdList.eq(4).text(node.data.width);
+
+        $tdList.eq(4).text(node.data.name);
+
+        $tdList.eq(5).text(node.data.width);
         // (Index #5 is the height)
-        $tdList.eq(5).text(node.data.height);
+        $tdList.eq(6).text(node.data.height);
         // (Index #6 is the depth)
-        $tdList.eq(6).text(node.data.depth);
+        $tdList.eq(7).text(node.data.depth);
         // (Index #7 is price, calculated below)
 
         if(node.data.hinge !== undefined) {
-          $tdList.eq(7).find(".item_hinge").val(node.data.hinge);
+          $tdList.eq(8).find(".item_hinge").val(node.data.hinge);
         }
 
         if(node.data.finish !== undefined) {
-          $tdList.eq(8).find(".item_finish").val(node.data.finish);
+          $tdList.eq(9).find(".item_finish").val(node.data.finish);
         }
 
         if(!isNaN(price)) {
           // (Index #7)
-          $tdList.eq(9).text(price.formatMoney()).removeAttr("style title"); // price column
+          $tdList.eq(10).text(price.formatMoney()).removeAttr("style title"); // price column
 
-          $("#no_global_info").css("display", "none");
+          $(".no_global_info").css("display", "none");
         } else {
-          $tdList.eq(9).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
-          $tdList.eq(10).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to properly calculate total.");
+          $tdList.eq(10).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
+          $tdList.eq(11).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to properly calculate total.");
 
           $("#submit_for_quote").attr("disabled", "true").attr("title", "Unknown global attributes, unable to submit.");
 
-          $("#no_global_info").css("display", "block");
+          $(".no_global_info").css("display", "block");
         }
 
         // (Index #8)
-        $tdList.eq(10).text(node.data.total);
+        $tdList.eq(11).text(node.data.total);
       },
       modifyChild: function(event, data) {
         recalcTotal();

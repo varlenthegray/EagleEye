@@ -13,7 +13,7 @@ $parent_qry = $dbconn->prepare('SELECT
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
-WHERE parent = ? ORDER BY pc.catalog_id, parent, sort_order, catID ASC');
+WHERE parent = ? AND (pn.catalog_id = 2 OR pn.catalog_id IS NULL) ORDER BY pc.catalog_id, parent, sort_order, catID ASC');
 
 function makeTree($parent_id) {
   global $parent_qry;
@@ -28,10 +28,9 @@ function makeTree($parent_id) {
   $data = array();
 
   while ($parent_qry->fetch()) {
-
-    if($catalog_id === 1) {
+    if($catalog_id === 1) { // if it's SMC's catalog, color it green
       $cat_bg = 'rgba(0,255,0,.25)';
-    } else {
+    } else { // otherwise, it's someone else's catalog, color it orange
       $cat_bg = 'rgba(255,165,0,.25)';
     }
 

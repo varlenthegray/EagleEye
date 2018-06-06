@@ -117,7 +117,7 @@
 
 .fancytree-title {
   white-space: normal;
-  width: 80%;
+  width: 70%;
 }
 
 .fancytree-container, span.fancytree-focused span.fancytree-title {
@@ -200,9 +200,13 @@
   span.fancytree-custom-icon {
     display: none !important;
   }
+
+  .fancytree-title {
+    width: 95%;
+  }
 }
 
-#no_global_info {
+.no_global_info {
   position: relative;
 
   margin-top: 15px;
@@ -229,7 +233,7 @@
 }
 
 @media screen {
-  #no_global_info {
+  .no_global_info {
     margin: 15px 20%;
   }
 }

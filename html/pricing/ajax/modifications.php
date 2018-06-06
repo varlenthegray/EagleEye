@@ -27,7 +27,7 @@ if(!empty($itemID)) {
 }
 
 $parent_qry = $dbconn->prepare('SELECT
-  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path
+  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, detail.title
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -40,7 +40,7 @@ function makeTree($parent_id) {
   $ret = array();
 
   $parent_qry->bind_param('i', $parent_id);
-  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image);
+  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $sku_title);
   $parent_qry->execute();
   $parent_qry->store_result();
 
@@ -55,7 +55,8 @@ function makeTree($parent_id) {
       'sort_order' => $sort_order,
       'item_catID' => $item_catID,
       'sku' => $sku,
-      'image_path' => $image
+      'image_path' => $image,
+      'sku_title' => $sku_title
     );
   }
 
@@ -73,7 +74,7 @@ function makeTree($parent_id) {
           $ret[] = &$sku_items[$item['item_catID']];
         }
 
-        $title = $item['sku'];
+        $title = "{$item['sku']} - {$item['sku_title']}";
         $title .= " <span class='actions'>
           <div class='info_container'><i class='fa fa-info-circle primary-color view_item_info' data-id='{$item['itemID']}'></i></div>
         </span>";
