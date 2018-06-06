@@ -162,47 +162,47 @@ function getLocalTime() {
 
 function productTypeSwitch() {
   function setPcts(g, y, n, r) {
-    $(".dts_pct_g").html("(" + g + ")");
-    $(".dts_pct_y").html("(" + y + ")");
-    $(".dts_pct_n").html("(" + n + ")");
-    $(".dts_pct_r").html("(" + r + ")");
+    $(".dts_pct_g").html(g);
+    $(".dts_pct_y").html(y);
+    $(".dts_pct_n").html(n);
+    $(".dts_pct_r").html(r);
   }
 
   switch($("#product_type").val()) {
     case 'C':
-      setPcts('0%', '25%', '50%', 'Not Available');
+      setPcts('[26 Days] (0%)', '[19 Days] (25%)', '[13 Days] (50%)', '(Not Available)');
       break;
 
     case 'L':
-      setPcts('0%', '0%', '25%', 'Not Available');
+      setPcts('[10 Days] (0%)', '[6 Days] (25%)', '(Not Available)', '[3 Days] (50%)');
       break;
 
     case 'S':
-      setPcts('Not Available', 'Not Available', '0%', '0%');
+      setPcts('(Not Available)', '(Not Available)', '[13 Days] (0%)', '[6 Days] (0%)');
       break;
 
     case 'D':
-      setPcts('0%', 'Not Available', 'Not Available', 'Not Available');
+      setPcts('[26 Days] (0%)', '(Not Available)', '(Not Available)', '(Not Available)');
       break;
 
     case 'A':
-      setPcts('Not Available', '0%', '25%', '25%');
+      setPcts('(Not Available)', '[19 Days] (0%)', '[13 Days] (25%)', '[6 Days] (25%)');
       break;
 
     case 'W':
-      setPcts('Not Available', '0%', '0%', '0%');
+      setPcts('(Not Available)', '[19 Days] (0%)', '[13 Days] (0%)', '[6 Days] (0%)');
       break;
 
     case 'H':
-      setPcts('Not Available', 'Not Available', '0%', 'Not Available');
+      setPcts('(Not Available)', '(Not Available)', '[13 Days] (0%)', '(Not Available)');
       break;
 
     case 'N':
-      setPcts('Not Available', 'Not Available', '0%', 'Not Available');
+      setPcts('(Not Available)', '(Not Available)', '[13 Days] (0%)', '(Not Available)');
       break;
 
     case 'R':
-      setPcts('Not Available', 'Not Available', 'Not Available', 'Not Available');
+      setPcts('(Not Available)', '(Not Available)', '(Not Available)', '(Not Available)');
       break;
   }
 }
