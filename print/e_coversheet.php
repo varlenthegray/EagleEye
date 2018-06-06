@@ -12,7 +12,7 @@ $dealer_info = $dealer_qry->fetch_assoc();
 $sheen_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' AND `key` = '{$info['sheen']}'");
 $sheen = $sheen_qry->fetch_assoc();
 
-function translateVIN($segment, $key) {
+function translateVIN($segment, $key, $product_type = null) {
   global $dbconn;
   global $info;
 
@@ -24,6 +24,241 @@ function translateVIN($segment, $key) {
     $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
   } else {
     $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
+  }
+
+  if($segment === 'days_to_ship') {
+    switch($product_type) {
+      case 'C':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [26 Days]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [19 Days]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'L':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [10 Days]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [6 Days]';
+            break;
+
+          case 'N':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'R':
+            $dts_days = ' [3 Days]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'S':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [6 Days]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'D':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [26 Days]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'N':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'R':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'A':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [19 Days]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [6 Days]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'W':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [19 Days]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [6 Days]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'H':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'N':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'R':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'N':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'R':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      default:
+        $dts_days = '[??????]';
+        break;
+    }
+  } else {
+    $dts_days = null;
   }
 
   $vin = $vin_qry->fetch_assoc();
@@ -40,16 +275,16 @@ function translateVIN($segment, $key) {
 
       if(count($custom_info[$segment]) > 1) {
         foreach($custom_info[$segment] as $key => $value) {
-          $mfg = (stristr($key, 'mfg')) ? $value : $mfg;
-          $code = (stristr($key, 'code')) ? $value : $code;
-          $name = (stristr($key, 'name')) ? $value : $name;
+          $mfg = stristr($key, 'mfg') ? $value : $mfg;
+          $code = stristr($key, 'code') ? $value : $code;
+          $name = stristr($key, 'name') ? $value : $name;
         }
 
         $ikey = "{$mfg}-{$code}";
-        $desc = "$name";
+        $desc = $name;
       } else {
         $ikey = $key;
-        $desc = "Custom - " . array_values($custom_info[$segment])[0];
+        $desc = 'Custom - ' . array_values($custom_info[$segment])[0];
       }
     } else {
       $ikey = $key;
@@ -60,7 +295,7 @@ function translateVIN($segment, $key) {
     $desc = $vin['value'];
   }
 
-  return "$ikey = $desc";
+  return "$ikey = $desc $dts_days";
 }
 
 $note_arr = array();
@@ -159,7 +394,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             </tr>
             <tr>
               <td>Lead time:</td>
-              <td><?php echo translateVIN('days_to_ship', $info['days_to_ship']); ?></td>
+              <td><?php echo translateVIN('days_to_ship', $info['days_to_ship'], $info['product_type']); ?></td>
             </tr>
             <tr>
               <td><strong>Ship VIA:</strong></td>
@@ -192,14 +427,14 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <th colspan="3"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['company_name']}"; ?></span></th>
         </tr>
         <tr>
+          <td style="border-right:1px solid #000;" class="gray_bg">Room Notes:</td>
           <td style="border-right:1px solid #000;" class="gray_bg">Delivery Notes:</td>
-          <td style="border-right:1px solid #000;" class="gray_bg">Global Notes:</td>
           <td class="gray_bg">Finishing/Sample Notes:</td>
         </tr>
 
         <tr id="notes_section">
-          <td id="delivery_notes"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
           <td id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_global']; ?></textarea></td>
+          <td id="delivery_notes"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
           <td id="layout_notes_title"><textarea name="layout_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
         </tr>
       </table>
@@ -1251,12 +1486,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       final_last_subtotal = parseFloat(final_net) + parseFloat(final_shipping) + parseFloat(final_freight) + parseFloat(final_jobsite) + parseFloat(final_cc) + parseFloat(final_samples);
       final_total = parseFloat(final_last_subtotal);
       final_deposit = parseFloat(final_total) * .5;
-
-      if(parseFloat(final_last_subtotal) < 500) {
-        $("#deposit_line").hide();
-      } else {
-        $("#deposit_line").show();
-      }
 
       $("#final_upcharges").html(addCommas(parseFloat(final_upcharges).toFixed(2)));
       $("#final_leadtime").html(addCommas(final_leadtime.toFixed(2)));

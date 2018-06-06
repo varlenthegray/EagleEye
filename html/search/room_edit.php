@@ -769,10 +769,15 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
           <div class="col-md-4">
             <div class="row">
-              <div class="col-md-4"><input type="radio" name="note_type" id="note_room" class="ignoreSaveAlert" value="room_note" checked> <label for="note_room">Room Note</label></div>
-              <div class="col-md-4"><input type="radio" name="note_type" id="note_delivery" class="ignoreSaveAlert" value="delivery_note"> <label for="note_delivery">Delivery Note</label></div>
-              <div class="col-md-4"><input type="radio" name="note_type" id="note_global" class="ignoreSaveAlert" value="global_note"> <label for="note_global">Global Note</label></div>
-              <div class="col-md-4"><input type="radio" name="note_type" id="note_fin_sample" class="ignoreSaveAlert" value="fin_sample_note"> <label for="note_fin_sample">Finish/Sample Note</label></div>
+              <div class="col-md-4">
+                <input type="radio" name="note_type" id="note_room" class="ignoreSaveAlert" value="room_note" checked> <label for="note_room">Internal Note</label>
+              </div>
+
+              <div class="col-md-8">
+                <div class="col-md-12"><input type="radio" name="note_type" id="note_global" class="ignoreSaveAlert" value="global_note"> <label for="note_global">Room Note</label></div>
+                <div class="col-md-12"><input type="radio" name="note_type" id="note_delivery" class="ignoreSaveAlert" value="delivery_note"> <label for="note_delivery">Delivery Note</label></div>
+                <div class="col-md-12"><input type="radio" name="note_type" id="note_fin_sample" class="ignoreSaveAlert" value="fin_sample_note"> <label for="note_fin_sample">Finish/Sample Note</label></div>
+              </div>
             </div>
 
             <input type="hidden" name="note_id" id="note_id" value="">
@@ -782,7 +787,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
             <?php if(!empty($_SESSION['userInfo'])) { ?>
               <input type="text" name="room_inquiry_followup_date" id="room_inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
               <label for="room_inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
-              <select name="room_inquiry_requested_of" id="room_inquiry_requested_of" class="form-control" style="width:50%;float:left;">
+              <select name="room_inquiry_requested_of" id="room_inquiry_requested_of" class="form-control" style="width:45%;float:right;">
                 <option value="null" selected disabled></option>
                 <?php
                 $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC");
@@ -963,7 +968,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
   $(".room_note_log").hide();
 
-  <?php echo (!empty($room['custom_vin_info'])) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}')": null; ?>
+  <?php echo !empty($room['custom_vin_info']) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}')": null; ?>
 
   $(function() {
     productTypeSwitch();

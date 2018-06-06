@@ -193,7 +193,7 @@ switch ($search) {
 
     if($qry->num_rows > 0) {
       while($result = $qry->fetch_assoc()) {
-        $soColor = "job-color-green";
+        $soColor = 'job-color-green';
 
         $dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id LIKE '%{$result['dealer_code']}%'");
         $dealer = $dealer_qry->fetch_assoc();
@@ -203,8 +203,8 @@ switch ($search) {
         if($bouncer->validate('view_so')) {
           echo "  <tr class='cursor-hand' id='show_room_{$result['so_num']}'>";
 
-          $btn_add_room = ($bouncer->validate('add_room')) ? "<button class='btn btn-primary-outline waves-effect add_room_trigger' data-sonum='{$result['so_num']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional room' style='font-size:10px;width:23px;height:22px;margin-top:1px;padding:0;'> +X</button></td>" : null;
-          $btn_edit_room = ($bouncer->validate('edit_so')) ? "<button class='btn waves-effect btn-primary' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button>" : null;
+          $btn_add_room = $bouncer->validate('add_room') ? "<button class='btn btn-primary-outline waves-effect add_room_trigger' data-sonum='{$result['so_num']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional room' style='font-size:10px;width:23px;height:22px;margin-top:1px;padding:0;'> +X</button></td>" : null;
+          $btn_edit_room = $bouncer->validate('edit_so') ? "<button class='btn waves-effect btn-primary' id='edit_so_{$result['so_num']}'> <i class='zmdi zmdi-edit'></i> </button>" : null;
 
           if (!empty($_SESSION['userInfo'])) {
             echo "    <td class='nowrap' style='width:50px;'>$btn_edit_room $btn_add_room";
@@ -214,7 +214,7 @@ switch ($search) {
           echo "    <td>{$result['project_name']}</td>";
           echo "    <td>{$dealer['contact']}</td>";
           echo "    <td>{$result['dealer_code']}: {$dealer['first_name']} {$dealer['last_name']}</td>";
-          echo "  </tr>";
+          echo '  </tr>';
 
           //<editor-fold desc="Edit SO">
           if ($bouncer->validate('edit_so')) {
@@ -927,7 +927,7 @@ switch ($search) {
 
           //<editor-fold desc="Add Room">
           /** ADD ROOM TO SO */
-          echo ($bouncer->validate('add_room')) ? "<tr class='add_room' id='{$result['so_num']}' style='display:none;'><td colspan='8'><div style='display:none;'></div></td></tr>" : null;
+          echo $bouncer->validate('add_room') ? "<tr class='add_room' id='{$result['so_num']}' style='display:none;'><td colspan='8'><div style='display:none;'></div></td></tr>" : null;
           /** END ADD ROOM TO SO */
           //</editor-fold>
 
@@ -973,7 +973,7 @@ switch ($search) {
 
                       $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
-                      $iteration = explode(".", number_format($room['iteration'], 2));
+                      $iteration = explode('.', number_format($room['iteration'], 2));
 
                       if (empty($prev_seq)) {
                         $prev_seq = $iteration[0];
@@ -1069,11 +1069,11 @@ switch ($search) {
                       echo "<tr class='cursor-hand room_line' id='{$room['id']}'>";
 
                       echo "<td class='nowrap' style='width:50px;'>";
-                      echo ($bouncer->validate('edit_room')) ? " <button class='btn waves-effect btn-primary edit_room' id='{$room['id']}' data-sonum='{$room['so_parent']}'><i class='zmdi zmdi-edit'></i></button>" : null;
-                      echo ($bouncer->validate('view_attachments')) ? " <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button>" : null;
-                      echo ($bouncer->validate('add_sequence')) ? " <button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-addto='sequence' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional sequence' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:$seq_visible;'> S +1</button>" : null;
-                      echo ($bouncer->validate('add_iteration')) ? " <button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-addto='iteration' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional iteration' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:$iteration_visible;'> I +.01</button>" : null;
-                      echo "</td>";
+                      echo $bouncer->validate('edit_room') ? " <button class='btn waves-effect btn-primary edit_room' id='{$room['id']}' data-sonum='{$room['so_parent']}'><i class='zmdi zmdi-edit'></i></button>" : null;
+                      echo $bouncer->validate('view_attachments') ? " <button class='btn waves-effect $attachment_code' id='show_attachments_room_{$room['id']}'><i class='zmdi zmdi-attachment-alt'></i></button>" : null;
+                      echo $bouncer->validate('add_sequence') ? " <button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-sonum='{$result['so_num']}' data-addto='sequence' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional sequence' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:$seq_visible;'> S +1</button>" : null;
+                      echo $bouncer->validate('add_iteration') ? " <button class='btn btn-primary-outline waves-effect add_iteration' data-roomid='{$room['id']}' data-sonum='{$result['so_num']}' data-addto='iteration' data-iteration='{$room['iteration']}' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add additional iteration' style='font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:$iteration_visible;'> I +.01</button>" : null;
+                      echo '</td>';
 
                       echo "  <td class='nowrap'><span class='pull-left'>{$tab}{$room_name}</span> <span class='pull-right' style='margin-right:5px;'>$order_status</span></td>";
 

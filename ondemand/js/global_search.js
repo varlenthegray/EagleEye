@@ -294,6 +294,7 @@ $("body")
 
     checkTransition(function() {
       active_room_id = $(thisClick).data('roomid');
+      active_so_num = $(thisClick).data('sonum');
 
       var seqAjax;
       var iterationAjax;
@@ -345,7 +346,7 @@ $("body")
 
       active_ops = JSON.stringify(active_ops);
 
-      $.post("/ondemand/room_actions.php?action=create_room&" + edit_info, {active_ops: active_ops}, function(data) {
+      $.post("/ondemand/room_actions.php?action=create_room", {active_ops: active_ops, editInfo: edit_info}, function(data) {
         $('body').append(data);
       });
 

@@ -13,8 +13,7 @@ if ($user_qry->num_rows > 0) {
   $user = $user_qry->fetch_assoc();
 }
 
-function getHMM($duration)
-{
+function getHMM($duration) {
   $hours_worked = floor($duration / 3600);
   $mins_remainder = ($duration % 3600);
   $mins_readable = floor($mins_remainder / 60);
@@ -26,8 +25,7 @@ function getHMM($duration)
   return "$hours_worked:$mins_readable";
 }
 
-function getHMMSS($duration)
-{
+function getHMMSS($duration) {
   if ($duration == 0) return '---';
   $hours_worked = floor($duration / 3600);
   $mins_remainder = ($duration % 3600);
@@ -277,14 +275,24 @@ ORDER BY c_start_time ASC;");
           # Loop through every operation now and calculate its actual, properly split time
           foreach ($op_data as $index => $time) {
             $total_time = 0;
+
             # For every operation, loop through all timeframes
             foreach ($timeframes as $timeframe) {
-              # Find which timeframes apply to this particular operation by checking the start and end times
-              if ($timeframe['start_time'] >= $time['c_start_time'] && $timeframe['end_time'] <= $time['c_end_time']) {
-                # If this timeframe applies to this operation, add the timeframe's split time
-                $total_time += $timeframe['actual_time'];
+              if($op_data[$index]['job_title'] === 'Break') {
+                # Find which timeframes apply to this particular operation by checking the start and end times
+                if ($timeframe['start_time'] > $time['c_start_time'] && $timeframe['end_time'] < $time['c_end_time']) {
+                  # If this timeframe applies to this operation, add the timeframe's split time
+                  $total_time += $timeframe['actual_time'];
+                }
+              } else {
+                # Find which timeframes apply to this particular operation by checking the start and end times
+                if ($timeframe['start_time'] >= $time['c_start_time'] && $timeframe['end_time'] <= $time['c_end_time']) {
+                  # If this timeframe applies to this operation, add the timeframe's split time
+                  $total_time += $timeframe['actual_time'];
+                }
               }
             }
+
             $op_data[$index]['split_time'] = $total_time;
             $op_data[$index]['split_time_human'] = getHMMSS($total_time);
 

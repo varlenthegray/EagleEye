@@ -522,138 +522,142 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                                 <tr style="height:5px;"><td colspan="2"></td></tr>
                             </table>
                         </div>
+                    <?php
+                    }
+
+                    if($bouncer->validate('edit_brackets')) {
+                    ?>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <table width="100%" class="bracket-adjustment-table">
+                            <tr>
+                              <td style="width: 49.8%;" class="bracket-border-top">
+                                <div class="row bracket-header-custom">
+                                  <div class="col-md-8"><h5><label for="sales_bracket_adjustments_<?php echo $room['id']; ?>">Sales Bracket</label></h5></div>
+                                  <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" value="1" id="sales_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
+                                </div>
+                              </td>
+                              <td style="background-color:#eceeef;"></td>
+                              <td style="width: 49.8%;" class="bracket-border-top">
+                                <div class="row bracket-header-custom">
+                                  <div class="col-md-8"><h5><label for="sample_bracket_adjustments_<?php echo $room['id']; ?>">Sample Bracket</label></h5></div>
+                                  <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" value="1" id="sample_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="bracket-border-bottom">
+                                <?php displayBracketOpsMgmt('Sales', $room, $individual_bracket); ?>
+                              </td>
+                              <td style="background-color: #eceeef;">&nbsp;</td>
+                              <td class="bracket-border-bottom">
+                                <?php displayBracketOpsMgmt('Sample', $room, $individual_bracket); ?>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="bracket-border-top">
+                                <div class="row bracket-header-custom">
+                                  <div class="col-md-8"><h5><label for="pre_prod_bracket_adjustments_<?php echo $room['id']; ?>">Pre-production Bracket</label></h5></div>
+                                  <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="preprod_published" value="1" id="pre_prod_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
+                                </div>
+                              </td>
+                              <td style="background-color: #eceeef;">&nbsp;</td>
+                              <td class="bracket-border-top">
+                                <div class="row bracket-header-custom">
+                                  <div class="col-md-8"><h5><label for="door_drawer_bracket_adjustments_<?php echo $room['id']; ?>">Door/Drawer Bracket</label></h5></div>
+                                  <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="doordrawer_published" value="1" id="doordrawer_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="bracket-border-bottom">
+                                <?php displayBracketOpsMgmt('Pre-Production', $room, $individual_bracket); ?>
+                              </td>
+                              <td style="background-color: #eceeef;">&nbsp;</td>
+                              <td class="bracket-border-bottom">
+                                <?php displayBracketOpsMgmt('Drawer & Doors', $room, $individual_bracket); ?>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="bracket-border-top">
+                                <div class="row bracket-header-custom">
+                                  <div class="col-md-8"><h5><label for="main_bracket_adjustments_<?php echo $room['id']; ?>">Main Bracket</label></h5></div>
+                                  <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="main_published" value="1" id="main_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
+                                </div>
+                              </td>
+                              <td style="background-color: #eceeef;">&nbsp;</td>
+                              <td class="bracket-border-top">
+                                <div class="row bracket-header-custom">
+                                  <div class="col-md-8"><h5><label for="edgebanding_bracket_adjustments_<?php echo $room['id']; ?>">Edge Banding Bracket</label></h5></div>
+                                  <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="edgebanding_published" value="1" id="edgebanding_bracket_adjustments_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="bracket-border-bottom">
+                                <?php displayBracketOpsMgmt('Main', $room, $individual_bracket); ?>
+                              </td>
+                              <td style="background-color: #eceeef;">&nbsp;</td>
+                              <td class="bracket-border-bottom">
+                                <?php displayBracketOpsMgmt('Edge Banding', $room, $individual_bracket); ?>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="bracket-border-top">
+                                <div class="row bracket-header-custom">
+                                  <div class="col-md-8"><h5><label for="custom_bracket_adjustments_<?php echo $room['id']; ?>">Custom Bracket</label></h5></div>
+                                  <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" value="1" id="custom_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
+                                </div>
+                              </td>
+                              <td style="background-color: #eceeef;">&nbsp;</td>
+                              <td class="bracket-border-top">
+                                <div class="row bracket-header-custom">
+                                  <div class="col-md-8"><h5><label for="shipping_bracket_adjustments_<?php echo $room['id']; ?>">Shipping Bracket</label></h5></div>
+                                  <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shipping_published" value="1" id="shipping_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="bracket-border-bottom">
+                                <?php displayBracketOpsMgmt('Custom', $room, $individual_bracket); ?>
+                              </td>
+                              <td style="background-color: #eceeef;">&nbsp;</td>
+                              <td class="bracket-border-bottom">
+                                <?php displayBracketOpsMgmt('Shipping', $room, $individual_bracket); ?>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="bracket-border-top">
+                                <div class="row bracket-header-custom">
+                                  <div class="col-md-8"><h5><label for="install_bracket_adjustments_<?php echo $room['id']; ?>">Install Bracket</label></h5></div>
+                                  <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published" value="1" id="install_published_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
+                                </div>
+                              </td>
+                              <td style="background-color: #eceeef;">&nbsp;</td>
+                              <td class="bracket-border-top">
+                                <div class="row bracket-header-custom">
+                                  <div class="col-md-8"><h5><label for="pickmat_bracket_adjustments_<?php echo $room['id']; ?>">Pick & Materials Bracket</label></h5></div>
+                                  <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pickmat_published" value="1" id="pickmat_bracket_adjustments_<?php echo $room['id']; ?>"> <span class="c-indicator"></span> Published</label> </div>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="bracket-border-bottom">
+                                <?php displayBracketOpsMgmt('Installation', $room, $individual_bracket); ?>
+                              </td>
+                              <td style="background-color: #eceeef;">&nbsp;</td>
+                              <td class="bracket-border-bottom">
+                                <?php displayBracketOpsMgmt('Pick & Materials', $room, $individual_bracket); ?>
+                              </td>
+                            </tr>
+                          </table>
+                        </div>
+                      </div>
                     <?php } ?>
                     </div>
                 </div>
 
-                <?php if($bouncer->validate('edit_brackets')) { ?>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <table width="100%" class="bracket-adjustment-table">
-                                <tr>
-                                    <td style="width: 49.8%;" class="bracket-border-top">
-                                        <div class="row bracket-header-custom">
-                                            <div class="col-md-8"><h5><label for="sales_bracket_adjustments_<?php echo $room['id']; ?>">Sales Bracket</label></h5></div>
-                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" value="1" id="sales_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sales_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                        </div>
-                                    </td>
-                                    <td style="background-color:#eceeef;"></td>
-                                    <td style="width: 49.8%;" class="bracket-border-top">
-                                        <div class="row bracket-header-custom">
-                                            <div class="col-md-8"><h5><label for="sample_bracket_adjustments_<?php echo $room['id']; ?>">Sample Bracket</label></h5></div>
-                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" value="1" id="sample_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['sample_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="bracket-border-bottom">
-                                        <?php displayBracketOpsMgmt('Sales', $room, $individual_bracket); ?>
-                                    </td>
-                                    <td style="background-color: #eceeef;">&nbsp;</td>
-                                    <td class="bracket-border-bottom">
-                                        <?php displayBracketOpsMgmt('Sample', $room, $individual_bracket); ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="bracket-border-top">
-                                        <div class="row bracket-header-custom">
-                                            <div class="col-md-8"><h5><label for="pre_prod_bracket_adjustments_<?php echo $room['id']; ?>">Pre-production Bracket</label></h5></div>
-                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="preprod_published" value="1" id="pre_prod_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['preproduction_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                        </div>
-                                    </td>
-                                    <td style="background-color: #eceeef;">&nbsp;</td>
-                                    <td class="bracket-border-top">
-                                        <div class="row bracket-header-custom">
-                                            <div class="col-md-8"><h5><label for="door_drawer_bracket_adjustments_<?php echo $room['id']; ?>">Door/Drawer Bracket</label></h5></div>
-                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="doordrawer_published" value="1" id="doordrawer_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['doordrawer_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="bracket-border-bottom">
-                                        <?php displayBracketOpsMgmt('Pre-Production', $room, $individual_bracket); ?>
-                                    </td>
-                                    <td style="background-color: #eceeef;">&nbsp;</td>
-                                    <td class="bracket-border-bottom">
-                                        <?php displayBracketOpsMgmt('Drawer & Doors', $room, $individual_bracket); ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="bracket-border-top">
-                                        <div class="row bracket-header-custom">
-                                            <div class="col-md-8"><h5><label for="main_bracket_adjustments_<?php echo $room['id']; ?>">Main Bracket</label></h5></div>
-                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="main_published" value="1" id="main_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['main_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                        </div>
-                                    </td>
-                                    <td style="background-color: #eceeef;">&nbsp;</td>
-                                    <td class="bracket-border-top">
-                                        <div class="row bracket-header-custom">
-                                            <div class="col-md-8"><h5><label for="edgebanding_bracket_adjustments_<?php echo $room['id']; ?>">Edge Banding Bracket</label></h5></div>
-                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="edgebanding_published" value="1" id="edgebanding_bracket_adjustments_<?php echo $room['id']; ?>" <?php echo ((bool)$room['edgebanding_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="bracket-border-bottom">
-                                        <?php displayBracketOpsMgmt('Main', $room, $individual_bracket); ?>
-                                    </td>
-                                    <td style="background-color: #eceeef;">&nbsp;</td>
-                                    <td class="bracket-border-bottom">
-                                        <?php displayBracketOpsMgmt('Edge Banding', $room, $individual_bracket); ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="bracket-border-top">
-                                        <div class="row bracket-header-custom">
-                                            <div class="col-md-8"><h5><label for="custom_bracket_adjustments_<?php echo $room['id']; ?>">Custom Bracket</label></h5></div>
-                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" value="1" id="custom_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['custom_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                        </div>
-                                    </td>
-                                    <td style="background-color: #eceeef;">&nbsp;</td>
-                                    <td class="bracket-border-top">
-                                        <div class="row bracket-header-custom">
-                                            <div class="col-md-8"><h5><label for="shipping_bracket_adjustments_<?php echo $room['id']; ?>">Shipping Bracket</label></h5></div>
-                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shipping_published" value="1" id="shipping_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['shipping_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="bracket-border-bottom">
-                                        <?php displayBracketOpsMgmt('Custom', $room, $individual_bracket); ?>
-                                    </td>
-                                    <td style="background-color: #eceeef;">&nbsp;</td>
-                                    <td class="bracket-border-bottom">
-                                        <?php displayBracketOpsMgmt('Shipping', $room, $individual_bracket); ?>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="bracket-border-top">
-                                        <div class="row bracket-header-custom">
-                                            <div class="col-md-8"><h5><label for="install_bracket_adjustments_<?php echo $room['id']; ?>">Install Bracket</label></h5></div>
-                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published" value="1" id="install_published_<?php echo $room['id']; ?>" <?php echo ((bool)$room['install_bracket_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                        </div>
-                                    </td>
-                                    <td style="background-color: #eceeef;">&nbsp;</td>
-                                    <td class="bracket-border-top">
-                                        <div class="row bracket-header-custom">
-                                            <div class="col-md-8"><h5><label for="pickmat_bracket_adjustments_<?php echo $room['id']; ?>">Pick & Materials Bracket</label></h5></div>
-                                            <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pickmat_published" value="1" id="pickmat_bracket_adjustments_<?php echo $room['id']; ?>" <?php echo ((bool)$room['pick_materials_published']) ? "checked" : NULL; ?>> <span class="c-indicator"></span> Published</label> </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="bracket-border-bottom">
-                                        <?php displayBracketOpsMgmt('Installation', $room, $individual_bracket); ?>
-                                    </td>
-                                    <td style="background-color: #eceeef;">&nbsp;</td>
-                                    <td class="bracket-border-bottom">
-                                        <?php displayBracketOpsMgmt('Pick & Materials', $room, $individual_bracket); ?>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                <?php } ?>
+
             </div>
     </form>
 
