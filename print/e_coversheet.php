@@ -12,7 +12,7 @@ $dealer_info = $dealer_qry->fetch_assoc();
 $sheen_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' AND `key` = '{$info['sheen']}'");
 $sheen = $sheen_qry->fetch_assoc();
 
-function translateVIN($segment, $key) {
+function translateVIN($segment, $key, $product_type = null) {
   global $dbconn;
   global $info;
 
@@ -24,6 +24,241 @@ function translateVIN($segment, $key) {
     $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
   } else {
     $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
+  }
+
+  if($segment === 'days_to_ship') {
+    switch($product_type) {
+      case 'C':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [26 Days]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [19 Days]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'L':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [10 Days]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [6 Days]';
+            break;
+
+          case 'N':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'R':
+            $dts_days = ' [3 Days]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'S':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [6 Days]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'D':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [26 Days]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'N':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'R':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'A':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [19 Days]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [6 Days]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'W':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [19 Days]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [6 Days]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'H':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'N':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'N':
+            $dts_days = ' [13 Days]';
+            break;
+
+          case 'R':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      case 'R':
+        switch($key) {
+          case 'G':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'Y':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'N':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          case 'R':
+            $dts_days = ' [Unavailable]';
+            break;
+
+          default:
+            $dts_days = ' [???]';
+            break;
+        }
+
+        break;
+
+      default:
+        $dts_days = '[??????]';
+        break;
+    }
+  } else {
+    $dts_days = null;
   }
 
   $vin = $vin_qry->fetch_assoc();
@@ -40,16 +275,16 @@ function translateVIN($segment, $key) {
 
       if(count($custom_info[$segment]) > 1) {
         foreach($custom_info[$segment] as $key => $value) {
-          $mfg = (stristr($key, 'mfg')) ? $value : $mfg;
-          $code = (stristr($key, 'code')) ? $value : $code;
-          $name = (stristr($key, 'name')) ? $value : $name;
+          $mfg = stristr($key, 'mfg') ? $value : $mfg;
+          $code = stristr($key, 'code') ? $value : $code;
+          $name = stristr($key, 'name') ? $value : $name;
         }
 
         $ikey = "{$mfg}-{$code}";
-        $desc = "$name";
+        $desc = $name;
       } else {
         $ikey = $key;
-        $desc = "Custom - " . array_values($custom_info[$segment])[0];
+        $desc = 'Custom - ' . array_values($custom_info[$segment])[0];
       }
     } else {
       $ikey = $key;
@@ -60,7 +295,7 @@ function translateVIN($segment, $key) {
     $desc = $vin['value'];
   }
 
-  return "$ikey = $desc";
+  return "$ikey = $desc $dts_days";
 }
 
 $note_arr = array();
@@ -159,7 +394,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
             </tr>
             <tr>
               <td>Lead time:</td>
-              <td><?php echo translateVIN('days_to_ship', $info['days_to_ship']); ?></td>
+              <td><?php echo translateVIN('days_to_ship', $info['days_to_ship'], $info['product_type']); ?></td>
             </tr>
             <tr>
               <td><strong>Ship VIA:</strong></td>
