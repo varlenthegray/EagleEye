@@ -84,7 +84,7 @@ function whatChanged($new, $old, $title, $date = false, $bool = false, $bracket_
 switch($_REQUEST['action']) {
   case 'create_room':
     parse_str($_REQUEST['editInfo'], $editInfo);
-    
+
     $so_num = sanitizeInput($editInfo['sonum']);
     $room = sanitizeInput($editInfo['room']);
     $room_id = sanitizeInput($editInfo['roomid']);
@@ -160,14 +160,18 @@ switch($_REQUEST['action']) {
     $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' AND room = '$room' AND iteration = '$iteration'");
 
     if($room_qry->num_rows === 0) {
-      $del_date_unix = strtotime($delivery_date);
+      if(empty($delivery_date)) { // this entire thing is stupid but it resolves the del date being blank
+        $del_date_unix = 'null'; // this was stupid, i had to set this to a null string and remove quotes from SQL statement
+      } else {
+        $del_date_unix = "'" . strtotime($delivery_date) . "'"; // this was stupid, i had to configure this to string
+      }
 
       // first, create the room itself
       if($dbconn->query("INSERT INTO rooms (so_parent, room, iteration, room_name, product_type, sales_bracket, preproduction_bracket, sample_bracket, 
             doordrawer_bracket, custom_bracket, main_bracket, individual_bracket_buildout, order_status, shipping_bracket, install_bracket, delivery_date,
             sales_published, preproduction_published, sample_published, doordrawer_published, custom_published, main_published, shipping_published,
             install_bracket_published, pick_materials_published) VALUES  ('$so_num', '$room', '$iteration', '$room_name', '$product_type', '$sales_op', '$preprod_op', '$sample_op', 
-            '$doordrawer_op', '$custom_op', '$main_op', '$ops', '$order_status', '$shipping_op', '$install_op', '$del_date_unix', '$sales_pub', 
+            '$doordrawer_op', '$custom_op', '$main_op', '$ops', '$order_status', '$shipping_op', '$install_op', $del_date_unix, '$sales_pub', 
             '$preprod_pub', '$sample_pub', '$doordrawer_pub', '$custom_pub', '$main_pub', '$shipping_pub', '$install_pub', '$pickmat_pub')")) {
         $new_room_id = $dbconn->insert_id;
         createOpQueue($sales_pub, 'Sales', $sales_op, $new_room_id);
@@ -275,9 +279,9 @@ HEREDOC;
     $note_type = sanitizeInput($editInfo['note_type']);
     $note_id = sanitizeInput($editInfo['note_id']);
 
-    $deposit_received = (!empty($editInfo['deposit_received'])) ? (bool)$editInfo['deposit_received'] : 0;
-    $final_payment = (!empty($editInfo['final_payment'])) ? (bool)$editInfo['final_payment'] : 0;
-    $ptl_del = (!empty($editInfo['ptl_del'])) ? (bool)$editInfo['ptl_del'] : 0;
+    $deposit_received = !empty($editInfo['deposit_received']) ? (bool)$editInfo['deposit_received'] : 0;
+    $final_payment = !empty($editInfo['final_payment']) ? (bool)$editInfo['final_payment'] : 0;
+    $ptl_del = !empty($editInfo['ptl_del']) ? (bool)$editInfo['ptl_del'] : 0;
 
     $followup_date = sanitizeInput($editInfo['room_inquiry_followup_date']);
     $followup_individual = sanitizeInput($editInfo['room_inquiry_requested_of']);
@@ -296,12 +300,12 @@ HEREDOC;
     $changed[] = whatChanged($deposit_received, $room_info['payment_deposit'], 'Deposit Payment');
     $changed[] = whatChanged($final_payment, $room_info['payment_final'], 'Final Payment');
     $changed[] = whatChanged($ptl_del, $room_info['payment_del_ptl'], 'Prior to Loading/Delivery Payment');
-    $changed[] = (!empty($notes)) ? "Notes added" : null;
+    $changed[] = !empty($notes) ? 'Notes added' : null;
 
     if(empty($delivery_date)) {
       $delivery_date = null;
     } elseif(!empty($delivery_date)) {
-      $delivery_date = ",delivery_date = " . strtotime($delivery_date) . "";
+      $delivery_date = ',delivery_date = ' . strtotime($delivery_date);
     }
 
     if($dbconn->query("UPDATE rooms SET product_type = '$product_type', order_status = '$order_status', dealer_status = '$dealer_status', days_to_ship = '$days_to_ship', room_name = '$room_name' $delivery_date  WHERE id = $room_id")) {
@@ -558,7 +562,7 @@ HEREDOC;
     $changed[] = whatChanged($ops, $room_info['individual_bracket_buildout'], 'Active Bracket Operations');
 
     if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
-    $update_result = $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op', edgebanding_bracket = '$edgebanding_op',
+      $update_result = $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op', edgebanding_bracket = '$edgebanding_op',
     custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
     preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', edgebanding_published = '$edgebanding_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
     install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub', payment_deposit = '$deposit_received',
