@@ -84,13 +84,29 @@ outputPHPErrs();
             <td class="pad-l5 no-print"></td>
             <td class="alignCenter">
               <select class="custom-select task_length" style="width: 100%;">
-                <option value="???">???</option>
-                <option value="< 1 Hr" class="length_green">< 1 Hr</option>
-                <option value="1-3 Hrs" class="length_green">1-3 Hrs</option>
-                <option value="3-6 Hrs" class="length_yellow">3-6 Hrs</option>
-                <option value="1 Day" class="length_yellow">1 Day</option>
-                <option value="2-3 Days" class="length_black">2-3 Days</option>
-                <option value="3+ Days" class="length_black">3+ Days</option>
+                <option value="???">Unknown</option>
+                <option value="15 mins" class="length_green">15 mins</option>
+                <option value="30 mins" class="length_green">30 mins</option>
+                <option value="1 hr" class="length_green">1 hr</option>
+                <option value="1 hr 30 mins" class="length_green">1 hr 30 mins</option>
+                <option value="2 hrs" class="length_green">2 hrs</option>
+                <option value="2 hrs 30 mins" class="length_green">2 hrs 30 mins</option>
+                <option value="3 hrs" class="length_green">3 hrs</option>
+                <option value="3.5 hrs" class="length_green">3 hrs 30 mins</option>
+                <option value="4 hrs" class="length_green">4 hrs</option>
+                <option value="4.5 hrs" class="length_yellow">4 hrs 30 mins</option>
+                <option value="5 hrs" class="length_yellow">5 hrs</option>
+                <option value="5.5 hrs" class="length_yellow">5 hrs 30 mins</option>
+                <option value="6 hrs" class="length_yellow">6 hrs</option>
+                <option value="7 hrs" class="length_yellow">7 hrs</option>
+                <option value="8 hrs" class="length_yellow">8 hrs</option>
+                <option value="9 hrs" class="length_yellow">9 hrs</option>
+                <option value="1 Day" class="length_black">1 day</option>
+                <option value="1.5 Days" class="length_black">1.5 days</option>
+                <option value="2 Days" class="length_black">2 days</option>
+                <option value="3 Days" class="length_black">3 days</option>
+                <option value="4 Days" class="length_black">4 days</option>
+                <option value="5+ Days" class="length_black">5+ days</option>
               </select>
             </td>
             <td class="alignCenter"><input type="text" class="due_date" value="" placeholder="Empty" /></td>
@@ -171,33 +187,7 @@ outputPHPErrs();
     let dueDateField = ele.parent().parent().find(".due_date"); // get the due date of this field
     let timeLeftField = ele.parent().parent().find(".task_length"); // get the time left field
     let timeLeft = dueDateField.parent().parent().find(".task_length").find(":selected").val(); // get the selected element of time left for this row
-    let duration = null; // duration default to null (error out)
     let ddTime = moment(dueDateField.val()); // the due date time
-
-    // time to figure out how long we think this is going to take and add it to the due date time
-    switch(timeLeft) {
-      case '< 1 Hr':
-        ddTime.subtract(1, 'hour');
-        break;
-      case '1-3 Hrs':
-        ddTime.subtract(3, 'hours');
-        break;
-      case '3-6 Hrs':
-        ddTime.subtract(6, 'hours');
-        break;
-      case '1 Day':
-        ddTime.subtract(1, 'day');
-        break;
-      case '2-3 Days':
-        ddTime.subtract(3, 'days');
-        break;
-      case '3+ Days':
-        ddTime.subtract(5, 'days');
-        break;
-      default:
-        duration = 0;
-        break;
-    }
 
     let tomorrow = null; // tomorrow
     let futureThreeDays = null; // three days from today
@@ -208,10 +198,10 @@ outputPHPErrs();
       futureThreeDays = moment().add(3, 'days'); // three days from today
     } else if(ddTime.day() === 7) {
       tomorrow = moment().add(2, 'days'); // add 1 day since it's sunday
-      futureThreeDays = moment().add(2, 'days'); // three days from today
+      futureThreeDays = moment().add(2, 'days'); // two days from today
     } else {
       tomorrow = moment().add(1, 'day');
-      futureThreeDays = moment().add(2, 'days'); // three days from today
+      futureThreeDays = moment().add(2, 'days'); // two days from today
     }
 
     if(dueDateField.val() !== '') {
@@ -278,11 +268,7 @@ outputPHPErrs();
       selectMode: 3,
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
-      <?php if($_REQUEST['flip'] === 'true') {
-        echo 'source: { url: "/html/opl/ajax/actions.php?action=getOPL&user_id=" + opl_usr},';
-      } else {
-        echo 'source: { url: "/html/opl/all.php"},';
-      } ?>
+      source: { url: "/html/opl/all.php" },
       extensions: ["edit", "dnd", "table", "gridnav", "filter", "persist"],
       dnd: {
         preventVoidMoves: true,
@@ -321,7 +307,8 @@ outputPHPErrs();
             // Quick-enter: add new nodes until we hit [enter] on an empty title
             $("#tree").trigger("nodeCommand", {cmd: "addSibling"});
           }
-        }
+        },
+        adjustWidthOfs: null
       },
       table: {
         indentation: 20,

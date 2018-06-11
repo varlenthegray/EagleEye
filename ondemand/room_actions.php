@@ -430,6 +430,7 @@ HEREDOC;
     $carcass_interior_finish_code = sanitizeInput($editInfo['carcass_interior_finish_code']);
     $carcass_interior_glaze_color = sanitizeInput($editInfo['carcass_interior_glaze_color']);
     $carcass_interior_glaze_technique = sanitizeInput($editInfo['carcass_interior_glaze_technique']);
+    $drawer_box_mount = sanitizeInput($editInfo['drawer_box_mount']);
     $drawer_boxes = sanitizeInput($editInfo['drawer_boxes']);
 
     $custom_vals = $_REQUEST['customVals']; // custom fields in VIN sheet
@@ -468,6 +469,7 @@ HEREDOC;
       $changed[] = whatChanged($carcass_interior_finish_code, $room_info['carcass_interior_finish_code'], 'Carcass Interior Finish Code');
       $changed[] = whatChanged($carcass_interior_glaze_color, $room_info['carcass_interior_glaze_color'], 'Carcass Interior Glaze Color');
       $changed[] = whatChanged($carcass_interior_glaze_technique, $room_info['carcass_interior_glaze_technique'], 'Carcass Interior Glaze Technique');
+      $changed[] = whatChanged($drawer_box_mount, $room_info['drawer_box_mount'], 'Drawer Box Mount');
       $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
 
       $changed[] = whatChanged($sample_block_ordered, $room_info['sample_block_ordered'], 'Sample Block Ordered');
@@ -499,10 +501,10 @@ HEREDOC;
         carcass_exterior_finish_code = '$carcass_exterior_finish_code', carcass_exterior_glaze_color = '$carcass_exterior_glaze_color', 
         carcass_exterior_glaze_technique = '$carcass_exterior_glaze_technique', carcass_interior_species = '$carcass_interior_species',
         carcass_interior_finish_code = '$carcass_interior_finish_code', carcass_interior_glaze_color = '$carcass_interior_glaze_color', 
-        carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', vin_code = '$vin_final', 
+        carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', drawer_box_mount = '$drawer_box_mount', vin_code = '$vin_final', 
         sample_block_ordered = '$sample_block_ordered', door_only_ordered = '$door_only_ordered', door_drawer_ordered = '$door_drawer_ordered',
         inset_square_ordered = '$inset_square_ordered', inset_beaded_ordered = '$inset_beaded_ordered', custom_vin_info = '$custom_vals' $sample_ordered_date WHERE id = '$room_id'")) {
-      echo displayToast("success", "VIN has been updated for SO {$editInfo['sonum']} room {$editInfo['room']} iteration $iteration.", "VIN Updated");
+      echo displayToast('success', "VIN has been updated for SO {$editInfo['sonum']} room {$editInfo['room']} iteration $iteration.", 'VIN Updated');
     } else {
       dbLogSQLErr($dbconn);
     }
@@ -531,16 +533,16 @@ HEREDOC;
     $changed[] = whatChanged($pickmat_op, $room_info['pick_materials_bracket'], 'Pick & Materials Bracket', false, false, true);
     $changed[] = whatChanged($edgebanding_op, $room_info['edgebanding_bracket'], 'Edge Banding Bracket', false, false, true);
 
-    $sales_pub = (!empty($editInfo['sales_published'])) ? sanitizeInput($editInfo['sales_published']) : 0;
-    $sample_pub = (!empty($editInfo['sample_published'])) ? sanitizeInput($editInfo['sample_published']) : 0;
-    $preprod_pub = (!empty($editInfo['preprod_published'])) ? sanitizeInput($editInfo['preprod_published']) : 0;
-    $doordrawer_pub = (!empty($editInfo['doordrawer_published'])) ? sanitizeInput($editInfo['doordrawer_published']) : 0;
-    $main_pub = (!empty($editInfo['main_published'])) ? sanitizeInput($editInfo['main_published']) : 0;
-    $custom_pub = (!empty($editInfo['custom_published'])) ? sanitizeInput($editInfo['custom_published']) : 0;
-    $shipping_pub = (!empty($editInfo['shipping_published'])) ? sanitizeInput($editInfo['shipping_published']) : 0;
-    $install_pub = (!empty($editInfo['install_published'])) ? sanitizeInput($editInfo['install_published']) : 0;
-    $pickmat_pub = (!empty($editInfo['pick_materials_published'])) ? sanitizeInput($editInfo['pickmat_published']) : 0;
-    $edgebanding_pub = (!empty($editInfo['edgebanding_published'])) ? sanitizeInput($editInfo['edgebanding_published']) : 0;
+    $sales_pub = !empty($editInfo['sales_published']) ? sanitizeInput($editInfo['sales_published']) : 0;
+    $sample_pub = !empty($editInfo['sample_published']) ? sanitizeInput($editInfo['sample_published']) : 0;
+    $preprod_pub = !empty($editInfo['preprod_published']) ? sanitizeInput($editInfo['preprod_published']) : 0;
+    $doordrawer_pub = !empty($editInfo['doordrawer_published']) ? sanitizeInput($editInfo['doordrawer_published']) : 0;
+    $main_pub = !empty($editInfo['main_published']) ? sanitizeInput($editInfo['main_published']) : 0;
+    $custom_pub = !empty($editInfo['custom_published']) ? sanitizeInput($editInfo['custom_published']) : 0;
+    $shipping_pub = !empty($editInfo['shipping_published']) ? sanitizeInput($editInfo['shipping_published']) : 0;
+    $install_pub = !empty($editInfo['install_published']) ? sanitizeInput($editInfo['install_published']) : 0;
+    $pickmat_pub = !empty($editInfo['pick_materials_published']) ? sanitizeInput($editInfo['pickmat_published']) : 0;
+    $edgebanding_pub = !empty($editInfo['edgebanding_published']) ? sanitizeInput($editInfo['edgebanding_published']) : 0;
 
 
     $changed[] = whatChanged($sales_pub, $room_info['sales_published'], 'Sales Bracket', false, true);
@@ -573,14 +575,14 @@ HEREDOC;
       createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $room_id);
       createOpQueue($edgebanding_pub, 'Edge Banding', $edgebanding_op, $room_id);
 
-      echo displayToast("success", "All operations have been refreshed and the bracket has been updated.", "Updated & Refreshed");
+      echo displayToast('success', 'All operations have been refreshed and the bracket has been updated.', 'Updated & Refreshed');
     } else {
       dbLogSQLErr($dbconn);
     }
 
 
     if(!empty(array_values(array_filter($changed)))) {
-      $c_note = "<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+      $c_note = '<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
       $c_note .= implode(", ", array_values(array_filter($changed)));
 
       if(empty($_SESSION['userInfo'])) {
@@ -590,7 +592,7 @@ HEREDOC;
       }
 
       $stmt = $dbconn->prepare("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES (?, 'room_note_log', UNIX_TIMESTAMP(), $user, ?);");
-      $stmt->bind_param("si", $c_note, $room_id);
+      $stmt->bind_param('si', $c_note, $room_id);
       $stmt->execute();
       $stmt->close();
     }

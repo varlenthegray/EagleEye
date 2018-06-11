@@ -42,7 +42,7 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
         $option_grid .= "$section_head <div class='grid_element' data-value='{$value['key']}'><div class='header'>{$value['value']}</div>$img";
 
         foreach($subitems as $key => $item) {
-          $options .= "<div class='option sub_option' data-value='{$key}'>{$item}</div>";
+          $options .= "<div class='option sub_option' data-value='{$key}' data-addl-info='{$value['value']}'>{$item}</div>";
           $option_grid .= "<div class='option sub_option' data-value='{$key}'>{$item}</div>";
         }
 
@@ -592,6 +592,10 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                   </tr>
                   <tr>
                     <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Interior Conveniences</h5></td>
+                  </tr>
+                  <tr>
+                    <td><label for="drawer_box_mount_<?php echo $room['id']; ?>">Drawer Box Mount</label></td>
+                    <td><?php displayVINOpts('drawer_box_mount'); ?></td>
                   </tr>
                   <tr>
                     <td><label for="drawer_boxes_<?php echo $room['id']; ?>">Drawer Boxes</label></td>
