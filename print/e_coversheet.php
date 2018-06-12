@@ -433,9 +433,9 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         </tr>
 
         <tr id="notes_section">
-          <td id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_global']; ?></textarea></td>
-          <td id="delivery_notes"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
-          <td id="layout_notes_title"><textarea name="layout_notes" maxlength="280" class="static_width" rows="7"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
+          <td id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width" rows="6"><?php echo $note_arr['room_note_global']; ?></textarea></td>
+          <td id="delivery_notes"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="6"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
+          <td id="layout_notes_title"><textarea name="layout_notes" maxlength="280" class="static_width" rows="6"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
         </tr>
       </table>
 
@@ -733,6 +733,16 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <?php
         }
         ?>
+        <tr>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td class="border_thin_bottom">Drawer Box Mount:</td>
+          <td class="border_thin_bottom"><?php echo translateVIN('drawer_box_mount', $info['drawer_box_mount']); ?></td>
+          <td class="border_thin_bottom gray_bg">&nbsp;</td>
+          <td class="border_thin_bottom gray_bg">&nbsp;</td>
+          <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
+          <td class="text-md-right border_thin_bottom gray_bg subtotal">&nbsp;</td>
+        </tr>
         <tr class="border_double_bottom">
           <td>&nbsp;</td>
           <td>&nbsp;</td>
