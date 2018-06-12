@@ -433,9 +433,9 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         </tr>
 
         <tr id="notes_section">
-          <td id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width" rows="6"><?php echo $note_arr['room_note_global']; ?></textarea></td>
-          <td id="delivery_notes"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="6"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
-          <td id="layout_notes_title"><textarea name="layout_notes" maxlength="280" class="static_width" rows="6"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
+          <td id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width" rows="5"><?php echo $note_arr['room_note_global']; ?></textarea></td>
+          <td id="delivery_notes"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="5"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
+          <td id="layout_notes_title"><textarea name="layout_notes" maxlength="280" class="static_width" rows="5"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
         </tr>
       </table>
 
