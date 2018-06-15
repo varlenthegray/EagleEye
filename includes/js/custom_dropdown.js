@@ -25,8 +25,8 @@ function determineOpts() {
   $("[data-for='drawer_boxes']").find(".option_list").children(".option").each(function() {$(this).show();});
 
   switch($("#construction_method").val()) {
-    case 'C':
-      if($("#drawer_box_mount").val() === 'U') {
+    case 'C': // cam
+      if($("#drawer_box_mount").val() === 'U') { //
         hideOption("U");
         hideOption("G");
         hideOption("T");
@@ -38,6 +38,7 @@ function determineOpts() {
         hideOption("M");
         hideOption("G");
         hideOption("T");
+        hideOption("F");
         hideOption("MA");
         hideOption("BI");
         hideOption("HA");

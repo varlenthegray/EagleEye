@@ -264,7 +264,7 @@ $("body")
     $("input[type='hidden']").each(function() {
       var ele = $(this);
       var field = $(this).attr('id');
-      var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX'];
+      var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
 
       if($.inArray(ele.val(), custom_fields) >= 0) {
         val_array[field] = {};
