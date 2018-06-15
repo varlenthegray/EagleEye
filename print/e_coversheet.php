@@ -18,7 +18,7 @@ function translateVIN($segment, $key, $product_type = null) {
 
   $output = array();
 
-  $custom_keys = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX'];
+  $custom_keys = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
 
   if($segment === 'finish_code') {
     $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
@@ -283,8 +283,14 @@ function translateVIN($segment, $key, $product_type = null) {
         $ikey = "{$mfg}-{$code}";
         $desc = $name;
       } else {
-        $ikey = $key;
-        $desc = 'Custom - ' . array_values($custom_info[$segment])[0];
+        if($key === 'HW' || $key === 'KW') {
+          $ikey = $key;
+          $desc = $vin['value'] . array_values($custom_info[$segment])[0];
+        } else {
+          $ikey = $key;
+          $desc = 'Custom - ' . array_values($custom_info[$segment])[0];
+        }
+
       }
     } else {
       $ikey = $key;
