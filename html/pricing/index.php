@@ -543,9 +543,7 @@ if($existing_quote_qry->num_rows === 1) {
                 <select class="item_finish custom-select">
                   <option value="L">Left</option>
                   <option value="R">Right</option>
-                  <option value="B">Back</option>
-                  <option value="F">Front</option>
-                  <option value="M">Multiple</option>
+                  <option value="B">Both</option>
                   <option value="N" selected>None</option>
                 </select>
               </td>
