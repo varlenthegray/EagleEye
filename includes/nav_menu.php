@@ -60,6 +60,18 @@ HEREDOC;
     $nav_out .= $bouncer->validate('view_employees') ? "<li id='nav_employees'><a href='employees.php'><i class='zmdi zmdi-account-circle m-r-5'></i><span>Employees</span></a></li>" : null;
     $nav_out .= $bouncer->validate('view_employee_ops') ? "<li id='nav_employee_ops'><a href='?page=user_op_mgmt'><i class='zmdi zmdi-assignment-account m-r-5'></i><span>Employee Ops</span></a></li>" : null;
 
+    if($bouncer->validate('view_docs')) {
+      $nav_out .= <<<HEREDOC
+        <li class='has-submenu'>
+            <a><i class='zmdi zmdi-collection-pdf'></i>Documents</a>
+            <ul class='submenu'>
+                <li id='#'><a href='/assets/pdf/vin_sheet.pdf' target="_blank"><i class='zmdi zmdi-globe-alt m-r-5'></i>VIN Sheet</a></li>
+                <li id='#'><a href='/assets/pdf/dealer_sheet.pdf' target="_blank"><i class='zmdi zmdi-pin-account m-r-5'></i>Dealer Sheet</a></li>
+            </ul>
+        </li>
+HEREDOC;
+    }
+
     echo $nav_out;
     ?>
 </ul>
