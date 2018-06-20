@@ -1,7 +1,7 @@
 <?php
 require '../../../includes/header_start.php';
 
-//outputPHPErrs();
+outputPHPErrs();
 
 function saveCatalog($roomID, $cabinet_list) {
   global $dbconn;
