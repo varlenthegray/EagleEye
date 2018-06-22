@@ -1,7 +1,7 @@
 <?php
 require '../../../includes/header_start.php';
 
-outputPHPErrs();
+//outputPHPErrs();
 
 function saveCatalog($roomID, $cabinet_list) {
   global $dbconn;
@@ -62,10 +62,11 @@ switch($_REQUEST['action']) {
       $price_group = $price_group_qry->fetch_assoc();
       $price_group = $price_group['price_group_id'];
 
-      $price_qry = $dbconn->query("SELECT price FROM pricing_price_map map WHERE map.price_group_id = $price_group AND map.nomenclature_id = $id;");
-      $price = $price_qry->fetch_assoc();
+      if($price_qry = $dbconn->query("SELECT price FROM pricing_price_map map WHERE map.price_group_id = $price_group AND map.nomenclature_id = $id;")) {
+        $price = $price_qry->fetch_assoc();
 
-      $price = $price['price'];
+        $price = $price['price'];
+      }
     } else {
       $price = 'N/A';
     }

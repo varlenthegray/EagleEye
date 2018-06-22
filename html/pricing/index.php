@@ -243,7 +243,7 @@ if($existing_quote_qry->num_rows === 1) {
     </div>
 
     <div class="col-md-10 pricing_table_format">
-      <div class="row no_global_info">
+      <div class="row no_global_info" style="display:none;">
         <div class="col-md-12"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>Unable to price with the current global attributes.<br />Any price displayed above is not a reflection of the final price until a final price has been returned.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
       </div>
 
@@ -496,6 +496,7 @@ if($existing_quote_qry->num_rows === 1) {
 
               <td colspan="12" style="padding-bottom:5px;">
                 <input type="button" class="btn btn-primary waves-effect waves-light no-print" id="cabinet_list_save" value="Save" <?php echo $submit_disabled; ?> />
+<!--                <input type="button" class="btn btn-secondary waves-effect waves-light no-print" id="catalog_add_custom" value="Custom Item" />-->
                 <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" <?php echo $submit_disabled; ?> />
                 <input type="button" class="btn btn-success waves-effect waves-light no-print pull-right" id="submit_for_quote" value="Submit Quote" <?php echo $submit_disabled; ?> />
 
@@ -555,7 +556,7 @@ if($existing_quote_qry->num_rows === 1) {
         </div>
       </div>
 
-      <div class="row no_global_info">
+      <div class="row no_global_info" style="display:none;">
         <div class="col-md-12"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>Unable to price with the current global attributes.<br />Any price displayed above is not a reflection of the final price until a final price has been returned.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
       </div>
     </div>
@@ -632,7 +633,7 @@ if($existing_quote_qry->num_rows === 1) {
 
       // update the total column with the correct total
       node.data.total = newTotal.formatMoney();
-      $tdList.eq(10).text(newTotal.formatMoney());
+      $tdList.eq(11).text(newTotal.formatMoney());
     });
   }
 
@@ -658,13 +659,14 @@ if($existing_quote_qry->num_rows === 1) {
       // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
       // TODO: https://github.com/mar10/fancytree/issues/551
     })
-    .on("click", "#catalog_add_item", function() { // the click of the "Add Item" button
+    .on("click", "#catalog_add_custom", function() { // the click of the "Add Item" button
       delNoData();
 
       var root = cabinetList.fancytree("getRootNode");
       var child = root.addChildren({
         title: "Nomenclature...",
-        tooltip: "Type your nomenclature here."
+        tooltip: "Type your nomenclature here.",
+        name: '<input type="text" class="form-control qty_input" value="1" placeholder="Qty" />' // FIXME: This doesn't work, need some sort of typeable field
       });
     })
     .on("click", "#catalog_remove_checked", function() { // removes whatever is checked
@@ -1028,11 +1030,12 @@ if($existing_quote_qry->num_rows === 1) {
           $tdList.eq(10).text(price.formatMoney()).removeAttr("style title"); // price column
 
           $(".no_global_info").css("display", "none");
+          $("#submit_for_quote").attr("disabled", false).attr("title", "");
         } else {
           $tdList.eq(10).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
           $tdList.eq(11).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to properly calculate total.");
 
-          $("#submit_for_quote").attr("disabled", "true").attr("title", "Unknown global attributes, unable to submit.");
+          $("#submit_for_quote").attr("disabled", true).attr("title", "Unknown global attributes, unable to submit.");
 
           $(".no_global_info").css("display", "block");
         }
