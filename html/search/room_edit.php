@@ -278,6 +278,8 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
 <input id="copytext" type="text" style="visibility:hidden;position:absolute;top:-9999px;" />
 
+<link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
+
 <div class="col-md-12">
   <form id="room_edit_<?php echo $room['id']; ?>">
     <div class="row">
@@ -465,144 +467,6 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 <?php } else { ?>
                   <input type="hidden" class="form-control" name="vin_code_<?php echo $room['id']; ?>" id="vin_code_<?php echo $room['id']; ?>" value="<?php echo $room['vin_code']; ?>" />
                 <?php } ?>
-                  <tr>
-                    <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left"><label>Door, Drawer & Hardwood</label></h5><label class="c-input c-checkbox pull-right" style="margin-top:7px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></td>
-                  </tr>
-                  <tr>
-                    <td><label for="species_grade_<?php echo $room['id']; ?>">Species</label></td>
-                    <td><?php displayVINOpts('species_grade'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="construction_method_<?php echo $room['id']; ?>">Construction Method</label></td>
-                    <td><?php displayVINOpts('construction_method'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="door_design_<?php echo $room['id']; ?>">Door Design</label></td>
-                    <td><?php displayVINOpts('door_design'); ?></td>
-                  </tr>
-                  <tr style="height:10px;">
-                    <td colspan="2"></td>
-                  </tr>
-                  <tr>
-                    <td colspan="2"><label>Panel Raise</label></td>
-                  </tr>
-                  <tr>
-                    <td style="padding-left:20px;"><label for="panel_raise_door_<?php echo $room['id']; ?>">Door</label></td>
-                    <td><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
-                  </tr>
-                  <tr>
-                    <td style="padding-left:20px;"><label for="panel_raise_sd_<?php echo $room['id']; ?>">Short Drawer</label></td>
-                    <td><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
-                  </tr>
-                  <tr>
-                    <td style="padding-left:20px;"><label for="panel_raise_td_<?php echo $room['id']; ?>">Tall Drawer</label></td>
-                    <td><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="edge_profile_<?php echo $room['id']; ?>">Edge Profile</label></td>
-                    <td><?php displayVINOpts('edge_profile'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="framing_bead_<?php echo $room['id']; ?>">Framing Bead</label></td>
-                    <td><?php displayVINOpts('framing_bead'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="framing_options_<?php echo $room['id']; ?>">Framing Options</label></td>
-                    <td><?php displayVINOpts('framing_options'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="style_rail_width_<?php echo $room['id']; ?>">Style/Rail Width</label></td>
-                    <td><?php displayVINOpts('style_rail_width'); ?></td>
-                  </tr>
-                  <tr>
-                    <td colspan="2">&nbsp;</td>
-                  </tr>
-                  <tr>
-                    <td><label for="finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                    <td><?php displayFinishOpts('finish_code', 'finish_code'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="sheen_<?php echo $room['id']; ?>">Sheen</label></td>
-                    <td><?php displayVINOpts('sheen'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="glaze_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                    <td><?php displayVINOpts('glaze'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                    <td><?php displayVINOpts('glaze_technique'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="antiquing_<?php echo $room['id']; ?>">Antiquing</label></td>
-                    <td><?php displayVINOpts('antiquing'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="worn_edges_<?php echo $room['id']; ?>">Worn Edges</label></td>
-                    <td><?php displayVINOpts('worn_edges'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="distress_level_<?php echo $room['id']; ?>">Distress Level</label></td>
-                    <td><?php displayVINOpts('distress_level'); ?></td>
-                  </tr>
-                  <tr style="height:10px;">
-                    <td colspan="2"></td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Carcass Exterior Finish</h5></td>
-                  </tr>
-                  <tr>
-                    <td><label for="carcass_exterior_species_<?php echo $room['id']; ?>">Species</label></td>
-                    <td><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="carcass_exterior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                    <td><?php displayFinishOpts('finish_code', 'carcass_exterior_finish_code', 'carcass_exterior_finish_code'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="carcass_exterior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                    <td><?php displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                    <td><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
-                  </tr>
-                  <tr style="height:10px;">
-                    <td colspan="2"></td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Carcass Interior Finish</h5></td>
-                  </tr>
-                  <tr>
-                    <td><label for="carcass_interior_species_<?php echo $room['id']; ?>">Species</label></td>
-                    <td><?php displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="carcass_interior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                    <td><?php displayFinishOpts('finish_code', 'carcass_interior_finish_code', 'carcass_interior_finish_code'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="carcass_interior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                    <td><?php displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="carcass_interior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                    <td><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?></td>
-                  </tr>
-                  <tr style="height:10px;">
-                    <td colspan="2"></td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5>Interior Conveniences</h5></td>
-                  </tr>
-                  <tr>
-                    <td><label for="drawer_box_mount_<?php echo $room['id']; ?>">Drawer Box Mount</label></td>
-                    <td><?php displayVINOpts('drawer_box_mount'); ?></td>
-                  </tr>
-                  <tr>
-                    <td><label for="drawer_boxes_<?php echo $room['id']; ?>">Drawer Boxes</label></td>
-                    <td><?php displayVINOpts('drawer_boxes'); ?></td>
-                  </tr>
                   <tr style="height:10px;">
                     <td colspan="2"></td>
                   </tr>
@@ -804,6 +668,157 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 ?>
               </select>
             <?php }} ?>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12 pricing_table_format">
+            <form id="pricing_global_attributes" method="post" action="#">
+              <table class="pull-left" style="width:33%;margin-left:0.3%;">
+                <tr><th colspan="2" style="padding-left:5px;">Design</th></tr>
+                <tr><td colspan="2" class='gray_bg' style="padding-left:5px;"><?php echo ($info['construction_method'] !== 'L') ? "Door/Drawer Head" : null; ?></td></tr>
+                <tr class="border_top">
+                  <td class="border_thin_bottom" width="40%"><label for="species_grade_<?php echo $room['id']; ?>">Species/Grade:</label></td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('species_grade'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Construction:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('construction_method'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Door Design:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('door_design'); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Door Panel Raise:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Short Drawer Raise:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Tall Drawer Raise:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Edge Profile:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('edge_profile'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Framing Bead:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('framing_bead'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Frame Option:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('framing_options'); ?></td>
+                </tr>
+                <tr>
+                  <td colspan="2">&nbsp;</td>
+                </tr>
+                <tr>
+                  <td colspan="2">&nbsp;</td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Drawer Box:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('drawer_boxes'); ?></td>
+                </tr>
+              </table>
+
+              <table class="pull-left" style="width:33%;margin-left:0.3%;">
+                <tr><th colspan="3" style="padding-left:5px;">Finish</th></tr>
+                <tr><td colspan="3" class='gray_bg' style="padding-left:5px;">Door/Drawer</td></tr>
+                <tr class="border_top">
+                  <td class="border_thin_bottom" width="40%">Finish Code:</td>
+                  <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Sheen:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('sheen'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Glaze Color:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('glaze'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Glaze Technique:</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Antiquing</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('antiquing'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Worn Edges</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('worn_edges'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Distressing</td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('distress_level'); ?></td>
+                </tr>
+                <tr>
+                  <td colspan="2" class='gray_bg border_thin_bottom'>Carcass<div class="text-mini">Default is UV2 Maple unless otherwise modified as a line item below.</div></td>
+                  <td colspan="3">&nbsp;</td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom"><strong>Exterior:</strong></td>
+                  <td class="border_thin_bottom"><div class="checkbox"><input id="ext_carcass_same" type="checkbox"><label for="ext_carcass_same"> Same as Door/Drawer</label></div></td>
+                </tr>
+                <tr class="ext_finish_block">
+                  <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
+                </tr>
+                <tr class="ext_finish_block">
+                  <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
+                  <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_exterior_finish_code", "carcass_exterior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
+                </tr>
+                <tr class="ext_finish_block">
+                  <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
+                </tr>
+                <tr class="ext_finish_block">
+                  <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom"><strong>Interior:</strong></td>
+                  <td class="border_thin_bottom"><div class="checkbox"><input id="int_carcass_same" type="checkbox"><label for="int_carcass_same"> Same as Door/Drawer</label></div></td>
+                </tr>
+                <tr class="int_finish_block">
+                  <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
+                </tr>
+                <tr class="int_finish_block">
+                  <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
+                  <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_interior_finish_code", "carcass_interior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
+                </tr>
+                <tr class="int_finish_block">
+                  <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
+                </tr>
+                <tr class="int_finish_block">
+                  <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
+                  <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?></td>
+                </tr>
+              </table>
+
+              <table class="pull-left" style="width:33%;margin-left:0.3%;">
+                <tr><th colspan="2" style="padding-left:5px;">Delivery</th></tr>
+                <tr><td colspan="2" class='gray_bg' style="padding-left:5px;">&nbsp;</td></tr>
+                <tr class="border_top">
+                  <td width="30%"><strong>Ship VIA:</strong></td>
+                  <td><input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_via" value="<?php echo $info['vin_ship_via']; ?>"></td>
+                </tr>
+                <tr>
+                  <td><strong>Ship To:</strong></td>
+                  <td rowspan="3">
+                    <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
+                    <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
+                    <input type="text" style="width:76px;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:30px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+                  </td>
+                </tr>
+              </table>
+            </form>
           </div>
         </div>
 

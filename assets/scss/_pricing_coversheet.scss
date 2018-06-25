@@ -292,6 +292,10 @@
   .txt_custom_input {
     display: none;
   }
+
+  th, td {
+    border: none !important;
+  }
 }
 
 body {

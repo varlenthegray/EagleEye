@@ -26,12 +26,6 @@ function makeTree($parent_id) {
   $data = array();
 
   while ($parent_qry->fetch()) {
-    if($catCatalogID === 1) { // if it's SMC's catalog, color it green
-      $cat_bg = 'rgba(0,255,0,.25)';
-    } else { // otherwise, it's someone else's catalog, color it orange
-      $cat_bg = 'rgba(255,165,0,.25)';
-    }
-
     $data[] = array(
       'catID' => $catID,
       'itemID' => $itemID,
@@ -41,7 +35,6 @@ function makeTree($parent_id) {
       'item_catID' => $item_catID,
       'sku' => $sku,
       'image_path' => $image,
-      'cat_bg' => $cat_bg,
       'catCatalogID' => $catCatalogID,
       'itemCatalogID' => $itemCatalogID
     );
@@ -71,7 +64,7 @@ function makeTree($parent_id) {
         $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'],'icon' => $img, 'title' => $title, 'is_item' => true, 'qty' => 1);
       }
     } else {
-      $object = array('key' => $item['catID'], 'folder' => true, 'title' => "<span style='background-color:{$item['cat_bg']};'>{$item['name']}</span>");
+      $object = array('key' => $item['catID'], 'folder' => true, 'title' => $item['name']);
 
       $children = makeTree($item['catID']);
 

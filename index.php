@@ -971,6 +971,21 @@ require 'includes/header_start.php';
       .on("change", ".recalcVin", function() {
         calcVin(active_room_id);
       })
+
+      .on("change", "#ext_carcass_same", function() {
+        if($(this).is(":checked")) {
+          $(".ext_finish_block").hide();
+        } else {
+          $(".ext_finish_block").show();
+        }
+      })
+      .on("change", "#int_carcass_same", function() {
+        if($(this).is(":checked")) {
+          $(".int_finish_block").hide();
+        } else {
+          $(".int_finish_block").show();
+        }
+      })
       // -- End VIN Page --
       <?php } ?>
 
