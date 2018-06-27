@@ -595,6 +595,8 @@ HEREDOC;
         </div>
       </div>
     </div>
+
+    <script>$(".delivery_date").datepicker();</script>
 HEREDOC;
 
 

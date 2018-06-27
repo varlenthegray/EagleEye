@@ -299,7 +299,7 @@ if(!empty($existing_quote['quote_submission'])) {
               <td colspan="8" class="text-md-center"><h2>Item List</h2></td>
             </tr>
             <tr>
-              <td colspan="3" width="33.3%" style="text-decoration: underline;"><h3>Quote</h3></td>
+              <td colspan="3" width="33.3%" style="text-decoration: underline;"><h3><?php echo translateVIN('order_status', $room['order_status']); ?></h3></td>
               <td colspan="3" width="33.3%" class="text-md-center" id="page_count"></td>
               <td colspan="2" width="33.3%" class="text-md-right">Production Type: <?php echo translateVIN('product_type', $room['product_type']); ?></td>
             </tr>
