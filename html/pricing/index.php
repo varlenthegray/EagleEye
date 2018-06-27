@@ -410,50 +410,6 @@ if(!empty($existing_quote['quote_submission'])) {
                       <td class="border_thin_bottom">Distressing</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('distress_level'); ?></td>
                     </tr>
-                    <tr>
-                      <td colspan="2" class='gray_bg border_thin_bottom'>Carcass<div class="text-mini">Default is UV2 Maple unless otherwise modified as a line item below.</div></td>
-                      <td colspan="3">&nbsp;</td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom"><strong>Exterior:</strong></td>
-                      <td class="border_thin_bottom"><div class="checkbox"><input id="ext_carcass_same" name="ext_carcass_same" value="1" type="checkbox"><label for="ext_carcass_same"> Same as Door/Drawer</label></div></td>
-                    </tr>
-                    <tr class="ext_finish_block">
-                      <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
-                    </tr>
-                    <tr class="ext_finish_block">
-                      <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
-                      <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_exterior_finish_code", "carcass_exterior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="e_finish_code_pm" value="">)</span></td>
-                    </tr>
-                    <tr class="ext_finish_block">
-                      <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
-                    </tr>
-                    <tr class="ext_finish_block">
-                      <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom"><strong>Interior:</strong></td>
-                      <td class="border_thin_bottom"><div class="checkbox"><input id="int_carcass_same" name="int_carcass_same" value="1" type="checkbox"><label for="int_carcass_same"> Same as Door/Drawer</label></div></td>
-                    </tr>
-                    <tr class="int_finish_block">
-                      <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
-                    </tr>
-                    <tr class="int_finish_block">
-                      <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
-                      <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "carcass_interior_finish_code", "carcass_interior_finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="i_finish_code_pm" value="">)</span></td>
-                    </tr>
-                    <tr class="int_finish_block">
-                      <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
-                    </tr>
-                    <tr class="int_finish_block">
-                      <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?></td>
-                    </tr>
                   </table>
 
                   <table class="pull-left" style="width:33%;margin-left:0.3%;">
