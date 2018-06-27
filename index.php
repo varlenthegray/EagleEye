@@ -1410,7 +1410,7 @@ require 'includes/header_start.php';
   <!-- Math, fractions and more -->
   <script src="/assets/plugins/math.min.js"></script>
 
-  <script src="/html/pricing/pricing.min.js"></script>
+  <script src="/html/pricing/pricing.min.js?v=<?php echo VERSION; ?>"></script>
 
   <!-- Fancytree -->
   <script src="/assets/plugins/fancytree/jquery.fancytree.js"></script>

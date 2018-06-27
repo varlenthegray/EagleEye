@@ -1,39 +1,11 @@
 <?php
 require '../../../includes/header_start.php';
-
+require '../php/catalog.php';
 //outputPHPErrs();
 
-function saveCatalog($roomID, $cabinet_list) {
-  global $dbconn;
+use catalog\catalog as Catalog;
 
-  $room_id = sanitizeInput($_REQUEST['room_id']);
-  $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
-  $catalog_id = 2;
-  $out_id = null;
-
-  $existing_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
-
-  if($existing_qry->num_rows > 0) {
-    $existing = $existing_qry->fetch_assoc();
-
-    $result = $dbconn->query("UPDATE pricing_cabinet_list SET cabinet_list = '$cab_list', catalog_id = $catalog_id WHERE id = {$existing['id']}");
-
-    $out_id = $existing['id'];
-  } else {
-    $result = $dbconn->query("INSERT INTO pricing_cabinet_list (room_id, user_id, catalog_id, cabinet_list) VALUES ($room_id, {$_SESSION['shop_user']['id']}, $catalog_id, '$cab_list')");
-
-    $out_id = $dbconn->insert_id;
-
-  }
-
-  if($result) {
-    echo displayToast('success', 'Successfully updated the cabinet list.', 'Cabinet List Updated');
-  } else {
-    dbLogSQLErr($dbconn);
-  }
-
-  return $out_id;
-}
+$cat = new Catalog;
 
 switch($_REQUEST['action']) {
   case 'getItemInfo':
@@ -85,13 +57,6 @@ switch($_REQUEST['action']) {
     }
 
     break;
-  case 'saveCatalog':
-    $room_id = sanitizeInput($_REQUEST['room_id']);
-    $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
-
-    saveCatalog($room_id, $cab_list);
-
-    break;
   case 'getCabinetList':
     $room_id = sanitizeInput($_REQUEST['room_id']);
 
@@ -116,9 +81,7 @@ switch($_REQUEST['action']) {
     $room_id = sanitizeInput($_REQUEST['room_id']);
     $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
 
-    $quote_id = saveCatalog($room_id, $cab_list);
-
-    echo "<script>console.log('Quote ID: $quote_id');</script>";
+    $quote_id = $cat->saveCatalog($room_id, $cab_list);
 
     if($dbconn->query("UPDATE pricing_cabinet_list SET quote_submission = UNIX_TIMESTAMP() WHERE id = $quote_id")) {
       echo displayToast('success', 'Successfully submitted the quote for review!', 'Quote Submitted');

@@ -7,8 +7,11 @@
  */
 require '../../../includes/header_start.php';
 require '../../../includes/classes/mail_handler.php';
+require '../php/catalog.php';
 
-//outputPHPErrs();
+use catalog\catalog as Catalog;
+
+outputPHPErrs();
 
 $vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
  FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC");
@@ -332,125 +335,104 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
 }
 
 switch($_REQUEST['action']) {
-  case 'update_room':
-    parse_str($_REQUEST['editInfo'], $editInfo);
+  case 'roomSave':
+    $cat = new Catalog;
 
-//    $room_id = sanitizeInput($editInfo['roomid']);
-
-    $delivery_date = sanitizeInput($editInfo['delivery_date']);
-    $product_type = sanitizeInput($editInfo['product_type']);
-    $iteration = sanitizeInput($editInfo['iteration']);
-    $order_status = sanitizeInput(html_entity_decode($editInfo['order_status']));
-    $dealer_status = sanitizeInput(html_entity_decode($editInfo['dealer_status']));
-    $days_to_ship = sanitizeInput($editInfo['days_to_ship']);
-    $room_name = sanitizeInput($editInfo['room_name']);
-
-    $notes = sanitizeInput($editInfo['room_notes']);
-    $note_type = sanitizeInput($editInfo['note_type']);
-    $note_id = sanitizeInput($editInfo['note_id']);
-
-    $deposit_received = !empty($editInfo['deposit_received']) ? (bool)$editInfo['deposit_received'] : 0;
-    $final_payment = !empty($editInfo['final_payment']) ? (bool)$editInfo['final_payment'] : 0;
-    $ptl_del = !empty($editInfo['ptl_del']) ? (bool)$editInfo['ptl_del'] : 0;
-
-    $followup_date = sanitizeInput($editInfo['room_inquiry_followup_date']);
-    $followup_individual = sanitizeInput($editInfo['room_inquiry_requested_of']);
-    $inquiry_id = null;
+    parse_str($_REQUEST['cabinet_specifications'], $cabinet_specifications); // global: cabinet specifications
+    parse_str($_REQUEST['accounting_notes'], $accounting_notes); // accounting and notes
+    
+    $custom_vals = $_REQUEST['customVals']; // custom fields in VIN sheet
+  
+    $room_id = sanitizeInput($_REQUEST['room_id']);
 
     $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
     $room_info = $room_qry->fetch_assoc();
 
-    $changed[] = whatChanged($delivery_date, $room_info['delivery_date'], 'Delivery Date', true);
-    $changed[] = whatChanged($product_type, $room_info['product_type'], 'Product Type');
-    $changed[] = whatChanged($iteration, $room_info['iteration'], 'Iteration');
-    $changed[] = whatChanged($order_status, $room_info['order_status'], 'Order Status');
-    $changed[] = whatChanged($dealer_status, $room_info['dealer_status'], 'Dealer Status');
-    $changed[] = whatChanged($days_to_ship, $room_info['days_to_ship'], 'Days to Ship');
-    $changed[] = whatChanged($room_name, $room_info['room_name'], 'Room Name');
+    $notes = sanitizeInput($accounting_notes['room_notes']);
+    $note_type = sanitizeInput($accounting_notes['note_type']);
+    $note_id = sanitizeInput($accounting_notes['note_id']);
+
+    $deposit_received = !empty($accounting_notes['deposit_received']) ? (bool)$accounting_notes['deposit_received'] : 0;
+    $final_payment = !empty($accounting_notes['final_payment']) ? (bool)$accounting_notes['final_payment'] : 0;
+    $ptl_del = !empty($accounting_notes['ptl_del']) ? (bool)$accounting_notes['ptl_del'] : 0;
+
+    $followup_date = sanitizeInput($accounting_notes['room_inquiry_followup_date']);
+    $followup_individual = sanitizeInput($accounting_notes['room_inquiry_requested_of']);
+    $inquiry_id = null;
+
     $changed[] = whatChanged($deposit_received, $room_info['payment_deposit'], 'Deposit Payment');
     $changed[] = whatChanged($final_payment, $room_info['payment_final'], 'Final Payment');
     $changed[] = whatChanged($ptl_del, $room_info['payment_del_ptl'], 'Prior to Loading/Delivery Payment');
     $changed[] = !empty($notes) ? 'Notes added' : null;
 
-    if(empty($delivery_date)) {
-      $delivery_date = null;
-    } elseif(!empty($delivery_date)) {
-      $delivery_date = ',delivery_date = ' . strtotime($delivery_date);
-    }
+    //<editor-fold desc="Capture VIN Info">
+    $species_grade = sanitizeInput($cabinet_specifications['species_grade']);
+    $construction_method = sanitizeInput($cabinet_specifications['construction_method']);
+    $door_design = sanitizeInput($cabinet_specifications['door_design']);
+    $panel_raise_door = sanitizeInput($cabinet_specifications['panel_raise_door']);
+    $panel_raise_sd = sanitizeInput($cabinet_specifications['panel_raise_sd']);
+    $panel_raise_td = sanitizeInput($cabinet_specifications['panel_raise_td']);
+    $style_rail_width = sanitizeInput($cabinet_specifications['style_rail_width']);
+    $edge_profile = sanitizeInput($cabinet_specifications['edge_profile']);
+    $framing_bead = sanitizeInput($cabinet_specifications['framing_bead']);
+    $framing_options = sanitizeInput($cabinet_specifications['framing_options']);
+    $drawer_boxes = sanitizeInput($cabinet_specifications['drawer_boxes']);
+    $finish_code = sanitizeInput($cabinet_specifications['finish_code']);
+    $sheen = sanitizeInput($cabinet_specifications['sheen']);
+    $glaze = sanitizeInput($cabinet_specifications['glaze']);
+    $glaze_technique = sanitizeInput($cabinet_specifications['glaze_technique']);
+    $antiquing = sanitizeInput($cabinet_specifications['antiquing']);
+    $worn_edges = sanitizeInput($cabinet_specifications['worn_edges']);
+    $distress_level = sanitizeInput($cabinet_specifications['distress_level']);
+    //</editor-fold>
 
-    if($dbconn->query("UPDATE rooms SET product_type = '$product_type', order_status = '$order_status', dealer_status = '$dealer_status', days_to_ship = '$days_to_ship', room_name = '$room_name' $delivery_date  WHERE id = $room_id")) {
-      if(!empty($notes)) {
-        switch($note_type) {
-          case 'room_note':
-            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+//    $vin_final = sanitizeInput($cabinet_specifications['vin_code_' . $room_id]);
 
-            break;
-
-          case 'delivery_note':
-            if(!empty($note_id)) {
-              $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
-            } else {
-              if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_delivery'")->num_rows === 0) {
-                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_delivery', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-              } else {
-                echo displayToast("warning", "Delivery Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
-              }
-            }
-
-            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Delivery Note: $notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-
-            break;
-
-          case 'global_note':
-            if(!empty($note_id)) {
-              $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
-            } else {
-              if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_global'")->num_rows === 0) {
-                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_global', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-              } else {
-                echo displayToast("warning", "Global Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
-              }
-            }
-
-            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Global Note: $notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-
-            break;
-
-          case 'fin_sample_note':
-            if(!empty($note_id)) {
-              $dbconn->query("UPDATE notes SET note = '$notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$note_id'");
-            } else {
-              if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
-                $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-              } else {
-                echo displayToast("warning", "Finishing/Sample Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
-              }
-            }
-
-            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Finishing/Sample Note: $notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-
-            break;
-
-          default:
-            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-
-            break;
-        }
-
-        $inquiry_id = $dbconn->insert_id;
-
-        echo displayToast("success", "Successfully updated the room with the notes attached.", "Room Updated with Notes");
-      } else {
-        echo displayToast("success", "Successfully updated the room.", "Room Updated");
-      }
+    //<editor-fold desc="What's Changed">
+    if(!empty($room_info['vin_code'])) {
+      $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
+      $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
+      $changed[] = whatChanged($door_design, $room_info['door_design'], 'Door Design');
+      $changed[] = whatChanged($panel_raise_door, $room_info['panel_raise_door'], 'Panel Raise (Door)');
+      $changed[] = whatChanged($panel_raise_sd, $room_info['panel_raise_sd'], 'Panel Raise Shoot Drawer');
+      $changed[] = whatChanged($panel_raise_td, $room_info['panel_raise_td'], 'Panel Raise Tall Drawer');
+      $changed[] = whatChanged($edge_profile, $room_info['edge_profile'], 'Edge Profile');
+      $changed[] = whatChanged($framing_bead, $room_info['framing_bead'], 'Framing Bead');
+      $changed[] = whatChanged($framing_options, $room_info['framing_options'], 'Framing Options');
+      $changed[] = whatChanged($style_rail_width, $room_info['style_rail_width'], 'Style/Rail Width');
+      $changed[] = whatChanged($finish_code, $room_info['finish_code'], 'Finish Code');
+      $changed[] = whatChanged($sheen, $room_info['sheen'], 'Sheen');
+      $changed[] = whatChanged($glaze, $room_info['glaze'], 'Glaze');
+      $changed[] = whatChanged($glaze_technique, $room_info['glaze_technique'], 'Glaze Technique');
+      $changed[] = whatChanged($antiquing, $room_info['antiquing'], 'Antiquing');
+      $changed[] = whatChanged($worn_edges, $room_info['worn_edges'], 'Worn Edges');
+      $changed[] = whatChanged($distress_level, $room_info['distress_level'], 'Distress Level');
+      $changed[] = whatChanged($drawer_box_mount, $room_info['drawer_box_mount'], 'Drawer Box Mount');
+      $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
     } else {
-      dbLogSQLErr($dbconn);
+      if(!empty($vin_final)) {
+        if($vin_final !== $room_info['vin_code']) {
+          $changed[] = 'Established VIN values';
+        }
+      }
     }
+    //</editor-fold>
 
+    //<editor-fold desc="DB: Notes">
+    if(!empty($notes)) {
+      $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+
+      $inquiry_id = $dbconn->insert_id;
+
+      echo displayToast('success', 'Successfully updated the room with the notes attached.', 'Room Updated with Notes');
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="DB: Followup & Inquiry">
     if(!empty($followup_date) && !empty($followup_individual)) {
       $followup = strtotime($followup_date);
 
-      $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('room_inquiry_reply', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'SO# {$editInfo['sonum']}, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $inquiry_id)");
+      $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('room_inquiry_reply', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'SO# {$cabinet_specifications['sonum']}, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $inquiry_id)");
 
       $followup_time = date(DATE_TIME_ABBRV, $followup);
 
@@ -470,193 +452,30 @@ A new inquiry has been sent in for this room and requires your feedback.<br />
 $msg_notes -- {$_SESSION['userInfo']['name']}
 HEREDOC;
 
-        $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$editInfo['sonum']}{$editInfo['room']}{$iteration}", $message, true);
+        $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$cabinet_specifications['sonum']}{$cabinet_specifications['room']}{$iteration}", $message, true);
       }
     } elseif((empty($followup_date) && !empty($followup_individual)) || (!empty($followup_date) && empty($followup_individual))) {
-      echo displayToast("warning", "Unable to set a followup as there is a missing individual or date.", "No Followup Set");
+      echo displayToast('warning', 'Unable to set a followup as there is a missing individual or date.', 'No Followup Set');
     }
+    //</editor-fold>
 
-    //////
-
-    $species_grade = sanitizeInput($editInfo['species_grade']);
-    $construction_method = sanitizeInput($editInfo['construction_method']);
-    $door_design = sanitizeInput($editInfo['door_design']);
-    $panel_raise_door = sanitizeInput($editInfo['panel_raise_door']);
-    $panel_raise_sd = sanitizeInput($editInfo['panel_raise_sd']);
-    $panel_raise_td = sanitizeInput($editInfo['panel_raise_td']);
-    $edge_profile = sanitizeInput($editInfo['edge_profile']);
-    $framing_bead = sanitizeInput($editInfo['framing_bead']);
-    $framing_options = sanitizeInput($editInfo['framing_options']);
-    $style_rail_width = sanitizeInput($editInfo['style_rail_width']);
-    $finish_code = sanitizeInput($editInfo['finish_code']);
-    $sheen = sanitizeInput($editInfo['sheen']);
-    $glaze = sanitizeInput($editInfo['glaze']);
-    $glaze_technique = sanitizeInput($editInfo['glaze_technique']);
-    $antiquing = sanitizeInput($editInfo['antiquing']);
-    $worn_edges = sanitizeInput($editInfo['worn_edges']);
-    $distress_level = sanitizeInput($editInfo['distress_level']);
-    $carcass_exterior_species = sanitizeInput($editInfo['carcass_exterior_species']);
-    $carcass_exterior_finish_code = sanitizeInput($editInfo['carcass_exterior_finish_code']);
-    $carcass_exterior_glaze_color = sanitizeInput($editInfo['carcass_exterior_glaze_color']);
-    $carcass_exterior_glaze_technique = sanitizeInput($editInfo['carcass_exterior_glaze_technique']);
-    $carcass_interior_species = sanitizeInput($editInfo['carcass_interior_species']);
-    $carcass_interior_finish_code = sanitizeInput($editInfo['carcass_interior_finish_code']);
-    $carcass_interior_glaze_color = sanitizeInput($editInfo['carcass_interior_glaze_color']);
-    $carcass_interior_glaze_technique = sanitizeInput($editInfo['carcass_interior_glaze_technique']);
-    $drawer_box_mount = sanitizeInput($editInfo['drawer_box_mount']);
-    $drawer_boxes = sanitizeInput($editInfo['drawer_boxes']);
-
-    $custom_vals = $_REQUEST['customVals']; // custom fields in VIN sheet
-
-    $vin_final = sanitizeInput($editInfo['vin_code_' . $room_id]);
-
-    $sample_block_ordered = sanitizeInput($editInfo['sample_block_' . $room_id]);
-    $door_only_ordered = sanitizeInput($editInfo['door_only_' . $room_id]);
-    $door_drawer_ordered = sanitizeInput($editInfo['door_drawer_' . $room_id]);
-    $inset_square_ordered = sanitizeInput($editInfo['inset_square_' . $room_id]);
-    $inset_beaded_ordered = sanitizeInput($editInfo['inset_beaded_' . $room_id]);
-
-    if(!empty($room_info['vin_code'])) {
-      $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
-      $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
-      $changed[] = whatChanged($door_design, $room_info['door_design'], 'Door Design');
-      $changed[] = whatChanged($panel_raise_door, $room_info['panel_raise_door'], 'Panel Raise (Door)');
-      $changed[] = whatChanged($panel_raise_sd, $room_info['panel_raise_sd'], 'Panel Raise Shoot Drawer');
-      $changed[] = whatChanged($panel_raise_td, $room_info['panel_raise_td'], 'Panel Raise Tall Drawer');
-      $changed[] = whatChanged($edge_profile, $room_info['edge_profile'], 'Edge Profile');
-      $changed[] = whatChanged($framing_bead, $room_info['framing_bead'], 'Framing Bead');
-      $changed[] = whatChanged($framing_options, $room_info['framing_options'], 'Framing Options');
-      $changed[] = whatChanged($style_rail_width, $room_info['style_rail_width'], 'Style/Rail Width');
-      $changed[] = whatChanged($finish_code, $room_info['finish_code'], 'Finish Code');
-      $changed[] = whatChanged($sheen, $room_info['sheen'], 'Sheen');
-      $changed[] = whatChanged($glaze, $room_info['glaze'], 'Glaze');
-      $changed[] = whatChanged($glaze_technique, $room_info['glaze_technique'], 'Glaze Technique');
-      $changed[] = whatChanged($antiquing, $room_info['antiquing'], 'Antiquing');
-      $changed[] = whatChanged($worn_edges, $room_info['worn_edges'], 'Worn Edges');
-      $changed[] = whatChanged($distress_level, $room_info['distress_level'], 'Distress Level');
-      $changed[] = whatChanged($carcass_exterior_species, $room_info['carcass_exterior_species'], 'Carcass Exterior Species');
-      $changed[] = whatChanged($carcass_exterior_finish_code, $room_info['carcass_exterior_finish_code'], 'Carcass Exterior Finish Code');
-      $changed[] = whatChanged($carcass_exterior_glaze_color, $room_info['carcass_exterior_glaze_color'], 'Carcass Exterior Glaze Color');
-      $changed[] = whatChanged($carcass_exterior_glaze_technique, $room_info['carcass_exterior_glaze_technique'], 'Carcass Exterior Glaze Technique');
-      $changed[] = whatChanged($carcass_interior_species, $room_info['carcass_interior_species'], 'Carcass Interior Species');
-      $changed[] = whatChanged($carcass_interior_finish_code, $room_info['carcass_interior_finish_code'], 'Carcass Interior Finish Code');
-      $changed[] = whatChanged($carcass_interior_glaze_color, $room_info['carcass_interior_glaze_color'], 'Carcass Interior Glaze Color');
-      $changed[] = whatChanged($carcass_interior_glaze_technique, $room_info['carcass_interior_glaze_technique'], 'Carcass Interior Glaze Technique');
-      $changed[] = whatChanged($drawer_box_mount, $room_info['drawer_box_mount'], 'Drawer Box Mount');
-      $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
-
-      $changed[] = whatChanged($sample_block_ordered, $room_info['sample_block_ordered'], 'Sample Block Ordered');
-      $changed[] = whatChanged($door_only_ordered, $room_info['door_only_ordered'], 'Door Only Ordered');
-      $changed[] = whatChanged($door_drawer_ordered, $room_info['door_drawer_ordered'], 'Door/Drawer Ordered');
-      $changed[] = whatChanged($inset_square_ordered, $room_info['inset_square_ordered'], 'Inset Square Ordered');
-      $changed[] = whatChanged($inset_beaded_ordered, $room_info['inset_beaded_ordered'], 'Inset Beaded Ordered');
-    } else {
-      if(!empty($vin_final)) {
-        if($vin_final !== $room_info['vin_code']) {
-          $changed[] = "Established VIN values";
-        }
-      }
-    }
-
-    if(!empty($sample_block_ordered) || !empty($door_only_ordered) || !empty($door_drawer_ordered) || !empty($inset_square_ordered) || !empty($inset_beaded_ordered)) {
-      $now = time();
-
-      $sample_ordered_date = ", sample_ordered_date = '$now'";
-    } else {
-      $sample_ordered_date = null;
-    }
-
+    //<editor-fold desc="DB: Room VIN Information">
     if($dbconn->query("UPDATE rooms SET species_grade = '$species_grade', construction_method = '$construction_method', door_design = '$door_design', 
-        panel_raise_door = '$panel_raise_door', panel_raise_sd = '$panel_raise_sd', panel_raise_td = '$panel_raise_td', edge_profile = '$edge_profile', 
-        framing_bead = '$framing_bead', framing_options = '$framing_options', style_rail_width = '$style_rail_width',
+        panel_raise_door = '$panel_raise_door', panel_raise_sd = '$panel_raise_sd', panel_raise_td = '$panel_raise_td', style_rail_width = '$style_rail_width', 
+        edge_profile = '$edge_profile', framing_bead = '$framing_bead', framing_options = '$framing_options', 
         finish_code = '$finish_code', sheen = '$sheen', glaze = '$glaze', glaze_technique = '$glaze_technique', antiquing = '$antiquing', 
-        worn_edges = '$worn_edges', distress_level = '$distress_level', carcass_exterior_species = '$carcass_exterior_species', 
-        carcass_exterior_finish_code = '$carcass_exterior_finish_code', carcass_exterior_glaze_color = '$carcass_exterior_glaze_color', 
-        carcass_exterior_glaze_technique = '$carcass_exterior_glaze_technique', carcass_interior_species = '$carcass_interior_species',
-        carcass_interior_finish_code = '$carcass_interior_finish_code', carcass_interior_glaze_color = '$carcass_interior_glaze_color', 
-        carcass_interior_glaze_technique = '$carcass_interior_glaze_technique', drawer_boxes = '$drawer_boxes', drawer_box_mount = '$drawer_box_mount', vin_code = '$vin_final', 
-        sample_block_ordered = '$sample_block_ordered', door_only_ordered = '$door_only_ordered', door_drawer_ordered = '$door_drawer_ordered',
-        inset_square_ordered = '$inset_square_ordered', inset_beaded_ordered = '$inset_beaded_ordered', custom_vin_info = '$custom_vals' $sample_ordered_date WHERE id = '$room_id'")) {
-      echo displayToast('success', "VIN has been updated for SO {$editInfo['sonum']} room {$editInfo['room']} iteration $iteration.", 'VIN Updated');
+        worn_edges = '$worn_edges', distress_level = '$distress_level', drawer_boxes = '$drawer_boxes', custom_vin_info = '$custom_vals',
+        payment_deposit = $deposit_received, payment_final = $final_payment, payment_del_ptl = $ptl_del WHERE id = '$room_id'")) {
+      echo displayToast('success', 'Room updated successfully.', 'Room Updated');
     } else {
       dbLogSQLErr($dbconn);
     }
+    //</editor-fold>
 
-    $ops = $_REQUEST['active_ops'];
-
-    $sales_op = empty(sanitizeInput($editInfo['sales_bracket'])) ? 0 : sanitizeInput($editInfo['sales_bracket']);
-    $sample_op = empty(sanitizeInput($editInfo['sample_bracket'])) ? 0 : sanitizeInput($editInfo['sample_bracket']);
-    $preprod_op = empty(sanitizeInput($editInfo['preproduction_bracket'])) ? 0 : sanitizeInput($editInfo['preproduction_bracket']);
-    $doordrawer_op = empty(sanitizeInput($editInfo['doordrawer_bracket'])) ? 0 : sanitizeInput($editInfo['doordrawer_bracket']);
-    $main_op = empty(sanitizeInput($editInfo['main_bracket'])) ? 0 : sanitizeInput($editInfo['main_bracket']);
-    $custom_op = empty(sanitizeInput($editInfo['custom_bracket'])) ? 0 : sanitizeInput($editInfo['custom_bracket']);
-    $shipping_op = empty(sanitizeInput($editInfo['shipping_bracket'])) ? 0 : sanitizeInput($editInfo['shipping_bracket']);
-    $install_op = empty(sanitizeInput($editInfo['install_bracket'])) ? 0 : sanitizeInput($editInfo['install_bracket']);
-    $pickmat_op = empty(sanitizeInput($editInfo['pick_materials_bracket'])) ? 0 : sanitizeInput($editInfo['pick_materials_bracket']);
-    $edgebanding_op = empty(sanitizeInput($editInfo['edgebanding_bracket'])) ? 0 : sanitizeInput($editInfo['edgebanding_bracket']);
-
-    $changed[] = whatChanged($sales_op, $room_info['sales_bracket'], 'Sales Bracket', false, false, true);
-    $changed[] = whatChanged($sample_op, $room_info['sample_bracket'], 'Sample Bracket', false, false, true);
-    $changed[] = whatChanged($preprod_op, $room_info['preproduction_bracket'], 'Pre-Production Bracket', false, false, true);
-    $changed[] = whatChanged($doordrawer_op, $room_info['doordrawer_bracket'], 'Door/Drawer Bracket', false, false, true);
-    $changed[] = whatChanged($main_op, $room_info['main_bracket'], 'Main Bracket', false, false, true);
-    $changed[] = whatChanged($custom_op, $room_info['custom_bracket'], 'Custom Bracket', false, false, true);
-    $changed[] = whatChanged($shipping_op, $room_info['shipping_bracket'], 'Shipping Bracket', false, false, true);
-    $changed[] = whatChanged($install_op, $room_info['install_bracket'], 'Install Bracket', false, false, true);
-    $changed[] = whatChanged($pickmat_op, $room_info['pick_materials_bracket'], 'Pick & Materials Bracket', false, false, true);
-    $changed[] = whatChanged($edgebanding_op, $room_info['edgebanding_bracket'], 'Edge Banding Bracket', false, false, true);
-
-    $sales_pub = !empty($editInfo['sales_published']) ? sanitizeInput($editInfo['sales_published']) : 0;
-    $sample_pub = !empty($editInfo['sample_published']) ? sanitizeInput($editInfo['sample_published']) : 0;
-    $preprod_pub = !empty($editInfo['preprod_published']) ? sanitizeInput($editInfo['preprod_published']) : 0;
-    $doordrawer_pub = !empty($editInfo['doordrawer_published']) ? sanitizeInput($editInfo['doordrawer_published']) : 0;
-    $main_pub = !empty($editInfo['main_published']) ? sanitizeInput($editInfo['main_published']) : 0;
-    $custom_pub = !empty($editInfo['custom_published']) ? sanitizeInput($editInfo['custom_published']) : 0;
-    $shipping_pub = !empty($editInfo['shipping_published']) ? sanitizeInput($editInfo['shipping_published']) : 0;
-    $install_pub = !empty($editInfo['install_published']) ? sanitizeInput($editInfo['install_published']) : 0;
-    $pickmat_pub = !empty($editInfo['pick_materials_published']) ? sanitizeInput($editInfo['pickmat_published']) : 0;
-    $edgebanding_pub = !empty($editInfo['edgebanding_published']) ? sanitizeInput($editInfo['edgebanding_published']) : 0;
-
-
-    $changed[] = whatChanged($sales_pub, $room_info['sales_published'], 'Sales Bracket', false, true);
-    $changed[] = whatChanged($sample_pub, $room_info['sample_published'], 'Sample Bracket', false, true);
-    $changed[] = whatChanged($preprod_pub, $room_info['preproduction_published'], 'Pre-Production Bracket', false, true);
-    $changed[] = whatChanged($doordrawer_pub, $room_info['doordrawer_published'], 'Door/Drawer Bracket', false, true);
-    $changed[] = whatChanged($main_pub, $room_info['main_published'], 'Main Bracket', false, true);
-    $changed[] = whatChanged($custom_pub, $room_info['custom_published'], 'Custom Bracket', false, true);
-    $changed[] = whatChanged($shipping_pub, $room_info['shipping_published'], 'Shipping Bracke', false, true);
-    $changed[] = whatChanged($install_pub, $room_info['install_bracket_published'], 'Install Bracket', false, true);
-    $changed[] = whatChanged($pickmat_pub, $room_info['pick_materials_published'], 'Pick & Materials Bracket', false, true);
-    $changed[] = whatChanged($edgebanding_pub, $room_info['edgebanding_published'], 'Edgebanding Bracket', false, true);
-    $changed[] = whatChanged($ops, $room_info['individual_bracket_buildout'], 'Active Bracket Operations');
-
-    if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
-      $update_result = $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op', edgebanding_bracket = '$edgebanding_op',
-    custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
-    preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', edgebanding_published = '$edgebanding_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
-    install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub', payment_deposit = '$deposit_received',
-    payment_final = '$final_payment', payment_del_ptl = '$ptl_del' WHERE id = '$room_id'");
-
-      createOpQueue($sales_pub, 'Sales', $sales_op, $room_id);
-      createOpQueue($sample_pub, 'Sample', $sample_op, $room_id);
-      createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $room_id);
-      createOpQueue($doordrawer_pub, 'Drawer & Doors', $doordrawer_op, $room_id);
-      createOpQueue($main_pub, 'Main', $main_op, $room_id);
-      createOpQueue($custom_pub, 'Custom', $custom_op, $room_id);
-      createOpQueue($shipping_pub, 'Shipping', $shipping_op, $room_id);
-      createOpQueue($install_pub, 'Installation', $install_op, $room_id);
-      createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $room_id);
-      createOpQueue($edgebanding_pub, 'Edge Banding', $edgebanding_op, $room_id);
-
-      echo displayToast('success', 'All operations have been refreshed and the bracket has been updated.', 'Updated & Refreshed');
-    } else {
-      dbLogSQLErr($dbconn);
-    }
-
-
+    //<editor-fold desc="DB: What's Changed">
     if(!empty(array_values(array_filter($changed)))) {
       $c_note = '<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-      $c_note .= implode(", ", array_values(array_filter($changed)));
+      $c_note .= implode(', ', array_values(array_filter($changed)));
 
       if(empty($_SESSION['userInfo'])) {
         $user = 36;
@@ -669,6 +488,12 @@ HEREDOC;
       $stmt->execute();
       $stmt->close();
     }
+    //</editor-fold>
+
+    //<editor-fold desc="Saving the Cabinet List">
+    $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
+    $cat->saveCatalog($room_id, $cab_list);
+    //</editor-fold>
 
     break;
   case 'modalGlobals':
@@ -714,7 +539,7 @@ HEREDOC;
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-          <h4 class="modal-title">Global Room Details</h4>
+          <h4 class="modal-title">Global: Room Details</h4>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -1121,6 +946,22 @@ HEREDOC;
         createOpQueue($install_pub, 'Installation', $install_op, $room_id);
         createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $room_id);
         createOpQueue($edgebanding_pub, 'Edge Banding', $edgebanding_op, $room_id);
+
+        if(!empty(array_values(array_filter($changed)))) {
+          $c_note = '<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+          $c_note .= implode(', ', array_values(array_filter($changed)));
+
+          if(empty($_SESSION['userInfo'])) {
+            $user = 36;
+          } else {
+            $user = $_SESSION['userInfo']['id'];
+          }
+
+          $stmt = $dbconn->prepare("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES (?, 'room_note_log', UNIX_TIMESTAMP(), $user, ?);");
+          $stmt->bind_param('si', $c_note, $room_id);
+          $stmt->execute();
+          $stmt->close();
+        }
 
         echo displayToast('success', 'The bracket and operations have been updated.', 'Brackets & Operations Updated');
       } else {

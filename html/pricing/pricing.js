@@ -94,18 +94,22 @@ $("body")
 
     recalcTotal();
   })
-  .on("click", "#cabinet_list_save", function() {
-    // var cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
+  .on("click", "#save", function() {
+    /*//<editor-fold desc="Cabinet List">
     var cab_list = JSON.stringify(getMiniTree(cabinetList));
     var cat_id = $("#catalog").find(":selected").attr("id");
 
     $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=" + active_room_id, {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
       $("body").append(data);
     });
+    //</editor-fold>*/
 
-    var thisClick = this;
+    //<editor-fold desc="Room Data">
     var val_array = {};
-    var edit_info = $("#pricing_global_attributes").serialize();
+    var cabinet_specifications = $("#cabinet_specifications").serialize();
+    var customVals = JSON.stringify(val_array);
+    var accounting_notes = $("#accounting_notes").serialize();
+    var cab_list = JSON.stringify(getMiniTree(cabinetList));
 
     $("input[type='hidden']").each(function() {
       var ele = $(this);
@@ -121,14 +125,10 @@ $("body")
       }
     });
 
-    var customVals = JSON.stringify(val_array);
-
-    $.post("/ondemand/room_actions.php?action=update_room", {customVals: customVals, editInfo: edit_info, roomid: active_room_id}, function(data) {
+    $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes}, function(data) {
       $('body').append(data);
-    }).done(function() {
-      $(thisClick).addClass('edit_room_save');
-      $("#room_notes").val('');
     });
+    //</editor-fold>
 
     unsaved = false;
   })
@@ -305,45 +305,6 @@ $("body")
         no: function() {} // we're not doing anything
       }
     });
-  })
-  .on("click", "#save_globals", function() {
-    console.log("Saving globals.");
-
-    let thisClick = this;
-    let val_array = {};
-
-    $(thisClick).removeClass('edit_room_save');
-
-    let edit_info = $("#pricing_global_attributes").serialize();
-
-    $("input[type='hidden']").each(function() {
-      let ele = $(this);
-      let field = $(this).attr('id');
-      let custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX'];
-
-      // console.log(field);
-
-      if($.inArray(ele.val(), custom_fields) >= 0) {
-        val_array[field] = {};
-
-        ele.parent().find('.selected').find('input').each(function() {
-          val_array[field][$(this).attr('name')] = $(this).val();
-        });
-      }
-    });
-
-    let customVals = JSON.stringify(val_array); // this won't have a value if we don't have custom values
-
-    console.log(edit_info);
-
-    /*$.post("/ondemand/room_actions.php?action=update_room", {customVals: customVals, editInfo: edit_info}, function(data) {
-      $('body').append(data);
-    }).done(function() {
-      $(thisClick).addClass('edit_room_save');
-      $("#room_notes").val('');
-    });*/
-
-    unsaved = false;
   })
   .on("click", "#category_collapse", function() {
     catalog.fancytree("getTree").visit(function(node){
