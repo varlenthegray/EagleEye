@@ -344,7 +344,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
         <?php
         //echo ($bouncer->validate('')) ? "<a id='generate_code' data-so='{$so}' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Copy Dealer URL</a><br /><br />" : null;
         echo $bouncer->validate('view_inset_sizing') ? "<a href='/html/inset_sizing.php?room_id={$room['id']}' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>SMCM Door Sizing</a>" : null;
-        echo $bouncer->validate('view_preprod_checklist') ? "<a href='/pdf/preprod_checklist.pdf' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Preproduction Checklist</a>" : null;
+        echo $bouncer->validate('view_preprod_checklist') ? "<a href='/assets/pdf/preprod_checklist.pdf' target='_blank' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Preproduction Checklist</a>" : null;
         echo $bouncer->validate('view_appliance_ws') ? "<a id='appliance_worksheets' data-roomid='{$room['id']}' class='btn btn-primary-outline btn-block waves-effect waves-light w-xs'>Appliance Worksheets</a>" : null;
         ?>
 
@@ -660,7 +660,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
               <select name="room_inquiry_requested_of" id="room_inquiry_requested_of" class="form-control" style="width:45%;float:right;">
                 <option value="null" selected disabled></option>
                 <?php
-                $user_qry = $dbconn->query("SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC");
+                $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
 
                 while($user = $user_qry->fetch_assoc()) {
                   echo "<option value='{$user['id']}'>{$user['name']}</option>";

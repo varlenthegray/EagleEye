@@ -31,8 +31,7 @@ function translateVIN($segment, $key) {
 $style_rail_qry = $dbconn->query("SELECT value FROM vin_schema WHERE `key` = '{$room['style_rail_width']}' AND segment = 'style_rail_width'");
 $style_rail = $style_rail_qry->fetch_assoc();
 
-$style_rail = str_replace('-', ' ', $style_rail['value']);
-$style_rail = str_replace('"', '', $style_rail);
+$style_rail = str_replace(array('-', '"'), array(' ', ''), $style_rail['value']);
 
 echo "<script>var style_rail = '$style_rail';</script>";
 ?>

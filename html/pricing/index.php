@@ -38,13 +38,13 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
 
   foreach($vin_schema[$segment] as $value) {
     if(((string)$value['key'] === (string)$room[$dblookup]) && empty($selected)) {
-      $selected = "{$value['value']}";
+      $selected = $value['value'];
       $selected_img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
       $sel_key = $value['key'];
     }
 
     if((bool)$value['visible']) {
-      $img = (!empty($value['image'])) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
+      $img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
 
       if ($value['group'] !== $prev_header) {
         $section_head = "<div class='header'>{$value['group']}</div>";
@@ -64,14 +64,14 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
           $option_grid .= "<div class='option sub_option' data-value='{$key}'>{$item}</div>";
         }
 
-        $option_grid .= "</div>";
+        $option_grid .= '</div>';
       } else {
         $option_grid .= "$section_head <div class='grid_element option' data-value='{$value['key']}'><div class='header'>{$value['value']}</div>$img</div>";
       }
     }
   }
 
-  $selected = (empty($selected)) ? "Not Selected Yet" : $selected;
+  $selected = (empty($selected)) ? 'Not Selected Yet' : $selected;
 
   echo "<div class='custom_dropdown' $addl_id>";
   echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
@@ -115,7 +115,7 @@ function displayFinishOpts($segment, $db_col = null, $id = null) {
 
       $options .= "$section_head <div class='option' data-value='{$value['key']}' data-display-text=\"{$value['value']}\">{$value['value']} $img</div>";
 
-      if(!empty($value['imagemap_coords']) && stristr($value['imagemap_coords'], '[')) {
+      if(!empty($value['imagemap_coords']) && false !== strpos($value['imagemap_coords'], '[')) {
         $multimap = json_decode($value['imagemap_coords']);
 
         foreach($multimap AS $map) {
@@ -168,14 +168,14 @@ function translateVIN($segment, $key) {
   $desc = '';
 
   if(!empty($info['custom_vin_info'])) {
-    if(in_array($key, $custom_keys)) {
+    if(in_array($key, $custom_keys, true)) {
       $custom_info = json_decode($info['custom_vin_info'], true);
 
       if(count($custom_info[$segment]) > 1) {
         foreach($custom_info[$segment] as $key2 => $value) {
-          $mfg = stristr($key2, 'mfg') ? $value : $mfg;
-          $code = stristr($key2, 'code') ? $value : $code;
-          $name = stristr($key2, 'name') ? $value : $name;
+          $mfg = false !== stripos($key2, 'mfg') ? $value : $mfg;
+          $code = false !== stripos($key2, 'code') ? $value : $code;
+          $name = false !== stripos($key2, 'name') ? $value : $name;
         }
 
         $desc = $name;
@@ -189,7 +189,7 @@ function translateVIN($segment, $key) {
     $desc = $vin['value'];
   }
 
-  return (string)$desc;
+  return $desc;
 }
 
 $note_arr = array();
@@ -217,6 +217,7 @@ $result = $result_qry->fetch_assoc();
 $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$result['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();
 
+// This section refers to the submit buttons and disabling of them
 $existing_quote_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
 
 if($existing_quote_qry->num_rows === 1) {
@@ -224,32 +225,76 @@ if($existing_quote_qry->num_rows === 1) {
 } else {
   $existing_quote = null;
 }
+
+if(!empty($existing_quote['quote_submission'])) {
+  $submit_disabled = 'disabled';
+
+  $submitted_time = date(DATE_TIME_ABBRV, $existing_quote['quote_submission']);
+  $submitted = "- Submitted on $submitted_time";
+} else {
+  $submit_disabled = null;
+  $submitted = null;
+}
 ?>
 
 <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
 
+<script>
+  <?php echo !empty($submit_disabled) ? 'var already_submitted = true;' : 'var already_submitted = false;'; ?>
+</script>
+
 <div class="card-box">
+  <div class="row sticky no-print" style="background-color:#FFF;z-index:2;top:84px;padding:4px;">
+    <div class="col-md-3">
+      <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="cabinet_list_save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
+      <button class="btn waves-effect btn-success-outline" title="Submit Quote" id="submit_for_quote" <?php echo $submit_disabled; ?>> <i class="fa fa-paper-plane-o fa-2x"></i> </button>
+      <button class="btn waves-effect btn-secondary" title="Global Information" id="global_info"> <i class="fa fa-globe fa-2x"></i> </button>
+      <div class="btn-group">
+        <button type="button" title="Print" class="btn btn-secondary dropdown-toggle waves-effect" data-toggle="dropdown" aria-expanded="false"> <i class="fa fa-print fa-2x"></i> </button>
+        <div class="dropdown-menu" x-placement="bottom-start" style="position:absolute;transform:translate3d(0,38px,0);top:0;left:0;will-change:transform;">
+          <a class="dropdown-item" href="#" title="Print this page specifically" onclick="window.print();">Print Item List</a>
+          <?php
+          echo $bouncer->validate('print_sample') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=sample_req' target='_blank' class='dropdown-item'>Print Sample Request</a>" : null;
+          echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Coversheet</a>" : null;
+          echo $bouncer->validate('print_shop_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=no_totals' target='_blank' class='dropdown-item'>Print Shop Coversheet</a>" : null;
+          echo $bouncer->validate('print_sample_label') ? "<a href='/print/sample_label.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Sample Label</a>" : null;
+          ?>
+        </div>
+      </div>
+      <button class="btn waves-effect btn-secondary" title="Room Attachments" id="add_attachment"> <i class="fa fa-paperclip fa-2x"></i> </button>
+      <button class="btn waves-effect btn-secondary" title="Copy Room" id="copy_room"> <i class="fa fa-copy fa-2x"></i> </button>
+      <button class="btn waves-effect btn-secondary" title="Bracket Management" id="bracket_management"> <i class="fa fa-code-fork fa-2x"></i> </button>
+      <button class="btn waves-effect btn-secondary" title="Door Sizing" onclick="window.open('/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>','_blank')"> <i class="fa fa-arrows-alt fa-2x"></i> </button>
+      <button class="btn waves-effect btn-secondary" title="Appliance Worksheets" id='appliance_ws' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-cubes fa-2x"></i> </button>
+    </div>
+
+    <div class="col-md-5 text-md-right"><h4 style="margin:0;padding:0;"><?php echo "Room {$room['room']}{$room['iteration']} $submitted"; ?></h4></div>
+  </div>
+
   <div class="row">
-    <div class="col-md-2 pricing_left_nav no-print sticky">
+    <div class="col-md-2 pricing_left_nav no-print sticky" style="top:122px;">
       <div class="sticky nav_filter">
         <div class="form-group">
           <label for="treeFilter">Search Catalog</label>
           <input type="text" class="form-control fc-simple ignoreSaveAlert" id="treeFilter" placeholder="Find" width="100%" >
         </div>
+
+        <label for="below" id="category_collapse">Categories</label>
       </div>
 
-      <label for="below">Categories</label>
+
       <div id="catalog_categories"></div>
     </div>
 
-    <div class="col-md-10 pricing_table_format">
-      <div class="row no_global_info" style="display:none;">
-        <div class="col-md-12"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>Unable to price with the current global attributes.<br />Any price displayed above is not a reflection of the final price until a final price has been returned.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
-      </div>
-
+    <div class="col-md-6 pricing_table_format">
       <div class="row">
         <div class="col-md-12" style="margin-top:5px;">
           <table style="max-width:955px;" width="100%">
+            <tr>
+              <td colspan="8">
+                <div class="row no_global_info" style="display:none;"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>Unable to price with the current information.<br />Any price displayed is not a reflection of the final price until this quote has been processed by SMCM.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
+              </td>
+            </tr>
             <tr>
               <td colspan="8" class="text-md-center"><h2>Item List</h2></td>
             </tr>
@@ -259,12 +304,12 @@ if($existing_quote_qry->num_rows === 1) {
               <td colspan="2" width="33.3%" class="text-md-right">Production Type: <?php echo translateVIN('product_type', $room['product_type']); ?></td>
             </tr>
             <tr>
-              <td colspan="3"><h5><?php echo $result['project_name'] . " - " . $room['room_name']; ?></h5></td>
+              <td colspan="3"><h5><?php echo $result['project_name'] . ' - ' . $room['room_name']; ?></h5></td>
               <td colspan="3" class="text-md-center">&nbsp;</td>
               <td colspan="2" class="text-md-right">Production Status: <?php echo translateVIN('days_to_ship', $room['days_to_ship']); ?></td>
             </tr>
             <tr>
-              <td colspan="3"><?php echo $dealer['dealer_id'] . "_" . $dealer['dealer_name'] . " - " . $dealer['contact']; ?></td>
+              <td colspan="3"><?php echo $dealer['dealer_id'] . '_' . $dealer['dealer_name'] . ' - ' . $dealer['contact']; ?></td>
               <td colspan="3" class="text-md-center">&nbsp;</td>
               <td colspan="2" class="text-md-right">Ship Date: ---</td>
             </tr>
@@ -280,7 +325,7 @@ if($existing_quote_qry->num_rows === 1) {
               <td colspan="8">
                 <form id="pricing_global_attributes" method="post" action="#">
                   <table class="pull-left" style="width:33%;margin-left:0.3%;">
-                    <tr><th colspan="2" style="padding-left:5px;">Design</th></tr>
+                    <tr><th colspan="2" style="padding-left:5px;">Design<label class="c-input c-checkbox pull-right" style="color:#FFF;margin-top:2px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th></tr>
                     <tr><td colspan="2" class='gray_bg' style="padding-left:5px;"><?php echo ($info['construction_method'] !== 'L') ? "Door/Drawer Head" : null; ?></td></tr>
                     <tr class="border_top">
                       <td class="border_thin_bottom" width="40%"><label for="species_grade_<?php echo $room['id']; ?>">Species/Grade:</label></td>
@@ -325,6 +370,10 @@ if($existing_quote_qry->num_rows === 1) {
                       <td colspan="2">&nbsp;</td>
                     </tr>
                     <tr>
+                      <td class="border_thin_bottom">Drawer Box Mount</td>
+                      <td class="border_thin_bottom"><?php displayVINOpts('drawer_box_mount'); ?></td>
+                    </tr>
+                    <tr>
                       <td class="border_thin_bottom">Drawer Box:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('drawer_boxes'); ?></td>
                     </tr>
@@ -367,7 +416,7 @@ if($existing_quote_qry->num_rows === 1) {
                     </tr>
                     <tr>
                       <td class="border_thin_bottom"><strong>Exterior:</strong></td>
-                      <td class="border_thin_bottom"><div class="checkbox"><input id="ext_carcass_same" type="checkbox"><label for="ext_carcass_same"> Same as Door/Drawer</label></div></td>
+                      <td class="border_thin_bottom"><div class="checkbox"><input id="ext_carcass_same" name="ext_carcass_same" value="1" type="checkbox"><label for="ext_carcass_same"> Same as Door/Drawer</label></div></td>
                     </tr>
                     <tr class="ext_finish_block">
                       <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
@@ -387,7 +436,7 @@ if($existing_quote_qry->num_rows === 1) {
                     </tr>
                     <tr>
                       <td class="border_thin_bottom"><strong>Interior:</strong></td>
-                      <td class="border_thin_bottom"><div class="checkbox"><input id="int_carcass_same" type="checkbox"><label for="int_carcass_same"> Same as Door/Drawer</label></div></td>
+                      <td class="border_thin_bottom"><div class="checkbox"><input id="int_carcass_same" name="int_carcass_same" value="1" type="checkbox"><label for="int_carcass_same"> Same as Door/Drawer</label></div></td>
                     </tr>
                     <tr class="int_finish_block">
                       <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
@@ -412,10 +461,10 @@ if($existing_quote_qry->num_rows === 1) {
                     <tr><td colspan="2" class='gray_bg' style="padding-left:5px;">&nbsp;</td></tr>
                     <tr class="border_top">
                       <td width="30%"><strong>Ship VIA:</strong></td>
-                      <td><input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_via" value="<?php echo $info['vin_ship_via']; ?>"></td>
+                      <td><?php displayVINOpts('ship_via'); ?></td>
                     </tr>
                     <tr>
-                      <td><strong>Ship To:</strong></td>
+                      <td style="vertical-align:top !important;"><strong>Ship To:</strong></td>
                       <td rowspan="3">
                         <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
                         <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
@@ -430,31 +479,19 @@ if($existing_quote_qry->num_rows === 1) {
               <td colspan="8">&nbsp;</td>
             </tr>
             <tr>
-              <td colspan="8">
-                <input type="button" class="btn btn-secondary waves-effect waves-light no-print" id="save_globals" value="Update Global Attributes" />
-              </td>
+              <th colspan="3" style="border-right:2px solid #FFF;">&nbsp;Notes</th>
+              <th colspan="3" style="border-right:2px solid #FFF;">&nbsp;</th>
+              <th colspan="2">&nbsp;</th>
             </tr>
             <tr>
-              <td colspan="8">&nbsp;</td>
-            </tr>
-            <tr>
-              <th colspan="8">Notes</th>
-            </tr>
-            <tr>
-              <td colspan="3" style="border-right:1px solid #000;" class="gray_bg">&nbsp;Global Notes:</td>
-              <td colspan="3" class="gray_bg" style="border-right:1px solid #000;">&nbsp;Finishing/Sample Notes:</td>
+              <td colspan="3" style="border-right:2px solid #FFF;" class="gray_bg">&nbsp;Global Notes:</td>
+              <td colspan="3" class="gray_bg" style="border-right:2px solid #FFF;">&nbsp;Finishing/Sample Notes:</td>
               <td colspan="2" class="gray_bg">&nbsp;Delivery Notes:</td>
             </tr>
             <tr id="notes_section">
-              <td colspan="3" id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_global']; ?></textarea></td>
-              <td colspan="3" id="layout_notes_title" style="border-right:1px solid #000;"><textarea name="layout_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
+              <td colspan="3" id="global_notes" style="border-right:2px solid #FFF;"><textarea name="global_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_global']; ?></textarea></td>
+              <td colspan="3" id="layout_notes_title" style="border-right:2px solid #FFF;"><textarea name="layout_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
               <td colspan="2" id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
-            </tr>
-            <tr>
-              <th colspan="8">&nbsp;</th>
-            </tr>
-            <tr>
-              <td colspan="8">&nbsp;</td>
             </tr>
           </table>
         </div>
@@ -462,7 +499,7 @@ if($existing_quote_qry->num_rows === 1) {
 
       <div class="row">
         <div class="col-md-12" style="margin-top:5px;">
-          <h2>Cabinet List</h2>
+          <h5><u>Cabinet List</u></h5>
 
           <table id="cabinet_list">
             <colgroup>
@@ -481,29 +518,8 @@ if($existing_quote_qry->num_rows === 1) {
             </colgroup>
             <thead>
             <tr>
-              <?php
-              if(!empty($existing_quote['quote_submission'])) {
-                // FIXME: This was lazy.
-
-                $submit_disabled = 'disabled';
-
-                $submitted_time = date(DATE_TIME_ABBRV, $existing_quote['quote_submission']);
-                $submitted = "<h5 style='line-height:22px;' class='pull-right'>Submitted: $submitted_time</h5>";
-              } else {
-                $submit_disabled = null;
-              }
-              ?>
-
               <td colspan="12" style="padding-bottom:5px;">
-                <input type="button" class="btn btn-primary waves-effect waves-light no-print" id="cabinet_list_save" value="Save" <?php echo $submit_disabled; ?> />
-<!--                <input type="button" class="btn btn-secondary waves-effect waves-light no-print" id="catalog_add_custom" value="Custom Item" />-->
-                <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" <?php echo $submit_disabled; ?> />
-                <input type="button" class="btn btn-success waves-effect waves-light no-print pull-right" id="submit_for_quote" value="Submit Quote" <?php echo $submit_disabled; ?> />
-
-                <?php
-                  // FIXME: Other part of lazy code
-                  echo $submitted;
-                ?>
+                <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" />
               </td>
             </tr>
             <tr>
@@ -552,12 +568,130 @@ if($existing_quote_qry->num_rows === 1) {
               <td class="text-md-right cab-price cab-total"></td>
             </tr>
             </tbody>
+            <tfoot>
+            <tr>
+              <td colspan="12">
+                <div class="row no_global_info" style="display:none;"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>Unable to price with the current information.<br />Any price displayed is not a reflection of the final price until this quote has been processed by SMCM.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
+              </td>
+            </tr>
+            </tfoot>
           </table>
         </div>
       </div>
 
-      <div class="row no_global_info" style="display:none;">
-        <div class="col-md-12"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>Unable to price with the current global attributes.<br />Any price displayed above is not a reflection of the final price until a final price has been returned.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
+      <div style="height:100px;">&nbsp;</div>
+    </div>
+
+    <div class="col-md-2 sticky no-print" style="top:122px;margin-left:10px;">
+      <div class="row">
+        <div class="col-md-12">
+          <?php if($bouncer->validate('view_accounting')) { ?>
+          <tr>
+            <td colspan="2">
+              <label class="c-input c-checkbox">Deposit Received <input type="checkbox" name="deposit_received" value="1" <?php echo ((bool)$room['payment_deposit']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
+              <label class="c-input c-checkbox">Prior to Loading: Distribution - Final Payment<br/><span style="margin-left:110px;">Retail - On Delivery/Payment</span> <input type="checkbox" name="ptl_del" value="1" <?php echo ((bool)$room['payment_del_ptl']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
+              <label class="c-input c-checkbox">Retail - Final Payment <input type="checkbox" name="final_payment" value="1" <?php echo ((bool)$room['payment_final']) ? 'checked' :null; ?>><span class="c-indicator"></span></label>
+            </td>
+          </tr>
+          <tr style="height:10px;">
+            <td colspan="2"></td>
+          </tr>
+          <?php } ?>
+
+          <textarea class="form-control" name="room_notes" id="room_notes" placeholder="Notes" style="width:100%;height:277px;"></textarea>
+
+          <?php if(!empty($_SESSION['userInfo'])) { ?>
+            <input type="text" name="room_inquiry_followup_date" id="room_inquiry_followup_date" class="form-control" placeholder="Followup On" style="width:30%;float:left;">
+            <label for="room_inquiry_requested_of" style="float:left;padding:4px;"> by </label>
+            <select name="room_inquiry_requested_of" id="room_inquiry_requested_of" class="form-control" style="width:62%;float:right;">
+              <option value="null" selected disabled></option>
+              <?php
+              $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
+
+              while($user = $user_qry->fetch_assoc()) {
+                echo "<option value='{$user['id']}'>{$user['name']}</option>";
+              }
+              ?>
+            </select>
+          <?php } ?>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="room_note_box">
+            <table class="table table-custom-nb table-v-top">
+              <tr>
+                <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Room Notes</h5> <?php if($bouncer->validate('view_audit_log')) { ?><div class="pull-right"><input type="checkbox" class="ignoreSaveAlert" id="display_log" /> <label for="display_log">Show Audit Log</label></div><?php } ?></td>
+              </tr>
+              <tr style="height:5px;"><td colspan="2"></td></tr>
+              <?php
+              if((bool)$_SESSION['userInfo']['dealer']) {
+                $dealer = strtolower(DEALER);
+                $where = "AND user.username LIKE '$dealer%'";
+              } else {
+                $where = null;
+              }
+
+              $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'room_note' OR note_type = 'room_note_log') AND notes.type_id = '{$room['id']}' $where ORDER BY notes.timestamp DESC;");
+
+              while($room_inquiry = $room_inquiry_qry->fetch_assoc()) {
+                $inquiry_replies = null;
+
+                $time = date(DATE_TIME_ABBRV, $room_inquiry['NTimestamp']);
+
+                if(!empty($room_inquiry['followup_time'])) {
+                  $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$room_inquiry['user_to']}");
+                  $followup_usr = $followup_usr_qry->fetch_assoc();
+
+                  $followup_time = date(DATE_TIME_ABBRV, $room_inquiry['followup_time']);
+
+                  $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
+                } else {
+                  $followup = null;
+                }
+
+                $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$room_inquiry['nID']}' ORDER BY timestamp DESC");
+
+                if($inquiry_reply_qry->num_rows > 0) {
+                  while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
+                    $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
+
+                    $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+                  }
+                } else {
+                  $inquiry_replies = null;
+                }
+
+                $notes = str_replace('  ', '&nbsp;&nbsp;', $room_inquiry['note']);
+                //$notes = $room_inquiry['note'];
+                $notes = nl2br($notes);
+
+                echo "<tr style='height:5px;'><td colspan='2'></td></tr>";
+
+                $room_note_log = ($room_inquiry['note_type'] === 'room_note_log') ? 'room_note_log' : null;
+
+                echo "<tr class='$room_note_log'>";
+                echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$room_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
+                echo "  <td>$notes -- <small><em>{$room_inquiry['name']} on $time $followup</em></small><div><button type='button' class='btn waves-effect btn-primary post_to_cal'>Post to Calendar</button></div></td>";
+                echo '</tr>';
+
+                echo "<tr id='inquiry_reply_line_{$room_inquiry['nID']}' style='display:none;'>";
+                echo "<td colspan='2'>
+                          <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
+                          <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='r_{$room_inquiry['nID']}_submit'>Reply</button>
+                      </td>";
+                echo '</tr>';
+
+                echo $inquiry_replies;
+
+                echo "<tr class='$room_note_log' style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
+              }
+              ?>
+              <tr style="height:5px;"><td colspan="2"></td></tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -592,6 +726,40 @@ if($existing_quote_qry->num_rows === 1) {
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<!-- modal -->
+<div id="modalGeneral" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGeneralLabel" aria-hidden="true">
+      <!-- AJAX Loaded based on button press -->
+</div><!-- /.modal -->
+
+<form id="room_attachments">
+  <!-- Attachment modal -->
+  <div id="modalAddAttachment" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddAttachmentLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Add Attachment to <?php echo "{$room['so_parent']}{$room['room']}-{$room['iteration']}"; ?></h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
+              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
+              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
+              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
+              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" id="r_attachments_footer">
+          <button type="button" class="btn btn-primary waves-effect" id="submit_attachments">Submit</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+</form>
 
 <script>
   <?php echo "var roomID = $room_id;"; ?>

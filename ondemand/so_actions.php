@@ -140,7 +140,7 @@ switch($_REQUEST['action']) {
 
       $dbconn->query("INSERT INTO op_queue (room_id, operation_id, notes, created) VALUES ('$room_id', '{$starting_ops['Sales']}', 'Auto-generated.', UNIX_TIMESTAMP())");
 
-      echo displayToast("success", "Successfully created new SO.", "New SO Created");
+      echo displayToast('success', 'Successfully created new SO.', 'New SO Created');
     } else {
       dbLogSQLErr($dbconn);
     }

@@ -47,6 +47,11 @@ $(document).mousemove(function(e) {
   mouseY = e.pageY;
 });
 
+var CLIPBOARD = null;
+var cabinetList = $("#cabinet_list");
+var catalog = $("#catalog_categories");
+var itemModifications = $("#item_modifications");
+
 $("body")
   .on("keyup", "#treeFilter", function() { // filters per keystroke on search catalog
     // grab this value and filter it down to the node needed
@@ -94,9 +99,38 @@ $("body")
     var cab_list = JSON.stringify(getMiniTree(cabinetList));
     var cat_id = $("#catalog").find(":selected").attr("id");
 
-    $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=<?php echo $room_id; ?>", {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
+    $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=" + roomID, {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
       $("body").append(data);
     });
+
+    var thisClick = this;
+    var val_array = {};
+    var edit_info = $("#pricing_global_attributes").serialize();
+
+    $("input[type='hidden']").each(function() {
+      var ele = $(this);
+      var field = $(this).attr('id');
+      var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
+
+      if($.inArray(ele.val(), custom_fields) >= 0) {
+        val_array[field] = {};
+
+        ele.parent().find('.selected').find('input').each(function() {
+          val_array[field][$(this).attr('name')] = $(this).val();
+        });
+      }
+    });
+
+    var customVals = JSON.stringify(val_array);
+
+    $.post("/ondemand/room_actions.php?action=update_room", {customVals: customVals, editInfo: edit_info, roomid: roomID}, function(data) {
+      $('body').append(data);
+    }).done(function() {
+      $(thisClick).addClass('edit_room_save');
+      $("#room_notes").val('');
+    });
+
+    unsaved = false;
   })
   .on("focus", ".qty_input", function() { // when clicking or tabbing to quantity
     $(this).select(); // auto-select the text
@@ -155,7 +189,7 @@ $("body")
     let cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
     let cat_id = $("#catalog").find(":selected").attr("id");
 
-    $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=<?php echo $room_id; ?>", {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
+    $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=" + roomID, {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
       $("body").append(data);
     });
   })
@@ -235,6 +269,8 @@ $("body")
     let modifications = itemModifications.fancytree("getTree").getSelectedNodes();
 
     cabinetList.fancytree("getTree").getActiveNode().addChildren(modifications);
+
+    $("#modalAddModification").modal("hide");
   })
   .on("change", "#ext_carcass_same", function() {
     if($(this).is(":checked")) {
@@ -260,7 +296,7 @@ $("body")
       type: 'red',
       buttons: {
         yes: function() {
-          $.post("/html/pricing/ajax/item_actions.php?action=submitQuote&room_id=" + "<?php echo $room_id; ?>", {cabinet_list: cab_list}, function(data) {
+          $.post("/html/pricing/ajax/item_actions.php?action=submitQuote&room_id=" + roomID, {cabinet_list: cab_list}, function(data) {
             $("body").append(data);
           }).done(function() {
             button.val("Submitted").prop("disabled", true);
@@ -309,12 +345,51 @@ $("body")
 
     unsaved = false;
   })
-;
+  .on("click", "#category_collapse", function() {
+    catalog.fancytree("getTree").visit(function(node){
+      node.setExpanded(false);
+    });
+  })
+  .on("click", "#global_info", function() {
+    $.post("/html/pricing/ajax/global_actions.php?action=modalGlobals&roomID=" + roomID, function(data) {
+      $("#modalGeneral").html(data).modal("show");
+    });
+  })
+  .on("click", "#modalGlobalsUpdate", function() {
+    let globalInfo = $("#modalGlobalData").serialize();
 
-var CLIPBOARD = null;
-var cabinetList = $("#cabinet_list");
-var catalog = $("#catalog_categories");
-var itemModifications = $("#item_modifications");
+    $.post("/html/pricing/ajax/global_actions.php?action=updateGlobals&roomID=" + roomID, {globalInfo: globalInfo}, function(data) {
+      $("body").append(data);
+      $("#modalGeneral").html("").modal('hide');
+    });
+  })
+  .on("click", "#appliance_ws", function() {
+    $.post("/html/pricing/ajax/global_actions.php?action=modalApplianceWS&roomID=" + roomID, function(data) {
+      $("#modalGeneral").html(data).modal("show");
+    });
+  })
+  .on("click", "#modalAppWSSave", function() {
+    var formInfo = $("#appliance_info").serialize();
+
+    $.post("/ondemand/room_actions.php?action=save_app_worksheet&room=" + roomID + "&" + formInfo, function(data) {
+      if(data !== 'false') {
+        $(".print_app_ws").attr("id", data);
+        displayToast("success", "Successfully saved worksheet information.", "Worksheet Saved");
+      } else {
+        displayToast("error", "Unable to save worksheet. Please refresh your page.", "Unable to Save");
+      }
+    });
+
+    $("#modalGeneral").html("").modal("hide");
+
+    unsaved = false;
+  })
+  .on("click", "#bracket_management", function() {
+    $.post("/html/pricing/ajax/global_actions.php?action=modalBracketMgmt&roomID=" + roomID, function(data) {
+      $("#modalGeneral").html(data).modal("show");
+    });
+  })
+;
 
 $("#modalAddModification").on("show.bs.modal", function() {
   $("#modificationsFilter").val('');
@@ -327,8 +402,6 @@ $("#modalAddModification").on("show.bs.modal", function() {
   };
 
   itemModifications.fancytree("getTree").reload(modificationTree);
-
-  console.log("Forced: /html/pricing/ajax/modifications.php?itemID=" + cabinetList.fancytree("getTree").getActiveNode().data.itemID);
 });
 
 $(function() {
@@ -358,7 +431,7 @@ $(function() {
     checkbox: true,
     titlesTabbable: true,     // Add all node titles to TAB chain
     quicksearch: true,        // Jump to nodes when pressing first character
-    source: { url: "/html/pricing/ajax/item_actions.php?action=getCabinetList&room_id=<?php echo $room_id; ?>" },
+    source: { url: "/html/pricing/ajax/item_actions.php?action=getCabinetList&room_id=" + roomID },
     extensions: ["edit", "dnd", "table", "gridnav", "persist"],
     debugLevel: 0,
     dnd: { // drag and drop
@@ -433,7 +506,10 @@ $(function() {
         $tdList.eq(10).text(price.formatMoney()).removeAttr("style title"); // price column
 
         $(".no_global_info").css("display", "none");
-        $("#submit_for_quote").attr("disabled", false).attr("title", "");
+        
+        if(!already_submitted) {
+          $("#submit_for_quote").attr("disabled", false).attr("title", "");
+        }
       } else {
         $tdList.eq(10).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
         $tdList.eq(11).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to properly calculate total.");

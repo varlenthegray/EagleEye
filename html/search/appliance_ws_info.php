@@ -1,5 +1,5 @@
 <?php
-require_once("../../includes/header_start.php");
+require_once '../../includes/header_start.php';
 
 $id = sanitizeInput($_REQUEST['id']);
 $roomid = sanitizeInput($_REQUEST['room_id']);
@@ -10,12 +10,12 @@ $cur_spec = $spec_qry->fetch_assoc();
 
 <form id="appliance_info">
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-6">
             <select name="sheet_type" id="sheet_type" class="form-control" style="font-weight:bold;font-size:1.5em;margin-bottom:5px;">
                 <?php
                 $prev_const_method = null;
 
-                $specs_qry = $dbconn->query("SELECT * FROM appliance_specs ORDER BY const_method, name DESC");
+                $specs_qry = $dbconn->query('SELECT * FROM appliance_specs ORDER BY const_method, name DESC');
 
                 while($specs = $specs_qry->fetch_assoc()) {
                     $selected = ($id === $specs['id']) ? "selected" : null;
@@ -36,10 +36,10 @@ $cur_spec = $spec_qry->fetch_assoc();
                 ?>
             </select>
 
-            <?php echo "<img src='../../assets/images/appliance_specs/{$cur_spec['image']}.jpg' style='max-height:70vh;max-width:20vw;'>"; ?>
+            <?php echo "<img src='../../assets/images/appliance_specs/{$cur_spec['image']}.jpg' style='max-height:70vh;max-width:18vw;'>"; ?>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
             <div class="row" style="margin-bottom:5px;">
                 <div class="col-md-12">
                     <h5><?php echo $cur_spec['spec_text']; ?></h5>

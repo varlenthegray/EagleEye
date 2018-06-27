@@ -601,8 +601,6 @@ $("body")
   .on("click", "#appliance_worksheets", function(e) {
     thisClick = this;
 
-    e.stopPropagation();
-
     checkTransition(function() {
       active_room_id = $(thisClick).data("roomid");
 
