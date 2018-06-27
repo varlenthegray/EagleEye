@@ -150,7 +150,7 @@ $("body")
 
       toggleDisplay();
 
-      $.post("/html/search/room_edit.php?room_id=" + active_room_id, function(data) {
+      $.post("/html/pricing/index.php?room_id=" + active_room_id, function(data) {
         $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
       });
 
