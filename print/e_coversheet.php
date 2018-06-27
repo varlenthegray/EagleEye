@@ -470,7 +470,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <th class="dark_gray_bg text-md-right" id="executive_ref"></th>
           <th class="dark_gray_bg">QTY</th>
           <th class="dark_gray_bg">Amount</th>
-          <th class="dark_gray_bg text-md-center pct_value">%</th>
+          <th class="dark_gray_bg text-md-center pct_value" width="5%">%</th>
           <th class="dark_gray_bg text-md-right subtotal">Upcharges&nbsp;</th>
         </tr>
         <tr>
@@ -654,7 +654,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_distressing_subtotal"></span></td>
         </tr>
         <?php
-        if($info['construction_method'] !== 'L') {
+        if($info['so_num'] === '667') {
           ?>
           <tr class="border_top">
             <td>&nbsp;</td>
