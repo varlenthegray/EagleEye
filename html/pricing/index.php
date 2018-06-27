@@ -326,7 +326,6 @@ if(!empty($existing_quote['quote_submission'])) {
                 <form id="pricing_global_attributes" method="post" action="#">
                   <table class="pull-left" style="width:33%;margin-left:0.3%;">
                     <tr><th colspan="2" style="padding-left:5px;">Design<label class="c-input c-checkbox pull-right" style="color:#FFF;margin-top:2px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th></tr>
-                    <tr><td colspan="2" class='gray_bg' style="padding-left:5px;"><?php echo ($info['construction_method'] !== 'L') ? "Door/Drawer Head" : null; ?></td></tr>
                     <tr class="border_top">
                       <td class="border_thin_bottom" width="40%"><label for="species_grade_<?php echo $room['id']; ?>">Species/Grade:</label></td>
                       <td class="border_thin_bottom"><?php displayVINOpts('species_grade'); ?></td>
@@ -381,7 +380,6 @@ if(!empty($existing_quote['quote_submission'])) {
 
                   <table class="pull-left" style="width:33%;margin-left:0.3%;">
                     <tr><th colspan="3" style="padding-left:5px;">Finish</th></tr>
-                    <tr><td colspan="3" class='gray_bg' style="padding-left:5px;">Door/Drawer</td></tr>
                     <tr class="border_top">
                       <td class="border_thin_bottom" width="40%">Finish Code:</td>
                       <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
@@ -414,7 +412,6 @@ if(!empty($existing_quote['quote_submission'])) {
 
                   <table class="pull-left" style="width:33%;margin-left:0.3%;">
                     <tr><th colspan="2" style="padding-left:5px;">Delivery</th></tr>
-                    <tr><td colspan="2" class='gray_bg' style="padding-left:5px;">&nbsp;</td></tr>
                     <tr class="border_top">
                       <td width="30%"><strong>Ship VIA:</strong></td>
                       <td><?php displayVINOpts('ship_via'); ?></td>
