@@ -71,7 +71,7 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
     }
   }
 
-  $selected = (empty($selected)) ? 'Not Selected Yet' : $selected;
+  $selected = empty($selected) ? 'Not Selected Yet' : $selected;
 
   echo "<div class='custom_dropdown' $addl_id>";
   echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
@@ -286,10 +286,10 @@ if(!empty($existing_quote['quote_submission'])) {
       <div id="catalog_categories"></div>
     </div>
 
-    <div class="col-md-6 pricing_table_format">
+    <div class="col-md-8 pricing_table_format">
       <div class="row">
         <div class="col-md-12" style="margin-top:5px;">
-          <table style="max-width:955px;" width="100%">
+          <table width="100%">
             <tr>
               <td colspan="8">
                 <div class="row no_global_info" style="display:none;"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>Unable to price with the current information.<br />Any price displayed is not a reflection of the final price until this quote has been processed by SMCM.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
@@ -325,42 +325,64 @@ if(!empty($existing_quote['quote_submission'])) {
               <td colspan="8">
                 <form id="pricing_global_attributes" method="post" action="#">
                   <table class="pull-left" style="width:33%;margin-left:0.3%;">
-                    <tr><th colspan="2" style="padding-left:5px;">Design<label class="c-input c-checkbox pull-right" style="color:#FFF;margin-top:2px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th></tr>
+                    <tr>
+                      <th colspan="2" style="padding-left:5px;">Design<label class="c-input c-checkbox pull-right" style="color:#FFF;margin-top:2px;padding-right:13px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th>
+                      <th>Pct</th>
+                      <th>Cost</th>
+                    </tr>
                     <tr class="border_top">
                       <td class="border_thin_bottom" width="40%"><label for="species_grade_<?php echo $room['id']; ?>">Species/Grade:</label></td>
                       <td class="border_thin_bottom"><?php displayVINOpts('species_grade'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Construction:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('construction_method'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Door Design:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('door_design'); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Door Panel Raise:</td>
+                      <td class="border_thin_bottom" style="padding-left:10px;">Door Panel Raise:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Short Drawer Raise:</td>
+                      <td class="border_thin_bottom" style="padding-left:10px;">Short Drawer Raise:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
+                      <td class="border_thin_bottom"></td>
+                      <td class="border_thin_bottom"></td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Tall Drawer Raise:</td>
+                      <td class="border_thin_bottom" style="padding-left:10px;">Tall Drawer Raise:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Edge Profile:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('edge_profile'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Framing Bead:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('framing_bead'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Frame Option:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('framing_options'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td colspan="2">&nbsp;</td>
@@ -371,42 +393,60 @@ if(!empty($existing_quote['quote_submission'])) {
                     <tr>
                       <td class="border_thin_bottom">Drawer Box Mount</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('drawer_box_mount'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Drawer Box:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('drawer_boxes'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                   </table>
 
                   <table class="pull-left" style="width:33%;margin-left:0.3%;">
-                    <tr><th colspan="3" style="padding-left:5px;">Finish</th></tr>
+                    <tr><th colspan="4" style="padding-left:5px;">Finish</th></tr>
                     <tr class="border_top">
                       <td class="border_thin_bottom" width="40%">Finish Code:</td>
                       <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Sheen:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('sheen'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Glaze Color:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('glaze'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Glaze Technique:</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Antiquing</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('antiquing'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Worn Edges</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('worn_edges'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Distressing</td>
                       <td class="border_thin_bottom"><?php displayVINOpts('distress_level'); ?></td>
+                      <td class="border_thin_bottom">0.00%</td>
+                      <td class="border_thin_bottom">$0.00</td>
                     </tr>
                   </table>
 
@@ -535,7 +575,7 @@ if(!empty($existing_quote['quote_submission'])) {
       <div style="height:100px;">&nbsp;</div>
     </div>
 
-    <div class="col-md-2 sticky no-print" style="top:122px;margin-left:10px;">
+    <div class="col-md-2 sticky no-print" style="top:122px;">
       <div class="row">
         <div class="col-md-12">
           <?php if($bouncer->validate('view_accounting')) { ?>
@@ -715,7 +755,352 @@ if(!empty($existing_quote['quote_submission'])) {
 </form>
 
 <script>
-  <?php echo "var roomID = $room_id;"; ?>
-</script>
+  <?php echo "active_room_id = $room_id"; ?>
 
-<script src="/html/pricing/pricing.min.js"></script>
+  CLIPBOARD = null;
+  cabinetList = $("#cabinet_list");
+  catalog = $("#catalog_categories");
+  itemModifications = $("#item_modifications");
+
+  $(function() {
+    /******************************************************************************
+     *  Cabinet List
+     ******************************************************************************/
+    cabinetList.fancytree({
+      select: function(event, data) { // TODO: Determine if this is valuable
+        // Display list of selected nodes
+        var selNodes = data.tree.getSelectedNodes();
+        // convert to title/key array
+        var selKeys = $.map(selNodes, function(node){
+          return "[" + node.key + "]: '" + node.title + "'";
+        });
+
+        // console.log(selKeys.join(", "));
+
+        if(selKeys.length > 0) {
+          $("#catalog_remove_checked").show();
+        } else {
+          $("#catalog_remove_checked").hide();
+        }
+      },
+      imagePath: "/assets/images/cabinet_icons/",
+      cookieId: "fancytree-cabList",
+      idPrefix: "fancytree-cabList-",
+      checkbox: true,
+      titlesTabbable: true,     // Add all node titles to TAB chain
+      quicksearch: true,        // Jump to nodes when pressing first character
+      source: { url: "/html/pricing/ajax/item_actions.php?action=getCabinetList&room_id=" + active_room_id },
+      extensions: ["edit", "dnd", "table", "gridnav", "persist"],
+      debugLevel: 0,
+      dnd: { // drag and drop
+        preventVoidMoves: true,
+        preventRecursiveMoves: true,
+        autoExpandMS: 400,
+        dragStart: function(node, data) {
+          return true;
+        },
+        dragEnter: function(node, data) {
+          // return ["before", "after"];
+          return true;
+        },
+        dragDrop: function(node, data) {
+          data.otherNode.moveTo(node, data.hitMode);
+        }
+      },
+      edit: {
+        triggerStart: ["clickActive", "f2", "shift+click", "mac+enter"],
+        close: function(event, data) {
+          if( data.save && data.isNew ){
+            // Quick-enter: add new nodes until we hit [enter] on an empty title
+            cabinetList.trigger("nodeCommand", {cmd: "addSibling"});
+          }
+        }
+      },
+      table: {
+        indentation: 20,
+        nodeColumnIdx: 3,
+        checkboxColumnIdx: 0
+      },
+      gridnav: {
+        autofocusInput: false,
+        handleCursorKeys: true
+      },
+      renderColumns: function(event, data) {
+        // this section handles the column data itself
+        var node = data.node, $tdList = $(node.tr).find(">td");
+
+        // lets begin by getting the quantity and the total and multiplying them
+        let qty = parseInt(node.data.qty);
+        let price = parseFloat(node.data.price);
+        let line_total = qty * price;
+
+        // (Index #0 is rendered by fancytree by adding the checkbox)
+        // Set column #1 info from node data:
+        $tdList.eq(1).text(node.getIndexHier());
+        // (Index #2 is the quantity input field)
+        $tdList.eq(2).find("input").attr("id", node.key).val(node.data.qty);
+        // (Index #3 is rendered by fancytree in child table under nodeColumnIdx)
+        // (Index #4 is the width)
+
+        $tdList.eq(4).text(node.data.name);
+
+        $tdList.eq(5).text(node.data.width);
+        // (Index #5 is the height)
+        $tdList.eq(6).text(node.data.height);
+        // (Index #6 is the depth)
+        $tdList.eq(7).text(node.data.depth);
+        // (Index #7 is price, calculated below)
+
+        if(node.data.hinge !== undefined) {
+          $tdList.eq(8).find(".item_hinge").val(node.data.hinge);
+        }
+
+        if(node.data.finish !== undefined) {
+          $tdList.eq(9).find(".item_finish").val(node.data.finish);
+        }
+
+        if(!isNaN(price)) {
+          // (Index #7)
+          $tdList.eq(10).text(price.formatMoney()).removeAttr("style title"); // price column
+
+          $(".no_global_info").css("display", "none");
+
+          if(!already_submitted) {
+            $("#submit_for_quote").attr("disabled", false).attr("title", "");
+          }
+        } else {
+          $tdList.eq(10).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
+          $tdList.eq(11).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to properly calculate total.");
+
+          $("#submit_for_quote").attr("disabled", true).attr("title", "Unknown global attributes, unable to submit.");
+
+          $(".no_global_info").css("display", "block");
+        }
+
+        // (Index #8)
+        $tdList.eq(11).text(node.data.total);
+      },
+      modifyChild: function(event, data) {
+        recalcTotal();
+      }
+    }).on("nodeCommand", function(event, data){
+      // Custom event handler that is triggered by keydown-handler and
+      // context menu:
+      var refNode, moveMode,
+        tree = $(this).fancytree("getTree"),
+        node = tree.getActiveNode();
+
+      switch( data.cmd ) {
+        case "moveUp":
+          refNode = node.getPrevSibling();
+          if( refNode ) {
+            node.moveTo(refNode, "before");
+            node.setActive();
+          }
+          break;
+        case "moveDown":
+          refNode = node.getNextSibling();
+          if( refNode ) {
+            node.moveTo(refNode, "after");
+            node.setActive();
+          }
+          break;
+        case "indent":
+          refNode = node.getPrevSibling();
+          if( refNode ) {
+            node.moveTo(refNode, "child");
+            refNode.setExpanded();
+            node.setActive();
+          }
+          break;
+        case "outdent":
+          if( !node.isTopLevel() ) {
+            node.moveTo(node.getParent(), "after");
+            node.setActive();
+          }
+          break;
+        case "rename":
+          node.editStart();
+          break;
+        case "remove":
+          refNode = node.getNextSibling() || node.getPrevSibling() || node.getParent();
+          node.remove();
+          if( refNode ) {
+            refNode.setActive();
+          }
+          break;
+        case "addModifications":
+          $("#modalAddModification").modal('show');
+          break;
+        case "cut":
+          CLIPBOARD = {mode: data.cmd, data: node};
+          break;
+        case "copy":
+          CLIPBOARD = {
+            mode: data.cmd,
+            data: node.toDict(function(n){
+              delete n.key;
+            })
+          };
+          break;
+        case "clear":
+          CLIPBOARD = null;
+          break;
+        case "paste":
+          if( CLIPBOARD.mode === "cut" ) {
+            // refNode = node.getPrevSibling();
+            CLIPBOARD.data.moveTo(node, "child");
+            CLIPBOARD.data.setActive();
+          } else if( CLIPBOARD.mode === "copy" ) {
+            node.addChildren(CLIPBOARD.data).setActive();
+          }
+          break;
+        default:
+          alert("Unhandled command: " + data.cmd);
+          return;
+      }
+    }).on("keydown", function(e){
+      var cmd = null;
+
+      // console.log(e.type, $.ui.fancytree.eventToString(e));
+      switch( $.ui.fancytree.eventToString(e) ) {
+        case "ctrl+shift+n":
+        case "meta+shift+n": // mac: cmd+shift+n
+          cmd = "addChild";
+          break;
+        case "ctrl+c":
+        case "meta+c": // mac
+          cmd = "copy";
+          break;
+        case "ctrl+v":
+        case "meta+v": // mac
+          cmd = "paste";
+          break;
+        case "ctrl+x":
+        case "meta+x": // mac
+          cmd = "cut";
+          break;
+        case "ctrl+n":
+        case "meta+n": // mac
+          cmd = "addSibling";
+          break;
+        case "del":
+        case "meta+backspace": // mac
+          cmd = "remove";
+          break;
+        // case "f2":  // already triggered by ext-edit pluging
+        //   cmd = "rename";
+        //   break;
+        case "ctrl+up":
+          cmd = "moveUp";
+          break;
+        case "ctrl+down":
+          cmd = "moveDown";
+          break;
+        case "ctrl+right":
+        case "ctrl+shift+right": // mac
+          cmd = "indent";
+          break;
+        case "ctrl+left":
+        case "ctrl+shift+left": // mac
+          cmd = "outdent";
+      }
+      if( cmd ){
+        $(this).trigger("nodeCommand", {cmd: cmd});
+        return false;
+      }
+    });
+
+    // Context menu (https://github.com/mar10/jquery-ui-contextmenu)
+    cabinetList.contextmenu({
+      delegate: "span.fancytree-node",
+      menu: [
+        {title: "Delete <kbd>[Del]</kbd>", cmd: "remove", uiIcon: "ui-icon-trash" },
+        {title: "----"},
+        {title: "Add Modifications <kbd>[Ctrl+M]</kbd>", cmd: "addModifications", uiIcon: "ui-icon-plus" },
+        {title: "----"},
+        {title: "Cut <kbd>Ctrl+X</kbd>", cmd: "cut", uiIcon: "ui-icon-scissors"},
+        {title: "Copy <kbd>Ctrl-C</kbd>", cmd: "copy", uiIcon: "ui-icon-copy"},
+        {title: "Paste<kbd>Ctrl+V</kbd>", cmd: "paste", uiIcon: "ui-icon-clipboard", disabled: true }
+      ],
+      beforeOpen: function(event, ui) {
+        var node = $.ui.fancytree.getNode(ui.target);
+        cabinetList.contextmenu("enableEntry", "paste", !!CLIPBOARD);
+        node.setActive();
+      },
+      select: function(event, ui) {
+        var that = this;
+        // delay the event, so the menu can close and the click event does
+        // not interfere with the edit control
+        setTimeout(function(){
+          $(that).trigger("nodeCommand", {cmd: ui.cmd});
+        }, 100);
+      }
+    });
+
+    /******************************************************************************
+     *  Navigation menu
+     ******************************************************************************/
+
+    // this is the navigation menu on the left side
+    catalog.fancytree({
+      source: { url: "/html/pricing/ajax/nav_menu.php" },
+      extensions: ["filter"],
+      debugLevel: 0,
+      filter: {
+        autoApply: true,   // Re-apply last filter if lazy data is loaded
+        autoExpand: true, // Expand all branches that contain matches while filtered
+        counter: true,     // Show a badge with number of matching child nodes near parent icons
+        fuzzy: true,      // Match single characters in order, e.g. 'fb' will match 'FooBar'
+        hideExpandedCounter: true,  // Hide counter badge if parent is expanded
+        hideExpanders: false,       // Hide expanders if all child nodes are hidden by filter
+        highlight: true,   // Highlight matches by wrapping inside <mark> tags
+        leavesOnly: false, // Match end nodes only
+        nodata: false,      // Display a 'no data' status node if result is empty
+        mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
+      }
+    });
+
+    // this is the modifications modal popup
+    itemModifications.fancytree({
+      source: { url: "/html/pricing/ajax/modifications.php" },
+      extensions: ["filter"],
+      debugLevel: 0,
+      filter: {
+        autoApply: true,   // Re-apply last filter if lazy data is loaded
+        autoExpand: true, // Expand all branches that contain matches while filtered
+        counter: true,     // Show a badge with number of matching child nodes near parent icons
+        fuzzy: true,      // Match single characters in order, e.g. 'fb' will match 'FooBar'
+        hideExpandedCounter: true,  // Hide counter badge if parent is expanded
+        hideExpanders: false,       // Hide expanders if all child nodes are hidden by filter
+        highlight: true,   // Highlight matches by wrapping inside <mark> tags
+        leavesOnly: false, // Match end nodes only
+        nodata: true,      // Display a 'no data' status node if result is empty
+        mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
+      }
+    });
+
+    if($("#ext_carcass_same").is(":checked")) {
+      $(".ext_finish_block").hide();
+    } else {
+      $(".ext_finish_block").show();
+    }
+
+    if($("#int_carcass_same").is(":checked")) {
+      $(".int_finish_block").hide();
+    } else {
+      $(".int_finish_block").show();
+    }
+
+    if($("#submit_for_quote").prop("disabled")) {
+      $.confirm({
+        title: "Item List Submitted.",
+        content: "You are unable to save this form. It has already been submitted. Please check with your representative if you require any modifications.",
+        type: 'red',
+        buttons: {
+          ok: function() {}
+        }
+      });
+    }
+  });
+</script>

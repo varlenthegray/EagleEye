@@ -298,6 +298,39 @@ HEREDOC;
 HEREDOC;
 }
 
+function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
+  global $dbconn;
+
+  $op_queue_qry = $dbconn->query("SELECT op_queue.id AS QID, op_queue.*, operations.* FROM op_queue LEFT JOIN operations ON op_queue.operation_id = operations.id WHERE room_id = '$roomid' AND published = TRUE AND bracket = '$bracket'");
+
+  // if the bracket is published
+  if((bool)$bracket_pub) {
+    if($op_queue_qry->num_rows > 0) {
+      while($op_queue = $op_queue_qry->fetch_assoc()) {
+        if($op_queue['operation_id'] === $operation && (bool)$op_queue['active']) {
+          // the exact operation is currently active and we cannot take any further action
+          echo displayToast("error", "Operation is active presently inside of $bracket.", "Active Operation");
+          return;
+        } else {
+          // deactivate operations
+          $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
+        }
+      }
+    }
+
+    // grab the entire room's information
+    $dbinfo_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$roomid'");
+    $dbinfo = $dbinfo_qry->fetch_assoc();
+
+    // now that we've cleaned up the operations; it's time to get that operation flowing
+    $dbconn->query("INSERT INTO op_queue (room_id, operation_id, start_time, active, completed, rework, partially_completed, created) VALUES ('$roomid', '$operation', NULL, FALSE, FALSE, FALSE, NULL, UNIX_TIMESTAMP())");
+  } else {
+    while($op_queue = $op_queue_qry->fetch_assoc()) {
+      $dbconn->query("UPDATE op_queue SET published = FALSE WHERE id = '{$op_queue['QID']}'");
+    }
+  }
+}
+
 switch($_REQUEST['action']) {
   case 'update_room':
     parse_str($_REQUEST['editInfo'], $editInfo);
@@ -869,141 +902,233 @@ HEREDOC;
           <h4 class="modal-title">Manage Brackets - {$room['room']}{$room['iteration']}</h4>
         </div>
         <div class="modal-body">
+          <!--<div class="sticky" style="top:0;background-color:#FFF;width:100%;z-index:999;">
+            <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary waves-effect waves-light" id="modalAppWSSave">Save</button>
+          </div>-->
+        
           <div class="row">
             <div class="col-md-12">
-              <table width="100%" class="bracket-adjustment-table">
-                <tr>
-                  <td style="width: 49.8%;" class="bracket-border-top">
-                    <div class="row bracket-header-custom">
-                      <div class="col-md-8"><h5><label for="sales_bracket">Sales Bracket</label></h5></div>
-                      <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" value="1" id="sales_published" $sales_published> <span class="c-indicator"></span> Published</label> </div>
-                    </div>
-                  </td>
-                  <td style="background-color:#eceeef;"></td>
-                  <td style="width: 49.8%;" class="bracket-border-top">
-                    <div class="row bracket-header-custom">
-                      <div class="col-md-8"><h5><label for="sample_bracket">Sample Bracket</label></h5></div>
-                      <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" value="1" id="sample_published" $sample_published> <span class="c-indicator"></span> Published</label> </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="bracket-border-bottom">
-                    $sales_bracket
-                  </td>
-                  <td style="background-color: #eceeef;">&nbsp;</td>
-                  <td class="bracket-border-bottom">
-                    $sample_bracket
-                  </td>
-                </tr>
-                <tr>
-                  <td class="bracket-border-top">
-                    <div class="row bracket-header-custom">
-                      <div class="col-md-8"><h5><label for="pre_prod_bracket">Pre-production Bracket</label></h5></div>
-                      <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="preprod_published" value="1" id="pre_prod_published" $preprod_published> <span class="c-indicator"></span> Published</label> </div>
-                    </div>
-                  </td>
-                  <td style="background-color: #eceeef;">&nbsp;</td>
-                  <td class="bracket-border-top">
-                    <div class="row bracket-header-custom">
-                      <div class="col-md-8"><h5><label for="door_drawer_bracket">Door/Drawer Bracket</label></h5></div>
-                      <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="doordrawer_published" value="1" id="doordrawer_published" $doordrawer_published> <span class="c-indicator"></span> Published</label> </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="bracket-border-bottom">
-                    $preprod_bracket
-                  </td>
-                  <td style="background-color: #eceeef;">&nbsp;</td>
-                  <td class="bracket-border-bottom">
-                    $doordrawer_bracket
-                  </td>
-                </tr>
-                <tr>
-                  <td class="bracket-border-top">
-                    <div class="row bracket-header-custom">
-                      <div class="col-md-8"><h5><label for="main_bracket">Main Bracket</label></h5></div>
-                      <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="main_published" value="1" id="main_published" $main_published> <span class="c-indicator"></span> Published</label> </div>
-                    </div>
-                  </td>
-                  <td style="background-color: #eceeef;">&nbsp;</td>
-                  <td class="bracket-border-top">
-                    <div class="row bracket-header-custom">
-                      <div class="col-md-8"><h5><label for="edgebanding_bracket">Edge Banding Bracket</label></h5></div>
-                      <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="edgebanding_published" value="1" id="edgebanding_bracket" $edgebanding_published> <span class="c-indicator"></span> Published</label> </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="bracket-border-bottom">
-                    $main_bracket
-                  </td>
-                  <td style="background-color: #eceeef;">&nbsp;</td>
-                  <td class="bracket-border-bottom">
-                    $edgebanding_bracket
-                  </td>
-                </tr>
-                <tr>
-                  <td class="bracket-border-top">
-                    <div class="row bracket-header-custom">
-                      <div class="col-md-8"><h5><label for="custom_bracket">Custom Bracket</label></h5></div>
-                      <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" value="1" id="custom_published" $custom_published> <span class="c-indicator"></span> Published</label> </div>
-                    </div>
-                  </td>
-                  <td style="background-color: #eceeef;">&nbsp;</td>
-                  <td class="bracket-border-top">
-                    <div class="row bracket-header-custom">
-                      <div class="col-md-8"><h5><label for="shipping_bracket">Shipping Bracket</label></h5></div>
-                      <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shipping_published" value="1" id="shipping_published" $shipping_published> <span class="c-indicator"></span> Published</label> </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="bracket-border-bottom">
-                    $custom_bracket
-                  </td>
-                  <td style="background-color: #eceeef;">&nbsp;</td>
-                  <td class="bracket-border-bottom">
-                    $shipping_bracket
-                  </td>
-                </tr>
-                <tr>
-                  <td class="bracket-border-top">
-                    <div class="row bracket-header-custom">
-                      <div class="col-md-8"><h5><label for="install_bracket">Install Bracket</label></h5></div>
-                      <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published" value="1" id="install_published" $install_published> <span class="c-indicator"></span> Published</label> </div>
-                    </div>
-                  </td>
-                  <td style="background-color: #eceeef;">&nbsp;</td>
-                  <td class="bracket-border-top">
-                    <div class="row bracket-header-custom">
-                      <div class="col-md-8"><h5><label for="pickmat_bracket">Pick & Materials Bracket</label></h5></div>
-                      <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pickmat_published" value="1" id="pickmat_bracket" $pickmat_published> <span class="c-indicator"></span> Published</label> </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="bracket-border-bottom">
-                    $install_bracket
-                  </td>
-                  <td style="background-color: #eceeef;">&nbsp;</td>
-                  <td class="bracket-border-bottom">
-                    $pickmat_bracket
-                  </td>
-                </tr>
-              </table>
+              <form id="bracketAdjustments" action="#">
+                <table width="100%" class="bracket-adjustment-table">
+                  <tr>
+                    <td style="width: 49.8%;" class="bracket-border-top">
+                      <div class="row bracket-header-custom">
+                        <div class="col-md-8"><h5><label for="sales_bracket">Sales Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" value="1" id="sales_published" $sales_published> <span class="c-indicator"></span> Published</label> </div>
+                      </div>
+                    </td>
+                    <td style="background-color:#eceeef;"></td>
+                    <td style="width: 49.8%;" class="bracket-border-top">
+                      <div class="row bracket-header-custom">
+                        <div class="col-md-8"><h5><label for="sample_bracket">Sample Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" value="1" id="sample_published" $sample_published> <span class="c-indicator"></span> Published</label> </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="bracket-border-bottom">
+                      $sales_bracket
+                    </td>
+                    <td style="background-color: #eceeef;">&nbsp;</td>
+                    <td class="bracket-border-bottom">
+                      $sample_bracket
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="bracket-border-top">
+                      <div class="row bracket-header-custom">
+                        <div class="col-md-8"><h5><label for="pre_prod_bracket">Pre-production Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="preprod_published" value="1" id="pre_prod_published" $preprod_published> <span class="c-indicator"></span> Published</label> </div>
+                      </div>
+                    </td>
+                    <td style="background-color: #eceeef;">&nbsp;</td>
+                    <td class="bracket-border-top">
+                      <div class="row bracket-header-custom">
+                        <div class="col-md-8"><h5><label for="door_drawer_bracket">Door/Drawer Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="doordrawer_published" value="1" id="doordrawer_published" $doordrawer_published> <span class="c-indicator"></span> Published</label> </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="bracket-border-bottom">
+                      $preprod_bracket
+                    </td>
+                    <td style="background-color: #eceeef;">&nbsp;</td>
+                    <td class="bracket-border-bottom">
+                      $doordrawer_bracket
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="bracket-border-top">
+                      <div class="row bracket-header-custom">
+                        <div class="col-md-8"><h5><label for="main_bracket">Main Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="main_published" value="1" id="main_published" $main_published> <span class="c-indicator"></span> Published</label> </div>
+                      </div>
+                    </td>
+                    <td style="background-color: #eceeef;">&nbsp;</td>
+                    <td class="bracket-border-top">
+                      <div class="row bracket-header-custom">
+                        <div class="col-md-8"><h5><label for="edgebanding_bracket">Edge Banding Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="edgebanding_published" value="1" id="edgebanding_bracket" $edgebanding_published> <span class="c-indicator"></span> Published</label> </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="bracket-border-bottom">
+                      $main_bracket
+                    </td>
+                    <td style="background-color: #eceeef;">&nbsp;</td>
+                    <td class="bracket-border-bottom">
+                      $edgebanding_bracket
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="bracket-border-top">
+                      <div class="row bracket-header-custom">
+                        <div class="col-md-8"><h5><label for="custom_bracket">Custom Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="custom_published" value="1" id="custom_published" $custom_published> <span class="c-indicator"></span> Published</label> </div>
+                      </div>
+                    </td>
+                    <td style="background-color: #eceeef;">&nbsp;</td>
+                    <td class="bracket-border-top">
+                      <div class="row bracket-header-custom">
+                        <div class="col-md-8"><h5><label for="shipping_bracket">Shipping Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shipping_published" value="1" id="shipping_published" $shipping_published> <span class="c-indicator"></span> Published</label> </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="bracket-border-bottom">
+                      $custom_bracket
+                    </td>
+                    <td style="background-color: #eceeef;">&nbsp;</td>
+                    <td class="bracket-border-bottom">
+                      $shipping_bracket
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="bracket-border-top">
+                      <div class="row bracket-header-custom">
+                        <div class="col-md-8"><h5><label for="install_bracket">Install Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published" value="1" id="install_published" $install_published> <span class="c-indicator"></span> Published</label> </div>
+                      </div>
+                    </td>
+                    <td style="background-color: #eceeef;">&nbsp;</td>
+                    <td class="bracket-border-top">
+                      <div class="row bracket-header-custom">
+                        <div class="col-md-8"><h5><label for="pickmat_bracket">Pick & Materials Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pickmat_published" value="1" id="pickmat_bracket" $pickmat_published> <span class="c-indicator"></span> Published</label> </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="bracket-border-bottom">
+                      $install_bracket
+                    </td>
+                    <td style="background-color: #eceeef;">&nbsp;</td>
+                    <td class="bracket-border-bottom">
+                      $pickmat_bracket
+                    </td>
+                  </tr>
+                </table>
+              </form>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary waves-effect waves-light" id="modalAppWSSave">Save</button>
+          <button type="button" class="btn btn-primary waves-effect waves-light" id="modalBracketSave">Save</button>
         </div>
       </div>
     </div>
 HEREDOC;
 
+    break;
+  case 'updateBracket':
+    parse_str($_REQUEST['bracket_status'], $bracket_info);
+    $ops = $_REQUEST['active_ops'];
+    $room_id = sanitizeInput($_REQUEST['roomID']);
+
+    $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = '$room_id' ORDER BY room, iteration ASC;");
+    $room = $room_qry->fetch_assoc();
+
+    // grab the operation that each bracket is on
+    $sales_op = empty(sanitizeInput($bracket_info['sales_bracket'])) ? 0 : sanitizeInput($bracket_info['sales_bracket']);
+    $sample_op = empty(sanitizeInput($bracket_info['sample_bracket'])) ? 0 : sanitizeInput($bracket_info['sample_bracket']);
+    $preprod_op = empty(sanitizeInput($bracket_info['preproduction_bracket'])) ? 0 : sanitizeInput($bracket_info['preproduction_bracket']);
+    $doordrawer_op = empty(sanitizeInput($bracket_info['doordrawer_bracket'])) ? 0 : sanitizeInput($bracket_info['doordrawer_bracket']);
+    $main_op = empty(sanitizeInput($bracket_info['main_bracket'])) ? 0 : sanitizeInput($bracket_info['main_bracket']);
+    $custom_op = empty(sanitizeInput($bracket_info['custom_bracket'])) ? 0 : sanitizeInput($bracket_info['custom_bracket']);
+    $shipping_op = empty(sanitizeInput($bracket_info['shipping_bracket'])) ? 0 : sanitizeInput($bracket_info['shipping_bracket']);
+    $install_op = empty(sanitizeInput($bracket_info['install_bracket'])) ? 0 : sanitizeInput($bracket_info['install_bracket']);
+    $pickmat_op = empty(sanitizeInput($bracket_info['pick_materials_bracket'])) ? 0 : sanitizeInput($bracket_info['pick_materials_bracket']);
+    $edgebanding_op = empty(sanitizeInput($bracket_info['edgebanding_bracket'])) ? 0 : sanitizeInput($bracket_info['edgebanding_bracket']);
+    // end of grabbing the current operation for each bracket
+
+    // determine if any of the above (current bracket operation) has changed
+    $changed[] = whatChanged($sales_op, $room['sales_bracket'], 'Sales Bracket', false, false, true);
+    $changed[] = whatChanged($sample_op, $room['sample_bracket'], 'Sample Bracket', false, false, true);
+    $changed[] = whatChanged($preprod_op, $room['preproduction_bracket'], 'Pre-Production Bracket', false, false, true);
+    $changed[] = whatChanged($doordrawer_op, $room['doordrawer_bracket'], 'Door/Drawer Bracket', false, false, true);
+    $changed[] = whatChanged($main_op, $room['main_bracket'], 'Main Bracket', false, false, true);
+    $changed[] = whatChanged($custom_op, $room['custom_bracket'], 'Custom Bracket', false, false, true);
+    $changed[] = whatChanged($shipping_op, $room['shipping_bracket'], 'Shipping Bracket', false, false, true);
+    $changed[] = whatChanged($install_op, $room['install_bracket'], 'Install Bracket', false, false, true);
+    $changed[] = whatChanged($pickmat_op, $room['pick_materials_bracket'], 'Pick & Materials Bracket', false, false, true);
+    $changed[] = whatChanged($edgebanding_op, $room['edgebanding_bracket'], 'Edge Banding Bracket', false, false, true);
+    // end of the current bracket operation changes
+
+    // grab the status of each bracket publish
+    $sales_pub = !empty($bracket_info['sales_published']) ? sanitizeInput($bracket_info['sales_published']) : 0;
+    $sample_pub = !empty($bracket_info['sample_published']) ? sanitizeInput($bracket_info['sample_published']) : 0;
+    $preprod_pub = !empty($bracket_info['preprod_published']) ? sanitizeInput($bracket_info['preprod_published']) : 0;
+    $doordrawer_pub = !empty($bracket_info['doordrawer_published']) ? sanitizeInput($bracket_info['doordrawer_published']) : 0;
+    $main_pub = !empty($bracket_info['main_published']) ? sanitizeInput($bracket_info['main_published']) : 0;
+    $custom_pub = !empty($bracket_info['custom_published']) ? sanitizeInput($bracket_info['custom_published']) : 0;
+    $shipping_pub = !empty($bracket_info['shipping_published']) ? sanitizeInput($bracket_info['shipping_published']) : 0;
+    $install_pub = !empty($bracket_info['install_published']) ? sanitizeInput($bracket_info['install_published']) : 0;
+    $pickmat_pub = !empty($bracket_info['pick_materials_published']) ? sanitizeInput($bracket_info['pickmat_published']) : 0;
+    $edgebanding_pub = !empty($bracket_info['edgebanding_published']) ? sanitizeInput($bracket_info['edgebanding_published']) : 0;
+    // end of the status of each bracket publish
+
+    // record the changes for the status of each bracket publish
+    $changed[] = whatChanged($sales_pub, $room['sales_published'], 'Sales Bracket', false, true);
+    $changed[] = whatChanged($sample_pub, $room['sample_published'], 'Sample Bracket', false, true);
+    $changed[] = whatChanged($preprod_pub, $room['preproduction_published'], 'Pre-Production Bracket', false, true);
+    $changed[] = whatChanged($doordrawer_pub, $room['doordrawer_published'], 'Door/Drawer Bracket', false, true);
+    $changed[] = whatChanged($main_pub, $room['main_published'], 'Main Bracket', false, true);
+    $changed[] = whatChanged($custom_pub, $room['custom_published'], 'Custom Bracket', false, true);
+    $changed[] = whatChanged($shipping_pub, $room['shipping_published'], 'Shipping Bracke', false, true);
+    $changed[] = whatChanged($install_pub, $room['install_bracket_published'], 'Install Bracket', false, true);
+    $changed[] = whatChanged($pickmat_pub, $room['pick_materials_published'], 'Pick & Materials Bracket', false, true);
+    $changed[] = whatChanged($edgebanding_pub, $room['edgebanding_published'], 'Edgebanding Bracket', false, true);
+    $changed[] = whatChanged($ops, $room['individual_bracket_buildout'], 'Active Bracket Operations');
+    // end of recording the changes for the status of each bracket publish
+
+    if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
+      if($dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op', edgebanding_bracket = '$edgebanding_op',
+      custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
+      preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', edgebanding_published = '$edgebanding_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
+      install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub' WHERE id = '$room_id'")) {
+        createOpQueue($sales_pub, 'Sales', $sales_op, $room_id);
+        createOpQueue($sample_pub, 'Sample', $sample_op, $room_id);
+        createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $room_id);
+        createOpQueue($doordrawer_pub, 'Drawer & Doors', $doordrawer_op, $room_id);
+        createOpQueue($main_pub, 'Main', $main_op, $room_id);
+        createOpQueue($custom_pub, 'Custom', $custom_op, $room_id);
+        createOpQueue($shipping_pub, 'Shipping', $shipping_op, $room_id);
+        createOpQueue($install_pub, 'Installation', $install_op, $room_id);
+        createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $room_id);
+        createOpQueue($edgebanding_pub, 'Edge Banding', $edgebanding_op, $room_id);
+
+        echo displayToast('success', 'The bracket and operations have been updated.', 'Brackets & Operations Updated');
+      } else {
+        dbLogSQLErr($dbconn);
+      }
+    } else {
+      dbLogSQLErr($dbconn);
+    }
 
     break;
 }

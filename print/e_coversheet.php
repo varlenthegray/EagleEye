@@ -506,7 +506,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         <tr>
           <td>&nbsp;</td>
           <td>&nbsp;</td>
-          <td class="border_thin_bottom">Door Panel Raise:</td>
+          <td class="border_thin_bottom" style="padding-left:15px;">Door Panel Raise:</td>
           <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_door']); ?></td>
           <td class="border_thin_bottom gray_bg">&nbsp;</td>
           <td class="border_thin_bottom gray_bg">&nbsp;</td>
@@ -516,7 +516,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         <tr>
           <td>&nbsp;</td>
           <td>&nbsp;</td>
-          <td class="border_thin_bottom">Short Drawer Raise:</td>
+          <td><divShort Drawer Raise:</td>
           <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_sd']); ?></td>
           <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
           <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
@@ -528,7 +528,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         <tr>
           <td>&nbsp;</td>
           <td>&nbsp;</td>
-          <td class="border_thin_bottom">Tall Drawer Raise:</td>
+          <td class="border_thin_bottom" style="padding-left:15px;">Tall Drawer Raise:</td>
           <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_td']); ?></td>
           <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
           <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>

@@ -99,7 +99,7 @@ $("body")
     var cab_list = JSON.stringify(getMiniTree(cabinetList));
     var cat_id = $("#catalog").find(":selected").attr("id");
 
-    $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=" + roomID, {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
+    $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=" + active_room_id, {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
       $("body").append(data);
     });
 
@@ -123,7 +123,7 @@ $("body")
 
     var customVals = JSON.stringify(val_array);
 
-    $.post("/ondemand/room_actions.php?action=update_room", {customVals: customVals, editInfo: edit_info, roomid: roomID}, function(data) {
+    $.post("/ondemand/room_actions.php?action=update_room", {customVals: customVals, editInfo: edit_info, roomid: active_room_id}, function(data) {
       $('body').append(data);
     }).done(function() {
       $(thisClick).addClass('edit_room_save');
@@ -149,7 +149,7 @@ $("body")
     var root = cabinetList.fancytree("getRootNode");
     let $tdList = $(root.tr).find(">td");
 
-    $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: $(this).attr('data-id'), room_id: roomID}, function(data) {
+    $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: $(this).attr('data-id'), room_id: active_room_id}, function(data) {
       let itemInfo = JSON.parse(data);
 
       let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
@@ -189,7 +189,7 @@ $("body")
     let cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
     let cat_id = $("#catalog").find(":selected").attr("id");
 
-    $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=" + roomID, {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
+    $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=" + active_room_id, {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
       $("body").append(data);
     });
   })
@@ -209,7 +209,7 @@ $("body")
     let thisEle = $(this);
     let infoPopup = $(".info-popup");
 
-    $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: thisEle.data('id'), room_id: roomID}, function(data) {
+    $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: thisEle.data('id'), room_id: active_room_id}, function(data) {
       let result = JSON.parse(data);
 
       if(result.image !== null) {
@@ -296,7 +296,7 @@ $("body")
       type: 'red',
       buttons: {
         yes: function() {
-          $.post("/html/pricing/ajax/item_actions.php?action=submitQuote&room_id=" + roomID, {cabinet_list: cab_list}, function(data) {
+          $.post("/html/pricing/ajax/item_actions.php?action=submitQuote&room_id=" + active_room_id, {cabinet_list: cab_list}, function(data) {
             $("body").append(data);
           }).done(function() {
             button.val("Submitted").prop("disabled", true);
@@ -351,27 +351,27 @@ $("body")
     });
   })
   .on("click", "#global_info", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=modalGlobals&roomID=" + roomID, function(data) {
+    $.post("/html/pricing/ajax/global_actions.php?action=modalGlobals&roomID=" + active_room_id, function(data) {
       $("#modalGeneral").html(data).modal("show");
     });
   })
   .on("click", "#modalGlobalsUpdate", function() {
     let globalInfo = $("#modalGlobalData").serialize();
 
-    $.post("/html/pricing/ajax/global_actions.php?action=updateGlobals&roomID=" + roomID, {globalInfo: globalInfo}, function(data) {
+    $.post("/html/pricing/ajax/global_actions.php?action=updateGlobals&roomID=" + active_room_id, {globalInfo: globalInfo}, function(data) {
       $("body").append(data);
       $("#modalGeneral").html("").modal('hide');
     });
   })
   .on("click", "#appliance_ws", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=modalApplianceWS&roomID=" + roomID, function(data) {
+    $.post("/html/pricing/ajax/global_actions.php?action=modalApplianceWS&roomID=" + active_room_id, function(data) {
       $("#modalGeneral").html(data).modal("show");
     });
   })
   .on("click", "#modalAppWSSave", function() {
     var formInfo = $("#appliance_info").serialize();
 
-    $.post("/ondemand/room_actions.php?action=save_app_worksheet&room=" + roomID + "&" + formInfo, function(data) {
+    $.post("/ondemand/room_actions.php?action=save_app_worksheet&room=" + active_room_id + "&" + formInfo, function(data) {
       if(data !== 'false') {
         $(".print_app_ws").attr("id", data);
         displayToast("success", "Successfully saved worksheet information.", "Worksheet Saved");
@@ -385,9 +385,21 @@ $("body")
     unsaved = false;
   })
   .on("click", "#bracket_management", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=modalBracketMgmt&roomID=" + roomID, function(data) {
+    $.post("/html/pricing/ajax/global_actions.php?action=modalBracketMgmt&roomID=" + active_room_id, function(data) {
       $("#modalGeneral").html(data).modal("show");
     });
+  })
+  .on("click", "#modalBracketSave", function() {
+    var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
+    var bracket_status = $("#bracketAdjustments").serialize();
+
+    active_ops = JSON.stringify(active_ops);
+
+    $.post("/html/pricing/ajax/global_actions.php?action=updateBracket&roomID=" + active_room_id, {active_ops: active_ops, bracket_status: bracket_status}, function(data) {
+      $('body').append(data);
+    });
+
+    $("#modalGeneral").html("").modal("hide");
   })
 ;
 
@@ -404,344 +416,3 @@ $("#modalAddModification").on("show.bs.modal", function() {
   itemModifications.fancytree("getTree").reload(modificationTree);
 });
 
-$(function() {
-  /******************************************************************************
-   *  Cabinet List
-   ******************************************************************************/
-  cabinetList.fancytree({
-    select: function(event, data) { // TODO: Determine if this is valuable
-      // Display list of selected nodes
-      var selNodes = data.tree.getSelectedNodes();
-      // convert to title/key array
-      var selKeys = $.map(selNodes, function(node){
-        return "[" + node.key + "]: '" + node.title + "'";
-      });
-
-      // console.log(selKeys.join(", "));
-
-      if(selKeys.length > 0) {
-        $("#catalog_remove_checked").show();
-      } else {
-        $("#catalog_remove_checked").hide();
-      }
-    },
-    imagePath: "/assets/images/cabinet_icons/",
-    cookieId: "fancytree-cabList",
-    idPrefix: "fancytree-cabList-",
-    checkbox: true,
-    titlesTabbable: true,     // Add all node titles to TAB chain
-    quicksearch: true,        // Jump to nodes when pressing first character
-    source: { url: "/html/pricing/ajax/item_actions.php?action=getCabinetList&room_id=" + roomID },
-    extensions: ["edit", "dnd", "table", "gridnav", "persist"],
-    debugLevel: 0,
-    dnd: { // drag and drop
-      preventVoidMoves: true,
-      preventRecursiveMoves: true,
-      autoExpandMS: 400,
-      dragStart: function(node, data) {
-        return true;
-      },
-      dragEnter: function(node, data) {
-        // return ["before", "after"];
-        return true;
-      },
-      dragDrop: function(node, data) {
-        data.otherNode.moveTo(node, data.hitMode);
-      }
-    },
-    edit: {
-      triggerStart: ["clickActive", "f2", "shift+click", "mac+enter"],
-      close: function(event, data) {
-        if( data.save && data.isNew ){
-          // Quick-enter: add new nodes until we hit [enter] on an empty title
-          cabinetList.trigger("nodeCommand", {cmd: "addSibling"});
-        }
-      }
-    },
-    table: {
-      indentation: 20,
-      nodeColumnIdx: 3,
-      checkboxColumnIdx: 0
-    },
-    gridnav: {
-      autofocusInput: false,
-      handleCursorKeys: true
-    },
-    renderColumns: function(event, data) {
-      // this section handles the column data itself
-      var node = data.node, $tdList = $(node.tr).find(">td");
-
-      // lets begin by getting the quantity and the total and multiplying them
-      let qty = parseInt(node.data.qty);
-      let price = parseFloat(node.data.price);
-      let line_total = qty * price;
-
-      // (Index #0 is rendered by fancytree by adding the checkbox)
-      // Set column #1 info from node data:
-      $tdList.eq(1).text(node.getIndexHier());
-      // (Index #2 is the quantity input field)
-      $tdList.eq(2).find("input").attr("id", node.key).val(node.data.qty);
-      // (Index #3 is rendered by fancytree in child table under nodeColumnIdx)
-      // (Index #4 is the width)
-
-      $tdList.eq(4).text(node.data.name);
-
-      $tdList.eq(5).text(node.data.width);
-      // (Index #5 is the height)
-      $tdList.eq(6).text(node.data.height);
-      // (Index #6 is the depth)
-      $tdList.eq(7).text(node.data.depth);
-      // (Index #7 is price, calculated below)
-
-      if(node.data.hinge !== undefined) {
-        $tdList.eq(8).find(".item_hinge").val(node.data.hinge);
-      }
-
-      if(node.data.finish !== undefined) {
-        $tdList.eq(9).find(".item_finish").val(node.data.finish);
-      }
-
-      if(!isNaN(price)) {
-        // (Index #7)
-        $tdList.eq(10).text(price.formatMoney()).removeAttr("style title"); // price column
-
-        $(".no_global_info").css("display", "none");
-        
-        if(!already_submitted) {
-          $("#submit_for_quote").attr("disabled", false).attr("title", "");
-        }
-      } else {
-        $tdList.eq(10).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
-        $tdList.eq(11).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to properly calculate total.");
-
-        $("#submit_for_quote").attr("disabled", true).attr("title", "Unknown global attributes, unable to submit.");
-
-        $(".no_global_info").css("display", "block");
-      }
-
-      // (Index #8)
-      $tdList.eq(11).text(node.data.total);
-    },
-    modifyChild: function(event, data) {
-      recalcTotal();
-    }
-  }).on("nodeCommand", function(event, data){
-    // Custom event handler that is triggered by keydown-handler and
-    // context menu:
-    var refNode, moveMode,
-      tree = $(this).fancytree("getTree"),
-      node = tree.getActiveNode();
-
-    switch( data.cmd ) {
-      case "moveUp":
-        refNode = node.getPrevSibling();
-        if( refNode ) {
-          node.moveTo(refNode, "before");
-          node.setActive();
-        }
-        break;
-      case "moveDown":
-        refNode = node.getNextSibling();
-        if( refNode ) {
-          node.moveTo(refNode, "after");
-          node.setActive();
-        }
-        break;
-      case "indent":
-        refNode = node.getPrevSibling();
-        if( refNode ) {
-          node.moveTo(refNode, "child");
-          refNode.setExpanded();
-          node.setActive();
-        }
-        break;
-      case "outdent":
-        if( !node.isTopLevel() ) {
-          node.moveTo(node.getParent(), "after");
-          node.setActive();
-        }
-        break;
-      case "rename":
-        node.editStart();
-        break;
-      case "remove":
-        refNode = node.getNextSibling() || node.getPrevSibling() || node.getParent();
-        node.remove();
-        if( refNode ) {
-          refNode.setActive();
-        }
-        break;
-      case "addModifications":
-        $("#modalAddModification").modal('show');
-        break;
-      case "cut":
-        CLIPBOARD = {mode: data.cmd, data: node};
-        break;
-      case "copy":
-        CLIPBOARD = {
-          mode: data.cmd,
-          data: node.toDict(function(n){
-            delete n.key;
-          })
-        };
-        break;
-      case "clear":
-        CLIPBOARD = null;
-        break;
-      case "paste":
-        if( CLIPBOARD.mode === "cut" ) {
-          // refNode = node.getPrevSibling();
-          CLIPBOARD.data.moveTo(node, "child");
-          CLIPBOARD.data.setActive();
-        } else if( CLIPBOARD.mode === "copy" ) {
-          node.addChildren(CLIPBOARD.data).setActive();
-        }
-        break;
-      default:
-        alert("Unhandled command: " + data.cmd);
-        return;
-    }
-  }).on("keydown", function(e){
-    var cmd = null;
-
-    // console.log(e.type, $.ui.fancytree.eventToString(e));
-    switch( $.ui.fancytree.eventToString(e) ) {
-      case "ctrl+shift+n":
-      case "meta+shift+n": // mac: cmd+shift+n
-        cmd = "addChild";
-        break;
-      case "ctrl+c":
-      case "meta+c": // mac
-        cmd = "copy";
-        break;
-      case "ctrl+v":
-      case "meta+v": // mac
-        cmd = "paste";
-        break;
-      case "ctrl+x":
-      case "meta+x": // mac
-        cmd = "cut";
-        break;
-      case "ctrl+n":
-      case "meta+n": // mac
-        cmd = "addSibling";
-        break;
-      case "del":
-      case "meta+backspace": // mac
-        cmd = "remove";
-        break;
-      // case "f2":  // already triggered by ext-edit pluging
-      //   cmd = "rename";
-      //   break;
-      case "ctrl+up":
-        cmd = "moveUp";
-        break;
-      case "ctrl+down":
-        cmd = "moveDown";
-        break;
-      case "ctrl+right":
-      case "ctrl+shift+right": // mac
-        cmd = "indent";
-        break;
-      case "ctrl+left":
-      case "ctrl+shift+left": // mac
-        cmd = "outdent";
-    }
-    if( cmd ){
-      $(this).trigger("nodeCommand", {cmd: cmd});
-      return false;
-    }
-  });
-
-  // Context menu (https://github.com/mar10/jquery-ui-contextmenu)
-  cabinetList.contextmenu({
-    delegate: "span.fancytree-node",
-    menu: [
-      {title: "Delete <kbd>[Del]</kbd>", cmd: "remove", uiIcon: "ui-icon-trash" },
-      {title: "----"},
-      {title: "Add Modifications <kbd>[Ctrl+M]</kbd>", cmd: "addModifications", uiIcon: "ui-icon-plus" },
-      {title: "----"},
-      {title: "Cut <kbd>Ctrl+X</kbd>", cmd: "cut", uiIcon: "ui-icon-scissors"},
-      {title: "Copy <kbd>Ctrl-C</kbd>", cmd: "copy", uiIcon: "ui-icon-copy"},
-      {title: "Paste<kbd>Ctrl+V</kbd>", cmd: "paste", uiIcon: "ui-icon-clipboard", disabled: true }
-    ],
-    beforeOpen: function(event, ui) {
-      var node = $.ui.fancytree.getNode(ui.target);
-      cabinetList.contextmenu("enableEntry", "paste", !!CLIPBOARD);
-      node.setActive();
-    },
-    select: function(event, ui) {
-      var that = this;
-      // delay the event, so the menu can close and the click event does
-      // not interfere with the edit control
-      setTimeout(function(){
-        $(that).trigger("nodeCommand", {cmd: ui.cmd});
-      }, 100);
-    }
-  });
-
-  /******************************************************************************
-   *  Navigation menu
-   ******************************************************************************/
-
-  // this is the navigation menu on the left side
-  catalog.fancytree({
-    source: { url: "/html/pricing/ajax/nav_menu.php" },
-    extensions: ["filter"],
-    debugLevel: 0,
-    filter: {
-      autoApply: true,   // Re-apply last filter if lazy data is loaded
-      autoExpand: true, // Expand all branches that contain matches while filtered
-      counter: true,     // Show a badge with number of matching child nodes near parent icons
-      fuzzy: true,      // Match single characters in order, e.g. 'fb' will match 'FooBar'
-      hideExpandedCounter: true,  // Hide counter badge if parent is expanded
-      hideExpanders: false,       // Hide expanders if all child nodes are hidden by filter
-      highlight: true,   // Highlight matches by wrapping inside <mark> tags
-      leavesOnly: false, // Match end nodes only
-      nodata: false,      // Display a 'no data' status node if result is empty
-      mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
-    }
-  });
-
-  // this is the modifications modal popup
-  itemModifications.fancytree({
-    source: { url: "/html/pricing/ajax/modifications.php" },
-    extensions: ["filter"],
-    debugLevel: 0,
-    filter: {
-      autoApply: true,   // Re-apply last filter if lazy data is loaded
-      autoExpand: true, // Expand all branches that contain matches while filtered
-      counter: true,     // Show a badge with number of matching child nodes near parent icons
-      fuzzy: true,      // Match single characters in order, e.g. 'fb' will match 'FooBar'
-      hideExpandedCounter: true,  // Hide counter badge if parent is expanded
-      hideExpanders: false,       // Hide expanders if all child nodes are hidden by filter
-      highlight: true,   // Highlight matches by wrapping inside <mark> tags
-      leavesOnly: false, // Match end nodes only
-      nodata: true,      // Display a 'no data' status node if result is empty
-      mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
-    }
-  });
-
-  if($("#ext_carcass_same").is(":checked")) {
-    $(".ext_finish_block").hide();
-  } else {
-    $(".ext_finish_block").show();
-  }
-
-  if($("#int_carcass_same").is(":checked")) {
-    $(".int_finish_block").hide();
-  } else {
-    $(".int_finish_block").show();
-  }
-
-  if($("#submit_for_quote").prop("disabled")) {
-    $.confirm({
-      title: "Item List Submitted.",
-      content: "You are unable to save this form. It has already been submitted. Please check with your representative if you require any modifications.",
-      type: 'red',
-      buttons: {
-        ok: function() {}
-      }
-    });
-  }
-});

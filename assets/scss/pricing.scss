@@ -113,6 +113,10 @@
   .pricing_table_format {
     padding-left: 15px;
   }
+
+  .no_global_info {
+    margin: 15px 0;
+  }
 }
 
 .fancytree-title {
@@ -230,12 +234,6 @@
     &:last-of-type {
       right: 1%;
     }
-  }
-}
-
-@media screen {
-  .no_global_info {
-    margin: 15px 0;
   }
 }
 
