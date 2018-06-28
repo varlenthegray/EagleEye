@@ -106,7 +106,7 @@
         $server = explode(".", $_SERVER['HTTP_HOST']);
 
         if($server[0] === 'dev') {
-            echo "<style>
+            echo '<style>
                         body {
                             background-color: #750909 !important;
                         }
@@ -122,7 +122,7 @@
                         .footer {
                             background-color: #750909 !important;
                         }
-                    </style>";
+                    </style>';
         } else {
             echo "<script>$.fn.dataTable.ext.errMode = 'throw';</script>";
         }

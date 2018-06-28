@@ -26,44 +26,16 @@ function determineOpts() {
 
   switch($("#construction_method").val()) {
     case 'C': // cam
-      if($("#drawer_box_mount").val() === 'U') { //
-        hideOption("U");
-        hideOption("G");
-        hideOption("T");
-      } else {
-        hideOption("U");
-        hideOption("H");
-        hideOption("K");
-        hideOption("B");
-        hideOption("M");
-        hideOption("G");
-        hideOption("T");
-        hideOption("F");
-        hideOption("MA");
-        hideOption("BI");
-        hideOption("HA");
-      }
-      break;
-    case 'P':
-      if($("#drawer_box_mount").val() === 'U') {
-        hideOption("G");
-        hideOption("T");
-      } else {
-        hideOption("U");
-        hideOption("H");
-        hideOption("K");
-        hideOption("B");
-        hideOption("BI");
-        hideOption("M");
-        hideOption("G");
-        hideOption("T");
-        hideOption("MA");
-        hideOption("HA");
-      }
+      hideOption("A4");
+      hideOption("A5");
+      hideOption("A6");
+      hideOption("A7");
+      hideOption("A8");
+      hideOption("A9");
       break;
     default:
-      hideOption("V");
-      hideOption("W");
+      hideOption("A2");
+      hideOption("A3");
       break;
   }
 }

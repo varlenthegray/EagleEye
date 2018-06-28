@@ -21,176 +21,11 @@ $dealer_info = $dealer_qry->fetch_assoc();
 $sheen_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' AND `key` = '{$info['sheen']}'");
 $sheen = $sheen_qry->fetch_assoc();
 
-function displayVINOpts($segment, $db_col = null, $id = null) {
-  global $vin_schema;
-  global $room;
 
-  // assigns SEGMENT = VIN Schema column (panel_raise) of which there may be multiple pulled from VIN SCHEMA, DB_COL of which there is only one (panel_raise_sd, stored in ROOMS table)
-  $dblookup = !empty($db_col) ? $db_col : $segment;
-  $addl_id = !empty($id) ? "id = '$id'" : null; // for duplicate values (panel_raise vs panel_raise_sd)
-  $options = null;
-  $option_grid = null;
 
-  $prev_header = null;
-  $section_head = null;
 
-  $selected = '';
 
-  foreach($vin_schema[$segment] as $value) {
-    if(((string)$value['key'] === (string)$room[$dblookup]) && empty($selected)) {
-      $selected = $value['value'];
-      $selected_img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
-      $sel_key = $value['key'];
-    }
 
-    if((bool)$value['visible']) {
-      $img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
-
-      if ($value['group'] !== $prev_header) {
-        $section_head = "<div class='header'>{$value['group']}</div>";
-        $prev_header = $value['group'];
-      } else {
-        $section_head = null;
-      }
-
-      $options .= "$section_head <div class='option' data-value='{$value['key']}'>{$value['value']} $img</div>";
-
-      if(!empty($value['subitems'])) {
-        $subitems = json_decode($value['subitems']);
-        $option_grid .= "$section_head <div class='grid_element' data-value='{$value['key']}'><div class='header'>{$value['value']}</div>$img";
-
-        foreach($subitems as $key => $item) {
-          $options .= "<div class='option sub_option' data-value='{$key}'>{$item}</div>";
-          $option_grid .= "<div class='option sub_option' data-value='{$key}'>{$item}</div>";
-        }
-
-        $option_grid .= '</div>';
-      } else {
-        $option_grid .= "$section_head <div class='grid_element option' data-value='{$value['key']}'><div class='header'>{$value['value']}</div>$img</div>";
-      }
-    }
-  }
-
-  $selected = empty($selected) ? 'Not Selected Yet' : $selected;
-
-  echo "<div class='custom_dropdown' $addl_id>";
-  echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
-  echo "<div class='dropdown_options' data-for='$dblookup'>";
-  echo "<div class='option_list'>$options</div>";
-  echo "<div class='option_grid'>$option_grid</div>";
-  echo "</div><input type='hidden' value='$sel_key' id='{$dblookup}' name='{$dblookup}' /><div class='clearfix'></div></div>";
-}
-
-function displayFinishOpts($segment, $db_col = null, $id = null) {
-  global $vin_schema;
-  global $room;
-
-  // assigns SEGMENT = VIN Schema column (panel_raise) of which there may be multiple pulled from VIN SCHEMA, DB_COL of which there is only one (panel_raise_sd, stored in ROOMS table)
-  $dblookup = !empty($db_col) ? $db_col : $segment;
-  $addl_id = !empty($id) ? $id : $dblookup; // for duplicate values (panel_raise vs panel_raise_sd)
-  $options = null;
-  $option_grid = null;
-
-  $prev_header = null;
-  $section_head = null;
-
-  $selected = '';
-
-  foreach($vin_schema[$segment] as $value) {
-    if(((string)$value['key'] === (string)$room[$dblookup]) && empty($selected)) {
-      $selected = $value['value'];
-      $selected_img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
-      $sel_key = $value['key'];
-    }
-
-    if((bool)$value['visible']) {
-      $img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
-
-      if ($value['group'] !== $prev_header) {
-        $section_head = "<div class='header'>{$value['group']}</div>";
-        $prev_header = $value['group'];
-      } else {
-        $section_head = null;
-      }
-
-      $options .= "$section_head <div class='option' data-value='{$value['key']}' data-display-text=\"{$value['value']}\">{$value['value']} $img</div>";
-
-      if(!empty($value['imagemap_coords']) && false !== strpos($value['imagemap_coords'], '[')) {
-        $multimap = json_decode($value['imagemap_coords']);
-
-        foreach($multimap AS $map) {
-          $option_grid .= "<area shape='rect' class='option sub_option' style='display:none;' coords='$map' href='#' onclick='return false;' data-value='{$value['key']}' data-display-text=\"{$value['value']}\" />";
-        }
-      } else {
-        $option_grid .= "<area shape='rect' class='option sub_option' style='display:none;' coords='{$value['imagemap_coords']}' onclick='return false;' href='#' data-value='{$value['key']}' data-display-text=\"{$value['value']}\" />";
-      }
-    }
-  }
-
-  $selected = empty($selected) ? 'Not Selected Yet' : $selected;
-
-  $option_grid = "<img src='/assets/images/sample_display.jpg' width='778' height='800' border='0' usemap='#{$dblookup}_map' style='max-width:800px;max-height:800px;' /><map name='{$dblookup}_map' class='grid_element'>$option_grid</map>";
-
-  echo "<div class='custom_dropdown'>";
-  echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
-  echo "<div class='dropdown_options' data-for='$dblookup'>";
-  echo "<div class='option_list'>$options</div>";
-  echo "<div class='option_grid'>$option_grid</div>";
-  echo "</div><input type='hidden' value='$sel_key' id='{$dblookup}' name='{$dblookup}' /><div class='clearfix'></div></div>";
-
-  /*echo "<div class='custom_dropdown' $addl_id>";
-  echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
-  echo "<div class='dropdown_options' data-for='$dblookup'>";
-  echo "<div class='option_list'>$options</div>";
-  echo "<div class='option_grid'>$options_grid</div>";
-  echo "</div><input type='hidden' value='$selected' id='$dblookup' name='$dblookup' /><div class='clearfix'></div></div>";*/
-}
-
-function translateVIN($segment, $key) {
-  global $dbconn;
-  global $info;
-
-  $output = array();
-
-  $custom_keys = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX'];
-
-  if($segment === 'finish_code') {
-    $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
-  } else {
-    $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
-  }
-
-  $vin = $vin_qry->fetch_assoc();
-
-  $mfg = '';
-  $code = '';
-  $name = '';
-  $desc = '';
-
-  if(!empty($info['custom_vin_info'])) {
-    if(in_array($key, $custom_keys, true)) {
-      $custom_info = json_decode($info['custom_vin_info'], true);
-
-      if(count($custom_info[$segment]) > 1) {
-        foreach($custom_info[$segment] as $key2 => $value) {
-          $mfg = false !== stripos($key2, 'mfg') ? $value : $mfg;
-          $code = false !== stripos($key2, 'code') ? $value : $code;
-          $name = false !== stripos($key2, 'name') ? $value : $name;
-        }
-
-        $desc = $name;
-      } else {
-        $desc = 'Custom - ' . array_values($custom_info[$segment])[0];
-      }
-    } else {
-      $desc = $vin['value'];
-    }
-  } else {
-    $desc = $vin['value'];
-  }
-
-  return $desc;
-}
 
 $note_arr = array();
 
@@ -332,67 +167,57 @@ if(!empty($existing_quote['quote_submission'])) {
                 <form id="cabinet_specifications" method="post" action="#">
                   <table class="pull-left" style="width:33%;margin-left:0.3%;">
                     <tr>
-                      <th colspan="2" style="padding-left:5px;">Design<label class="c-input c-checkbox pull-right" style="color:#FFF;margin-top:2px;padding-right:13px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th>
+                      <th style="padding-left:5px;" width="70%">Design<label class="c-input c-checkbox pull-right" style="color:#FFF;margin-top:2px;padding-right:13px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th>
                       <th>Pct</th>
                       <th>Cost</th>
                     </tr>
                     <tr class="border_top">
-                      <td class="border_thin_bottom" width="40%"><label for="species_grade_<?php echo $room['id']; ?>">Species/Grade:</label></td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('species_grade'); ?></td>
+                      <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc"><?php displayVINOpts('species_grade'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Construction:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('construction_method'); ?></td>
+                      <td class="border_thin_bottom">Construction:<div class="cab_specifications_desc"><?php displayVINOpts('construction_method'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Door Design:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('door_design'); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
+                      <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php displayVINOpts('door_design'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom" style="padding-left:10px;">Door Panel Raise:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
+                      <td class="border_thin_bottom" style="padding-left:10px;">Door Panel Raise:<div class="cab_specifications_desc"><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom" style="padding-left:10px;">Short Drawer Raise:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
+                      <td class="border_thin_bottom" style="padding-left:10px;">Short Drawer Raise:<div class="cab_specifications_desc"><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom" style="padding-left:10px;">Tall Drawer Raise:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
+                      <td class="border_thin_bottom" style="padding-left:10px;">Tall Drawer Raise:<div class="cab_specifications_desc"><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Style/Rail Width:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('style_rail_width'); ?></td>
+                      <td class="border_thin_bottom">Style/Rail Width:<div class="cab_specifications_desc"><?php displayVINOpts('style_rail_width'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Edge Profile:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('edge_profile'); ?></td>
+                      <td class="border_thin_bottom">Edge Profile:<div class="cab_specifications_desc"><?php displayVINOpts('edge_profile'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Framing Bead:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('framing_bead'); ?></td>
+                      <td class="border_thin_bottom">Framing Bead:<div class="cab_specifications_desc"><?php displayVINOpts('framing_bead'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Frame Option:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('framing_options'); ?></td>
+                      <td class="border_thin_bottom">Frame Option:<div class="cab_specifications_desc"><?php displayVINOpts('framing_options'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
@@ -403,54 +228,46 @@ if(!empty($existing_quote['quote_submission'])) {
                       <td colspan="2">&nbsp;</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Drawer Box:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('drawer_boxes'); ?></td>
+                      <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc"><?php displayVINOpts('drawer_boxes'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                   </table>
 
                   <table class="pull-left" style="width:33%;margin-left:0.3%;">
-                    <tr><th colspan="4" style="padding-left:5px;">Finish</th></tr>
+                    <tr><th colspan="3" style="padding-left:5px;">Finish</th></tr>
                     <tr class="border_top">
-                      <td class="border_thin_bottom" width="40%">Finish Code:</td>
-                      <td class="border_thin_bottom"><?php displayFinishOpts("finish_code", "finish_code"); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="finish_code_pm" value="">)</span></td>
+                      <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc"><?php displayFinishOpts("finish_code", "finish_code"); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Sheen:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('sheen'); ?></td>
+                      <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc"><?php displayVINOpts('sheen'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Glaze Color:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('glaze'); ?></td>
+                      <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc"><?php displayVINOpts('glaze'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Glaze Technique:</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique'); ?></td>
+                      <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc"><?php displayVINOpts('glaze_technique'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Antiquing</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('antiquing'); ?></td>
+                      <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc"><?php displayVINOpts('antiquing'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Worn Edges</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('worn_edges'); ?></td>
+                      <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc"><?php displayVINOpts('worn_edges'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>
                     <tr>
-                      <td class="border_thin_bottom">Distressing</td>
-                      <td class="border_thin_bottom"><?php displayVINOpts('distress_level'); ?></td>
+                      <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc"><?php displayVINOpts('distress_level'); ?></div></td>
                       <td class="border_thin_bottom">0.00%</td>
                       <td class="border_thin_bottom">$0.00</td>
                     </tr>

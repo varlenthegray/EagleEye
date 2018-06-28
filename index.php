@@ -61,15 +61,15 @@ require 'includes/header_start.php';
     <script src="/assets/plugins/select2/js/select2.min.js"></script>
 
     <?php
-    $server = explode(".", $_SERVER['HTTP_HOST']);
+    $server = explode('.', $_SERVER['HTTP_HOST']);
 
     if($server[0] === 'dev') {
-      echo "<style>body, html, .account-pages, #topnav .topbar-main, .footer {background-color: #750909 !important; }</style>";
+      echo '<style>body, html, .account-pages, #topnav .topbar-main, .footer {background-color: #750909 !important; }</style>';
     } else {
 //      echo "<script>$.fn.dataTable.ext.errMode = 'throw';</script>";
     }
 
-    if(stristr($_SERVER["REQUEST_URI"],  'inset_sizing.php')) {
+    if(false !== stripos($_SERVER['REQUEST_URI'], 'inset_sizing.php')) {
       echo '<link href="/assets/css/inset_sizing.css" rel="stylesheet">';
     }
     ?>
@@ -1365,7 +1365,7 @@ require 'includes/header_start.php';
   <script src="/assets/js/jquery.nicescroll.js"></script>
 
   <!-- custom dropdown -->
-  <script src="/includes/js/custom_dropdown.js"></script>
+  <script src="/includes/js/custom_dropdown.min.js?v=<?php echo VERSION; ?>"></script>
 
   <!-- Toastr setup -->
   <script src="/assets/plugins/toastr/toastr.min.js"></script>

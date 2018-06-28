@@ -67,7 +67,8 @@ HEREDOC;
             <ul class='submenu'>
                 <li id='#'><a href='/assets/pdf/vin_sheet.pdf' target="_blank"><i class='zmdi zmdi-globe-alt m-r-5'></i>VIN Sheet</a></li>
                 <li id='#'><a href='/assets/pdf/dealer_sheet.pdf' target="_blank"><i class='zmdi zmdi-pin-account m-r-5'></i>Dealer Sheet</a></li>
-                <li id='#'><a href='/assets/pdf/preprod_checklist.pdf' target="_blank"><i class='fa fa-list m-r-5'></i>Pre-production Checklist</a></li>
+                <!--<li id='#'><a href='/assets/pdf/preprod_checklist.pdf' target="_blank"><i class='fa fa-list m-r-5'></i>Pre-production Checklist</a></li>-->
+                <li id='#'><a href='/assets/pdf/global_upcharges.pdf' target="_blank"><i class='fa fa-dollar m-r-5'></i>Global Upcharges</a></li>
             </ul>
         </li>
 HEREDOC;
