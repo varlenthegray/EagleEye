@@ -181,12 +181,14 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
 
   $selected = empty($selected) ? 'Not Selected Yet' : $selected;
 
-  echo "<div class='custom_dropdown' $addl_id>";
-  echo "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
-  echo "<div class='dropdown_options' data-for='$dblookup'>";
-  echo "<div class='option_list'>$options</div>";
-  echo "<div class='option_grid'>$option_grid</div>";
-  echo "</div><input type='hidden' value='$sel_key' id='{$dblookup}' name='{$dblookup}' /><div class='clearfix'></div></div>";
+  $final_out = "<div class='custom_dropdown' $addl_id>";
+  $final_out .= "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
+  $final_out .=  "<div class='dropdown_options' data-for='$dblookup'>";
+  $final_out .= "<div class='option_list'>$options</div>";
+  $final_out .= "<div class='option_grid'>$option_grid</div>";
+  $final_out .= "</div><input type='hidden' value='$sel_key' id='{$dblookup}' name='{$dblookup}' /><div class='clearfix'></div></div>";
+
+  return $final_out;
 }
 
 function displayFinishOpts($segment, $db_col = null, $id = null) {

@@ -180,12 +180,12 @@ echo "<script>
                                     </tr>
                                     <tr>
                                         <td><label for="product_type">Product Type</label></td>
-                                        <td><?php displayVINOpts('product_type', null, 'dropdown_p_type'); ?></td>
+                                        <td><?php echo displayVINOpts('product_type', null, 'dropdown_p_type'); ?></td>
                                     </tr>
                                     <?php if($bouncer->validate('change_order_status')) { ?>
                                         <tr>
                                             <td><label for="order_status">Order Status</label></td>
-                                            <td><?php displayVINOpts('order_status'); ?></td>
+                                            <td><?php echo displayVINOpts('order_status'); ?></td>
                                         </tr>
                                     <?php } else {
                                         echo "<input type='hidden' name='order_status' id='order_status' value='{$room['order_status']}'>";
@@ -193,14 +193,14 @@ echo "<script>
                                     <?php if($bouncer->validate('view_dealer_status')) { ?>
                                         <tr>
                                             <td><label for="order_status">Status</label></td>
-                                            <td><?php displayVINOpts('dealer_status'); ?></td>
+                                            <td><?php echo displayVINOpts('dealer_status'); ?></td>
                                         </tr>
                                     <?php } else {
                                         echo "<input type='hidden' name='dealer_status' id='edit_dealer_status_{$room['room']}_so_{$result['so_num']}' value='{$room['dealer_status']}'>";
                                     } ?>
                                     <tr>
                                         <td><label for="days_to_ship">Days to Ship</label></td>
-                                        <td><?php displayVINOpts('days_to_ship'); ?></td>
+                                        <td><?php echo displayVINOpts('days_to_ship'); ?></td>
                                     </tr>
                                     <?php if(!(bool)$_SESSION['userInfo']['dealer']) {  ?>
                                     <tr>
@@ -264,15 +264,15 @@ echo "<script>
                                     </tr>
                                     <tr>
                                         <td><label for="species_grade_<?php echo $room['id']; ?>">Species</label></td>
-                                        <td><?php displayVINOpts('species_grade'); ?></td>
+                                        <td><?php echo displayVINOpts('species_grade'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="construction_method_<?php echo $room['id']; ?>">Construction Method</label></td>
-                                        <td><?php displayVINOpts('construction_method'); ?></td>
+                                        <td><?php echo displayVINOpts('construction_method'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="door_design_<?php echo $room['id']; ?>">Door Design</label></td>
-                                        <td><?php displayVINOpts('door_design'); ?></td>
+                                        <td><?php echo displayVINOpts('door_design'); ?></td>
                                     </tr>
                                     <tr style="height:10px;">
                                         <td colspan="2"></td>
@@ -282,62 +282,62 @@ echo "<script>
                                     </tr>
                                     <tr>
                                         <td style="padding-left:20px;"><label for="panel_raise_door_<?php echo $room['id']; ?>">Door</label></td>
-                                        <td><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
+                                        <td><?php echo displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
                                     </tr>
                                     <tr>
                                         <td style="padding-left:20px;"><label for="panel_raise_sd_<?php echo $room['id']; ?>">Short Drawer</label></td>
-                                        <td><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
+                                        <td><?php echo displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
                                     </tr>
                                     <tr>
                                         <td style="padding-left:20px;"><label for="panel_raise_td_<?php echo $room['id']; ?>">Tall Drawer</label></td>
-                                        <td><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
+                                        <td><?php echo displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="edge_profile_<?php echo $room['id']; ?>">Edge Profile</label></td>
-                                        <td><?php displayVINOpts('edge_profile'); ?></td>
+                                        <td><?php echo displayVINOpts('edge_profile'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="framing_bead_<?php echo $room['id']; ?>">Framing Bead</label></td>
-                                        <td><?php displayVINOpts('framing_bead'); ?></td>
+                                        <td><?php echo displayVINOpts('framing_bead'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="framing_options_<?php echo $room['id']; ?>">Framing Options</label></td>
-                                        <td><?php displayVINOpts('framing_options'); ?></td>
+                                        <td><?php echo displayVINOpts('framing_options'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="style_rail_width_<?php echo $room['id']; ?>">Style/Rail Width</label></td>
-                                        <td><?php displayVINOpts('style_rail_width'); ?></td>
+                                        <td><?php echo displayVINOpts('style_rail_width'); ?></td>
                                     </tr>
                                     <tr>
                                         <td colspan="2">&nbsp;</td>
                                     </tr>
                                     <tr>
                                         <td><label for="finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                                        <td><?php displayVINOpts('finish_code'); ?></td>
+                                        <td><?php echo displayVINOpts('finish_code'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="sheen_<?php echo $room['id']; ?>">Sheen</label></td>
-                                        <td><?php displayVINOpts('sheen'); ?></td>
+                                        <td><?php echo displayVINOpts('sheen'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="glaze_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                                        <td><?php displayVINOpts('glaze'); ?></td>
+                                        <td><?php echo displayVINOpts('glaze'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                                        <td><?php displayVINOpts('glaze_technique'); ?></td>
+                                        <td><?php echo displayVINOpts('glaze_technique'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="antiquing_<?php echo $room['id']; ?>">Antiquing</label></td>
-                                        <td><?php displayVINOpts('antiquing'); ?></td>
+                                        <td><?php echo displayVINOpts('antiquing'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="worn_edges_<?php echo $room['id']; ?>">Worn Edges</label></td>
-                                        <td><?php displayVINOpts('worn_edges'); ?></td>
+                                        <td><?php echo displayVINOpts('worn_edges'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="distress_level_<?php echo $room['id']; ?>">Distress Level</label></td>
-                                        <td><?php displayVINOpts('distress_level'); ?></td>
+                                        <td><?php echo displayVINOpts('distress_level'); ?></td>
                                     </tr>
                                     <tr style="height:10px;">
                                         <td colspan="2"></td>
@@ -347,19 +347,19 @@ echo "<script>
                                     </tr>
                                     <tr>
                                         <td><label for="carcass_exterior_species_<?php echo $room['id']; ?>">Species</label></td>
-                                        <td><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
+                                        <td><?php echo displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="carcass_exterior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                                        <td><?php displayVINOpts('finish_code', 'carcass_exterior_finish_code'); ?></td>
+                                        <td><?php echo displayVINOpts('finish_code', 'carcass_exterior_finish_code'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="carcass_exterior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                                        <td><?php displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
+                                        <td><?php echo displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="carcass_exterior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                                        <td><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
+                                        <td><?php echo displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
                                     </tr>
                                     <tr style="height:10px;">
                                         <td colspan="2"></td>
@@ -369,19 +369,19 @@ echo "<script>
                                     </tr>
                                     <tr>
                                         <td><label for="carcass_interior_species_<?php echo $room['id']; ?>">Species</label></td>
-                                        <td><?php displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
+                                        <td><?php echo displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="carcass_interior_finish_code_<?php echo $room['id']; ?>">Finish Code</label></td>
-                                        <td><?php displayVINOpts('finish_code', 'carcass_interior_finish_code'); ?></td>
+                                        <td><?php echo displayVINOpts('finish_code', 'carcass_interior_finish_code'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="carcass_interior_glaze_color_<?php echo $room['id']; ?>">Glaze Color</label></td>
-                                        <td><?php displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
+                                        <td><?php echo displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
                                     </tr>
                                     <tr>
                                         <td><label for="carcass_interior_glaze_technique_<?php echo $room['id']; ?>">Glaze Technique</label></td>
-                                        <td><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?>
+                                        <td><?php echo displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?>
                                         </td>
                                     </tr>
                                     <tr style="height:10px;">
@@ -392,7 +392,7 @@ echo "<script>
                                     </tr>
                                     <tr>
                                         <td><label for="drawer_boxes_<?php echo $room['id']; ?>">Drawer Boxes</label></td>
-                                        <td><?php displayVINOpts('drawer_boxes'); ?></td>
+                                        <td><?php echo displayVINOpts('drawer_boxes'); ?></td>
                                     </tr>
                                     <tr style="height:10px;">
                                         <td colspan="2"></td>

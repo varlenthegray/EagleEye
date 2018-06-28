@@ -257,12 +257,12 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                   <?php } ?>
                   <tr>
                     <td><label for="product_type">Product Type</label></td>
-                    <td><?php displayVINOpts('product_type', null, 'dropdown_p_type'); ?></td>
+                    <td><?php echo displayVINOpts('product_type', null, 'dropdown_p_type'); ?></td>
                   </tr>
                   <?php if($bouncer->validate('change_order_status')) { ?>
                     <tr>
                       <td><label for="order_status">Order Status</label></td>
-                      <td><?php displayVINOpts('order_status'); ?></td>
+                      <td><?php echo displayVINOpts('order_status'); ?></td>
                     </tr>
                   <?php } else {
                     echo "<input type='hidden' name='order_status' id='order_status' value='{$room['order_status']}'>";
@@ -270,14 +270,14 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                   <?php if($bouncer->validate('view_dealer_status')) { ?>
                     <tr>
                       <td><label for="order_status">Status</label></td>
-                      <td><?php displayVINOpts('dealer_status'); ?></td>
+                      <td><?php echo displayVINOpts('dealer_status'); ?></td>
                     </tr>
                   <?php } else {
                     echo "<input type='hidden' name='dealer_status' id='edit_dealer_status_{$room['room']}_so_{$result['so_num']}' value='{$room['dealer_status']}'>";
                   } ?>
                   <tr>
                     <td><label for="days_to_ship">Days to Ship</label></td>
-                    <td><?php displayVINOpts('days_to_ship'); ?></td>
+                    <td><?php echo displayVINOpts('days_to_ship'); ?></td>
                   </tr>
                   <?php if(!(bool)$_SESSION['userInfo']['dealer']) { ?>
                     <tr>
@@ -552,39 +552,39 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 <tr><td colspan="2" class='gray_bg' style="padding-left:5px;"><?php echo ($info['construction_method'] !== 'L') ? "Door/Drawer Head" : null; ?></td></tr>
                 <tr class="border_top">
                   <td class="border_thin_bottom" width="40%"><label for="species_grade_<?php echo $room['id']; ?>">Species/Grade:</label></td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('species_grade'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('species_grade'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Construction:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('construction_method'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('construction_method'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Door Design:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('door_design'); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('door_design'); ?> <span class="pull-right arh_highlight">(<input type="text" style="width:80px;text-align:center;" class="arh_highlight static_width" name="dd_custom_pm" value="">)</span></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Door Panel Raise:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('panel_raise', 'panel_raise_door'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Short Drawer Raise:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('panel_raise', 'panel_raise_sd'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Tall Drawer Raise:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('panel_raise', 'panel_raise_td'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Edge Profile:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('edge_profile'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('edge_profile'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Framing Bead:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('framing_bead'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('framing_bead'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Frame Option:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('framing_options'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('framing_options'); ?></td>
                 </tr>
                 <tr>
                   <td colspan="2">&nbsp;</td>
@@ -594,7 +594,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Drawer Box:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('drawer_boxes'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('drawer_boxes'); ?></td>
                 </tr>
               </table>
 
@@ -607,27 +607,27 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Sheen:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('sheen'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('sheen'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Glaze Color:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('glaze'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('glaze'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Glaze Technique:</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('glaze_technique'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Antiquing</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('antiquing'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('antiquing'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Worn Edges</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('worn_edges'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('worn_edges'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom">Distressing</td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('distress_level'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('distress_level'); ?></td>
                 </tr>
                 <tr>
                   <td colspan="2" class='gray_bg border_thin_bottom'>Carcass<div class="text-mini">Default is UV2 Maple unless otherwise modified as a line item below.</div></td>
@@ -639,7 +639,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 </tr>
                 <tr class="ext_finish_block">
                   <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('carcass_species', 'carcass_exterior_species'); ?></td>
                 </tr>
                 <tr class="ext_finish_block">
                   <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
@@ -647,11 +647,11 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 </tr>
                 <tr class="ext_finish_block">
                   <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('glaze', 'carcass_exterior_glaze_color'); ?></td>
                 </tr>
                 <tr class="ext_finish_block">
                   <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('glaze_technique', 'carcass_exterior_glaze_technique'); ?></td>
                 </tr>
                 <tr>
                   <td class="border_thin_bottom"><strong>Interior:</strong></td>
@@ -659,7 +659,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 </tr>
                 <tr class="int_finish_block">
                   <td class="border_thin_bottom"><div style="padding-left:20px;">Species:</div></td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('carcass_species', 'carcass_interior_species'); ?></td>
                 </tr>
                 <tr class="int_finish_block">
                   <td class="border_thin_bottom"><div style="padding-left:20px;">Finish Code:</div></td>
@@ -667,11 +667,11 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 </tr>
                 <tr class="int_finish_block">
                   <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Color:</div></td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('glaze', 'carcass_interior_glaze_color'); ?></td>
                 </tr>
                 <tr class="int_finish_block">
                   <td class="border_thin_bottom"><div style="padding-left:20px;">Glaze Technique:</div></td>
-                  <td class="border_thin_bottom"><?php displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?></td>
+                  <td class="border_thin_bottom"><?php echo displayVINOpts('glaze_technique', 'carcass_interior_glaze_technique'); ?></td>
                 </tr>
               </table>
 

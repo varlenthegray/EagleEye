@@ -364,17 +364,3 @@ $("body")
   })
 
 ;
-
-$("#modalAddModification").on("show.bs.modal", function() {
-  $("#modificationsFilter").val('');
-  itemModifications.fancytree("getTree").clearFilter();
-
-  let modificationTree = {
-    url: "/html/pricing/ajax/modifications.php?itemID=" + cabinetList.fancytree("getTree").getActiveNode().data.itemID,
-    type: "POST",
-    dataType: 'json'
-  };
-
-  itemModifications.fancytree("getTree").reload(modificationTree);
-});
-

@@ -1,4 +1,8 @@
 @media print {
+  body {
+    font-size: 7pt;
+  }
+
   .no-print {
     display: none !important;
   }
@@ -158,7 +162,7 @@
   }
 
   .border_thin_bottom {
-    border: solid #000 !important;
+    border: dotted #000 !important;
     border-width: 0 0 1px 0 !important;
   }
 

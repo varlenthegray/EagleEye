@@ -142,12 +142,22 @@
   border: none;
 }
 
-.pricing_table_format input[type="checkbox"]+label:before {
-  margin: 0.15em 0 0 -1.5em !important;
-}
+.pricing_table_format {
+  .center_header {
+    text-align: center;
 
-.pricing_table_format input[type="checkbox"]:checked+label:before {
-  content: '' !important;
+    #company_info {
+      font-size: .8em;
+    }
+  }
+
+  input[type="checkbox"]+label:before {
+    margin: 0.15em 0 0 -1.5em !important;
+  }
+
+  input[type="checkbox"]:checked+label:before {
+    content: '' !important;
+  }
 }
 
 .checkbox label {
@@ -262,3 +272,4 @@
 .cab_specifications_desc {
   padding-left: 20px;
 }
+

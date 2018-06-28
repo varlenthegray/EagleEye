@@ -54,7 +54,7 @@ HEREDOC;
         $nav_out .= $bouncer->validate('view_sales_list') ? "<li id='nav_sales_list'><a onclick='unloadPage(\"sales_list\")'><i class='zmdi zmdi-accounts-list m-r-5'></i>Sales List</a></li>" : null;
         $nav_out .= $bouncer->validate('view_timecards') ? "<li id='nav_timecard'><a><i class='zmdi zmdi-time m-r-5'></i>Timecards</a></li>" : null;
 
-        $nav_out .= "</ul></li>";
+        $nav_out .= '</ul></li>';
     }
 
     $nav_out .= $bouncer->validate('view_employees') ? "<li id='nav_employees'><a href='employees.php'><i class='zmdi zmdi-account-circle m-r-5'></i><span>Employees</span></a></li>" : null;
@@ -69,6 +69,7 @@ HEREDOC;
                 <li id='#'><a href='/assets/pdf/dealer_sheet.pdf' target="_blank"><i class='zmdi zmdi-pin-account m-r-5'></i>Dealer Sheet</a></li>
                 <!--<li id='#'><a href='/assets/pdf/preprod_checklist.pdf' target="_blank"><i class='fa fa-list m-r-5'></i>Pre-production Checklist</a></li>-->
                 <li id='#'><a href='/assets/pdf/global_upcharges.pdf' target="_blank"><i class='fa fa-dollar m-r-5'></i>Global Upcharges</a></li>
+                <li id='#'><a href='/assets/pdf/global_upcharges.pdf' target="_blank"><i class='fa fa-home m-r-5'></i>Room/Sequence/Iteration</a></li>
             </ul>
         </li>
 HEREDOC;
