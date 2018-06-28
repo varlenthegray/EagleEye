@@ -21,12 +21,6 @@ $dealer_info = $dealer_qry->fetch_assoc();
 $sheen_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' AND `key` = '{$info['sheen']}'");
 $sheen = $sheen_qry->fetch_assoc();
 
-
-
-
-
-
-
 $note_arr = array();
 
 $notes_qry = $dbconn->query("SELECT * FROM notes WHERE (note_type = 'room_note_delivery' OR note_type = 'room_note_global' OR note_type = 'room_note_fin_sample') AND type_id = '$room_id'");
@@ -173,53 +167,53 @@ if(!empty($existing_quote['quote_submission'])) {
                     </tr>
                     <tr class="border_top">
                       <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc"><?php displayVINOpts('species_grade'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="sg_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="sg_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Construction:<div class="cab_specifications_desc"><?php displayVINOpts('construction_method'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="const_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="const_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php displayVINOpts('door_design'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="dd_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="dd_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom" style="padding-left:10px;">Door Panel Raise:<div class="cab_specifications_desc"><?php displayVINOpts('panel_raise', 'panel_raise_door'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="dpr_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="dpr_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom" style="padding-left:10px;">Short Drawer Raise:<div class="cab_specifications_desc"><?php displayVINOpts('panel_raise', 'panel_raise_sd'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="sdr_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="sdr_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom" style="padding-left:10px;">Tall Drawer Raise:<div class="cab_specifications_desc"><?php displayVINOpts('panel_raise', 'panel_raise_td'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="tdr_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="tdr_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Style/Rail Width:<div class="cab_specifications_desc"><?php displayVINOpts('style_rail_width'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="srw_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="srw_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Edge Profile:<div class="cab_specifications_desc"><?php displayVINOpts('edge_profile'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="ep_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="ep_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Framing Bead:<div class="cab_specifications_desc"><?php displayVINOpts('framing_bead'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="fb_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="fb_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Frame Option:<div class="cab_specifications_desc"><?php displayVINOpts('framing_options'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="fo_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="fo_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td colspan="2">&nbsp;</td>
@@ -229,8 +223,8 @@ if(!empty($existing_quote['quote_submission'])) {
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc"><?php displayVINOpts('drawer_boxes'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="db_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="db_amt">$0.00</td>
                     </tr>
                   </table>
 
@@ -238,38 +232,38 @@ if(!empty($existing_quote['quote_submission'])) {
                     <tr><th colspan="3" style="padding-left:5px;">Finish</th></tr>
                     <tr class="border_top">
                       <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc"><?php displayFinishOpts("finish_code", "finish_code"); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="fc_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="fc_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc"><?php displayVINOpts('sheen'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="sheen_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="sheen_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc"><?php displayVINOpts('glaze'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="gc_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="gc_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc"><?php displayVINOpts('glaze_technique'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="gt_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="gt_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc"><?php displayVINOpts('antiquing'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="ant_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="ant_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc"><?php displayVINOpts('worn_edges'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="we_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="we_amt">$0.00</td>
                     </tr>
                     <tr>
                       <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc"><?php displayVINOpts('distress_level'); ?></div></td>
-                      <td class="border_thin_bottom">0.00%</td>
-                      <td class="border_thin_bottom">$0.00</td>
+                      <td class="border_thin_bottom" id="dist_pct">0.00%</td>
+                      <td class="border_thin_bottom" id="dist_amt">$0.00</td>
                     </tr>
                   </table>
 
@@ -282,9 +276,9 @@ if(!empty($existing_quote['quote_submission'])) {
                     <tr>
                       <td style="vertical-align:top !important;"><strong>Ship To:</strong></td>
                       <td rowspan="3">
-                        <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
-                        <input type="text" style="width:125px;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
-                        <input type="text" style="width:76px;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:30px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+                        <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
+                        <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
+                        <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
                       </td>
                     </tr>
                   </table>

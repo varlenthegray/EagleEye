@@ -8,15 +8,6 @@ $id = sanitizeInput($_REQUEST['room_id']);
 $info_qry = $dbconn->query("SELECT sales_order.*, rooms.* FROM rooms LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num WHERE rooms.id = '$id'");
 $info = $info_qry->fetch_assoc();
 
-function translateVIN($segment, $key) {
-    global $dbconn;
-
-    $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
-    $vin = $vin_qry->fetch_assoc();
-
-    return ($vin['value'] === '') ? "<span class='highlight'>_____________</span><br />" : $vin['value'];
-}
-
 function displayOrder($ordered_var, $human_name) {
     if(!empty($ordered_var)) {
         if($ordered_var > 1) {

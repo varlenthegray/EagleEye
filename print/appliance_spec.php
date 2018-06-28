@@ -14,20 +14,6 @@ $info = $info_qry->fetch_assoc();
 $dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$info['dealer_code']}'");
 $dealer_info = $dealer_qry->fetch_assoc();
 
-function translateVIN($segment, $key) {
-    global $dbconn;
-
-    if($segment === 'finish_code') {
-        $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
-    } else {
-        $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
-    }
-
-    $vin = $vin_qry->fetch_assoc();
-
-    return "{$key} = {$vin['value']}";
-}
-
 $const_method = translateVIN("construction_method", $ws['const_method']);
 
 $note_arr = array();

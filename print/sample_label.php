@@ -23,24 +23,6 @@ $room = $room_qry->fetch_assoc();
 
 $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
 $so = $so_qry->fetch_assoc();
-
-function translateVIN($segment, $key) {
-    global $dbconn;
-
-    if($segment === 'finish_code') {
-        $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
-    } else {
-        $vin_qry = $dbconn->query("SELECT `value` FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
-    }
-
-    if($vin_qry->num_rows === 1) {
-        $vin = $vin_qry->fetch_assoc();
-    } else {
-        $vin = null;
-    }
-
-    return "{$key} = {$vin['value']}";
-}
 ?>
 
 <html>

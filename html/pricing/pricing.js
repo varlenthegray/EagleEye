@@ -362,6 +362,7 @@ $("body")
 
     $("#modalGeneral").html("").modal("hide");
   })
+
 ;
 
 $("#modalAddModification").on("show.bs.modal", function() {

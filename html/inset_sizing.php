@@ -10,24 +10,6 @@ if($room_qry->num_rows === 1) {
     $room = $room_qry->fetch_assoc();
 }
 
-function translateVIN($segment, $key) {
-    global $dbconn;
-
-    if($segment === 'finish_code') {
-        $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
-    } else {
-        $vin_qry = $dbconn->query("SELECT `value` FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
-    }
-
-    if($vin_qry->num_rows === 1) {
-        $vin = $vin_qry->fetch_assoc();
-    } else {
-        $vin = null;
-    }
-
-    return "{$key} = {$vin['value']}";
-}
-
 $style_rail_qry = $dbconn->query("SELECT value FROM vin_schema WHERE `key` = '{$room['style_rail_width']}' AND segment = 'style_rail_width'");
 $style_rail = $style_rail_qry->fetch_assoc();
 
