@@ -11,7 +11,7 @@ require '../php/catalog.php';
 
 use catalog\catalog as Catalog;
 
-outputPHPErrs();
+//outputPHPErrs();
 
 $vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
  FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC");
@@ -425,7 +425,7 @@ HEREDOC;
                     <td><label for="room">Room</label></td>
                     <td>
                       <input type="text" class="form-control" id="room_letter" name="room_letter" placeholder="Room" value="{$room['room']}" style="float:left;width:15%;" readonly>
-                      <input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name" value="{$room['room_name']}" style="float:left;width:82.5%;margin-left:5px;">
+                      <input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name" value="{$room['room_name']}" style="float:left;width:80%;margin-left:5px;">
                     </td>
                   </tr>
                   <tr>
