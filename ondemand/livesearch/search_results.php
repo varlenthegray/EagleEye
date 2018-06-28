@@ -26,20 +26,7 @@ function determineColor($room, $bracket) {
   }
 }
 
-function displayVINOpts($segment) {
-  global $vin_schema;
-  global $room;
 
-  foreach($vin_schema[$segment] as $key => $value) {
-    if($key === $room[$segment]) {
-      $selected = "selected";
-    } else {
-      $selected = ($key === $room[$segment] && empty($room[$segment])) ? "selected" : null;
-    }
-
-    echo "<option value='$key' $selected>$value ($key)</option>";
-  }
-}
 
 function getBracketInfo($bracket, $opID, $room) {
   global $dbconn;
