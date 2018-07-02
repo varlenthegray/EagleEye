@@ -107,7 +107,7 @@ $("body")
     //<editor-fold desc="Room Data">
     var val_array = {};
     var cabinet_specifications = $("#cabinet_specifications").serialize();
-    var customVals = JSON.stringify(val_array);
+    var customVals = null;
     var accounting_notes = $("#accounting_notes").serialize();
     var cab_list = JSON.stringify(getMiniTree(cabinetList));
 
@@ -124,6 +124,10 @@ $("body")
         });
       }
     });
+
+    customVals = JSON.stringify(val_array);
+
+    console.log("Custom Vals:" + customVals);
 
     $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes}, function(data) {
       $('body').append(data);

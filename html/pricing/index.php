@@ -244,9 +244,9 @@ if(!empty($existing_quote['quote_submission'])) {
                 <td colspan="3" style="height:5px;"></td>
               </tr>
               <tr>
-                <td colspan="3" style="padding-left:5px;">
+                <td colspan="3" style="padding-left:2px;">
                   <input type="checkbox" name="terms_deposit" id="terms_deposit"> <label for="terms_deposit">A 50% deposit will be drafted within 24 hours.</label><br />
-                  <input type="checkbox" name="terms_outbound_date" id="terms_outbound_date"> <label for="terms_outbound_date">Shipping/delivery date cannot be confirmed until signature.</label><br />
+                  <input type="checkbox" name="terms_outbound_date" id="terms_outbound_date"> <label for="terms_outbound_date">Shipping/delivery date confirmed once deposit is received.</label><br />
                   <input type="checkbox" name="terms_final_payment" id="terms_final_payment"> <label for="terms_final_payment">Final payment is due prior to delivery.</label>
                 </td>
               </tr>
@@ -509,7 +509,7 @@ if(!empty($existing_quote['quote_submission'])) {
                 <td class="text-md-right total_text">$0.00<span id="final_net"></span></td>
               </tr>
               <tr class="border_thin_bottom">
-                <td class="total_text">Delivery:</td>
+                <td class="total_text">Shipping:</td>
                 <td class="total_text">&nbsp;</td>
                 <td class="text-md-right total_text">$0.00<span id="final_net"></span></td>
               </tr>
@@ -1096,5 +1096,17 @@ if(!empty($existing_quote['quote_submission'])) {
     });
     
     $(".room_note_log").hide();
+
+    <?php echo !empty($room['custom_vin_info']) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}')": null; ?>
+
+    productTypeSwitch();
+
+    <?php if (!empty($room['custom_vin_info'])) { ?>
+    $.each(customFieldInfo, function(mainID, value) {
+      $.each(value, function(i, v) {
+        $("#" + mainID).parent().find(".selected").find("input[name='" + i + "']").val(v);
+      });
+    });
+    <?php } ?>
   });
 </script>
