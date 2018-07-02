@@ -101,12 +101,12 @@
   #notes_section textarea {
     margin: 0;
     padding: 2px;
-    width: calc(100% - 4px);
+    width: 100%;
     text-align: left;
   }
 
   #delivery_notes, #global_notes {
-    width: 33%;
+    width: 100%;
     border-right: 1px solid #000;
   }
 

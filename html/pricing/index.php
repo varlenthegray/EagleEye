@@ -119,9 +119,22 @@ if(!empty($existing_quote['quote_submission'])) {
     <div class="col-md-8 pricing_table_format">
       <div class="row">
         <div class="col-sm-4">
-          <h3><?php echo translateVIN('order_status', $room['order_status']); ?></h3>
-
-          <h5><?php echo $result['project_name'] . ' - ' . $room['room_name']; ?></h5>
+          <table width="100%">
+            <tr>
+              <td colspan="2"><h3><?php echo translateVIN('order_status', $room['order_status']); ?></h3></td>
+            </tr>
+            <tr>
+              <td colspan="2"><h5><?php echo $result['project_name'] . ' - ' . $room['room_name']; ?></h5></td>
+            </tr>
+            <tr>
+              <td width="15%">Dealer:</td>
+              <td class="text-bold"><?php echo "{$dealer_info['dealer_id']}_{$dealer_info['dealer_name']} - {$dealer_info['contact']}"; ?></td>
+            </tr>
+            <tr>
+              <td>SO:</td>
+              <td class="text-bold"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></td>
+            </tr>
+          </table>
         </div>
 
         <div class="col-sm-4 center_header">
@@ -139,12 +152,12 @@ if(!empty($existing_quote['quote_submission'])) {
         <div class="col-sm-2 col-sm-offset-2">
           <table>
             <tr>
-              <td># of Pages:</td>
-              <td>1</td>
+              <td width="80px"># of Pages:</td>
+              <td class="text-bold">1</td>
             </tr>
             <tr>
               <td>Printed:</td>
-              <td>06/28/2018</td>
+              <td class="text-bold">06/28/2018</td>
             </tr>
           </table>
         </div>
@@ -356,7 +369,7 @@ if(!empty($existing_quote['quote_submission'])) {
         </form>
       </div>
 
-      <div class="row" style="margin-top:5px;">
+      <div class="row" id="notes_section" style="margin-top:5px;">
         <div class="col-sm-4">
           <table width="100%">
             <tr><th>&nbsp;Notes</th></tr>
