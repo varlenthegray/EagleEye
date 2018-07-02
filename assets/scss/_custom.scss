@@ -1019,3 +1019,10 @@ h5 {
     color: darken($brand-danger, 15%);
   }
 }
+
+// adjustments for editing the room, TABLES!
+.tr_room_actions {
+  table, td, th {
+    border: 0 none;
+  }
+}

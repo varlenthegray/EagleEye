@@ -11,7 +11,7 @@
   }
 
   body {
-    padding: 5mm 5mm 5mm 15mm !important;
+    padding: 5mm 5mm 5mm 12mm !important;
     color: #000 !important;
 
     a {
@@ -100,3 +100,15 @@
   padding-left: 5px;
 }
 /** End custom definitions */
+
+.esig {
+  font-family: 'Marck Script', cursive !important;
+  font-weight: bold;
+  font-size: 1.25em;
+  background-color: #FFF !important;
+}
+
+.esig_id {
+  font-size: .75em;
+  text-align: right;
+}

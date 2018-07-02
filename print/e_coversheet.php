@@ -447,16 +447,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <?php
         }
         ?>
-        <tr>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td class="border_thin_bottom">Drawer Box Mount:</td>
-          <td class="border_thin_bottom"><?php echo translateVIN('drawer_box_mount', $info['drawer_box_mount']); ?></td>
-          <td class="border_thin_bottom gray_bg">&nbsp;</td>
-          <td class="border_thin_bottom gray_bg">&nbsp;</td>
-          <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
-          <td class="text-md-right border_thin_bottom gray_bg subtotal">&nbsp;</td>
-        </tr>
         <tr class="border_double_bottom">
           <td>&nbsp;</td>
           <td>&nbsp;</td>

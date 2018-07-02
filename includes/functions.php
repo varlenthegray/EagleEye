@@ -170,7 +170,7 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
           $option_grid .= "<div class='option sub_option' data-value='{$key}'>{$item}</div>";
         }
 
-        $option_grid .= "</div>";
+        $option_grid .= '</div>';
       } else {
         $options .= "$section_head <div class='option' data-value='{$value['key']}'>{$value['value']} $img</div>";
 

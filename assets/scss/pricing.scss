@@ -150,14 +150,6 @@
       font-size: .8em;
     }
   }
-
-  input[type="checkbox"]+label:before {
-    margin: 0.15em 0 0 -1.5em !important;
-  }
-
-  input[type="checkbox"]:checked+label:before {
-    content: '' !important;
-  }
 }
 
 .checkbox label {
@@ -270,6 +262,56 @@
 }
 
 .cab_specifications_desc {
-  padding-left: 20px;
+  padding-left: 10px;
 }
 
+h5 {
+  padding-bottom: 5px;
+}
+
+.summary_of_charges {
+  .left_header {
+    background-color: #000;
+    transform: rotate(90deg);
+    transform-origin: left top 0;
+    float: left;
+    width: 229px;
+    color: #FFF;
+    padding-bottom: .25em;
+    text-align: center;
+
+    h5 {
+      transform: rotate(-180deg);
+    }
+  }
+
+  table {
+    border-top: 4px double #000;
+    border-right: 1px solid #000;
+    margin-top: -2em;
+
+    td {
+      padding-left: 4px;
+    }
+  }
+}
+
+@media print {
+  .summary_of_charges {
+    .left_header {
+      width: 162px;
+    }
+
+    table {
+      margin-top: -2.45em;
+    }
+  }
+
+  h5 {
+    font-size: 1.25em;
+  }
+
+  .th_17 {
+    height: 17px;
+  }
+}

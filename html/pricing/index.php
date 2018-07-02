@@ -67,6 +67,7 @@ if(!empty($existing_quote['quote_submission'])) {
 ?>
 
 <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
+<link href="https://fonts.googleapis.com/css?family=Marck+Script" rel="stylesheet">
 
 <script>
   <?php echo !empty($submit_disabled) ? 'var already_submitted = true;' : 'var already_submitted = false;'; ?>
@@ -116,14 +117,14 @@ if(!empty($existing_quote['quote_submission'])) {
     </div>
 
     <div class="col-md-8 pricing_table_format">
-      <!--<div class="row">
-        <div class="col-md-4">
-          <h3><?php /*echo translateVIN('order_status', $room['order_status']); */?></h3>
+      <div class="row">
+        <div class="col-sm-4">
+          <h3><?php echo translateVIN('order_status', $room['order_status']); ?></h3>
 
-          <h5><?php /*echo $result['project_name'] . ' - ' . $room['room_name']; */?></h5>
+          <h5><?php echo $result['project_name'] . ' - ' . $room['room_name']; ?></h5>
         </div>
 
-        <div class="col-md-4 center_header">
+        <div class="col-sm-4 center_header">
           <div id="logo"><img src="/assets/images/smc_logo.png" width="140px" /></div>
 
           <div id="company_info">
@@ -135,7 +136,7 @@ if(!empty($existing_quote['quote_submission'])) {
           </div>
         </div>
 
-        <div class="col-md-2 col-md-offset-2">
+        <div class="col-sm-2 col-sm-offset-2">
           <table>
             <tr>
               <td># of Pages:</td>
@@ -150,226 +151,234 @@ if(!empty($existing_quote['quote_submission'])) {
       </div>
 
       <div class="row">
-        <div class="col-md-4">
-          <h5><u>Global: Room Details</u></h5>
+        <form id="cabinet_specifications" method="post" action="#">
+          <div class="col-sm-4 gray_bg" style="border-radius:.25rem;border:1px solid #000;padding-bottom:25px;">
+            <h5><u>Global: Room Details</u></h5>
 
+            <table width="100%">
+              <colgroup>
+                <col width="30%">
+                <col width="60%">
+                <col width="10%">
+              </colgroup>
+              <tr>
+                <th colspan="3">&nbsp;</th>
+              </tr>
+              <tr>
+                <td>Product Type:</td>
+                <td><?php echo displayVINOpts('product_type'); ?></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Production Status:</td>
+                <td><?php echo displayVINOpts('days_to_ship'); ?></td>
+                <td>$0.00</td>
+              </tr>
+              <tr>
+                <td>Ship Date:</td>
+                <td><strong><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : '---'; ?></strong></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Delivery Date:</td>
+                <td><strong><?php echo date(DATE_DEFAULT, $room['delivery_date']); ?></strong></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Ship VIA:</td>
+                <td><?php echo displayVINOpts('ship_via'); ?></td>
+                <td>$0.00</td>
+              </tr>
+              <tr rowspan="3">
+                <td style="vertical-align:top !important;">Ship To:</td>
+                <td colspan="2">
+                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
+                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
+                  <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+                </td>
+              </tr>
+              <tr>
+                <td>Shipping Zone:</td>
+                <td><strong>A (0-100 Miles)</strong></td>
+                <td>$0.00</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="height:2px;"></td>
+              </tr>
+              <tr>
+                <td>Payment Method:</td>
+                <td><?php echo displayVINOpts('payment_method', null, null, 'ACH'); ?></td>
+                <td>$0.00</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="height:5px;"></td>
+              </tr>
+              <tr>
+                <td style="vertical-align:top !important;">Signature:</td>
+                <td colspan="2"><input type="text" class="esig" name="signature" placeholder="Signature affirms the following:" style="width:100%;border:1px dashed #000;padding:3px;" /></td>
+              </tr>
+              <tr>
+                <td colspan="3" class="esig_id">
+                  <?php
+                   $ip = $_SERVER['REMOTE_ADDR'];
+                   $time = date(DATE_TIME_ABBRV);
+
+                   echo "IP: $ip ($time)";
+                  ?>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3" style="height:5px;"></td>
+              </tr>
+              <tr>
+                <td colspan="3" style="padding-left:5px;">
+                  <input type="checkbox" name="terms_deposit" id="terms_deposit"> <label for="terms_deposit">A 50% deposit will be drafted within 24 hours.</label><br />
+                  <input type="checkbox" name="terms_outbound_date" id="terms_outbound_date"> <label for="terms_outbound_date">Shipping/delivery date cannot be confirmed until signature.</label><br />
+                  <input type="checkbox" name="terms_final_payment" id="terms_final_payment"> <label for="terms_final_payment">Final payment is due prior to delivery.</label>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3"><input type="button" class="btn btn-warning waves-effect waves-light no-print pull-right" id="terms_confirm" value="Sign & Agree"></td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="col-sm-8">
+            <div class="col-md-12">
+              <div class="global_cab_header"><h5><u>Global: Cabinet Details</u></h5></div>
+            </div>
+
+            <div class="col-sm-6">
+              <table width="100%">
+                <tr>
+                  <th style="padding-left:5px;" width="70%">Design<label class="c-input c-checkbox pull-right" style="color:#FFF;margin-top:2px;padding-right:13px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th>
+                  <th>Pct</th>
+                  <th>Cost</th>
+                </tr>
+                <tr class="border_top">
+                  <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc"><?php echo displayVINOpts('species_grade'); ?></div></td>
+                  <td class="border_thin_bottom"></td>
+                  <td class="border_thin_bottom"></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Construction:<div class="cab_specifications_desc"><?php echo displayVINOpts('construction_method'); ?></div></td>
+                  <td class="border_thin_bottom" id="const_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="const_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo displayVINOpts('door_design'); ?></div></td>
+                  <td class="border_thin_bottom" id="const_pg" colspan="2">Price Group 7</td>
+                </tr>
+                <tr>
+                  <td style="padding-left:20px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_door'); ?></div></td>
+                  <td class="border_thin_bottom"></td>
+                  <td class="border_thin_bottom"></td>
+                </tr>
+                <tr>
+                  <td style="padding-left:20px;">Short Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_sd'); ?></div></td>
+                  <td class="border_thin_bottom" id="sdr_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="sdr_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <td style="padding-left:20px;">Tall Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_td'); ?></div></td>
+                  <td class="border_thin_bottom" id="tdr_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="tdr_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <td style="padding-left:20px;">Style/Rail Width:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('style_rail_width'); ?></div></td>
+                  <td class="border_thin_bottom" id="srw_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="srw_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <td style="padding-left:20px;">Edge Profile:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('edge_profile'); ?></div></td>
+                  <td class="border_thin_bottom"></td>
+                  <td class="border_thin_bottom"></td>
+                </tr>
+                <tr>
+                  <td style="padding-left:20px;">Framing Bead:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('framing_bead'); ?></div></td>
+                  <td class="border_thin_bottom"></td>
+                  <td class="border_thin_bottom"></td>
+                </tr>
+                <tr>
+                  <td style="padding-left:20px;">Frame Option:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('framing_options'); ?></div></td>
+                  <td class="border_thin_bottom" id="fo_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="fo_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc"><?php echo displayVINOpts('drawer_boxes'); ?></div></td>
+                  <td class="border_thin_bottom" id="const_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="const_amt">$0.00</td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="col-sm-6" style="padding-left:0;">
+              <table width="100%">
+                <tr><th colspan="3" style="padding-left:5px;" class="th_17">Finish</th></tr>
+                <tr class="border_top">
+                  <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc"><?php displayFinishOpts("finish_code", "finish_code"); ?></div></td>
+                  <td class="border_thin_bottom" id="fc_pct"></td>
+                  <td class="border_thin_bottom" id="fc_amt"></td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc"><?php echo displayVINOpts('sheen'); ?></div></td>
+                  <td class="border_thin_bottom" id="sheen_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="sheen_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc"><?php echo displayVINOpts('glaze'); ?></div></td>
+                  <td class="border_thin_bottom" id="gc_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="gc_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc"><?php echo displayVINOpts('glaze_technique'); ?></div></td>
+                  <td class="border_thin_bottom" id="gt_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="gt_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc"><?php echo displayVINOpts('antiquing'); ?></div></td>
+                  <td class="border_thin_bottom" id="ant_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="ant_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc"><?php echo displayVINOpts('worn_edges'); ?></div></td>
+                  <td class="border_thin_bottom" id="we_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="we_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc"><?php echo displayVINOpts('distress_level'); ?></div></td>
+                  <td class="border_thin_bottom" id="dist_pct">0.00%</td>
+                  <td class="border_thin_bottom" id="dist_amt">$0.00</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="row" style="margin-top:5px;">
+        <div class="col-sm-4">
           <table width="100%">
-            <tr>
-              <td>Product Type:</td>
-              <td><?php /*echo displayVINOpts('product_type'); */?></td>
-            </tr>
-            <tr>
-              <td>Production Status:</td>
-              <td><?php /*echo displayVINOpts('days_to_ship'); */?></td>
-            </tr>
-            <tr>
-              <td>Ship Date:</td>
-              <td><?php /*echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : "---"; */?></td>
-            </tr>
-            <tr>
-              <td>Delivery Date:</td>
-              <td><?php /*echo date(DATE_DEFAULT, $room['delivery_date']); */?></td>
-            </tr>
-            <tr>
-              <td width="30%"><strong>Ship VIA:</strong></td>
-              <td><?php /*echo displayVINOpts('ship_via'); */?></td>
-            </tr>
-            <tr>
-              <td style="vertical-align:top !important;"><strong>Ship To:</strong></td>
-              <td rowspan="3">
-                <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php /*echo $info['name_1']; */?>"><br />
-                <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php /*echo $info['project_addr']; */?>"><br />
-                <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php /*echo $info['project_city']; */?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php /*echo $info['project_state']; */?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php /*echo $info['project_zip']; */?>">
-              </td>
+            <tr><th>&nbsp;Notes</th></tr>
+            <tr><td class="gray_bg">&nbsp;Delivery Notes:</td></tr>
+            <tr><td id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_delivery']; ?></textarea></td></tr>
+          </table>
+        </div>
+
+        <div class="col-sm-4">
+          <table width="100%">
+            <tr><th>&nbsp;</th></tr>
+            <tr><td class="gray_bg">&nbsp;Design Notes:</td></tr>
+            <tr><td id="global_notes" style="border-right:2px solid #FFF;"><textarea name="global_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_global']; ?></textarea></td>
             </tr>
           </table>
         </div>
-      </div>-->
 
-      <div class="row">
-        <div class="col-md-12" style="margin-top:5px;">
+        <div class="col-sm-4" style="padding-left:0;">
           <table width="100%">
-            <tr>
-              <td colspan="8">
-                <div class="row no_global_info" style="display:none;"><i class="fa fa-exclamation-triangle" style="font-size:2em;"></i>Unable to price with the current information.<br />Any price displayed is not a reflection of the final price until this quote has been processed by SMCM.<i class="fa fa-exclamation-triangle pull-right" style="font-size:2em;"></i></div>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="3" width="33.3%" style="text-decoration: underline;"><h3><?php echo translateVIN('order_status', $room['order_status']); ?></h3></td>
-              <td colspan="3" width="33.3%" class="text-md-center" id="page_count"></td>
-              <td colspan="2" width="33.3%" class="text-md-right">Production Type: <?php echo translateVIN('product_type', $room['product_type']); ?></td>
-            </tr>
-            <tr>
-              <td colspan="3"><h5><?php echo $result['project_name'] . ' - ' . $room['room_name']; ?></h5></td>
-              <td colspan="3" class="text-md-center">&nbsp;</td>
-              <td colspan="2" class="text-md-right">Production Status: <?php echo translateVIN('days_to_ship', $room['days_to_ship']); ?></td>
-            </tr>
-            <tr>
-              <td colspan="3"><?php echo $dealer['dealer_id'] . '_' . $dealer['dealer_name'] . ' - ' . $dealer['contact']; ?></td>
-              <td colspan="3" class="text-md-center">&nbsp;</td>
-              <td colspan="2" class="text-md-right">Ship Date: ---</td>
-            </tr>
-            <tr>
-              <td colspan="3"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></td>
-              <td colspan="3" class="text-md-center">&nbsp;</td>
-              <td colspan="2" class="text-md-right">Delivery Date: <?php echo date(DATE_DEFAULT, $room['delivery_date']); ?></td>
-            </tr>
-            <tr>
-              <td colspan="8">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="8"><h5><u>Global: Cabinet Specifications</u></h5></td>
-            </tr>
-            <tr>
-              <td colspan="8">&nbsp;</td>
-            </tr>
-            <tr>
-              <td colspan="8">
-                <form id="cabinet_specifications" method="post" action="#">
-                  <table class="pull-left" style="width:33%;margin-left:0.3%;">
-                    <tr>
-                      <th style="padding-left:5px;" width="70%">Design<label class="c-input c-checkbox pull-right" style="color:#FFF;margin-top:2px;padding-right:13px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th>
-                      <th>Pct</th>
-                      <th>Cost</th>
-                    </tr>
-                    <tr class="border_top">
-                      <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc"><?php echo displayVINOpts('species_grade'); ?></div></td>
-                      <td class="border_thin_bottom" id="sg_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="sg_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom">Construction:<div class="cab_specifications_desc"><?php echo displayVINOpts('construction_method'); ?></div></td>
-                      <td class="border_thin_bottom" id="const_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="const_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo displayVINOpts('door_design'); ?></div></td>
-                      <td class="border_thin_bottom" id="dd_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="dd_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="" style="padding-left:26px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_door'); ?></div></td>
-                      <td class="border_thin_bottom" id="dpr_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="dpr_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="" style="padding-left:26px;">Short Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_sd'); ?></div></td>
-                      <td class="border_thin_bottom" id="sdr_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="sdr_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="" style="padding-left:26px;">Tall Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_td'); ?></div></td>
-                      <td class="border_thin_bottom" id="tdr_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="tdr_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="" style="padding-left:26px;">Style/Rail Width:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('style_rail_width'); ?></div></td>
-                      <td class="border_thin_bottom" id="srw_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="srw_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="" style="padding-left:26px;">Edge Profile:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('edge_profile'); ?></div></td>
-                      <td class="border_thin_bottom" id="ep_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="ep_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="" style="padding-left:26px;">Framing Bead:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('framing_bead'); ?></div></td>
-                      <td class="border_thin_bottom" id="fb_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="fb_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="" style="padding-left:26px;">Frame Option:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('framing_options'); ?></div></td>
-                      <td class="border_thin_bottom" id="fo_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="fo_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td colspan="2">&nbsp;</td>
-                    </tr>
-                    <tr>
-                      <td colspan="2">&nbsp;</td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc"><?php echo displayVINOpts('drawer_boxes'); ?></div></td>
-                      <td class="border_thin_bottom" id="db_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="db_amt">$0.00</td>
-                    </tr>
-                  </table>
-
-                  <table class="pull-left" style="width:33%;margin-left:0.3%;">
-                    <tr><th colspan="3" style="padding-left:5px;">Finish</th></tr>
-                    <tr class="border_top">
-                      <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc"><?php displayFinishOpts("finish_code", "finish_code"); ?></div></td>
-                      <td class="border_thin_bottom" id="fc_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="fc_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc"><?php echo displayVINOpts('sheen'); ?></div></td>
-                      <td class="border_thin_bottom" id="sheen_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="sheen_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc"><?php echo displayVINOpts('glaze'); ?></div></td>
-                      <td class="border_thin_bottom" id="gc_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="gc_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc"><?php echo displayVINOpts('glaze_technique'); ?></div></td>
-                      <td class="border_thin_bottom" id="gt_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="gt_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc"><?php echo displayVINOpts('antiquing'); ?></div></td>
-                      <td class="border_thin_bottom" id="ant_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="ant_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc"><?php echo displayVINOpts('worn_edges'); ?></div></td>
-                      <td class="border_thin_bottom" id="we_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="we_amt">$0.00</td>
-                    </tr>
-                    <tr>
-                      <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc"><?php echo displayVINOpts('distress_level'); ?></div></td>
-                      <td class="border_thin_bottom" id="dist_pct">0.00%</td>
-                      <td class="border_thin_bottom" id="dist_amt">$0.00</td>
-                    </tr>
-                  </table>
-
-                  <table class="pull-left" style="width:33%;margin-left:0.3%;">
-                    <tr><th colspan="2" style="padding-left:5px;">Delivery</th></tr>
-                    <tr class="border_top">
-                      <td width="30%"><strong>Ship VIA:</strong></td>
-                      <td><?php echo displayVINOpts('ship_via'); ?></td>
-                    </tr>
-                    <tr>
-                      <td style="vertical-align:top !important;"><strong>Ship To:</strong></td>
-                      <td rowspan="3">
-                        <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
-                        <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
-                        <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
-                      </td>
-                    </tr>
-                  </table>
-                </form>
-              </td>
-            </tr>
-            <tr>
-              <td colspan="8">&nbsp;</td>
-            </tr>
-            <tr>
-              <th colspan="3" style="border-right:2px solid #FFF;">&nbsp;Notes</th>
-              <th colspan="3" style="border-right:2px solid #FFF;">&nbsp;</th>
-              <th colspan="2">&nbsp;</th>
-            </tr>
-            <tr>
-              <td colspan="3" style="border-right:2px solid #FFF;" class="gray_bg">&nbsp;Global Notes:</td>
-              <td colspan="3" class="gray_bg" style="border-right:2px solid #FFF;">&nbsp;Finishing/Sample Notes:</td>
-              <td colspan="2" class="gray_bg">&nbsp;Delivery Notes:</td>
-            </tr>
-            <tr id="notes_section">
-              <td colspan="3" id="global_notes" style="border-right:2px solid #FFF;"><textarea name="global_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_global']; ?></textarea></td>
-              <td colspan="3" id="layout_notes_title" style="border-right:2px solid #FFF;"><textarea name="layout_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
-              <td colspan="2" id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
-            </tr>
+            <tr><th>&nbsp;</th></tr>
+            <tr><td class="gray_bg">&nbsp;Finishing/Sample Notes:</td></tr>
+            <tr><td id="layout_notes_title" style="border-right:2px solid #FFF;"><textarea name="layout_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td></tr>
           </table>
         </div>
       </div>
@@ -378,7 +387,7 @@ if(!empty($existing_quote['quote_submission'])) {
         <div class="col-md-12" style="margin-top:5px;">
           <h5><u>Item List</u></h5>
 
-          <table id="cabinet_list">
+          <table id="cabinet_list" style="width:100%;">
             <colgroup>
               <col width="30px">
               <col width="30px">
@@ -456,8 +465,75 @@ if(!empty($existing_quote['quote_submission'])) {
         </div>
       </div>
 
-      <div style="height:100px;">&nbsp;</div>
+      <div class="row">
+        <div class="col-sm-4 col-sm-offset-8 summary_of_charges">
+          <div class="left_header"><h5>Summary of Charges:</h5></div>
+
+            <table align="right" width="100%">
+              <tr class="border_thin_bottom">
+                <td width="65%" class="total_text">Item List:</td>
+                <td width="80px">&nbsp;</td>
+                <td class="text-md-right gray_bg total_text">$0.00<span id="final_upcharges"></span></td>
+              </tr>
+              <tr class="border_thin_bottom">
+                <td class="total_text">Global Room Details:</td>
+                <td class="total_text">&nbsp;</td>
+                <td class="text-md-right total_text">$0.00<span id="final_leadtime"></span></td>
+              </tr>
+              <tr class="border_thin_bottom">
+                <td class="total_text">Global Cabinet Details:</td>
+                <td class="total_text">&nbsp;</td>
+                <td class="text-md-right total_text">$0.00<span id="final_subtotal"></span></td>
+              </tr>
+              <tr class="border_thin_bottom">
+                <td class="total_text">Total:</td>
+                <td class="total_text">&nbsp;</td>
+                <td class="text-md-right total_text">$0.00</td>
+              </tr>
+              <tr class="border_thin_bottom">
+                <td class="total_text">Multiplier:</td>
+                <td class="total_text">&nbsp;</td>
+                <td class="text-md-right total_text">$0.00<span id="final_net"></span></td>
+              </tr>
+              <tr class="border_thin_bottom">
+                <td class="total_text">Delivery:</td>
+                <td class="total_text">&nbsp;</td>
+                <td class="text-md-right total_text">$0.00<span id="final_net"></span></td>
+              </tr>
+              <tr class="border_thin_bottom">
+                <td class="total_text">NET:</td>
+                <td class="total_text">&nbsp;</td>
+                <td class="text-md-right total_text">$0.00</td>
+              </tr>
+              <tr class="border_thin_bottom">
+                <td class="total_text">Credit Card:</td>
+                <td class="total_text">3.5%</td>
+                <td class="text-md-right total_text">$0.00</td>
+              </tr>
+              <tr class="em_box">
+                <td class="total_text">Sub Total:</td>
+                <td class="total_text">&nbsp;</td>
+                <td class="text-md-right total_text">$0.00<span id="final_last_subtotal"></span></td>
+              </tr>
+              <tr class="header em_box">
+                <td class="total_text">Total Amount</td>
+                <td class="total_text">&nbsp;</td>
+                <td class="text-md-right total_text">$0.00<span id="final_total"></span></td>
+              </tr>
+              <tr id="deposit_line">
+                <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
+                <td class="text-md-right em_box">$0.00<span id="final_deposit"></span></td>
+              </tr>
+            </table>
+
+            <div class="clearfix"></div>
+        </div>
+      </div>
+
+      <div class="no-print" style="height:100px;">&nbsp;</div>
     </div>
+
+
 
     <div class="col-md-2 sticky no-print" style="top:122px;">
       <form id="accounting_notes" action="#">
@@ -773,7 +849,7 @@ if(!empty($existing_quote['quote_submission'])) {
       modifyChild: function(event, data) {
         recalcTotal();
       }
-    }).on("nodeCommand", function(event, data){
+    }).on("nodeCommand", function(event, data) {
       // Custom event handler that is triggered by keydown-handler and
       // context menu:
       var refNode, moveMode,
@@ -1005,5 +1081,7 @@ if(!empty($existing_quote['quote_submission'])) {
 
       itemModifications.fancytree("getTree").reload(modificationTree);
     });
+    
+    $(".room_note_log").hide();
   });
 </script>
