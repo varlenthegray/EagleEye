@@ -143,7 +143,7 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
   $selected = '';
 
   foreach($vin_schema[$segment] as $value) {
-    if(((string)$value['key'] === (string)$room[$dblookup]) && empty($selected)) {
+    if(empty($selected) && ((string)$value['key'] === (string)$room[$dblookup])) {
       $selected = $value['value'];
       $selected_img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
       $sel_key = $value['key'];
@@ -260,16 +260,12 @@ function translateVIN($segment, $key) {
   global $dbconn;
   global $info;
 
-  $output = array();
+  // segment = panel raise
+  // key = X
 
   $custom_keys = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX'];
 
-  if($segment === 'finish_code') {
-    $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE (segment = 'finish_code') AND `key` = '$key'");
-  } else {
-    $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
-  }
-
+  $vin_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = '$segment' AND `key` = '$key'");
   $vin = $vin_qry->fetch_assoc();
 
   $mfg = '';

@@ -166,7 +166,7 @@ if(!empty($existing_quote['quote_submission'])) {
       <div class="row">
         <form id="cabinet_specifications" method="post" action="#">
           <div class="col-sm-4 gray_bg" style="border-radius:.25rem;border:1px solid #000;padding-bottom:25px;">
-            <h5><u>Global: Room Details</u></h5>
+            <h5><u>Global: Room Details (Net Price)</u></h5>
 
             <table width="100%">
               <colgroup>
@@ -188,12 +188,12 @@ if(!empty($existing_quote['quote_submission'])) {
                 <td>$0.00</td>
               </tr>
               <tr>
-                <td>Ship Date:</td>
+                <td>Ship Date (*):</td>
                 <td><strong><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : '---'; ?></strong></td>
                 <td></td>
               </tr>
               <tr>
-                <td>Delivery Date:</td>
+                <td>Delivery Date (*):</td>
                 <td><strong><?php echo date(DATE_DEFAULT, $room['delivery_date']); ?></strong></td>
                 <td></td>
               </tr>
@@ -216,19 +216,26 @@ if(!empty($existing_quote['quote_submission'])) {
                 <td>$0.00</td>
               </tr>
               <tr>
+                <td>Shipping Cubes:<br /><em>(Min of 6)</em></td>
+                <td><strong>0</strong></td>
+                <td>$150.00</td>
+              </tr>
+              <tr>
                 <td colspan="3" style="height:2px;"></td>
               </tr>
               <tr>
                 <td>Payment Method:</td>
-                <td><?php echo displayVINOpts('payment_method', null, null, 'ACH'); ?></td>
-                <td>$0.00</td>
+                <td><?php echo displayVINOpts('payment_method', null, null); ?></td>
+                <td></td>
               </tr>
               <tr>
                 <td colspan="3" style="height:5px;"></td>
               </tr>
               <tr>
-                <td style="vertical-align:top !important;">Signature:</td>
-                <td colspan="2"><input type="text" class="esig" name="signature" placeholder="Signature affirms the following:" style="width:100%;border:1px dashed #000;padding:3px;" /></td>
+                <td colspan="3" style="vertical-align:top !important;">Signature:</td>
+              </tr>
+              <tr>
+                <td colspan="3"><input type="text" class="esig" name="signature" placeholder="Signature affirms the following:" style="width:100%;border:1px dashed #000;padding:3px;" /></td>
               </tr>
               <tr>
                 <td colspan="3" class="esig_id">
@@ -245,9 +252,11 @@ if(!empty($existing_quote['quote_submission'])) {
               </tr>
               <tr>
                 <td colspan="3" style="padding-left:2px;">
-                  <input type="checkbox" name="terms_deposit" id="terms_deposit"> <label for="terms_deposit">A 50% deposit will be drafted within 24 hours.</label><br />
-                  <input type="checkbox" name="terms_outbound_date" id="terms_outbound_date"> <label for="terms_outbound_date">Shipping/delivery date confirmed once deposit is received.</label><br />
-                  <input type="checkbox" name="terms_final_payment" id="terms_final_payment"> <label for="terms_final_payment">Final payment is due prior to delivery.</label>
+                  <ul>
+                    <li>A 50% deposit will be drafted within 24 hours.</li>
+                    <li>(*) Shipping/delivery date confirmed upon deposit.</li>
+                    <li>Final payment is due prior to delivery.</li>
+                  </ul>
                 </td>
               </tr>
               <tr>
@@ -489,11 +498,6 @@ if(!empty($existing_quote['quote_submission'])) {
                 <td class="text-md-right gray_bg total_text">$0.00<span id="final_upcharges"></span></td>
               </tr>
               <tr class="border_thin_bottom">
-                <td class="total_text">Global Room Details:</td>
-                <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00<span id="final_leadtime"></span></td>
-              </tr>
-              <tr class="border_thin_bottom">
                 <td class="total_text">Global Cabinet Details:</td>
                 <td class="total_text">&nbsp;</td>
                 <td class="text-md-right total_text">$0.00<span id="final_subtotal"></span></td>
@@ -517,6 +521,11 @@ if(!empty($existing_quote['quote_submission'])) {
                 <td class="total_text">NET:</td>
                 <td class="total_text">&nbsp;</td>
                 <td class="text-md-right total_text">$0.00</td>
+              </tr>
+              <tr class="border_thin_bottom">
+                <td class="total_text">Global Room Details:</td>
+                <td class="total_text">&nbsp;</td>
+                <td class="text-md-right total_text">$0.00<span id="final_leadtime"></span></td>
               </tr>
               <tr class="border_thin_bottom">
                 <td class="total_text">Credit Card:</td>

@@ -366,5 +366,20 @@ $("body")
 
     $("#modalGeneral").html("").modal("hide");
   })
+  .on("click", ".option", function() {
+    if($(this).parent().parent().attr("data-for") === 'ship_via') {
+      let ship_info = $("input[name='ship_to_1']").parent().parent();
 
+      if($(this).attr("data-value") === '4') {
+        ship_info.hide();
+        ship_info.next("tr").hide();
+        ship_info.next("tr").next("tr").hide();
+
+      } else {
+        ship_info.show();
+        ship_info.next("tr").show();
+        ship_info.next("tr").next("tr").show();
+      }
+    }
+  })
 ;
