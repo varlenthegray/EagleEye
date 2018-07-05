@@ -127,8 +127,6 @@ $("body")
 
     customVals = JSON.stringify(val_array);
 
-    console.log("Custom Vals:" + customVals);
-
     $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes}, function(data) {
       $('body').append(data);
     });
@@ -367,7 +365,9 @@ $("body")
     $("#modalGeneral").html("").modal("hide");
   })
   .on("click", ".option", function() {
-    if($(this).parent().parent().attr("data-for") === 'ship_via') {
+    let dropdown_list = $(this).parent().parent();
+
+    if(dropdown_list.attr("data-for") === 'ship_via') {
       let ship_info = $("input[name='ship_to_1']").parent().parent();
 
       if($(this).attr("data-value") === '4') {
@@ -379,6 +379,24 @@ $("body")
         ship_info.show();
         ship_info.next("tr").show();
         ship_info.next("tr").next("tr").show();
+      }
+    } else if(dropdown_list.attr("data-for") === 'product_type') {
+      let species_grade = $("#species_grade");
+      let door_design = $("#door_design");
+      let construction_method = $("#construction_method");
+
+      if($(this).attr("data-value") === 'L') {
+        if(species_grade.val() === '') {
+          species_grade.attr("value", "Me").parent().find(".selected").html("Melamine");
+        }
+
+        if(door_design.val() === '') {
+          door_design.attr("value", "ME0").parent().find(".selected").html("Melamine");
+        }
+
+        if(construction_method.val() === '') {
+          construction_method.attr("value", "C").parent().find(".selected").html("Closet - Cam");
+        }
       }
     }
   })

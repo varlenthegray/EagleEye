@@ -207,6 +207,7 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
 
 switch($_REQUEST['action']) {
   case 'roomSave':
+    //<editor-fold desc="Initial Setup, variable capture">
     $cat = new Catalog;
 
     parse_str($_REQUEST['cabinet_specifications'], $cabinet_specifications); // global: cabinet specifications
@@ -220,8 +221,6 @@ switch($_REQUEST['action']) {
     $room_info = $room_qry->fetch_assoc();
 
     $notes = sanitizeInput($accounting_notes['room_notes']);
-    $note_type = sanitizeInput($accounting_notes['note_type']);
-    $note_id = sanitizeInput($accounting_notes['note_id']);
 
     $deposit_received = !empty($accounting_notes['deposit_received']) ? (bool)$accounting_notes['deposit_received'] : 0;
     $final_payment = !empty($accounting_notes['final_payment']) ? (bool)$accounting_notes['final_payment'] : 0;
@@ -235,6 +234,7 @@ switch($_REQUEST['action']) {
     $changed[] = whatChanged($final_payment, $room_info['payment_final'], 'Final Payment');
     $changed[] = whatChanged($ptl_del, $room_info['payment_del_ptl'], 'Prior to Loading/Delivery Payment');
     $changed[] = !empty($notes) ? 'Notes added' : null;
+    //</editor-fold>
 
     //<editor-fold desc="Capture VIN Info">
     $species_grade = sanitizeInput($cabinet_specifications['species_grade']);
@@ -296,6 +296,54 @@ switch($_REQUEST['action']) {
       $inquiry_id = $dbconn->insert_id;
 
       echo displayToast('success', 'Successfully updated the room with the notes attached.', 'Room Updated with Notes');
+    }
+
+    if(!empty($cabinet_specifications['delivery_notes'])) {
+      if(!empty($cabinet_specifications['delivery_notes_id'])) {
+        $dbconn->query("UPDATE notes SET note = '{$cabinet_specifications['delivery_notes']}', timestamp = UNIX_TIMESTAMP() WHERE id = '{$cabinet_specifications['delivery_notes_id']}'");
+
+        $changed[] = 'Delivery Notes Updated';
+      } else {
+        if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_delivery'")->num_rows === 0) {
+          $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('{$cabinet_specifications['delivery_notes']}', 'room_note_delivery', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+
+          $changed[] = 'Delivery Notes Created';
+        } else {
+          echo displayToast('warning', 'Delivery Note already exists. Please refresh your page and try again.', 'Delivery Note Exists');
+        }
+      }
+    }
+
+    if(!empty($cabinet_specifications['room_note_design'])) {
+      if(!empty($cabinet_specifications['design_notes_id'])) {
+        $dbconn->query("UPDATE notes SET note = '{$cabinet_specifications['room_note_design']}', timestamp = UNIX_TIMESTAMP() WHERE id = '{$cabinet_specifications['design_notes_id']}'");
+
+        $changed[] = 'Design Notes Updated';
+      } else {
+        if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_design'")->num_rows === 0) {
+          $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('{$cabinet_specifications['room_note_design']}', 'room_note_design', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+
+          $changed[] = 'Design Notes Created';
+        } else {
+          echo displayToast('warning', 'Design Note already exists. Please refresh your page and try again.', 'Design Note Exists');
+        }
+      }
+    }
+
+    if(!empty($cabinet_specifications['fin_sample_notes'])) {
+      if(!empty($cabinet_specifications['fin_sample_notes_id'])) {
+        $dbconn->query("UPDATE notes SET note = '{$cabinet_specifications['fin_sample_notes']}', timestamp = UNIX_TIMESTAMP() WHERE id = '{$cabinet_specifications['fin_sample_notes_id']}'");
+
+        $changed[] = 'Finishing/Sample Notes Updated';
+      } else {
+        if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
+          $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('{$cabinet_specifications['fin_sample_notes']}', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+
+          $changed[] = 'Finishing/Sample Notes Created';
+        } else {
+          echo displayToast('warning', 'Finishing/Sample Note already exists. Please refresh your page and try again.', 'Finishing/Sample Note Exists');
+        }
+      }
     }
     //</editor-fold>
 

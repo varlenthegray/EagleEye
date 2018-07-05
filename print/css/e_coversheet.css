@@ -113,7 +113,7 @@ td {
     text-align: left;
 }
 
-#delivery_notes, #global_notes {
+#delivery_notes, #design_notes {
     width: 33%;
     border-right: 1px solid #000;
 }

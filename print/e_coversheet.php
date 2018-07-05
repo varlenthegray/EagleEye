@@ -14,7 +14,7 @@ $sheen = $sheen_qry->fetch_assoc();
 
 $note_arr = array();
 
-$notes_qry = $dbconn->query("SELECT * FROM notes WHERE (note_type = 'room_note_delivery' OR note_type = 'room_note_global' OR note_type = 'room_note_fin_sample') AND type_id = '$room_id'");
+$notes_qry = $dbconn->query("SELECT * FROM notes WHERE (note_type = 'room_note_delivery' OR note_type = 'room_note_design' OR note_type = 'room_note_fin_sample') AND type_id = '$room_id'");
 
 if($notes_qry->num_rows > 0) {
   while($notes = $notes_qry->fetch_assoc()) {
@@ -141,14 +141,14 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <th colspan="3"><span class="pull-left"><?php echo $info['vin_code']; ?></span><span class="pull-right"><?php echo "{$info['dealer_code']} - {$dealer_info['company_name']}"; ?></span></th>
         </tr>
         <tr>
-          <td style="border-right:1px solid #000;" class="gray_bg">Room Notes:</td>
           <td style="border-right:1px solid #000;" class="gray_bg">Delivery Notes:</td>
+          <td style="border-right:1px solid #000;" class="gray_bg">Design Notes:</td>
           <td class="gray_bg">Finishing/Sample Notes:</td>
         </tr>
 
         <tr id="notes_section">
-          <td id="global_notes"><textarea name="global_notes" maxlength="280" class="static_width" rows="5"><?php echo $note_arr['room_note_global']; ?></textarea></td>
           <td id="delivery_notes"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="5"><?php echo $note_arr['room_note_delivery']; ?></textarea></td>
+          <td id="design_notes"><textarea name="design_notes" maxlength="280" class="static_width" rows="5"><?php echo $note_arr['room_note_design']; ?></textarea></td>
           <td id="layout_notes_title"><textarea name="layout_notes" maxlength="280" class="static_width" rows="5"><?php echo $note_arr['room_note_fin_sample']; ?></textarea></td>
         </tr>
       </table>
