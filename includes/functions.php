@@ -256,12 +256,16 @@ function displayFinishOpts($segment, $db_col = null, $id = null) {
   echo "</div><input type='hidden' value='$selected' id='$dblookup' name='$dblookup' /><div class='clearfix'></div></div>";*/
 }
 
-function translateVIN($segment, $key) {
+function translateVIN($segment, $key, $db_col = null) {
   global $dbconn;
   global $info;
 
   // segment = panel raise
   // key = X
+
+  if(empty($db_col)) {
+    $db_col = $segment;
+  }
 
   $custom_keys = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX'];
 
@@ -277,8 +281,8 @@ function translateVIN($segment, $key) {
     if(in_array($key, $custom_keys, true)) {
       $custom_info = json_decode($info['custom_vin_info'], true);
 
-      if(count($custom_info[$segment]) > 1) {
-        foreach($custom_info[$segment] as $key2 => $value) {
+      if(count($custom_info[$db_col]) > 1) {
+        foreach($custom_info[$db_col] as $key2 => $value) {
           $mfg = false !== stripos($key2, 'mfg') ? $value : $mfg;
           $code = false !== stripos($key2, 'code') ? $value : $code;
           $name = false !== stripos($key2, 'name') ? $value : $name;
@@ -286,7 +290,7 @@ function translateVIN($segment, $key) {
 
         $desc = $name;
       } else {
-        $desc = 'Custom - ' . array_values($custom_info[$segment])[0];
+        $desc = 'Non-Standard - ' . array_values($custom_info[$db_col])[0];
       }
     } else {
       $desc = $vin['value'];

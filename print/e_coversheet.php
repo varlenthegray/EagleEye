@@ -215,7 +215,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <td>&nbsp;</td>
           <td>&nbsp;</td>
           <td class="border_thin_bottom" style="padding-left:15px;">Door Panel Raise:</td>
-          <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_door']); ?></td>
+          <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_door'], 'panel_raise_door'); ?></td>
           <td class="border_thin_bottom gray_bg">&nbsp;</td>
           <td class="border_thin_bottom gray_bg">&nbsp;</td>
           <td class="text-md-center border_thin_bottom gray_bg pct_value">&nbsp;</td>
@@ -225,7 +225,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <td>&nbsp;</td>
           <td>&nbsp;</td>
           <td class="border_thin_bottom" style="padding-left:15px;">Short Drawer Raise:</td>
-          <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_sd']); ?></td>
+          <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_sd'], 'panel_raise_sd'); ?></td>
           <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
           <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
           <td class="border_thin_bottom toggle_gray print_gray"><input type="text" name="sd_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width print_gray">x</td>
@@ -237,7 +237,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <td>&nbsp;</td>
           <td>&nbsp;</td>
           <td class="border_thin_bottom" style="padding-left:15px;">Tall Drawer Raise:</td>
-          <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_td']); ?></td>
+          <td class="border_thin_bottom"><?php echo translateVIN('panel_raise', $info['panel_raise_td'], 'panel_raise_td'); ?></td>
           <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
           <td class="border_thin_bottom gray_bg toggle_gray" style="display:none;"></td>
           <td class="border_thin_bottom toggle_gray print_gray"><input type="text" name="td_raise_qty" value="0" maxlength="2" style="width:10px;" class="static_width print_gray">x</td>
