@@ -70,7 +70,7 @@ HEREDOC;
                 <!--<li id='#'><a href='/assets/pdf/preprod_checklist.pdf' target="_blank"><i class='fa fa-list m-r-5'></i>Pre-production Checklist</a></li>-->
                 <li id='#'><a href='/assets/pdf/global_upcharges.pdf' target="_blank"><i class='fa fa-dollar m-r-5'></i>Global Upcharges</a></li>
                 <li id='#'><a href='/assets/pdf/rsi_doc.pdf' target="_blank"><i class='fa fa-home m-r-5'></i>Room/Sequence/Iteration</a></li>
-                <li id='#'><a href='/assets/pdf/warranty.pdf' target="_blank"><i class='fa fa-home m-r-5'></i>Warranty</a></li>
+                <li id='#'><a href='/assets/pdf/warranty.pdf' target="_blank"><i class='fa fa-dropbox m-r-5'></i>Warranty</a></li>
             </ul>
         </li>
 HEREDOC;
