@@ -142,7 +142,7 @@ $("body")
 
     var value = $(this).attr('data-value');
 
-    if($(this).attr("data-addl-info") !== undefined) {
+    if($(this).attr("data-addl-info") !== '') {
       addl_info = $(this).attr("data-addl-info") + " - ";
     }
 

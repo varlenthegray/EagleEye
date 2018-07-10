@@ -144,7 +144,13 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
 
   foreach($vin_schema[$segment] as $value) {
     if(empty($selected) && ((string)$value['key'] === (string)$room[$dblookup])) {
-      $selected = $value['value'];
+      if(!empty($value['description'])) {
+        $selected_addlInfo = "{$value['description']} - ";
+      } else {
+        $selected_addlInfo = null;
+      }
+
+      $selected = $selected_addlInfo . $value['value'];
       $selected_img = !empty($value['image']) ? "<br /><img src='/assets/images/vin/{$value['image']}'>" : null;
       $sel_key = $value['key'];
     }
@@ -165,14 +171,26 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
         $subitems = json_decode($value['subitems']);
         $option_grid .= "$section_head <div class='grid_element' data-value='{$value['key']}'><div class='header'>{$value['value']}</div>$img";
 
+        if(!empty($value['description'])) {
+          $addlInfo = $value['description'];
+        } else {
+          $addlInfo = $value['value'];
+        }
+
         foreach($subitems as $key => $item) {
-          $options .= "<div class='option sub_option' data-value='{$key}' data-addl-info='{$value['value']}'>{$item}</div>";
+          $options .= "<div class='option sub_option' data-value='{$key}' data-addl-info='$addlInfo'>{$item}</div>";
           $option_grid .= "<div class='option sub_option' data-value='{$key}'>{$item}</div>";
         }
 
         $option_grid .= '</div>';
       } else {
-        $options .= "$section_head <div class='option' data-value='{$value['key']}'>{$value['value']} $img</div>";
+        if(!empty($value['description'])) {
+          $addlInfo = $value['description'];
+        } else {
+          $addlInfo = null;
+        }
+
+        $options .= "$section_head <div class='option' data-value='{$value['key']}' data-addl-info='$addlInfo'>{$value['value']} $img</div>";
 
         $option_grid .= "$section_head <div class='grid_element option' data-value='{$value['key']}'><div class='header'>{$value['value']}</div>$img</div>";
       }
@@ -183,7 +201,7 @@ function displayVINOpts($segment, $db_col = null, $id = null) {
 
   $final_out = "<div class='custom_dropdown' $addl_id>";
   $final_out .= "<div class='selected'>$selected $selected_img</div><div class='dropdown_arrow'><i class='zmdi zmdi-chevron-down'></i></div>";
-  $final_out .=  "<div class='dropdown_options' data-for='$dblookup'>";
+  $final_out .= "<div class='dropdown_options' data-for='$dblookup'>";
   $final_out .= "<div class='option_list'>$options</div>";
   $final_out .= "<div class='option_grid'>$option_grid</div>";
   $final_out .= "</div><input type='hidden' value='$sel_key' id='{$dblookup}' name='{$dblookup}' /><div class='clearfix'></div></div>";
