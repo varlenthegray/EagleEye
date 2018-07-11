@@ -98,6 +98,7 @@ if(!empty($existing_quote['quote_submission'])) {
       <button class="btn waves-effect btn-secondary" title="Bracket Management" id="bracket_management"> <i class="fa fa-code-fork fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Door Sizing" onclick="window.open('/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>','_blank')"> <i class="fa fa-arrows-alt fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Appliance Worksheets" id='appliance_ws' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-cubes fa-2x"></i> </button>
+      <button class="btn waves-effect btn-secondary" title="Recalculate Ship Date" id='ship_date_recalc' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-truck fa-2x"></i> </button>
     </div>
 
     <div class="col-md-7 text-md-right"><h4 style="margin:0;padding:0;"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']} $submitted"; ?></h4></div>
@@ -159,7 +160,7 @@ if(!empty($existing_quote['quote_submission'])) {
             </tr>
             <tr>
               <td>Printed:</td>
-              <td class="text-bold">06/28/2018</td>
+              <td class="text-bold"><?php echo date(DATE_DEFAULT); ?></td>
             </tr>
           </table>
         </div>
@@ -185,18 +186,18 @@ if(!empty($existing_quote['quote_submission'])) {
                   <td></td>
                 </tr>
                 <tr>
-                  <td>Production Status:</td>
+                  <td>Lead Time:</td>
                   <td><?php echo displayVINOpts('days_to_ship'); ?></td>
                   <td>$0.00</td>
                 </tr>
                 <tr>
                   <td>Ship Date (*):</td>
-                  <td><strong><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : '---'; ?></strong></td>
+                  <td><strong id="calcd_ship_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : '---'; ?></strong></td>
                   <td></td>
                 </tr>
                 <tr>
                   <td>Delivery Date (*):</td>
-                  <td><strong><?php echo date(DATE_DEFAULT, $room['delivery_date']); ?></strong></td>
+                  <td><strong id="calcd_del_date"><?php echo date(DATE_DEFAULT, $room['delivery_date']); ?></strong></td>
                   <td></td>
                 </tr>
                 <tr>
@@ -207,9 +208,9 @@ if(!empty($existing_quote['quote_submission'])) {
                 <tr rowspan="3">
                   <td style="vertical-align:top !important;">Ship To:</td>
                   <td colspan="2">
-                    <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" name="ship_to_1" value="<?php echo $info['name_1']; ?>"><br />
-                    <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" name="ship_to_2" value="<?php echo $info['project_addr']; ?>"><br />
-                    <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+                    <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Name" name="ship_to_name" value="<?php echo $info['ship_name']; ?>"><br />
+                    <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $info['ship_address']; ?>"><br />
+                    <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $info['ship_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['ship_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $info['ship_zip']; ?>">
                   </td>
                 </tr>
                 <tr>
@@ -219,15 +220,15 @@ if(!empty($existing_quote['quote_submission'])) {
                 </tr>
                 <tr>
                   <td>Shipping Cubes:<br /><em>(Min of 6)</em></td>
-                  <td><strong>0</strong></td>
-                  <td>$150.00</td>
+                  <td><strong id="ship_cube_count">0</strong> <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" /></td>
+                  <td id="ship_cube_cost">$150.00</td>
                 </tr>
                 <tr>
                   <td colspan="3" style="height:2px;"></td>
                 </tr>
                 <tr>
                   <td>Payment Method:</td>
-                  <td><?php echo displayVINOpts('payment_method', null, null); ?></td>
+                  <td><?php echo displayVINOpts('payment_method'); ?></td>
                   <td></td>
                 </tr>
                 <tr>
@@ -245,8 +246,11 @@ if(!empty($existing_quote['quote_submission'])) {
                      $ip = $_SERVER['REMOTE_ADDR'];
                      $time = date(DATE_TIME_ABBRV);
 
-                     echo "IP: $ip ($time)";
+                     $output = "$ip ($time)";
+
+                     echo "IP: $output";
                     ?>
+                    <input type="hidden" name="esig_ip" value="<?php echo $output; ?>" id="esig_ip" />
                   </td>
                 </tr>
                 <tr>

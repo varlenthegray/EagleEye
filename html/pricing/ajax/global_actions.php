@@ -183,7 +183,7 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
       while($op_queue = $op_queue_qry->fetch_assoc()) {
         if($op_queue['operation_id'] === $operation && (bool)$op_queue['active']) {
           // the exact operation is currently active and we cannot take any further action
-          echo displayToast("error", "Operation is active presently inside of $bracket.", "Active Operation");
+          echo displayToast('error', "Operation is active presently inside of $bracket.", 'Active Operation');
           return;
         } else {
           // deactivate operations
@@ -212,9 +212,9 @@ switch($_REQUEST['action']) {
 
     parse_str($_REQUEST['cabinet_specifications'], $cabinet_specifications); // global: cabinet specifications
     parse_str($_REQUEST['accounting_notes'], $accounting_notes); // accounting and notes
-    
+
     $custom_vals = $_REQUEST['customVals']; // custom fields in VIN sheet
-  
+
     $room_id = sanitizeInput($_REQUEST['room_id']);
 
     $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
@@ -257,7 +257,16 @@ switch($_REQUEST['action']) {
     $distress_level = sanitizeInput($cabinet_specifications['distress_level']);
     //</editor-fold>
 
-//    $vin_final = sanitizeInput($cabinet_specifications['vin_code_' . $room_id]);
+    $product_type = sanitizeInput($cabinet_specifications['product_type']);
+    $ship_via = sanitizeInput($cabinet_specifications['ship_via']);
+    $ship_to_name = sanitizeInput($cabinet_specifications['ship_to_name']);
+    $ship_to_address = sanitizeInput($cabinet_specifications['ship_to_address']);
+    $ship_to_city = sanitizeInput($cabinet_specifications['ship_to_city']);
+    $ship_to_state = sanitizeInput($cabinet_specifications['ship_to_state']);
+    $ship_to_zip = sanitizeInput($cabinet_specifications['ship_to_zip']);
+    $shipping_cost = sanitizeInput($cabinet_specifications['shipping_cost']); // wtf is this?
+    $shipping_cubes = sanitizeInput($cabinet_specifications['shipping_cubes']);
+    $payment_method = sanitizeInput($cabinet_specifications['payment_method']);
 
     //<editor-fold desc="What's Changed">
     if(!empty($room_info['vin_code'])) {
@@ -378,13 +387,40 @@ HEREDOC;
     }
     //</editor-fold>
 
-    //<editor-fold desc="DB: Room VIN Information">
-    if($dbconn->query("UPDATE rooms SET species_grade = '$species_grade', construction_method = '$construction_method', door_design = '$door_design', 
-        panel_raise_door = '$panel_raise_door', panel_raise_sd = '$panel_raise_sd', panel_raise_td = '$panel_raise_td', style_rail_width = '$style_rail_width', 
-        edge_profile = '$edge_profile', framing_bead = '$framing_bead', framing_options = '$framing_options', 
-        finish_code = '$finish_code', sheen = '$sheen', glaze = '$glaze', glaze_technique = '$glaze_technique', antiquing = '$antiquing', 
-        worn_edges = '$worn_edges', distress_level = '$distress_level', drawer_boxes = '$drawer_boxes', custom_vin_info = '$custom_vals',
-        payment_deposit = $deposit_received, payment_final = $final_payment, payment_del_ptl = $ptl_del WHERE id = '$room_id'")) {
+    //<editor-fold desc="DB query for update of global data">
+    if($dbconn->query("UPDATE rooms SET 
+        product_type = '$product_type',
+        ship_via = '$ship_via',
+        ship_name = '$ship_to_name',
+        ship_address = '$ship_to_address',
+        ship_city = '$ship_to_city',
+        ship_state = '$ship_to_state',
+        ship_zip = '$ship_to_zip',
+        ship_cubes = '$shipping_cubes',
+        payment_method = '$payment_method',
+        species_grade = '$species_grade', 
+        construction_method = '$construction_method', 
+        door_design = '$door_design', 
+        panel_raise_door = '$panel_raise_door', 
+        panel_raise_sd = '$panel_raise_sd', 
+        panel_raise_td = '$panel_raise_td', 
+        style_rail_width = '$style_rail_width', 
+        edge_profile = '$edge_profile', 
+        framing_bead = '$framing_bead', 
+        framing_options = '$framing_options', 
+        finish_code = '$finish_code', 
+        sheen = '$sheen', 
+        glaze = '$glaze', 
+        glaze_technique = '$glaze_technique', 
+        antiquing = '$antiquing', 
+        worn_edges = '$worn_edges', 
+        distress_level = '$distress_level', 
+        drawer_boxes = '$drawer_boxes', 
+        custom_vin_info = '$custom_vals',
+        payment_deposit = $deposit_received, 
+        payment_final = $final_payment, 
+        payment_del_ptl = $ptl_del 
+      WHERE id = '$room_id'")) {
       echo displayToast('success', 'Room updated successfully.', 'Room Updated');
     } else {
       dbLogSQLErr($dbconn);
@@ -892,5 +928,19 @@ HEREDOC;
       dbLogSQLErr($dbconn);
     }
 
+    break;
+  case 'calcShipDate':
+    $days_to_ship = sanitizeInput($_REQUEST['days_to_ship']);
+    $roomID = sanitizeInput($_REQUEST['room_id']);
+
+    $date_int['ship_date'] = calcDelDate($days_to_ship);
+    $date_int['del_date'] = strtotime(date(DATE_DEFAULT, $date_int['ship_date']) . ' + 1 day');
+
+    $date['ship_date'] = date(DATE_DEFAULT, $date_int['ship_date']);
+    $date['del_date'] = date(DATE_DEFAULT, $date_int['del_date']);
+
+    $dbconn->query("UPDATE rooms SET ship_date = {$date_int['ship_date']}, delivery_date = {$date_int['del_date']}, days_to_ship = '$days_to_ship' WHERE id = $roomID");
+
+    echo json_encode($date, TRUE);
     break;
 }

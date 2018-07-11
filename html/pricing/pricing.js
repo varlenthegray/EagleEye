@@ -400,4 +400,14 @@ $("body")
       }
     }
   })
+  .on("click", "#ship_date_recalc", function() {
+    let dts = $("#days_to_ship").val();
+
+    $.post("/html/pricing/ajax/global_actions.php?action=calcShipDate", {days_to_ship: dts, room_id: active_room_id}, function(data) {
+      let result = JSON.parse(data);
+
+      $("#calcd_ship_date").html(result['ship_date']);
+      $("#calcd_del_date").html(result['del_date']);
+    });
+  })
 ;

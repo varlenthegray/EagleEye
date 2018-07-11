@@ -84,7 +84,7 @@ function calcDelDate($days_to_ship) {
     $holiday_count = 0;
     $holiday = [];
 
-    $hol_qry = $dbconn->query("SELECT * FROM cal_holidays");
+    $hol_qry = $dbconn->query('SELECT * FROM cal_holidays');
 
     while($hol_res = $hol_qry->fetch_assoc()) {
         $holiday[] = $hol_res['unix_time'];
@@ -94,7 +94,7 @@ function calcDelDate($days_to_ship) {
     foreach($holiday as $day) {
         if($target_date > $day && time() < $day) {
             // it falls on a holiday
-            $holiday_count += 1;
+            ++$holiday_count;
         }
     }
 
@@ -102,11 +102,11 @@ function calcDelDate($days_to_ship) {
 
     $final_date = strtotime("$target_date_formatted + $holiday_count days");
 
-    if(date("N", $final_date) >= 6) {
-        $final_date = strtotime(date("m/d/y", $final_date) . " next monday");
+    if(date('N', $final_date) >= 6) {
+        $final_date = strtotime(date('m/d/y', $final_date) . ' next monday');
     }
 
-    return date("m/d/Y", $final_date);
+    return $final_date;
 }
 
 function mail_nl2br($string) {
