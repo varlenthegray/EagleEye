@@ -410,4 +410,38 @@ $("body")
       $("#calcd_del_date").html(result['del_date']);
     });
   })
+  .on("click", "#terms_confirm", function() {
+    let signature = $(".esig").val();
+    let ip = $(".esig_id").html();
+    let button = $("#terms_confirm");
+
+    if($.trim(signature) !== '') {
+      $.confirm({ // a confirmation box to tell them they are about to legally sign their life away
+        title: "Sign & Agree to Quote",
+        content: signature + ", you agree to the following:<br /><br />" +
+        "Once submitted, the deposit of 50% will be drafted from your account within 24 hours.<br />" +
+        "Once the deposit has been processed a shipping/delivery date will be provided.<br />" +
+        "Final payment is due prior to delivery.<br />" +
+        "You have the authorization to legally sign this document.<br /><br />" + ip,
+        type: 'red',
+        buttons: {
+          'I Agree': function() {
+            $.post("/html/pricing/ajax/global_actions.php?action=termsSign&room_id=" + active_room_id, {sig: signature}, function(data) {
+              $("body").append(data);
+            }).done(function() {
+              button.hide();
+            });
+          },
+          'I Disagree': function() {} // we're not doing anything
+        }
+      });
+    }
+  })
+  .on("keyup", ".esig", function() {
+    if($.trim($(this).val()) !== '') {
+      $("#terms_confirm").prop("disabled", false);
+    } else {
+      $("#terms_confirm").prop("disabled", true);
+    }
+  })
 ;

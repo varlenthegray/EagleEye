@@ -238,17 +238,22 @@ if(!empty($existing_quote['quote_submission'])) {
                   <td colspan="3" style="vertical-align:top !important;">Signature:</td>
                 </tr>
                 <tr>
-                  <td colspan="3"><input type="text" class="esig" name="signature" placeholder="Signature affirms the following:" style="width:100%;border:1px dashed #000;padding:3px;" /></td>
+                  <td colspan="3"><input type="text" class="esig" name="signature" placeholder="Signature affirms the following:" style="width:100%;border:1px dashed #000;padding:3px;" value="<?php echo $room['esig']; ?>" <?php echo !empty($room['esig']) ? "disabled" : null;  ?> /></td>
                 </tr>
                 <tr>
                   <td colspan="3" class="esig_id">
                     <?php
-                     $ip = $_SERVER['REMOTE_ADDR'];
-                     $time = date(DATE_TIME_ABBRV);
+                     if(!empty($room['esig'])) {
+                       $ip = $room['esig_ip'];
+                       $time = date(DATE_TIME_ABBRV, $room['esig_time']);
+                     } else {
+                       $ip = $_SERVER['REMOTE_ADDR'];
+                       $time = date(DATE_TIME_ABBRV);
+                     }
 
                      $output = "$ip ($time)";
 
-                     echo "IP: $output";
+                     echo $output;
                     ?>
                     <input type="hidden" name="esig_ip" value="<?php echo $output; ?>" id="esig_ip" />
                   </td>
@@ -265,9 +270,11 @@ if(!empty($existing_quote['quote_submission'])) {
                     </ul>
                   </td>
                 </tr>
+                <?php if(empty($room['esig'])) { ?>
                 <tr>
-                  <td colspan="3"><input type="button" class="btn btn-warning waves-effect waves-light no-print pull-right" id="terms_confirm" value="Sign & Agree"></td>
+                  <td colspan="3"><input type="button" class="btn btn-warning waves-effect waves-light no-print pull-right" id="terms_confirm" value="Sign & Agree" disabled></td>
                 </tr>
+                <?php } ?>
               </table>
             </div>
 
@@ -288,11 +295,11 @@ if(!empty($existing_quote['quote_submission'])) {
                     <td class="border_thin_bottom"></td>
                     <td class="border_thin_bottom"></td>
                   </tr>
-                  <tr>
-                    <td class="border_thin_bottom">Construction:<div class="cab_specifications_desc"><?php echo displayVINOpts('construction_method'); ?></div></td>
+                  <!--<tr>
+                    <td class="border_thin_bottom">Construction:<div class="cab_specifications_desc"><?php /*echo displayVINOpts('construction_method'); */?></div></td>
                     <td class="border_thin_bottom" id="const_pct">0.00%</td>
                     <td class="border_thin_bottom" id="const_amt">$0.00</td>
-                  </tr>
+                  </tr>-->
                   <tr>
                     <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo displayVINOpts('door_design'); ?></div></td>
                     <td class="border_thin_bottom" id="const_pg" colspan="2">Price Group 7</td>

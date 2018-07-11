@@ -257,6 +257,7 @@ switch($_REQUEST['action']) {
     $distress_level = sanitizeInput($cabinet_specifications['distress_level']);
     //</editor-fold>
 
+    //<editor-fold desc="Capture Global Info">
     $product_type = sanitizeInput($cabinet_specifications['product_type']);
     $ship_via = sanitizeInput($cabinet_specifications['ship_via']);
     $ship_to_name = sanitizeInput($cabinet_specifications['ship_to_name']);
@@ -267,6 +268,7 @@ switch($_REQUEST['action']) {
     $shipping_cost = sanitizeInput($cabinet_specifications['shipping_cost']); // wtf is this?
     $shipping_cubes = sanitizeInput($cabinet_specifications['shipping_cubes']);
     $payment_method = sanitizeInput($cabinet_specifications['payment_method']);
+    //</editor-fold>
 
     //<editor-fold desc="What's Changed">
     if(!empty($room_info['vin_code'])) {
@@ -942,5 +944,24 @@ HEREDOC;
     $dbconn->query("UPDATE rooms SET ship_date = {$date_int['ship_date']}, delivery_date = {$date_int['del_date']}, days_to_ship = '$days_to_ship' WHERE id = $roomID");
 
     echo json_encode($date, TRUE);
+    break;
+  case 'termsSign':
+    $room_id = sanitizeInput($_REQUEST['room_id']);
+
+    $signature = sanitizeInput($_REQUEST['sig']);
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $time = time();
+
+    if(!empty(trim($signature))) {
+      if($dbconn->query("UPDATE rooms SET esig = '$signature', esig_ip = '$ip', esig_time = '$time' WHERE id = $room_id AND esig IS NULL")) {
+        echo displayToast('success', 'Successfully signed this quote.', 'Quote Signed');
+      } else {
+        echo displayToast('error', 'Unable to sign quote. Please contact your SMCM representative.', 'Quote Error');
+      }
+    } else {
+      echo displayToast('error', 'Signature cannot be empty.', 'Empty Signature');
+    }
+
+
     break;
 }
