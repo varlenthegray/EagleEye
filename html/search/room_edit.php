@@ -379,8 +379,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                 <tr style="height:5px;"><td colspan="2"></td></tr>
                 <?php
                 if((bool)$_SESSION['userInfo']['dealer']) {
-                  $dealer = strtolower(DEALER);
-                  $where = "AND user.username LIKE '$dealer%'";
+                  $where = "AND user.username LIKE '{$_SESSION['userInfo']['dealer_code']}%'";
                 } else {
                   $where = null;
                 }
@@ -409,7 +408,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
                     while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
                       $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
 
-                      if((substr(strtoupper($inquiry_reply['username']), 0, 3) === DEALER) && (bool)$_SESSION['userInfo']['dealer']) {
+                      if((bool)$_SESSION['userInfo']['dealer'] && (stripos($inquiry_reply['username'], $_SESSION['userInfo']['dealer_code']) === 0)) {
                         $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
                       } elseif(!(bool)$_SESSION['userInfo']['dealer']) {
                         $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
@@ -445,8 +444,7 @@ $individual_bracket = json_decode($room['individual_bracket_buildout']);
               <tr style="height:5px;"><td colspan="2"></td></tr>
               <?php
               if((bool)$_SESSION['userInfo']['dealer']) {
-                $dealer = strtolower(DEALER);
-                $where = "AND user.username LIKE '$dealer%'";
+                $where = "AND user.username LIKE '{$_SESSION['userInfo']['dealer_code']}%'";
               } else {
                 $where = null;
               }

@@ -1,0 +1,21 @@
+@import "page_setup";
+@import "custom";
+
+table {
+  outline: none;
+}
+
+.std_table {
+  border: 1px solid #000;
+
+  td, th {
+    border: 1px solid #000;
+    padding: 2px;
+  }
+}
+
+.order_box {
+  height: 25vh;
+  min-height: 200px;
+  overflow-y: auto;
+}

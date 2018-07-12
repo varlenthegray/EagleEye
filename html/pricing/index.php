@@ -620,7 +620,7 @@ if(!empty($existing_quote['quote_submission'])) {
                 <tr style="height:5px;"><td colspan="2"></td></tr>
                 <?php
                 if((bool)$_SESSION['userInfo']['dealer']) {
-                  $dealer = strtolower(DEALER);
+                  $dealer = strtolower($_SESSION['userInfo']['dealer_code']);
                   $where = "AND user.username LIKE '$dealer%'";
                 } else {
                   $where = null;

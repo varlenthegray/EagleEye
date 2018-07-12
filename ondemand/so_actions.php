@@ -46,6 +46,8 @@ switch($_REQUEST['action']) {
     
     parse_str($_REQUEST['cu_data'], $cuData);
 
+    $debug_out = json_encode($cuData, true);
+
     /** Retail information */
     $dealer_code = sanitizeInput($cuData['dealer_code']);
 
@@ -140,7 +142,7 @@ switch($_REQUEST['action']) {
 
       $dbconn->query("INSERT INTO op_queue (room_id, operation_id, notes, created) VALUES ('$room_id', '{$starting_ops['Sales']}', 'Auto-generated.', UNIX_TIMESTAMP())");
 
-      echo displayToast('success', 'Successfully created new SO.', 'New SO Created');
+      echo displayToast('success', 'Successfully created new project.', 'New Project Created');
     } else {
       dbLogSQLErr($dbconn);
     }
@@ -298,9 +300,7 @@ switch($_REQUEST['action']) {
     $i = 0;
 
     if((bool)$_SESSION['userInfo']['dealer']) {
-      $dealer = DEALER;
-
-      $dealer_where = "WHERE d.dealer_id LIKE '$dealer%'";
+      $dealer_where = "WHERE d.dealer_id LIKE '{$_SESSION['userInfo']['dealer_code']}%'";
     } else {
       $dealer_where = null;
     }
@@ -359,9 +359,7 @@ switch($_REQUEST['action']) {
     $prev_seq = null;
 
     if((bool)$_SESSION['userInfo']['dealer']) {
-      $dealer = DEALER;
-
-      $dealer_where = "WHERE dealers.dealer_id LIKE '$dealer%'";
+      $dealer_where = "WHERE dealers.dealer_id LIKE '{$_SESSION['userInfo']['dealer_code']}%'";
     } else {
       $dealer_where = null;
     }

@@ -15,6 +15,15 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
       $_SESSION['valid'] = true; // set the session as valid
       $_SESSION['userInfo'] = $result;
 
+      if((bool)$result['dealer']) {
+        $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE id = {$result['dealer_id']}");
+        $dealer = $dealer_qry->fetch_assoc();
+
+        $_SESSION['userInfo']['dealer_code'] = $dealer['dealer_id'];
+      } else {
+        $_SESSION['userInfo']['dealer_code'] = null;
+      }
+
       $perm_qry = $dbconn->query("SELECT pg.* FROM user u LEFT JOIN permission_groups pg on u.permission_id = pg.id WHERE u.id = {$result['id']}");
 
       if($perm_qry->num_rows === 1) {

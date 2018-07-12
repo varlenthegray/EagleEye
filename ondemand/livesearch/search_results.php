@@ -158,9 +158,7 @@ HEREDOC;
 }
 
 if((bool)$_SESSION['userInfo']['dealer']) {
-  $dealer = DEALER;
-
-  $dealer_filter = "AND dealer_code LIKE '$dealer%'";
+  $dealer_filter = "AND dealer_code LIKE '{$_SESSION['userInfo']['dealer_code']}%'";
 } else {
   $dealer_filter = null;
 }
@@ -300,7 +298,7 @@ switch ($search) {
                         // TODO: Clean the duplicate up between this and a normal SO (non-dealer)
                         $contact_dropdown = null;
 
-                        $dealer = substr(DEALER, 0, 3);
+                        $dealer = substr($_SESSION['userInfo']['dealer_code'], 0, 3);
 
                         $contact_qry = $dbconn->query("SELECT c.id, c.first_name, c.last_name, c.company_name, c2.description FROM contact c LEFT JOIN contact_types c2 ON c.type = c2.id LEFT JOIN user u ON c.created_by = u.id LEFT JOIN dealers d ON u.dealer_id = d.id WHERE d.dealer_id LIKE '%$dealer%' ORDER BY c2.description, c.first_name, c.last_name ASC");
 
@@ -344,9 +342,7 @@ switch ($search) {
                             <select class="form-control" id="dealer_code" name="dealer_code">
                               <?php
                               if($_SESSION['userInfo']['dealer']) {
-                                $dealer_code = DEALER;
-
-                                $where_clause = "WHERE dealer_id LIKE '$dealer_code%'";
+                                $where_clause = "WHERE dealer_id LIKE '{$_SESSION['userInfo']['dealer_code']}%'";
                               } else {
                                 $where_clause = null;
                               }
@@ -815,7 +811,7 @@ switch ($search) {
                         <table class="table table-custom-nb table-v-top" width="100%">
                           <?php
                           if((bool)$_SESSION['userInfo']['dealer']) {
-                            $dealer = strtolower(DEALER);
+                            $dealer = strtolower($_SESSION['userInfo']['dealer_code']);
                             $where = "AND user.username LIKE '$dealer%'";
                           } else {
                             $where = null;

@@ -12,10 +12,10 @@ if(!(bool)$_SESSION['userInfo']['dealer']) {
         $next_so = 1;
     }
 } else {
-    $qry = $dbconn->query("SELECT id FROM sales_order ORDER BY id DESC LIMIT 0, 1;");
+    $qry = $dbconn->query('SELECT id FROM sales_order ORDER BY id DESC LIMIT 0, 1;');
     $result = $qry->fetch_assoc();
 
-    $next_so = "D" . ($result['id'] + 1);
+    $next_so = 'D' . ($result['id'] + 1);
 }
 ?>
 
@@ -28,12 +28,10 @@ if(!(bool)$_SESSION['userInfo']['dealer']) {
         <div class="modal-body">
             <div class="row">
                 <div class="col-md-12">
-                    <form id="add_retail_customer">
+                    <form id="add_project">
                         <table style="width:100%;margin-top:8px;">
                             <?php
-                            $dealer_code = ucwords($_SESSION['userInfo']['username']);
-
-                            echo "<input type='hidden' name='dealer_code' id='dealer_code' value='$dealer_code'>";
+                            echo "<input type='hidden' name='dealer_code' id='dealer_code' value='{$_SESSION['userInfo']['dealer_code']}'>";
                             echo "<input type='hidden' name='so_num' id='so_num' value='$next_so'>";
                             ?>
 
@@ -159,7 +157,7 @@ if(!(bool)$_SESSION['userInfo']['dealer']) {
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary waves-effect waves-light" id="submit_new_customer">Add Project</button>
+            <button type="button" class="btn btn-primary waves-effect waves-light" id="submit_new_project">Add Project</button>
         </div>
     </div><!-- /.modal-content -->
 </div><!-- /.modal-dialog -->

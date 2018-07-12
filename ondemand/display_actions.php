@@ -1,7 +1,7 @@
 <?php
 require '../includes/header_start.php';
-require ("../assets/php/composer/vendor/autoload.php"); // require carbon for date formatting, http://carbon.nesbot.com/
-require ("../includes/classes/queue.php");
+require '../assets/php/composer/vendor/autoload.php'; // require carbon for date formatting, http://carbon.nesbot.com/
+require '../includes/classes/queue.php';
 
 //outputPHPErrs();
 
@@ -10,9 +10,9 @@ use Carbon\Carbon; // prep carbon
 $queue = new \Queue\queue();
 
 if((bool)$_SESSION['userInfo']['dealer']) {
-  $dealer = DEALER;
+  $partial_dealer = substr($_SESSION['userInfo']['dealer_code'], 0, 3);
 
-  $dealer_filter = "AND dealer_code LIKE '$dealer%'";
+  $dealer_filter = "AND dealer_code LIKE '$partial_dealer%'";
 } else {
   $dealer_filter = null;
 }
@@ -44,10 +44,10 @@ function displayOrderQuote ($type) {
         $sales_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room[$bracket1]}'");
         $sales_op = $sales_op_qry->fetch_assoc();
 
-        if((bool)$_SESSION['userInfo']['dealer'] && $type === '$') {
+        if($type === '$' && (bool)$_SESSION['userInfo']['dealer']) {
           $sales_op_display = 'In Production';
         } else {
-          $sales_op_display = (!empty($sales_op)) ? "{$sales_op['job_title']}" : "None";
+          $sales_op_display = !empty($sales_op) ? $sales_op['job_title'] : 'None';
         }
       } else {
         $sales_op_display = "";
@@ -57,26 +57,26 @@ function displayOrderQuote ($type) {
         $sample_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room[$bracket2]}'");
         $sample_op = $sample_op_qry->fetch_assoc();
 
-        if((bool)$_SESSION['userInfo']['dealer'] && $type === '$') {
+        if($type === '$' && (bool)$_SESSION['userInfo']['dealer']) {
           $sales_op_display = 'In Production';
         } else {
-          $sample_op_display = (!empty($sample_op)) ? "{$sample_op['job_title']}" : "None";
+          $sample_op_display = !empty($sample_op) ? $sample_op['job_title'] : 'None';
         }
       } else {
-        $sample_op_display = "";
+        $sample_op_display = '';
       }
 
-      $iteration = explode(".", number_format($room['iteration'], 2));
+      $iteration = explode('.', number_format($room['iteration'], 2));
 
       if($room['room'] === $prev_room && $room['so_num'] === $prev_so && $iteration[0] === $prev_seq) {
-        $indent = "margin-left:55px";
+        $indent = 'margin-left:55px';
         $addl_room_info = ".{$iteration[1]}";
       } else {
-        $indent = "margin-left:40px";
+        $indent = 'margin-left:40px';
         $addl_room_info = "{$room['room']}{$room['iteration']}";
       }
 
-      $rowID = (empty($room['so_num'])) ? $room['project_name'] : $rowID = $room['so_num'];
+      $rowID = empty($room['so_num']) ? $room['project_name'] : $rowID = $room['so_num'];
 
       if($prev_so !== $room['so_num']) {
         $output['data'][$i][] = $room['so_num'];
@@ -85,7 +85,7 @@ function displayOrderQuote ($type) {
         $output['data'][$i][] = null;
         $output['data'][$i]['DT_RowId'] = $rowID;
 
-        $i += 1;
+        ++$i;
       }
 
       $output['data'][$i][] = $room['so_parent'];
@@ -98,13 +98,13 @@ function displayOrderQuote ($type) {
       $prev_seq = $iteration[0];
       $prev_so = $room['so_num'];
 
-      $i += 1;
+      ++$i;
     }
   } else {
-    $output['data'][$i][] = "";
-    $output['data'][$i][] = "No rooms found.";
-    $output['data'][$i][] = "";
-    $output['data'][$i][] = "";
+    $output['data'][$i][] = '';
+    $output['data'][$i][] = 'No rooms found.';
+    $output['data'][$i][] = '';
+    $output['data'][$i][] = '';
   }
 
 
@@ -113,11 +113,11 @@ function displayOrderQuote ($type) {
 
 switch($_REQUEST['action']) {
   /** Dashboard */
-  case "display_quotes":
+  case 'display_quotes':
     echo json_encode(displayOrderQuote('#'));
 
     break;
-  case "display_orders":
+  case 'display_orders':
     echo json_encode(displayOrderQuote('$'));
 
     break;

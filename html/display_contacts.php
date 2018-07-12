@@ -18,20 +18,20 @@
 
               $personal_filter = ($contype['description'] === 'Personal') ? "AND created_by = {$_SESSION['userInfo']['id']}" : null;
 
-              $dealer = substr(DEALER, 0, 3);
+              $dealer = substr($_SESSION['userInfo']['dealer_code'], 0, 3);
 
               $dealer_filter = ((bool)$_SESSION['userInfo']['dealer']) ? "AND d.dealer_id LIKE '%$dealer%'" : null;
 
               $company_qry = $dbconn->query("SELECT DISTINCT(company_name) FROM contact c LEFT JOIN user u ON c.created_by = u.id LEFT JOIN dealers d ON u.dealer_id = d.id WHERE type = '{$contype['id']}' $personal_filter $dealer_filter ORDER BY company_name ASC");
 
               if($company_qry->num_rows > 0) {
-                $children = "<ul>";
+                $children = '<ul>';
 
                 while($company = $company_qry->fetch_assoc()) {
                   $subchild_qry = $dbconn->query("SELECT c.* FROM contact c LEFT JOIN user u ON c.created_by = u.id LEFT JOIN dealers d ON u.dealer_id = d.id WHERE company_name = '{$company['company_name']}' AND type = '{$contype['id']}' $personal_filter $dealer_filter ORDER BY first_name, last_name ASC");
 
                   if($subchild_qry->num_rows > 0) {
-                    $subchildren = "<ul>";
+                    $subchildren = '<ul>';
 
                     while($subchild = $subchild_qry->fetch_assoc()) {
                       $name = (empty($subchild['first_name']) && empty($subchild['last_name'])) ? $subchild['company_name'] : "{$subchild['first_name']} {$subchild['last_name']}";
@@ -39,12 +39,12 @@
                       $subchildren .= "<li id='{$subchild['id']}' data-icon='fa fa-user'>$name</li>";
                     }
 
-                    $subchildren .= "</ul>";
+                    $subchildren .= '</ul>';
                   } else {
                     $subchildren = null;
                   }
 
-                  $company_name = (empty($company['company_name'])) ? "<em>Individuals</em>" : $company['company_name'];
+                  $company_name = empty($company['company_name']) ? '<em>Individuals</em>' : $company['company_name'];
 
 
                   $children .= "<li class='folder' data-icon='fa fa-group'>$company_name $subchildren</li>";

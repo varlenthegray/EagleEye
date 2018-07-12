@@ -332,7 +332,7 @@ require 'includes/header_start.php';
     <?php
     echo (isset($_SESSION['userInfo']['default_queue']) || !empty($_SESSION['userInfo']['default_queue'])) ? "var queue = '{$_SESSION['userInfo']['default_queue']}';" : "var queue = '{$_SESSION['shop_user']['default_queue']}';";
 
-    $unique_key = hash("md5", microtime() + rand(1,999999999));
+    $unique_key = hash('md5', microtime() + mt_rand(1,999999999));
 
     if(!$dbconn->query("UPDATE user SET unique_key = '$unique_key' WHERE id = '{$_SESSION['userInfo']['id']}'")) {
       dbLogSQLErr($dbconn);
@@ -1208,12 +1208,12 @@ require 'includes/header_start.php';
       .on("change", "#contractor_chk", function() {
         $(".contractor_disp").toggle();
       })
-      .on("click", "#submit_new_customer", function() {
+      .on("click", "#submit_new_project", function() {
         var cuData;
 
-        cuData = $("#add_retail_customer").serialize();
+        cuData = $("#add_project").serialize();
 
-        $.post("/ondemand/so_actions.php?action=add_customer&" + cuData, {so_num: $("#so_num").val()}, function(data) {
+        $.post("/ondemand/so_actions.php?action=add_customer", {so_num: $("#so_num").val(), cu_data: cuData}, function(data) {
           $("body").append(data);
 
           $("#modalAddContact").modal('hide');
@@ -1420,6 +1420,7 @@ require 'includes/header_start.php';
   <script src="/assets/plugins/fancytree/jquery.fancytree.gridnav.js"></script>
   <script src="/assets/plugins/fancytree/jquery.fancytree.table.js"></script>
   <script src="/assets/plugins/fancytree/jquery.fancytree.persist.js"></script>
+  <script src="/assets/plugins/fancytree/jquery.fancytree.fixed.js"></script>
 
   <!-- Float TableHead -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/floatthead/2.1.2/jquery.floatThead.min.js"></script>
