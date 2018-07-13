@@ -272,7 +272,7 @@ $("body")
     let cablist = cabinetList.fancytree("getTree").getActiveNode();
 
     $.each(modifications, function(i, v) {
-      let addlInfo = null;
+      let addlInfo = '';
 
       if(v.data.addlInfo !== undefined) {
         addlInfo = " by " + v.data.addlInfo;
