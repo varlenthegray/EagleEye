@@ -275,12 +275,12 @@ $("body")
       let addlInfo = null;
 
       if(v.data.addlInfo !== undefined) {
-        addlInfo = v.data.addlInfo;
+        addlInfo = " by " + v.data.addlInfo;
       }
 
       cablist.addChildren({
         title: v.title,
-        name: v.data.description + " by " + addlInfo,
+        name: v.data.description + addlInfo,
         qty: 1,
         icon: v.icon,
         price: v.data.price
