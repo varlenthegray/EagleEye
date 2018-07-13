@@ -27,7 +27,7 @@ if(!empty($itemID)) {
 }
 
 $parent_qry = $dbconn->prepare('SELECT
-  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, detail.title
+  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, detail.title, pn.addl_info
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -40,7 +40,7 @@ function makeTree($parent_id) {
   $ret = array();
 
   $parent_qry->bind_param('i', $parent_id);
-  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $sku_title);
+  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $sku_title, $addl_info);
   $parent_qry->execute();
   $parent_qry->store_result();
 
@@ -56,7 +56,8 @@ function makeTree($parent_id) {
       'item_catID' => $item_catID,
       'sku' => $sku,
       'image_path' => $image,
-      'sku_title' => $sku_title
+      'sku_title' => $sku_title,
+      'addl_info' => $addl_info
     );
   }
 
@@ -67,21 +68,17 @@ function makeTree($parent_id) {
   foreach($data as $item) {
     if(!empty($item['sku'])) {
       if(in_array($item['itemID'], $mods_accepted, false)) {
-//      if(1===1) {
         if (!isset($sku_items[$item['item_catID']])) {
           $object = array('key' => $item['catID'], 'title' => $item['name'], 'folder' => true, 'children' => array());
           $sku_items[$item['item_catID']] = $object;
           $ret[] = &$sku_items[$item['item_catID']];
         }
 
-        $title = "{$item['sku']} - {$item['sku_title']}";
-        $title .= " <span class='actions'>
-          <div class='info_container'><i class='fa fa-info-circle primary-color view_item_info' data-id='{$item['itemID']}'></i></div>
-        </span>";
+        $info = " <span class='actions'><div class='info_container'><i class='fa fa-info-circle primary-color view_item_info' data-id='{$item['itemID']}'></i></div></span>";
 
         $img = !empty($item['image_path']) ? "/html/pricing/images/{$item['image_path']}" : 'fa fa-magic';
 
-        $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $title, 'is_item' => true, 'checkbox' => true, 'icon' => $img, 'qty' => 1, 'price' => 0.00);
+        $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $item['sku'], 'description' => $item['sku_title'], 'info' => $info, 'is_item' => true, 'checkbox' => true, 'icon' => $img, 'qty' => 1, 'price' => 0.00, 'addl_info' => $item['addl_info']);
       }
     } else {
       $object = array('key' => $item['catID'], 'folder' => true, 'title' => $item['name']);

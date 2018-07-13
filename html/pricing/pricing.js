@@ -269,8 +269,25 @@ $("body")
   })
   .on("click", "#modificationAddSelected", function() {
     let modifications = itemModifications.fancytree("getTree").getSelectedNodes();
+    let cablist = cabinetList.fancytree("getTree").getActiveNode();
 
-    cabinetList.fancytree("getTree").getActiveNode().addChildren(modifications);
+    $.each(modifications, function(i, v) {
+      let addlInfo = null;
+
+      if(v.data.addlInfo !== undefined) {
+        addlInfo = v.data.addlInfo;
+      }
+
+      cablist.addChildren({
+        title: v.title,
+        name: v.data.description + " by " + addlInfo,
+        qty: 1,
+        icon: v.icon,
+        price: v.data.price
+      });
+    });
+
+    cablist.setExpanded();
 
     $("#modalAddModification").modal("hide");
   })
@@ -443,5 +460,10 @@ $("body")
     } else {
       $("#terms_confirm").prop("disabled", true);
     }
+  })
+  .on("keyup", ".modAddlInfo", function() {
+    let id = $(this).attr("id");
+
+    itemModifications.fancytree("getTree").getNodeByKey(id).data.addlInfo = $(this).val();
   })
 ;
