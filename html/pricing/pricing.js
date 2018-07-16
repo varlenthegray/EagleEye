@@ -30,14 +30,25 @@ function recalcTotal() {
 
     let node = cabinetList.fancytree("getTree").getNodeByKey(line.key), $tdList = $(node.tr).find(">td");
 
-    console.log("Updated " + node.key + " with total: " + newTotal);
-
     // update the line item quantity?
 
     // update the total column with the correct total
     node.data.total = newTotal.formatMoney();
     $tdList.eq(11).text(newTotal.formatMoney());
   });
+}
+
+function sqFtCalc(node) {
+  let $tdList = $(node.tr).find(">td");
+
+  if(node.data.sqft === '1') {
+    let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.height) * parseFloat(node.data.depth)) / 144;
+    let line_total = line_sqft * node.data.price;
+
+    $tdList.eq(10).text(line_total.formatMoney());
+
+    return node.data.price;
+  }
 }
 
 var mouseX, mouseY;
@@ -138,7 +149,7 @@ $("body")
     $(this).select(); // auto-select the text
   })
   .on("keyup", ".qty_input", function() {
-    let id = $(this).attr("id");
+    let id = $(this).attr("data-id");
 
     cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
   })
@@ -166,7 +177,8 @@ $("body")
         price: fixedPrice,
         key: new Date().getTime() * Math.random(999),
         icon: itemInfo.icon,
-        name: itemInfo.title
+        name: itemInfo.title,
+        sqft: itemInfo.sqft
       });
 
       recalcTotal();
@@ -194,14 +206,6 @@ $("body")
     $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=" + active_room_id, {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
       $("body").append(data);
     });
-  })
-  .on("focus", ".qty_input", function() { // when clicking or tabbing to quantity
-    $(this).select(); // auto-select the text
-  })
-  .on("keyup", ".qty_input", function() {
-    let id = $(this).attr("id");
-
-    cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
   })
   .on("mouseenter", ".view_item_info", function() {
     // FIXME: Change this so the data isn't loaded on hover
@@ -465,5 +469,32 @@ $("body")
     let id = $(this).attr("id");
 
     itemModifications.fancytree("getTree").getNodeByKey(id).data.addlInfo = $(this).val();
+  })
+  .on("keyup", ".itm_width", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+
+    node.data.width = $(this).val();
+
+    node.data.price = sqFtCalc(node);
+    recalcTotal();
+  })
+  .on("keyup", ".itm_height", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+
+    node.data.height = $(this).val();
+
+    node.data.price = sqFtCalc(node);
+    recalcTotal();
+  })
+  .on("keyup", ".itm_depth", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+
+    node.data.depth = $(this).val();
+
+    node.data.price = sqFtCalc(node);
+    recalcTotal();
   })
 ;
