@@ -191,16 +191,16 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="dd_species_pct" id="dd_species_pct" value="0.00" maxlength="4">%</td>
           <td class="text-md-right border_thin_bottom subtotal">$<span id="dd_species_subtotal"></span></td>
         </tr>
-        <tr>
+        <!--<tr>
           <td>&nbsp;</td>
           <td>&nbsp;</td>
           <td class="border_thin_bottom">Construction:</td>
-          <td class="border_thin_bottom"><?php echo translateVIN('construction_method', $info['construction_method']); ?></td>
+          <td class="border_thin_bottom"><?php /*echo translateVIN('construction_method', $info['construction_method']); */?></td>
           <td class="border_thin_bottom gray_bg">&nbsp;</td>
           <td class="border_thin_bottom gray_bg">&nbsp;</td>
           <td class="text-md-center border_thin_bottom pct_value"><input type="text" name="construction_pct" id="construction_pct" value="0.00" maxlength="4">%</td>
           <td class="text-md-right border_thin_bottom subtotal">$<span id="construction_subtotal"></span></td>
-        </tr>
+        </tr>-->
         <tr>
           <td>&nbsp;</td>
           <td>&nbsp;</td>
