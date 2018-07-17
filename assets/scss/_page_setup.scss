@@ -7,11 +7,10 @@
   }
 
   @page {
-    margin: 0;
+    margin: 12.7mm 5mm 12.7mm 12mm !important;
   }
 
   body {
-    padding: 5mm 5mm 5mm 12mm !important;
     color: #000 !important;
 
     a {
@@ -106,6 +105,11 @@
   font-weight: bold;
   font-size: 2em !important;
   background-color: #FFF !important;
+
+  &::placeholder {
+    opacity: .35;
+    font-size: .8em;
+  }
 }
 
 .esig_id {

@@ -136,9 +136,7 @@
 .qty_input {
   width: 100%;
   background-color: transparent;
-  font-size: 10pt !important;
   text-align: center;
-  height: 20px;
   border: none;
 }
 
@@ -200,6 +198,11 @@
     background-color: rgba(63, 191, 127, 0.5);
     border: solid #000;
     border-width: 0 0 1px 2px;
+  }
+
+  .main-level {
+    font-weight: bold;
+    border-top: 2px solid #000;
   }
 }
 
@@ -301,6 +304,8 @@ h5 {
     table {
       margin-top: -2.45em;
     }
+
+    page-break-inside: avoid;
   }
 
   h5 {
@@ -309,5 +314,21 @@ h5 {
 
   .th_17 {
     height: 17px;
+  }
+
+  /** Massive overhaul of the FancyTree table for Cabinet List **/
+  #cabinet_list {
+    span.fancytree-expander, img.fancytree-icon, span.fancytree-custom-icon {
+      width: 12px;
+      height: 12px;
+    }
+
+    .custom-select, span.fancytree-node, span.fancytree-title {
+      min-height: 12px;
+    }
+
+    .fancytree-exp-e span.fancytree-expander {
+      background-position: -32px -83px;
+    }
   }
 }
