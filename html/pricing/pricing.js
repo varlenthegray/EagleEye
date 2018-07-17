@@ -43,11 +43,11 @@ function sqFtCalc(node) {
 
   if(node.data.sqft === '1') {
     let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.height) * parseFloat(node.data.depth)) / 144;
-    let line_total = line_sqft * node.data.price;
+    let line_total = line_sqft * node.data.sqftPrice;
 
     $tdList.eq(10).text(line_total.formatMoney());
 
-    return node.data.price;
+    return line_total;
   }
 }
 
@@ -178,7 +178,8 @@ $("body")
         key: new Date().getTime() * Math.random(999),
         icon: itemInfo.icon,
         name: itemInfo.title,
-        sqft: itemInfo.sqft
+        sqft: itemInfo.sqft,
+        sqftPrice: fixedPrice
       });
 
       recalcTotal();
