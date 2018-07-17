@@ -964,4 +964,27 @@ HEREDOC;
 
 
     break;
+  case 'getPriceGroup':
+    $room_id = sanitizeInput($_REQUEST['room_id']);
+
+    $room_qry = $dbconn->query("SELECT 
+      vs1.id AS species_grade_id, vs2.id AS door_design_id
+    FROM rooms r 
+      LEFT JOIN vin_schema vs1 ON r.species_grade = vs1.key
+      LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key
+    WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'");
+
+    $room = $room_qry->fetch_assoc();
+
+    if($room['door_design_id'] !== '1544' && $room['species_grade_id'] !== '11') {
+      $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$room['door_design_id']} AND species_id = {$room['species_grade_id']}");
+      $price_group = $price_group_qry->fetch_assoc();
+      $price_group = $price_group['price_group_id'];
+    } else {
+      $price_group = 'Unknown';
+    }
+
+    echo $price_group;
+
+    break;
 }

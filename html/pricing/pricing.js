@@ -28,13 +28,7 @@ function recalcTotal() {
 
     newTotal += parseFloat(lineTotal);
 
-    let node = cabinetList.fancytree("getTree").getNodeByKey(line.key), $tdList = $(node.tr).find(">td");
-
-    // update the line item quantity?
-
-    // update the total column with the correct total
-    node.data.total = newTotal.formatMoney();
-    $tdList.eq(11).text(newTotal.formatMoney());
+    $("#itemListTotal").text(newTotal.formatMoney());
   });
 }
 
@@ -497,5 +491,10 @@ $("body")
 
     node.data.price = sqFtCalc(node);
     recalcTotal();
+  })
+  .on("click", ".option", function() {
+    $.post("/html/pricing/ajax/global_actions.php?action=getPriceGroup&room_id=" + active_room_id, function(data) {
+      $("#cab_spec_pg").text(data);
+    });
   })
 ;

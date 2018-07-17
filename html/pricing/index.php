@@ -84,7 +84,7 @@ if(!empty($existing_quote['quote_submission'])) {
       <div class="btn-group">
         <button type="button" title="Print" class="btn btn-secondary dropdown-toggle waves-effect" data-toggle="dropdown" aria-expanded="false"> <i class="fa fa-print fa-2x"></i> </button>
         <div class="dropdown-menu" x-placement="bottom-start" style="position:absolute;transform:translate3d(0,38px,0);top:0;left:0;will-change:transform;">
-          <a class="dropdown-item" href="#" title="Print this page specifically" onclick="window.print();">Print Item List</a>
+          <a class="dropdown-item" href="/index.php?page=pricing/index?room_id=<?php echo $room_id; ?>" title="Print this page specifically" onclick="window.print();">Print Item List</a>
           <?php
           echo $bouncer->validate('print_sample') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=sample_req' target='_blank' class='dropdown-item'>Print Sample Request</a>" : null;
           echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Coversheet</a>" : null;
@@ -221,7 +221,7 @@ if(!empty($existing_quote['quote_submission'])) {
                 <tr>
                   <td>Shipping Cubes:<br /><em>(Min of 6)</em></td>
                   <td><strong id="ship_cube_count">0</strong> <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" /></td>
-                  <td id="ship_cube_cost">$150.00</td>
+                  <td id="ship_cube_cost">$0.00</td>
                 </tr>
                 <tr>
                   <td colspan="3" style="height:2px;"></td>
@@ -302,7 +302,30 @@ if(!empty($existing_quote['quote_submission'])) {
                   </tr>-->
                   <tr>
                     <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo displayVINOpts('door_design'); ?></div></td>
-                    <td class="border_thin_bottom" id="const_pg" colspan="2">Price Group 7</td>
+                    <td class="border_thin_bottom text-md-center" id="const_pg" colspan="2">
+                      Price Group <span id="cab_spec_pg">
+                        <?php
+                        $pg_qry = $dbconn->query("SELECT 
+                          vs1.id AS species_grade_id, vs2.id AS door_design_id
+                        FROM rooms r 
+                          LEFT JOIN vin_schema vs1 ON r.species_grade = vs1.key
+                          LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key
+                        WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'");
+
+                        $pg = $pg_qry->fetch_assoc();
+
+                        if($pg['door_design_id'] !== '1544' && $pg['species_grade_id'] !== '11') {
+                          $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$pg['door_design_id']} AND species_id = {$pg['species_grade_id']}");
+                          $price_group = $price_group_qry->fetch_assoc();
+                          $price_group = $price_group['price_group_id'];
+                        } else {
+                          $price_group = 'Unknown';
+                        }
+
+                        echo $price_group;
+                        ?>
+                      </span>
+                    </td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_door'); ?></div></td>
@@ -441,7 +464,6 @@ if(!empty($existing_quote['quote_submission'])) {
               <col width="50px">
               <col width="50px">
               <col width="50px">
-              <col width="50px">
             </colgroup>
             <thead>
             <tr>
@@ -459,9 +481,7 @@ if(!empty($existing_quote['quote_submission'])) {
               <th class="text-md-center">Height</th>
               <th class="text-md-center">Depth</th>
               <th class="text-md-center">Hinge</th>
-              <th class="text-md-center">Finish</th>
               <th class="text-md-center">Price Ea</th>
-              <th class="text-md-center">Total</th>
             </tr>
             </thead>
             <tbody>
@@ -483,16 +503,7 @@ if(!empty($existing_quote['quote_submission'])) {
                   <option value="N" selected>None</option>
                 </select>
               </td>
-              <td class="text-md-center">
-                <select class="item_finish custom-select">
-                  <option value="L">Left</option>
-                  <option value="R">Right</option>
-                  <option value="B">Both</option>
-                  <option value="N" selected>None</option>
-                </select>
-              </td>
               <td class="text-md-right cab-price"></td>
-              <td class="text-md-right cab-price cab-total"></td>
             </tr>
             </tbody>
             <tfoot>
@@ -514,12 +525,12 @@ if(!empty($existing_quote['quote_submission'])) {
               <tr class="border_thin_bottom">
                 <td width="65%" class="total_text">Item List:</td>
                 <td width="80px">&nbsp;</td>
-                <td class="text-md-right gray_bg total_text">$0.00<span id="final_upcharges"></span></td>
+                <td class="text-md-right gray_bg total_text" id="itemListTotal">$0.00</td>
               </tr>
               <tr class="border_thin_bottom">
                 <td class="total_text">Global Cabinet Details:</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00<span id="final_subtotal"></span></td>
+                <td class="text-md-right total_text">$0.00</td>
               </tr>
               <tr class="border_thin_bottom">
                 <td class="total_text">Total:</td>
@@ -529,12 +540,12 @@ if(!empty($existing_quote['quote_submission'])) {
               <tr class="border_thin_bottom">
                 <td class="total_text">Multiplier:</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00<span id="final_net"></span></td>
+                <td class="text-md-right total_text">$0.00</td>
               </tr>
               <tr class="border_thin_bottom">
                 <td class="total_text">Shipping:</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00<span id="final_net"></span></td>
+                <td class="text-md-right total_text">$0.00</td>
               </tr>
               <tr class="border_thin_bottom">
                 <td class="total_text">NET:</td>
@@ -544,7 +555,7 @@ if(!empty($existing_quote['quote_submission'])) {
               <tr class="border_thin_bottom">
                 <td class="total_text">Global Room Details:</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00<span id="final_leadtime"></span></td>
+                <td class="text-md-right total_text">$0.00</td>
               </tr>
               <tr class="border_thin_bottom">
                 <td class="total_text">Credit Card:</td>
@@ -554,16 +565,16 @@ if(!empty($existing_quote['quote_submission'])) {
               <tr class="em_box">
                 <td class="total_text">Sub Total:</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00<span id="final_last_subtotal"></span></td>
+                <td class="text-md-right total_text">$0.00</td>
               </tr>
               <tr class="header em_box">
                 <td class="total_text">Total Amount</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00<span id="final_total"></span></td>
+                <td class="text-md-right total_text">$0.00</td>
               </tr>
               <tr id="deposit_line">
                 <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
-                <td class="text-md-right em_box">$0.00<span id="final_deposit"></span></td>
+                <td class="text-md-right em_box">$0.00</td>
               </tr>
             </table>
 
@@ -879,14 +890,9 @@ if(!empty($existing_quote['quote_submission'])) {
           $tdList.eq(8).find(".item_hinge").val(node.data.hinge);
         }
 
-        // Index #9 => Finish
-        if(node.data.finish !== undefined) {
-          $tdList.eq(9).find(".item_finish").val(node.data.finish);
-        }
-
-        // Index #10 => Price (individual)
+        // Index #9 => Price (individual)
         if(!isNaN(price)) {
-          $tdList.eq(10).text(price.formatMoney()).removeAttr("style title"); // price column
+          $tdList.eq(9).text(price.formatMoney()).removeAttr("style title"); // price column
 
           $(".no_global_info").css("display", "none");
 
@@ -894,16 +900,12 @@ if(!empty($existing_quote['quote_submission'])) {
             $("#submit_for_quote").attr("disabled", false).attr("title", "");
           }
         } else {
-          $tdList.eq(10).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
-          $tdList.eq(11).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to properly calculate total.");
+          $tdList.eq(9).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
 
           $("#submit_for_quote").attr("disabled", true).attr("title", "Unknown global attributes, unable to submit.");
 
           $(".no_global_info").css("display", "block");
         }
-
-        // Index #11 => Total (line)
-        $tdList.eq(11).text(node.data.total);
       },
       modifyChild: function(event, data) {
         recalcTotal();
