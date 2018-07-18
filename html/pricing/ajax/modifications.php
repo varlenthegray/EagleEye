@@ -28,7 +28,7 @@ if(!empty($itemID)) {
 }
 
 $parent_qry = $dbconn->prepare('SELECT
-  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, detail.title, pn.addl_info, pn.sqft, pn.linft
+  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, detail.title, pn.addl_info, pn.sqft, pn.linft, pn.cabinet
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -43,7 +43,7 @@ function makeTree($parent_id) {
   $ret = array();
 
   $parent_qry->bind_param('i', $parent_id);
-  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $sku_title, $addl_info, $sqft, $linft);
+  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $sku_title, $addl_info, $sqft, $linft, $cabinet);
   $parent_qry->execute();
   $parent_qry->store_result();
 
@@ -62,7 +62,8 @@ function makeTree($parent_id) {
       'sku_title' => $sku_title,
       'addl_info' => $addl_info,
       'sqft' => $sqft,
-      'linft' => $linft
+      'linft' => $linft,
+      'cabinet' => $cabinet
     );
   }
 
@@ -88,9 +89,9 @@ function makeTree($parent_id) {
         if($price_qry->num_rows > 0) {
           $price = $price_qry->fetch_assoc();
 
-          $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $item['sku'], 'description' => $item['sku_title'], 'info' => $info, 'is_item' => true, 'checkbox' => true, 'icon' => $img, 'qty' => 1, 'price' => $price['price'], 'addl_info' => $item['addl_info'], 'sqft' => $item['sqft'], 'linft' => $item['linft']);
+          $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $item['sku'], 'description' => $item['sku_title'], 'info' => $info, 'is_item' => true, 'checkbox' => true, 'icon' => $img, 'qty' => 1, 'price' => $price['price'], 'addl_info' => $item['addl_info'], 'sqft' => $item['sqft'], 'linft' => $item['linft'], 'cabinet' => $item['cabinet']);
         } else {
-          $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $item['sku'], 'description' => $item['sku_title'], 'info' => $info, 'is_item' => true, 'checkbox' => true, 'icon' => $img, 'qty' => 1, 'price' => 0.00, 'addl_info' => $item['addl_info'], 'sqft' => $item['sqft'], 'linft' => $item['linft']);
+          $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $item['sku'], 'description' => $item['sku_title'], 'info' => $info, 'is_item' => true, 'checkbox' => true, 'icon' => $img, 'qty' => 1, 'price' => 0.00, 'addl_info' => $item['addl_info'], 'sqft' => $item['sqft'], 'linft' => $item['linft'], 'cabinet' => $item['cabinet']);
         }
       }
     } else {

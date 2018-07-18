@@ -19,6 +19,7 @@ function recalcSummary() {
   let global_room_charges = 0.00; // global room charges
   let global_cab_charges = 0.00; // global cabinet charges total
   let line_total = 0.00;
+  let cabinet_only_total = 0.00; // cabinet only total
 
   //******************************************************************
   // parse per line
@@ -27,11 +28,18 @@ function recalcSummary() {
     let price = parseFloat(line.data.price);
     let lineTotal = qty * price;
 
+    if(line.data.cabinet === '1') {
+      cabinet_only_total += parseFloat(lineTotal);
+      console.log(line.title + ' is a cabinet.');
+    }
+
     line_total += parseFloat(lineTotal);
   });
 
   // display the total
   $("#itemListTotal").text(line_total.formatMoney());
+
+  console.log(cabinet_only_total);
   //******************************************************************
 
 
@@ -84,6 +92,21 @@ function recalcSummary() {
   let netPrice = (line_total + global_cab_charges) * multiplier;
   $("#itemListNET").text(netPrice.formatMoney());
 
+  // Grab the product type, has to be calculated in jquery because this is a flexible price based on the total of the job
+  // THIS PRICE IS NET, MARKUP DOES NOT IMPACT THIS PRICE
+  let productTypeOpt = $("#product_type").val();
+  let productTypeMarkup = 0.00;
+
+  if(productTypeOpt === 'B') { // markup for inset
+    productTypeMarkup = 0.10;
+  }
+
+  let productTypeCost = netPrice * productTypeMarkup;
+  $("#product_type_cost").text(productTypeCost.formatMoney());
+
+  // add the product type cost to the global room charges
+  global_room_charges += productTypeCost;
+
   //// Display the global room detail charges
   $("#itemListGlobalRoomDetails").text(global_room_charges.formatMoney());
 
@@ -126,6 +149,29 @@ function footCalc(node) {
   }
 
   return outprice;
+}
+
+function fullRecalc() {
+  cabinetList.fancytree("getTree").visit(function(line) {
+    let itemID = line.data.itemID;
+    let key = line.key;
+
+    var tree = cabinetList.fancytree("getTree");
+
+    $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: itemID, room_id: active_room_id}, function(data) {
+      let itemInfo = JSON.parse(data);
+      let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
+      let node = tree.getNodeByKey(key);
+
+      node.title = itemInfo.sku;
+      node.data.price = fixedPrice;
+      node.icon = itemInfo.icon;
+      node.data.name = itemInfo.title;
+      node.data.sqft = itemInfo.sqft;
+      node.data.singlePrice = fixedPrice;
+      node.data.cabinet = itemInfo.cabinet;
+    });
+  });
 }
 
 var mouseX, mouseY;
@@ -256,7 +302,8 @@ $("body")
         icon: itemInfo.icon,
         name: itemInfo.title,
         sqft: itemInfo.sqft,
-        singlePrice: fixedPrice
+        singlePrice: fixedPrice,
+        cabinet: itemInfo.cabinet
       });
 
       recalcSummary();
@@ -372,7 +419,8 @@ $("body")
         name: v.data.description + addlInfo,
         sqft: v.sqft,
         linft: v.data.linft,
-        singlePrice: fixedPrice
+        singlePrice: fixedPrice,
+        cabinet: v.data.cabinet
       });
     });
 

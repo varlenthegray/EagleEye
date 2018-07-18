@@ -1,4 +1,3 @@
-
 <?php
 require '../../includes/header_start.php';
 
@@ -207,7 +206,7 @@ if($pg_qry->num_rows > 0) {
                 <tr>
                   <td>Product Type:</td>
                   <td><?php echo displayVINOpts('product_type'); ?></td>
-                  <td></td>
+                  <td id="product_type_cost">$0.00</td>
                 </tr>
                 <tr>
                   <td>Lead Time:</td>
@@ -242,6 +241,7 @@ if($pg_qry->num_rows > 0) {
                   <td><strong><?php echo $ship_zone_info['zone']; ?></strong></td>
                   <td id="shipping_cost" data-cost="<?php echo $ship_zone_info['cost']; ?>">$<?php echo "{$ship_zone_info['cost']}.00"; ?></td>
                 </tr>
+                <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" />
                 <!--<tr>
                   <td>Shipping Cubes:<br /><em>(Min of 6)</em></td>
                   <td><strong id="ship_cube_count">0</strong> <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" /></td>
@@ -1216,6 +1216,11 @@ if($pg_qry->num_rows > 0) {
     // Calculate totals and summary
     setTimeout(function() {
       recalcSummary();
+
+      // automatically expand all sub-lines
+      cabinetList.fancytree("getTree").visit(function(node){
+        node.setExpanded();
+      });
     }, 100);
   });
 </script>

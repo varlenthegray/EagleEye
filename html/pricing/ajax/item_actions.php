@@ -13,7 +13,7 @@ switch($_REQUEST['action']) {
     $room_id = sanitizeInput($_REQUEST['room_id']);
 
     $item_qry = $dbconn->query("SELECT 
-      pn.sku, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog, detail.image_path AS image, detail.title, detail.description, pn.sqft
+      pn.sku, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog, detail.image_path AS image, detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet
     FROM pricing_nomenclature pn
       LEFT JOIN pricing_catalog catalog on pn.catalog_id = catalog.id
       LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -28,9 +28,10 @@ switch($_REQUEST['action']) {
 
     $room = $room_qry->fetch_assoc();
 
+    //****************************************************************************
+    // Calculate price group
     if($room['door_design_id'] !== '1544' && $room['species_grade_id'] !== '11') {
       $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$room['door_design_id']} AND species_id = {$room['species_grade_id']}");
-//    $price_group_qry = $dbconn->query("SELECT price_group_id FROM pricing_price_group_map WHERE door_style_id = 41 AND species_id = 27;");
       $price_group = $price_group_qry->fetch_assoc();
       $price_group = $price_group['price_group_id'];
 
@@ -42,6 +43,7 @@ switch($_REQUEST['action']) {
     } else {
       $price = 'N/A';
     }
+    //****************************************************************************
 
     if($item_qry->num_rows === 1) {
       $item = $item_qry->fetch_assoc();
