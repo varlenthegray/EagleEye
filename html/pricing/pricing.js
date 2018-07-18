@@ -51,6 +51,8 @@ function sqFtCalc(node) {
     $tdList.eq(8).text(line_total.formatMoney());
 
     return line_total;
+  } else {
+    return node.data.price;
   }
 }
 
