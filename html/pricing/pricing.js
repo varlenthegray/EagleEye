@@ -43,10 +43,12 @@ function sqFtCalc(node) {
   let $tdList = $(node.tr).find(">td");
 
   if(node.data.sqft === '1') {
-    let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.height) * parseFloat(node.data.depth)) / 144;
+    let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.depth)) / 144;
     let line_total = line_sqft * node.data.sqftPrice;
 
-    $tdList.eq(10).text(line_total.formatMoney());
+    console.log("Line SqFT: " + line_sqft + ", Line Total: " + line_total);
+
+    $tdList.eq(8).text(line_total.formatMoney());
 
     return line_total;
   }
@@ -485,8 +487,8 @@ $("body")
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.width = $(this).val();
-
     node.data.price = sqFtCalc(node);
+
     recalcTotal();
   })
   .on("keyup", ".itm_height", function() {
@@ -494,8 +496,8 @@ $("body")
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.height = $(this).val();
-
     node.data.price = sqFtCalc(node);
+
     recalcTotal();
   })
   .on("keyup", ".itm_depth", function() {
@@ -503,8 +505,8 @@ $("body")
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.depth = $(this).val();
-
     node.data.price = sqFtCalc(node);
+
     recalcTotal();
   })
   .on("click", ".option", function() {
