@@ -551,7 +551,7 @@ if($pg_qry->num_rows > 0) {
                 <td class="text-md-right total_text">$0.00</td>
               </tr>-->
               <tr class="border_thin_bottom">
-                <td class="total_text">Global: Room Details:</td>
+                <td class="total_text">Global: Room Details/Shipping:</td>
                 <td class="total_text">&nbsp;</td>
                 <td class="text-md-right total_text" id="itemListGlobalRoomDetails">$0.00</td>
               </tr>
