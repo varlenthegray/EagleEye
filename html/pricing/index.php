@@ -66,6 +66,26 @@ if(!empty($existing_quote['quote_submission'])) {
   $submit_disabled = null;
   $submitted = null;
 }
+
+// determine the price group
+$pg_qry = $dbconn->query("SELECT 
+  vs1.id AS species_grade_id, vs2.id AS door_design_id
+FROM rooms r 
+  LEFT JOIN vin_schema vs1 ON r.species_grade = vs1.key
+  LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key
+WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'");
+
+if($pg_qry->num_rows > 0) {
+  $pg = $pg_qry->fetch_assoc();
+
+  if ($pg['door_design_id'] !== '1544' && $pg['species_grade_id'] !== '11') {
+    $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$pg['door_design_id']} AND species_id = {$pg['species_grade_id']}");
+    $price_group = $price_group_qry->fetch_assoc();
+    $price_group = $price_group['price_group_id'];
+  } else {
+    $price_group = '0';
+  }
+}
 ?>
 
 <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
@@ -302,34 +322,7 @@ if(!empty($existing_quote['quote_submission'])) {
                   </tr>-->
                   <tr>
                     <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo displayVINOpts('door_design'); ?></div></td>
-                    <td class="border_thin_bottom text-md-center" id="const_pg" colspan="2">
-                      Price Group <span id="cab_spec_pg">
-                        <?php
-                        $pg_qry = $dbconn->query("SELECT 
-                          vs1.id AS species_grade_id, vs2.id AS door_design_id
-                        FROM rooms r 
-                          LEFT JOIN vin_schema vs1 ON r.species_grade = vs1.key
-                          LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key
-                        WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'");
-
-                        if($pg_qry->num_rows > 0) {
-                          $pg = $pg_qry->fetch_assoc();
-
-                          if($pg['door_design_id'] !== '1544' && $pg['species_grade_id'] !== '11') {
-                            $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$pg['door_design_id']} AND species_id = {$pg['species_grade_id']}");
-                            $price_group = $price_group_qry->fetch_assoc();
-                            $price_group = $price_group['price_group_id'];
-                          } else {
-                            $price_group = '????';
-                          }
-
-                          echo $price_group;
-                        } else {
-                          echo '????';
-                        }
-                        ?>
-                      </span>
-                    </td>
+                    <td class="border_thin_bottom text-md-center" id="const_pg" colspan="2">Price Group <span id="cab_spec_pg"><?php echo $price_group; ?></span></td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_door'); ?></div></td>
@@ -782,10 +775,12 @@ if(!empty($existing_quote['quote_submission'])) {
 </form>
 
 <script>
-  <?php echo "active_room_id = $room_id"; ?>
+  <?php
+  echo "active_room_id = $room_id;";
+  echo "var priceGroup = $price_group;";
+  ?>
 
   let numPages = 1;
-  var priceGroup = 0;
 
   CLIPBOARD = null;
   cabinetList = $("#cabinet_list");

@@ -39,21 +39,30 @@ function recalcTotal() {
   $("#gt_amt").text(gt_text);
 }
 
-function sqFtCalc(node) {
+// calculates by square foot or linear foot
+function footCalc(node) {
   let $tdList = $(node.tr).find(">td");
+  let outprice = 0.00;
 
-  if(node.data.sqft === '1') {
+  // noinspection JSCheckFunctionSignatures
+  if(parseInt(node.data.sqft) === 1) {
     let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.depth)) / 144;
-    let line_total = line_sqft * node.data.sqftPrice;
-
-    console.log("Line SqFT: " + line_sqft + ", Line Total: " + line_total);
+    let line_total = line_sqft * node.data.singlePrice;
 
     $tdList.eq(8).text(line_total.formatMoney());
 
-    return line_total;
+    outprice =  line_total;
+  } else if(parseInt(node.data.linft) === 1) {
+    let line_linft = (parseFloat(node.data.width) / 12) * node.data.singlePrice;
+
+    $tdList.eq(8).text(line_linft.formatMoney());
+
+    outprice = line_linft;
   } else {
-    return node.data.price;
+    outprice = node.data.price;
   }
+
+  return outprice;
 }
 
 var mouseX, mouseY;
@@ -184,7 +193,7 @@ $("body")
         icon: itemInfo.icon,
         name: itemInfo.title,
         sqft: itemInfo.sqft,
-        sqftPrice: fixedPrice
+        singlePrice: fixedPrice
       });
 
       recalcTotal();
@@ -288,20 +297,19 @@ $("body")
         addlInfo = " by " + v.data.addlInfo;
       }
 
-      console.log(v.data);
-
       let fixedPrice = parseFloat(v.data.price).toFixed(2);
 
       cablist.addChildren({
         qty: 1,
         title: v.title,
-        itemID: v.id,
+        itemID: v.data.id,
         price: fixedPrice,
         key: new Date().getTime() * Math.random(999),
         icon: v.icon,
         name: v.data.description + addlInfo,
         sqft: v.sqft,
-        sqftPrice: fixedPrice
+        linft: v.data.linft,
+        singlePrice: fixedPrice
       });
     });
 
@@ -489,7 +497,7 @@ $("body")
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.width = $(this).val();
-    node.data.price = sqFtCalc(node);
+    node.data.price = footCalc(node);
 
     recalcTotal();
   })
@@ -498,7 +506,7 @@ $("body")
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.height = $(this).val();
-    node.data.price = sqFtCalc(node);
+    node.data.price = footCalc(node);
 
     recalcTotal();
   })
@@ -507,7 +515,7 @@ $("body")
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.depth = $(this).val();
-    node.data.price = sqFtCalc(node);
+    node.data.price = footCalc(node);
 
     recalcTotal();
   })
