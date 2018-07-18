@@ -7,10 +7,6 @@ jQuery.expr.filters.offscreen = function(el) {
   );
 };
 
-var total = 0.00; // define initial total
-
-var gt_markup = 0.00; // glaze technique markup
-
 function delNoData() {
   let getNegNode = cabinetList.fancytree("getTree").getNodeByKey('-1');
 
@@ -19,27 +15,84 @@ function delNoData() {
   }
 }
 
-function recalcTotal() {
-  total = 0.00;
+function recalcSummary() {
+  let global_charges = 0.00; // global charges total
+  let line_total = 0.00;
 
+  //******************************************************************
+  // parse per line
   cabinetList.fancytree("getTree").visit(function(line) {
     let qty = parseInt(line.data.qty);
     let price = parseFloat(line.data.price);
     let lineTotal = qty * price;
 
-    total += parseFloat(lineTotal);
-
-    $("#itemListTotal").text(total.formatMoney());
+    line_total += parseFloat(lineTotal);
   });
 
-  // now time to calculate the Global Cabinet Details
-  let gt_text = (total * gt_markup).formatMoney();
+  // display the total
+  $("#itemListTotal").text(line_total.formatMoney());
+  //******************************************************************
 
-  // now time to display the global cabinet details
-  $("#gt_amt").text(gt_text);
+
+  //******************************************************************
+  // done parsing per line, moving into the global charges for the page
+
+  //// Glaze Technique
+  let gt_pct = $("#gt_pct");
+  let gt_amt = $("#gt_amt");
+  let gt_markup = 0.00; // glaze technique markup
+
+  // grab the glaze technique, determine what the amount to markup is
+  switch($("#glaze_technique").val()) {
+    case 'G2':
+      gt_markup = 0.10; // toss this into the function variable for markup
+      break;
+    case 'G0':
+      gt_amt.text("");
+      break;
+    default:
+      gt_amt.text("ERR");
+      break;
+  }
+
+  // calculate out the cost of the glaze technique
+  let gt_cost = line_total * gt_markup;
+
+  // Glaze Technique fields
+  gt_amt.text(gt_cost.formatMoney());
+  gt_pct.text((gt_markup * 100).toFixed(2) + "%");
+
+  // add the glaze technique to the total amount of global upcharges
+  global_charges += gt_cost;
+
+  //// Global Cabinet Details
+  $("#itemListGlobalCabDetails").text(global_charges.formatMoney());
+
+  //// Subtotal 1
+  let subtotal1 = global_charges + line_total;
+  $("#itemListSubTotal1").text(subtotal1.formatMoney());
+
+  //// Capture the multiplier for use
+  let multiplier = parseFloat($("#itemListMultiplier").text());
+
+  //// Calculate the net price
+  let netPrice = (line_total + global_charges) * multiplier;
+  $("#itemListNET").text(netPrice.formatMoney());
+
+  // TODO: We're not adding shipping, global room details, or credit card here right now, we need to add those in
+
+  //// Update the subtotal
+  $("#finalSubTotal").text(netPrice.formatMoney());
+
+  //// Update the total
+  $("#finalTotal").text(netPrice.formatMoney());
+
+  //// Update the required deposit
+  let deposit = netPrice * .5;
+  $("#finalDeposit").text(deposit.formatMoney());
 }
 
-// calculates by square foot or linear foot
+// @footCalc() - calculates by square foot or linear foot
 function footCalc(node) {
   let $tdList = $(node.tr).find(">td");
   let outprice = 0.00;
@@ -117,7 +170,7 @@ $("body")
     // hide the remove items button, there are no items to remove now
     $(this).hide();
 
-    recalcTotal();
+    recalcSummary();
   })
   .on("click", "#save", function() {
     /*//<editor-fold desc="Cabinet List">
@@ -168,7 +221,7 @@ $("body")
     cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
   })
   .on("change", ".qty_input", function() {
-    recalcTotal();
+    recalcSummary();
   })
   .on("click", ".add_item_cabinet_list", function() {
     delNoData();
@@ -196,7 +249,7 @@ $("body")
         singlePrice: fixedPrice
       });
 
-      recalcTotal();
+      recalcSummary();
     });
   })
   .on("change", "#catalog", function() {
@@ -499,7 +552,7 @@ $("body")
     node.data.width = $(this).val();
     node.data.price = footCalc(node);
 
-    recalcTotal();
+    recalcSummary();
   })
   .on("keyup", ".itm_height", function() {
     let id = $(this).attr("data-id");
@@ -508,7 +561,7 @@ $("body")
     node.data.height = $(this).val();
     node.data.price = footCalc(node);
 
-    recalcTotal();
+    recalcSummary();
   })
   .on("keyup", ".itm_depth", function() {
     let id = $(this).attr("data-id");
@@ -517,7 +570,7 @@ $("body")
     node.data.depth = $(this).val();
     node.data.price = footCalc(node);
 
-    recalcTotal();
+    recalcSummary();
   })
   .on("click", ".option", function() {
     $.post("/html/pricing/ajax/global_actions.php?action=getPriceGroup&room_id=" + active_room_id, function(data) {
@@ -525,24 +578,6 @@ $("body")
       priceGroup = data;
     });
 
-    let gt_field = $("#gt_pct");
-    let gt_amt = $("#gt_amt");
-
-    switch($("#glaze_technique").val()) {
-      case 'G2':
-        gt_field.text("10.00%");
-        gt_amt.text("...");
-
-        gt_markup = 0.10;
-        break;
-      case 'G0':
-        gt_field.text("");
-        gt_amt.text("");
-        break;
-      default:
-        gt_field.text("ERR");
-        gt_amt.text("ERR");
-        break;
-    }
+    recalcSummary();
   })
 ;

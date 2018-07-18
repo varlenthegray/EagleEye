@@ -526,25 +526,25 @@ if($pg_qry->num_rows > 0) {
               <tr class="border_thin_bottom">
                 <td class="total_text">Global Cabinet Details:</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00</td>
+                <td class="text-md-right total_text" id="itemListGlobalCabDetails">$0.00</td>
               </tr>
               <tr class="border_thin_bottom">
                 <td class="total_text">Total:</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00</td>
+                <td class="text-md-right total_text" id="itemListSubTotal1">$0.00</td>
               </tr>
               <tr class="border_thin_bottom">
                 <td class="total_text">Multiplier:</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00</td>
-              </tr>
-              <tr class="border_thin_bottom">
-                <td class="total_text">Shipping:</td>
-                <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00</td>
+                <td class="text-md-right total_text" id="itemListMultiplier"><?php echo $dealer['multiplier']; ?></td>
               </tr>
               <tr class="border_thin_bottom">
                 <td class="total_text">NET:</td>
+                <td class="total_text">&nbsp;</td>
+                <td class="text-md-right total_text" id="itemListNET">$0.00</td>
+              </tr>
+              <tr class="border_thin_bottom">
+                <td class="total_text">Shipping:</td>
                 <td class="total_text">&nbsp;</td>
                 <td class="text-md-right total_text">$0.00</td>
               </tr>
@@ -561,16 +561,16 @@ if($pg_qry->num_rows > 0) {
               <tr class="em_box">
                 <td class="total_text">Sub Total:</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00</td>
+                <td class="text-md-right total_text" id="finalSubTotal">$0.00</td>
               </tr>
               <tr class="header em_box">
                 <td class="total_text">Total Amount</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00</td>
+                <td class="text-md-right total_text" id="finalTotal">$0.00</td>
               </tr>
               <tr id="deposit_line">
                 <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
-                <td class="text-md-right em_box">$0.00</td>
+                <td class="text-md-right em_box" id="finalDeposit">$0.00</td>
               </tr>
             </table>
 
@@ -779,7 +779,7 @@ if($pg_qry->num_rows > 0) {
 <script>
   <?php
   echo "active_room_id = $room_id;";
-  echo "var priceGroup = $price_group;";
+  echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
   ?>
 
   let numPages = 1;
@@ -1210,5 +1210,10 @@ if($pg_qry->num_rows > 0) {
       });
     });
     <?php } ?>
+
+    // Calculate totals and summary
+    setTimeout(function() {
+      recalcSummary();
+    }, 100);
   });
 </script>
