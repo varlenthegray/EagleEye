@@ -233,6 +233,7 @@ Number.prototype.formatMoney = function(c, d, t){
   return "$" + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
 };
 
+/*
 function getMileage($zip1, $zip2){
   // This function returns Longitude & Latitude from zip code.
   function getLnt($zip){
@@ -260,4 +261,4 @@ function getMileage($zip1, $zip2){
   $miles = $dist * 60 * 1.1515;
 
   return ($miles * 0.8684);
-}
+}*/

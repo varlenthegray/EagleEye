@@ -18,7 +18,7 @@ function delNoData() {
 function recalcSummary() {
   let global_room_charges = 0.00; // global room charges
   let global_cab_charges = 0.00; // global cabinet charges total
-  let line_total = 0.00;
+  let line_total = 0.00; // total of the item list
   let cabinet_only_total = 0.00; // cabinet only total
 
   //******************************************************************
@@ -26,12 +26,41 @@ function recalcSummary() {
   cabinetList.fancytree("getTree").visit(function(line) {
     let qty = parseInt(line.data.qty);
     let price = parseFloat(line.data.price);
+    let $tdList = $(line.tr).find(">td");
+
+    // if there is an additional markup (% right now) defined in the system for this line
+    if(line.data.addlMarkup !== undefined && line.data.addlMarkup !== '' && line.data.addlMarkup !== null) {
+      let addlMarkup = JSON.parse(line.data.addlMarkup); // grab the information into JSON value
+
+      // for the species and markups available, grab each of them
+      $.each(addlMarkup, function(i, v) {
+        // this is going to be the main focus of what drives the markup, i.e. species_grade
+        let curVal = $("#" + i).val();
+
+        // for every definition such as Cherry, Hickory, Black Walnut, etc, get the key and percent
+        $.each(v, function(key, pct) {
+          // if the key is the current value that we're working with (species
+          if(key === curVal) {
+            // take the percent (in float, to ensure no NaN) and multiply it by the price (note, this is the price before quantity but after square foot)
+            price = parseFloat(pct) * price;
+          }
+        });
+      });
+    }
+
+    // set the line total equal to the quantity * price
     let lineTotal = qty * price;
 
+    // now update the last column (total) with the final price for that line item
+    $tdList.eq(8).text(lineTotal.formatMoney());
+
+    // if the line item is a cabinet only (excludes tops, accessories, fillers, moldings) then we're adding that to a cabinet only price (inset specific pricing)
     if(line.data.cabinet === '1') {
+      // our cabinet only total goes up
       cabinet_only_total += parseFloat(lineTotal);
     }
 
+    // this is the final running total for the system
     line_total += parseFloat(lineTotal);
   });
 
@@ -168,7 +197,14 @@ function fullRecalc() {
       node.data.sqft = itemInfo.sqft;
       node.data.singlePrice = fixedPrice;
       node.data.cabinet = itemInfo.cabinet;
+      node.data.addlMarkup = itemInfo.addl_markup;
     });
+  });
+}
+
+function fetchDebug() {
+  cabinetList.fancytree("getTree").visit(function(line) {
+    console.log(line);
   });
 }
 
@@ -301,7 +337,8 @@ $("body")
         name: itemInfo.title,
         sqft: itemInfo.sqft,
         singlePrice: fixedPrice,
-        cabinet: itemInfo.cabinet
+        cabinet: itemInfo.cabinet,
+        addlMarkup: itemInfo.addlMarkup
       });
 
       recalcSummary();
@@ -418,7 +455,8 @@ $("body")
         sqft: v.sqft,
         linft: v.data.linft,
         singlePrice: fixedPrice,
-        cabinet: v.data.cabinet
+        cabinet: v.data.cabinet,
+        addlMarkup: v.data.addlMarkup
       });
     });
 

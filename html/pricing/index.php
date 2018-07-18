@@ -480,7 +480,7 @@ if($pg_qry->num_rows > 0) {
               <th class="text-md-center">Height</th>
               <th class="text-md-center">Depth</th>
               <th class="text-md-center">Hinge</th>
-              <th class="text-md-center">Price Ea</th>
+              <th class="text-md-center">Price</th>
             </tr>
             </thead>
             <tbody>
@@ -928,7 +928,7 @@ if($pg_qry->num_rows > 0) {
         $("#gt_amt").text()
       },
       modifyChild: function(event, data) {
-        recalcTotal();
+        recalcSummary();
       }
     }).on("nodeCommand", function(event, data) {
       // Custom event handler that is triggered by keydown-handler and
