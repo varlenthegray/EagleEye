@@ -30,7 +30,6 @@ function recalcSummary() {
 
     if(line.data.cabinet === '1') {
       cabinet_only_total += parseFloat(lineTotal);
-      console.log(line.title + ' is a cabinet.');
     }
 
     line_total += parseFloat(lineTotal);
@@ -38,8 +37,6 @@ function recalcSummary() {
 
   // display the total
   $("#itemListTotal").text(line_total.formatMoney());
-
-  console.log(cabinet_only_total);
   //******************************************************************
 
 
@@ -101,7 +98,8 @@ function recalcSummary() {
     productTypeMarkup = 0.10;
   }
 
-  let productTypeCost = netPrice * productTypeMarkup;
+  // IT IS IMPORTANT THAT WE USE THE CABINET ONLY PRICE HERE! THIS ALLOWS US TO SEGREGATE OUT WOOD TOPS AND FILLERS/PANELS!
+  let productTypeCost = cabinet_only_total * productTypeMarkup;
   $("#product_type_cost").text(productTypeCost.formatMoney());
 
   // add the product type cost to the global room charges
