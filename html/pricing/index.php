@@ -286,7 +286,7 @@ if(!empty($existing_quote['quote_submission'])) {
               <div class="col-sm-6">
                 <table width="100%">
                   <tr>
-                    <th style="padding-left:5px;" width="70%">Design<label class="c-input c-checkbox pull-right" style="color:#FFF;margin-top:2px;padding-right:13px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th>
+                    <th style="padding-left:5px;" width="70%">Design<label class="c-input c-checkbox pull-right no-print" style="color:#FFF;margin-top:2px;padding-right:13px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th>
                     <th>Pct</th>
                     <th>Cost</th>
                   </tr>
@@ -312,17 +312,21 @@ if(!empty($existing_quote['quote_submission'])) {
                           LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key
                         WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'");
 
-                        $pg = $pg_qry->fetch_assoc();
+                        if($pg_qry->num_rows > 0) {
+                          $pg = $pg_qry->fetch_assoc();
 
-                        if($pg['door_design_id'] !== '1544' && $pg['species_grade_id'] !== '11') {
-                          $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$pg['door_design_id']} AND species_id = {$pg['species_grade_id']}");
-                          $price_group = $price_group_qry->fetch_assoc();
-                          $price_group = $price_group['price_group_id'];
+                          if($pg['door_design_id'] !== '1544' && $pg['species_grade_id'] !== '11') {
+                            $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$pg['door_design_id']} AND species_id = {$pg['species_grade_id']}");
+                            $price_group = $price_group_qry->fetch_assoc();
+                            $price_group = $price_group['price_group_id'];
+                          } else {
+                            $price_group = '????';
+                          }
+
+                          echo $price_group;
                         } else {
-                          $price_group = 'Unknown';
+                          echo '????';
                         }
-
-                        echo $price_group;
                         ?>
                       </span>
                     </td>
@@ -334,18 +338,18 @@ if(!empty($existing_quote['quote_submission'])) {
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Short Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_sd'); ?></div></td>
-                    <td class="border_thin_bottom" id="sdr_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="sdr_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="sdr_pct"></td>
+                    <td class="border_thin_bottom" id="sdr_amt"></td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Tall Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_td'); ?></div></td>
-                    <td class="border_thin_bottom" id="tdr_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="tdr_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="tdr_pct"></td>
+                    <td class="border_thin_bottom" id="tdr_amt"></td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Style/Rail Width:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('style_rail_width'); ?></div></td>
-                    <td class="border_thin_bottom" id="srw_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="srw_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="srw_pct"></td>
+                    <td class="border_thin_bottom" id="srw_amt"></td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Edge Profile:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('edge_profile'); ?></div></td>
@@ -359,13 +363,13 @@ if(!empty($existing_quote['quote_submission'])) {
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Frame Option:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('framing_options'); ?></div></td>
-                    <td class="border_thin_bottom" id="fo_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="fo_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="fo_pct"></td>
+                    <td class="border_thin_bottom" id="fo_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc"><?php echo displayVINOpts('drawer_boxes'); ?></div></td>
-                    <td class="border_thin_bottom" id="const_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="const_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="const_pct"></td>
+                    <td class="border_thin_bottom" id="const_amt"></td>
                   </tr>
                 </table>
               </div>
@@ -380,33 +384,33 @@ if(!empty($existing_quote['quote_submission'])) {
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc"><?php echo displayVINOpts('sheen'); ?></div></td>
-                    <td class="border_thin_bottom" id="sheen_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="sheen_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="sheen_pct"></td>
+                    <td class="border_thin_bottom" id="sheen_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc"><?php echo displayVINOpts('glaze'); ?></div></td>
-                    <td class="border_thin_bottom" id="gc_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="gc_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="gc_pct"></td>
+                    <td class="border_thin_bottom" id="gc_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc"><?php echo displayVINOpts('glaze_technique'); ?></div></td>
-                    <td class="border_thin_bottom" id="gt_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="gt_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="gt_pct"><?php echo $room['glaze_technique'] === 'G2' ? '10.00%' : null; ?></td>
+                    <td class="border_thin_bottom" id="gt_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc"><?php echo displayVINOpts('antiquing'); ?></div></td>
-                    <td class="border_thin_bottom" id="ant_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="ant_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="ant_pct"></td>
+                    <td class="border_thin_bottom" id="ant_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc"><?php echo displayVINOpts('worn_edges'); ?></div></td>
-                    <td class="border_thin_bottom" id="we_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="we_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="we_pct"></td>
+                    <td class="border_thin_bottom" id="we_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc"><?php echo displayVINOpts('distress_level'); ?></div></td>
-                    <td class="border_thin_bottom" id="dist_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="dist_amt">$0.00</td>
+                    <td class="border_thin_bottom" id="dist_pct"></td>
+                    <td class="border_thin_bottom" id="dist_amt"></td>
                   </tr>
                 </table>
               </div>
@@ -781,6 +785,7 @@ if(!empty($existing_quote['quote_submission'])) {
   <?php echo "active_room_id = $room_id"; ?>
 
   let numPages = 1;
+  var priceGroup = 0;
 
   CLIPBOARD = null;
   cabinetList = $("#cabinet_list");
@@ -905,13 +910,23 @@ if(!empty($existing_quote['quote_submission'])) {
           $(".no_global_info").css("display", "block");
         }
 
+        //** Adjustments based on the line items being added
+
+        // lining and styles for main lines
         if(node.isTopLevel()) {
           $tdList.addClass("main-level");
         }
 
+        // calculation of how many pages are going to print (total)
         numPages = Math.ceil($(".wrapper").outerHeight() / 980);
 
         $("#num_of_pgs").text(numPages);
+
+        // update of Global: Cabinet Details pricing
+        // TODO: Short Drawer Raise, Tall Drawer Raise, Frame Option, Drawer Box
+
+        // Glaze Technique:
+        $("#gt_amt").text()
       },
       modifyChild: function(event, data) {
         recalcTotal();
@@ -961,6 +976,7 @@ if(!empty($existing_quote['quote_submission'])) {
           if( refNode ) {
             refNode.setActive();
           }
+          recalcTotal();
           break;
         case "addModifications":
           $("#modalAddModification").modal('show');
@@ -1173,8 +1189,10 @@ if(!empty($existing_quote['quote_submission'])) {
       $("#modificationsFilter").val('');
       itemModifications.fancytree("getTree").clearFilter();
 
+      console.log("PriceGroup: " + priceGroup);
+
       let modificationTree = {
-        url: "/html/pricing/ajax/modifications.php?itemID=" + cabinetList.fancytree("getTree").getActiveNode().data.itemID,
+        url: "/html/pricing/ajax/modifications.php?priceGroup=" + priceGroup + "&itemID=" + cabinetList.fancytree("getTree").getActiveNode().data.itemID,
         type: "POST",
         dataType: 'json'
       };

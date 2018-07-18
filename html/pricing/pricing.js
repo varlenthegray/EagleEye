@@ -7,7 +7,9 @@ jQuery.expr.filters.offscreen = function(el) {
   );
 };
 
-var total = 0; // define initial total
+var total = 0.00; // define initial total
+
+var gt_markup = 0.00; // glaze technique markup
 
 function delNoData() {
   let getNegNode = cabinetList.fancytree("getTree").getNodeByKey('-1');
@@ -18,18 +20,23 @@ function delNoData() {
 }
 
 function recalcTotal() {
-  let totalTree = cabinetList.fancytree("getTree");
-  let newTotal = 0.00;
+  total = 0.00;
 
-  totalTree.visit(function(line) {
+  cabinetList.fancytree("getTree").visit(function(line) {
     let qty = parseInt(line.data.qty);
     let price = parseFloat(line.data.price);
     let lineTotal = qty * price;
 
-    newTotal += parseFloat(lineTotal);
+    total += parseFloat(lineTotal);
 
-    $("#itemListTotal").text(newTotal.formatMoney());
+    $("#itemListTotal").text(total.formatMoney());
   });
+
+  // now time to calculate the Global Cabinet Details
+  let gt_text = (total * gt_markup).formatMoney();
+
+  // now time to display the global cabinet details
+  $("#gt_amt").text(gt_text);
 }
 
 function sqFtCalc(node) {
@@ -277,12 +284,20 @@ $("body")
         addlInfo = " by " + v.data.addlInfo;
       }
 
+      console.log(v.data);
+
+      let fixedPrice = parseFloat(v.data.price).toFixed(2);
+
       cablist.addChildren({
-        title: v.title,
-        name: v.data.description + addlInfo,
         qty: 1,
+        title: v.title,
+        itemID: v.id,
+        price: fixedPrice,
+        key: new Date().getTime() * Math.random(999),
         icon: v.icon,
-        price: v.data.price
+        name: v.data.description + addlInfo,
+        sqft: v.sqft,
+        sqftPrice: fixedPrice
       });
     });
 
@@ -495,6 +510,27 @@ $("body")
   .on("click", ".option", function() {
     $.post("/html/pricing/ajax/global_actions.php?action=getPriceGroup&room_id=" + active_room_id, function(data) {
       $("#cab_spec_pg").text(data);
+      priceGroup = data;
     });
+
+    let gt_field = $("#gt_pct");
+    let gt_amt = $("#gt_amt");
+
+    switch($("#glaze_technique").val()) {
+      case 'G2':
+        gt_field.text("10.00%");
+        gt_amt.text("...");
+
+        gt_markup = 0.10;
+        break;
+      case 'G0':
+        gt_field.text("");
+        gt_amt.text("");
+        break;
+      default:
+        gt_field.text("ERR");
+        gt_amt.text("ERR");
+        break;
+    }
   })
 ;
