@@ -16,7 +16,8 @@ function delNoData() {
 }
 
 function recalcSummary() {
-  let global_charges = 0.00; // global charges total
+  let global_room_charges = 0.00; // global room charges
+  let global_cab_charges = 0.00; // global cabinet charges total
   let line_total = 0.00;
 
   //******************************************************************
@@ -63,32 +64,41 @@ function recalcSummary() {
   gt_pct.text((gt_markup * 100).toFixed(2) + "%");
 
   // add the glaze technique to the total amount of global upcharges
-  global_charges += gt_cost;
+  global_cab_charges += gt_cost;
+
+  // Grab the shipping price
+  let shipPrice = $("#shipping_cost").attr("data-cost");
+  global_room_charges += parseFloat(shipPrice);
 
   //// Global Cabinet Details
-  $("#itemListGlobalCabDetails").text(global_charges.formatMoney());
+  $("#itemListGlobalCabDetails").text(global_cab_charges.formatMoney());
 
   //// Subtotal 1
-  let subtotal1 = global_charges + line_total;
+  let subtotal1 = global_cab_charges + line_total;
   $("#itemListSubTotal1").text(subtotal1.formatMoney());
 
   //// Capture the multiplier for use
   let multiplier = parseFloat($("#itemListMultiplier").text());
 
   //// Calculate the net price
-  let netPrice = (line_total + global_charges) * multiplier;
+  let netPrice = (line_total + global_cab_charges) * multiplier;
   $("#itemListNET").text(netPrice.formatMoney());
 
-  // TODO: We're not adding shipping, global room details, or credit card here right now, we need to add those in
+  //// Display the global room detail charges
+  $("#itemListGlobalRoomDetails").text(global_room_charges.formatMoney());
+
+  let subtotal = netPrice + global_room_charges;
+
+  // TODO: We're not adding credit card here right now, we need to add that in
 
   //// Update the subtotal
-  $("#finalSubTotal").text(netPrice.formatMoney());
+  $("#finalSubTotal").text(subtotal.formatMoney());
 
   //// Update the total
-  $("#finalTotal").text(netPrice.formatMoney());
+  $("#finalTotal").text(subtotal.formatMoney());
 
   //// Update the required deposit
-  let deposit = netPrice * .5;
+  let deposit = subtotal * .5;
   $("#finalDeposit").text(deposit.formatMoney());
 }
 

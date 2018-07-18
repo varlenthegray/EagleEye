@@ -48,6 +48,8 @@ $result = $result_qry->fetch_assoc();
 $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$result['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();
 
+$ship_zone_info = calcShipZone($dealer['shipping_zip']);
+
 // This section refers to the submit buttons and disabling of them
 $existing_quote_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
 
@@ -237,14 +239,14 @@ if($pg_qry->num_rows > 0) {
                 </tr>
                 <tr>
                   <td>Shipping Zone:</td>
-                  <td><strong>A (0-100 Miles)</strong></td>
-                  <td>$0.00</td>
+                  <td><strong><?php echo $ship_zone_info['zone']; ?></strong></td>
+                  <td id="shipping_cost" data-cost="<?php echo $ship_zone_info['cost']; ?>">$<?php echo "{$ship_zone_info['cost']}.00"; ?></td>
                 </tr>
-                <tr>
+                <!--<tr>
                   <td>Shipping Cubes:<br /><em>(Min of 6)</em></td>
                   <td><strong id="ship_cube_count">0</strong> <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" /></td>
                   <td id="ship_cube_cost">$0.00</td>
-                </tr>
+                </tr>-->
                 <tr>
                   <td colspan="3" style="height:2px;"></td>
                 </tr>
@@ -417,7 +419,7 @@ if($pg_qry->num_rows > 0) {
             <table width="100%">
               <tr><th>&nbsp;Notes</th></tr>
               <tr><td class="gray_bg">&nbsp;Delivery Notes:</td></tr>
-              <tr><td id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_delivery']['note']; ?></textarea></td></tr>
+              <tr><td id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="3"><?php echo $note_arr['room_note_delivery']['note']; ?></textarea></td></tr>
             </table>
 
             <input type="hidden" name="delivery_notes_id" value="<?php echo $note_arr['room_note_delivery']['id']; ?>" />
@@ -427,7 +429,7 @@ if($pg_qry->num_rows > 0) {
             <table width="100%">
               <tr><th>&nbsp;</th></tr>
               <tr><td class="gray_bg">&nbsp;Design Notes:</td></tr>
-              <tr><td style="border-right:2px solid #FFF;"><textarea name="room_note_design" maxlength="280"><?php echo $note_arr['room_note_design']['note']; ?></textarea></td>
+              <tr><td style="border-right:2px solid #FFF;"><textarea name="room_note_design" maxlength="280" rows="3"><?php echo $note_arr['room_note_design']['note']; ?></textarea></td>
               </tr>
             </table>
 
@@ -438,7 +440,7 @@ if($pg_qry->num_rows > 0) {
             <table width="100%">
               <tr><th>&nbsp;</th></tr>
               <tr><td class="gray_bg">&nbsp;Finishing/Sample Notes:</td></tr>
-              <tr><td style="border-right:2px solid #FFF;"><textarea name="fin_sample_notes" maxlength="280" class="static_width"><?php echo $note_arr['room_note_fin_sample']['note']; ?></textarea></td></tr>
+              <tr><td style="border-right:2px solid #FFF;"><textarea name="fin_sample_notes" maxlength="280" class="static_width" rows="3"><?php echo $note_arr['room_note_fin_sample']['note']; ?></textarea></td></tr>
             </table>
 
             <input type="hidden" name="fin_sample_notes_id" value="<?php echo $note_arr['room_note_fin_sample']['id']; ?>" />
@@ -524,7 +526,7 @@ if($pg_qry->num_rows > 0) {
                 <td class="text-md-right gray_bg total_text" id="itemListTotal">$0.00</td>
               </tr>
               <tr class="border_thin_bottom">
-                <td class="total_text">Global Cabinet Details:</td>
+                <td class="total_text">Global: Cabinet Details:</td>
                 <td class="total_text">&nbsp;</td>
                 <td class="text-md-right total_text" id="itemListGlobalCabDetails">$0.00</td>
               </tr>
@@ -543,15 +545,15 @@ if($pg_qry->num_rows > 0) {
                 <td class="total_text">&nbsp;</td>
                 <td class="text-md-right total_text" id="itemListNET">$0.00</td>
               </tr>
-              <tr class="border_thin_bottom">
+              <!--<tr class="border_thin_bottom">
                 <td class="total_text">Shipping:</td>
                 <td class="total_text">&nbsp;</td>
                 <td class="text-md-right total_text">$0.00</td>
-              </tr>
+              </tr>-->
               <tr class="border_thin_bottom">
-                <td class="total_text">Global Room Details:</td>
+                <td class="total_text">Global: Room Details:</td>
                 <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00</td>
+                <td class="text-md-right total_text" id="itemListGlobalRoomDetails">$0.00</td>
               </tr>
               <tr class="border_thin_bottom">
                 <td class="total_text">Credit Card:</td>

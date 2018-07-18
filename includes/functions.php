@@ -319,3 +319,45 @@ function translateVIN($segment, $key, $db_col = null) {
 
   return $desc;
 }
+
+function calcMiles($zip1, $zip2) {
+  // https://developers.google.com/maps/documentation/distance-matrix/intro
+  $url = "http://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=$zip1&destinations=$zip2&mode=driving&language=en-EN&sensor=false";
+
+  $data = @file_get_contents($url);
+
+  $result = json_decode($data, true);
+
+  // comes back in meters, change that value to miles
+  return $result['rows'][0]['elements'][0]['distance']['value'] * 0.000621371;
+}
+
+function calcShipZone($dealer_zip) {
+  $mileage = calcMiles(28704, $dealer_zip);
+  $out = [];
+
+  switch(true) {
+    case $mileage <= 100:
+      $out['zone'] = 'A (0-100 Miles)';
+      $out['cost'] = 0.00;
+      break;
+    case $mileage > 100 && $mileage <= 200:
+      $out['zone'] = 'B (100-200 Miles)';
+      $out['cost'] = 150.00;
+      break;
+    case $mileage > 200 && $mileage <= 300:
+      $out['zone'] = 'C (200-300 Miles)';
+      $out['cost'] = 300.00;
+      break;
+    case $mileage > 300 && $mileage <= 400:
+      $out['zone'] = 'D (300-400 Miles)';
+      $out['cost'] = 450.00;
+      break;
+    case $mileage > 400 && $mileage <= 500:
+      $out['zone'] = 'E (400-500 Miles)';
+      $out['cost'] = 600.00;
+      break;
+  }
+
+  return $out;
+}
