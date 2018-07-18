@@ -85,6 +85,8 @@ if($pg_qry->num_rows > 0) {
   } else {
     $price_group = '0';
   }
+} else {
+  $price_group = '0';
 }
 ?>
 
