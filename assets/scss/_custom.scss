@@ -1012,11 +1012,19 @@ h5 {
   }
 }
 
-.dabger-color {
+.danger-color {
   color: $brand-danger;
 
   &:hover {
     color: darken($brand-danger, 15%);
+  }
+}
+
+.secondary-color {
+  color: $gray;
+
+  &:hover {
+    color: darken($gray, 15%);
   }
 }
 
@@ -1025,4 +1033,11 @@ h5 {
   table, td, th {
     border: 0 none;
   }
+}
+
+// Adjusting the button with icons because it's smaller
+.btn-label {
+  padding: 7px 10px;
+  margin: -7px -8px;
+  margin-right: 5px;
 }

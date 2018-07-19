@@ -1,7 +1,8 @@
 <?php
 require '../../../includes/header_start.php';
 require '../php/catalog.php';
-outputPHPErrs();
+
+//outputPHPErrs();
 
 use catalog\catalog as Catalog;
 

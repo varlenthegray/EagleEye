@@ -90,9 +90,39 @@ function makeTree($parent_id) {
         if($price_qry->num_rows > 0) {
           $price = $price_qry->fetch_assoc();
 
-          $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $item['sku'], 'description' => $item['sku_title'], 'info' => $info, 'is_item' => true, 'checkbox' => true, 'icon' => $img, 'qty' => 1, 'price' => $price['price'], 'addl_info' => $item['addl_info'], 'sqft' => $item['sqft'], 'linft' => $item['linft'], 'cabinet' => $item['cabinet'], 'addlMarkup' => $item['addlMarkup']);
+          $sku_items[$item['item_catID']]['children'][] = array(
+            'key' => $item['itemID'],
+            'title' => $item['sku'],
+            'description' => $item['sku_title'],
+            'info' => $info,
+            'is_item' => true,
+            'checkbox' => true,
+            'icon' => $img,
+            'qty' => 1,
+            'price' => $price['price'],
+            'addl_info' => $item['addl_info'],
+            'sqft' => $item['sqft'],
+            'linft' => $item['linft'],
+            'cabinet' => $item['cabinet'],
+            'addlMarkup' => $item['addlMarkup'],
+            'itemID' => $item['itemID']);
         } else {
-          $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'], 'title' => $item['sku'], 'description' => $item['sku_title'], 'info' => $info, 'is_item' => true, 'checkbox' => true, 'icon' => $img, 'qty' => 1, 'price' => 0.00, 'addl_info' => $item['addl_info'], 'sqft' => $item['sqft'], 'linft' => $item['linft'], 'cabinet' => $item['cabinet'], 'addlMarkup' => $item['addlMarkup']);
+          $sku_items[$item['item_catID']]['children'][] = array(
+            'key' => $item['itemID'],
+            'title' => $item['sku'],
+            'description' => $item['sku_title'],
+            'info' => $info,
+            'is_item' => true,
+            'checkbox' => true,
+            'icon' => $img,
+            'qty' => 1,
+            'price' => 0.00,
+            'addl_info' => $item['addl_info'],
+            'sqft' => $item['sqft'],
+            'linft' => $item['linft'],
+            'cabinet' => $item['cabinet'],
+            'addlMarkup' => $item['addlMarkup'],
+            'itemID' => $item['itemID']);
         }
       }
     } else {

@@ -335,6 +335,7 @@ function calcMiles($zip1, $zip2) {
 function calcShipZone($dealer_zip) {
   $mileage = calcMiles(28704, $dealer_zip);
   $out = [];
+  $out['miles'] = $mileage;
 
   switch(true) {
     case $mileage <= 100:

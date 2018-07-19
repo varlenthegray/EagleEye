@@ -47,8 +47,6 @@ $result = $result_qry->fetch_assoc();
 $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$result['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();
 
-$ship_zone_info = calcShipZone($dealer['shipping_zip']);
-
 // This section refers to the submit buttons and disabling of them
 $existing_quote_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
 
@@ -238,6 +236,7 @@ if($pg_qry->num_rows > 0) {
                 </tr>
                 <tr>
                   <td>Shipping Zone:</td>
+                  <?php $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip']; $ship_zone_info = calcShipZone($shipZone); ?>
                   <td><strong><?php echo $ship_zone_info['zone']; ?></strong></td>
                   <td id="shipping_cost" data-cost="<?php echo $ship_zone_info['cost']; ?>">$<?php echo "{$ship_zone_info['cost']}.00"; ?></td>
                 </tr>
@@ -450,12 +449,21 @@ if($pg_qry->num_rows > 0) {
 
       <div class="row">
         <div class="col-md-12" style="margin-top:5px;">
-          <h5><u>Item List</u></h5>
+          <div class="item_list_header sticky">
+            <h5><u>Item List</u></h5>
+
+            <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" />
+            <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="item_custom_line"><span class="btn-label"><i class="fa fa-plus"></i> </span>Custom Line</button>
+            <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="detailed_item_summary"><span class="btn-label"><i class="fa fa-list"></i> </span>Detailed Report</button>
+
+            <div class="clearfix"></div>
+          </div>
 
           <table id="cabinet_list" style="width:100%;">
             <colgroup>
               <col width="30px">
               <col width="30px">
+              <col width="40px">
               <col width="150px">
               <col width="350px">
               <col width="50px">
@@ -467,13 +475,9 @@ if($pg_qry->num_rows > 0) {
             </colgroup>
             <thead>
             <tr>
-              <td colspan="12" style="padding-bottom:5px;">
-                <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" />
-              </td>
-            </tr>
-            <tr>
               <th>#</th>
               <th class="text-md-center">Qty</th>
+              <th class="text-md-center">Actions</th>
               <th>Nomenclature</th>
               <th>Description</th>
               <th class="text-md-center">Width</th>
@@ -488,6 +492,12 @@ if($pg_qry->num_rows > 0) {
             <tr>
               <td></td>
               <td><input type="text" class="form-control qty_input" value="1" placeholder="Qty" /> </td>
+              <td class="text-md-center">
+                <i class="fa fa-info-circle primary-color view_item_info cursor-hand" data-id=""></i>
+                <i class="fa fa-minus-circle danger-color delete_item cursor-hand" title="Delete line"></i>
+                <i class="fa fa-plus-circle secondary-color add_item_mod cursor-hand" title="Add modification"></i>
+                <i class="fa fa-copy secondary-color item_copy cursor-hand" title="Copy line"></i>
+              </td>
               <td style="white-space:nowrap;"></td>
               <td></td>
               <td class="text-md-center"><input type="text" class="form-control itm_width text-md-center" placeholder="W" /></td>
@@ -720,9 +730,9 @@ if($pg_qry->num_rows > 0) {
 
             <table id="item_modifications" width="100%">
               <colgroup>
+                <col width="35%">
                 <col width="40%">
-                <col width="40%">
-                <col width="20%">
+                <col width="25%">
               </colgroup>
               <thead>
               <tr>
@@ -732,6 +742,79 @@ if($pg_qry->num_rows > 0) {
               </tr>
               </thead>
               <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary waves-effect waves-light" id="modificationAddSelected">Add Selected</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- modal -->
+<div id="modalDetailedItemList" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalDetailedItemListLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Item List Breakdown</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <table id="cost_audit" width="100%"  style="vertical-align:top;">
+              <colgroup>
+                <col width="20%">
+                <col width="70%">
+                <col width="10%">
+              </colgroup>
+              <thead>
+              <tr>
+                <th>Line</th>
+                <th>Calculation</th>
+                <th>Total</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>Product Type</td>
+                <td id="calcProductType"></td>
+                <td id="calcProductTypeTotal"></td>
+              </tr>
+              <tr>
+                <td>Lead Time</td>
+                <td id="calcLeadTime"></td>
+                <td id="calcLeadTimeTotal"></td>
+              </tr>
+              <tr>
+                <td>Ship VIA</td>
+                <td id="calcShipVIA"></td>
+                <td id="calcShipVIATotal"></td>
+              </tr>
+              <tr>
+                <td>Shipping Zone</td>
+                <td id="calcShipZone"></td>
+                <td id="calcShipZoneTotal"></td>
+              </tr>
+              <tr>
+                <td>Glaze Technique</td>
+                <td id="calcGlazeTech"></td>
+                <td id="calcGlazeTechTotal"></td>
+              </tr>
+              <tr>
+                <td>Cabinet Lines</td>
+                <td id="calcCabinetLines"></td>
+                <td id="calcCabinetLinesTotal"></td>
+              </tr>
+              <tr>
+                <td>Non-Cabinet Lines</td>
+                <td id="calcNonCabLines"></td>
+                <td id="calcNonCabLinesTotal"></td>
+              </tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -782,6 +865,14 @@ if($pg_qry->num_rows > 0) {
   <?php
   echo "active_room_id = $room_id;";
   echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
+
+  $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip']; $ship_zone_info = calcShipZone($shipZone);
+
+  $shipInfo = json_encode($ship_zone_info, true);
+
+  echo "var calcShipZip = '{$info['ship_zip']}';";
+  echo "var calcDealerShipZip = '{$dealer['shipping_zip']}';";
+  echo "var calcShipInfo = '$shipInfo';";
   ?>
 
   let numPages = 1;
@@ -818,7 +909,7 @@ if($pg_qry->num_rows > 0) {
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
       source: { url: "/html/pricing/ajax/item_actions.php?action=getCabinetList&room_id=" + active_room_id },
-      extensions: ["edit", "dnd", "table", "gridnav", "persist"],
+      extensions: ["dnd", "table", "gridnav", "persist"],
       debugLevel: 0,
       dnd: { // drag and drop
         preventVoidMoves: true,
@@ -846,7 +937,7 @@ if($pg_qry->num_rows > 0) {
       },
       table: {
         indentation: 20,
-        nodeColumnIdx: 2,
+        nodeColumnIdx: 3,
         checkboxColumnIdx: 0
       },
       gridnav: {
@@ -862,39 +953,40 @@ if($pg_qry->num_rows > 0) {
         let price = parseFloat(node.data.price);
         let line_total = qty * price;
 
-        // Index #0 => Checkbox
-
-        // Index #1 => Line Numbering
+        // Index #0 => Line Numbering
         $tdList.eq(0).text(node.getIndexHier());
 
-        // Index #2 => Quantity
+        // Index #1 => Quantity
         $tdList.eq(1).find("input").attr("data-id", node.key).val(node.data.qty);
+
+        // Index #2 => Update all of the buttons to this specific node
+        $tdList.eq(2).find(".view_item_info").attr("data-id", node.data.itemID);
 
         // Index #3 => Nomenclature (SKU) - generated by node.title
 
         // Index #4 => Description
-        $tdList.eq(3).text(node.data.name);
+        $tdList.eq(4).text(node.data.name);
 
         // Index #4 => Width
         // $tdList.eq(5).text(node.data.width);
-        $tdList.eq(4).find("input").attr("data-id", node.key).val(node.data.width);
+        $tdList.eq(5).find("input").attr("data-id", node.key).val(node.data.width);
 
         // Index #6 => Height
         // $tdList.eq(6).text(node.data.height);
-        $tdList.eq(5).find("input").attr("data-id", node.key).val(node.data.height);
+        $tdList.eq(6).find("input").attr("data-id", node.key).val(node.data.height);
 
         // Index #7 => Depth
         // $tdList.eq(7).text(node.data.depth);
-        $tdList.eq(6).find("input").attr("data-id", node.key).val(node.data.depth);
+        $tdList.eq(7).find("input").attr("data-id", node.key).val(node.data.depth);
 
         // Index #8 => Hinge
         if(node.data.hinge !== undefined) {
-          $tdList.eq(7).find(".item_hinge").val(node.data.hinge);
+          $tdList.eq(8).find(".item_hinge").val(node.data.hinge);
         }
 
         // Index #9 => Price (individual)
         if(!isNaN(price)) {
-          $tdList.eq(8).text(price.formatMoney()).removeAttr("style title"); // price column
+          $tdList.eq(9).text(price.formatMoney()).removeAttr("style title"); // price column
 
           $(".no_global_info").css("display", "none");
 
@@ -902,7 +994,7 @@ if($pg_qry->num_rows > 0) {
             $("#submit_for_quote").attr("disabled", false).attr("title", "");
           }
         } else {
-          $tdList.eq(8).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
+          $tdList.eq(9).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
 
           $("#submit_for_quote").attr("disabled", true).attr("title", "Unknown global attributes, unable to submit.");
 

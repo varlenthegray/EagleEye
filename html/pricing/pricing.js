@@ -20,6 +20,9 @@ function recalcSummary() {
   let global_cab_charges = 0.00; // global cabinet charges total
   let line_total = 0.00; // total of the item list
   let cabinet_only_total = 0.00; // cabinet only total
+  let cabinet_only_skus = ''; // a list (for transparency report) of cabinets only
+  let non_cabinet_total = 0.00; // non-cabinet total (for transparency report)
+  let non_cabinet_skus = ''; // non-cabinet SKU's (for transparency report)
 
   //******************************************************************
   // parse per line
@@ -52,17 +55,32 @@ function recalcSummary() {
     let lineTotal = qty * price;
 
     // now update the last column (total) with the final price for that line item
-    $tdList.eq(8).text(lineTotal.formatMoney());
+    $tdList.eq(9).text(lineTotal.formatMoney());
 
     // if the line item is a cabinet only (excludes tops, accessories, fillers, moldings) then we're adding that to a cabinet only price (inset specific pricing)
     if(line.data.cabinet === '1') {
       // our cabinet only total goes up
       cabinet_only_total += parseFloat(lineTotal);
+
+      // add the SKU to the total cabinet only running list
+      cabinet_only_skus += line.title + ", ";
+    } else {
+      // our non-cabinet total goes up (transparency report)
+      non_cabinet_total += parseFloat(lineTotal);
+
+      //add the SKU to the non-cabinet total running list
+      non_cabinet_skus += line.title + ", ";
     }
 
     // this is the final running total for the system
     line_total += parseFloat(lineTotal);
   });
+
+  // remove the excess comma and space from the cabinet SKU list
+  cabinet_only_skus = cabinet_only_skus.slice(0, -2);
+
+  // remove the excess comma and space from the non-cabinet SKU list
+  non_cabinet_skus = non_cabinet_skus.slice(0, -2);
 
   // display the total
   $("#itemListTotal").text(line_total.formatMoney());
@@ -150,6 +168,33 @@ function recalcSummary() {
   //// Update the required deposit
   let deposit = subtotal * .5;
   $("#finalDeposit").text(deposit.formatMoney());
+  //******************************************************************
+
+  //******************************************************************
+  // Transparency report
+  $("#calcProductType").text('Cabinet Only Total (' + cabinet_only_total + ') * Product Type Markup (' + productTypeMarkup + ')');
+  $("#calcProductTypeTotal").text((cabinet_only_total * productTypeMarkup).formatMoney());
+
+  $("#calcLeadTime").text('Lead Time (Green) * Total [Hardcoded]');
+  $("#calcLeadTimeTotal").text('$0.00 [Hardcoded]');
+
+  $("#calcShipVIA").text('[Hardcoded]');
+  $("#calcShipVIATotal").text('$0.00 [Hardcoded]');
+
+  let shipMileInfo = JSON.parse(calcShipInfo);
+
+  $("#calcShipZone").html('Mileage (' + shipMileInfo.miles + ') - ' + shipMileInfo.zone + '<br /><br />Calculated based on Shipping Zip entered into Ship To, if that is empty, use Dealer Zip.<br /><br />0-100 Ship Zone A, $0.00<br />100-200 Ship Zone B, $150.00<br />200-300 Ship Zone C, $300.00<br />300-400 Ship Zone D, $450.00<br />400-500 Ship Zone E, $600.00');
+  $("#calcShipZoneTotal").text(shipMileInfo.cost.formatMoney());
+
+  $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') * Glaze Markup (' + gt_markup + ')');
+  $("#calcGlazeTechTotal").html(gt_cost.formatMoney());
+
+  $("#calcCabinetLines").html('Cabinets: ' + cabinet_only_skus);
+  $("#calcCabinetLinesTotal").html(cabinet_only_total.formatMoney());
+
+  $("#calcNonCabLines").html('Non-Cabinets: ' + non_cabinet_skus);
+  $("#calcNonCabLinesTotal").html(non_cabinet_total.formatMoney());
+  //******************************************************************
 }
 
 // @footCalc() - calculates by square foot or linear foot
@@ -208,6 +253,10 @@ function fetchDebug() {
   });
 }
 
+function genKey() {
+  return new Date().getTime() * Math.random(999);
+}
+
 var mouseX, mouseY;
 
 $(document).mousemove(function(e) {
@@ -235,30 +284,34 @@ $("body")
     // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
     // TODO: https://github.com/mar10/fancytree/issues/551
   })
-  .on("click", "#catalog_add_custom", function() { // the click of the "Add Item" button
-    delNoData();
+  .on("click", "#item_custom_line", function() { // the click of the "Add Item" button
+    // delNoData(); // wtc does this do?
 
     var root = cabinetList.fancytree("getRootNode");
-    var child = root.addChildren({
-      title: "Nomenclature...",
-      tooltip: "Type your nomenclature here.",
-      name: '<input type="text" class="form-control qty_input" value="1" placeholder="Qty" />' // FIXME: This doesn't work, need some sort of typeable field
-    });
-  })
-  .on("click", "#catalog_remove_checked", function() { // removes whatever is checked
-    var tree = cabinetList.fancytree("getTree"), // get the tree
-      selected = tree.getSelectedNodes(); // define what is selected
 
-    // for every selected node
-    selected.forEach(function(node) {
-      node.remove(); // remove it
+    var node = root.addChildren({
+      qty: 1,
+      title: 'NOTE',
+      price: 0.00,
+      key: genKey(),
+      icon: 'fa fa-commenting-o',
+      name: 'Error',
+      sqft: 0,
+      singlePrice: 0.00,
+      cabinet: 0
     });
+
+    let $tdList = $(node.tr).find(">td");
+
+    $tdList.eq(4).html('<input type="text" class="form-control custom-line-item" placeholder="Custom Description..." data-id="' + node.key + '" >');
+  })
+  .on("click", ".delete_item", function() { // removes whatever is checked
+    var tree = cabinetList.fancytree("getTree"); // get the tree
+
+    tree.getFocusNode().remove(); // remove the focused node
 
     // re-render the tree deeply so that we can recalculate the line item numbers
     cabinetList.fancytree("getRootNode").render(true,true);
-
-    // hide the remove items button, there are no items to remove now
-    $(this).hide();
 
     recalcSummary();
   })
@@ -332,7 +385,7 @@ $("body")
         depth: itemInfo.depth,
         itemID: itemInfo.id,
         price: fixedPrice,
-        key: new Date().getTime() * Math.random(999),
+        key: genKey(),
         icon: itemInfo.icon,
         name: itemInfo.title,
         sqft: itemInfo.sqft,
@@ -447,16 +500,17 @@ $("body")
       cablist.addChildren({
         qty: 1,
         title: v.title,
-        itemID: v.data.id,
+        itemID: v.itemID,
         price: fixedPrice,
-        key: new Date().getTime() * Math.random(999),
+        key: genKey(),
         icon: v.icon,
         name: v.data.description + addlInfo,
         sqft: v.sqft,
         linft: v.data.linft,
         singlePrice: fixedPrice,
         cabinet: v.data.cabinet,
-        addlMarkup: v.data.addlMarkup
+        addlMarkup: v.data.addlMarkup,
+        subLine: true
       });
     });
 
@@ -673,5 +727,24 @@ $("body")
     });
 
     recalcSummary();
+  })
+  .on("keyup", ".custom-line-item", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+
+    node.data.name = $(this).val();
+  })
+  .on("click", ".add_item_mod", function() {
+    $("#modalAddModification").modal('show');
+
+    console.log("Adding item modification");
+  })
+  .on("click", ".item_copy", function() {
+    let activeNode = cabinetList.fancytree("getTree").getActiveNode();
+
+    cabinetList.fancytree("getRootNode").addChildren(activeNode);
+  })
+  .on("click", "#detailed_item_summary", function() {
+    $("#modalDetailedItemList").modal("show")
   })
 ;
