@@ -2,6 +2,7 @@
  * Includes/requires
  *****************************************/
 var https = require('https');
+var http = require('http'); // localhost
 var fs = require('fs');
 var sconn = require('socket.io');
 var mysql = require('mysql');
@@ -25,6 +26,15 @@ if(scriptArgs[2] === 'dev') {
     requestCert: false,
     rejectUnauthorized: false
   }, sconn);
+
+  // port 4k is the dev server
+  port = 4000;
+} else if(scriptArgs[2] === 'localhost') {
+  // set the SQL data for dev
+  sqlLoc = {host:'localhost',user:'threeerp',password:'8h294et9hVaLvp0K*s!&',database:'3erp_dev'};
+
+  // setup the dev server for HTTPS
+  server = http.createServer(sconn);
 
   // port 4k is the dev server
   port = 4000;

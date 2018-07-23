@@ -6,35 +6,35 @@
  * Time: 10:13 PM
  */
 // initial MySQL configuration
-$server = explode(".", $_SERVER['HTTP_HOST']);
+$server = explode('.', $_SERVER['HTTP_HOST']);
 
 // determination for type of server we're on and what connection to throw
 switch($server[0]) {
     case 'dev':
-        $servername = "localhost";
-        $username = "threeerp";
-        $password = "8h294et9hVaLvp0K*s!&";
-        $database = "3erp_dev";
+        $servername = 'localhost';
+        $username = 'threeerp';
+        $password = '8h294et9hVaLvp0K*s!&';
+        $database = '3erp_dev';
 
         define('SITE_ROOT', '/home/threeerp/domains/dev.3erp.us/public_html'); // Current Dev Site
 
         break;
 
-    case 'd2':
-        $servername = "localhost";
-        $username = "threeerp";
-        $password = "8h294et9hVaLvp0K*s!&";
-        $database = "3erp_dev";
+    case 'eagleeye':
+        $servername = 'localhost';
+        $username = 'threeerp';
+        $password = '8h294et9hVaLvp0K*s!&';
+        $database = '3erp_dev';
 
-        define('SITE_ROOT', '/home/threeerp/domains/d2.3erp.us/public_html'); // New Dev Site
+        define('SITE_ROOT', 'C:/Users/Ben/OneDrive/SMCM/Eagle Eye/SMCDev'); // New Dev Site
 
         break;
 
     default:
-        $servername = "localhost";
-        $username = "threeerp";
-        $password = "8h294et9hVaLvp0K*s!&";
-        $database = "3erp";
+        $servername = 'localhost';
+        $username = 'threeerp';
+        $password = '8h294et9hVaLvp0K*s!&';
+        $database = '3erp';
 
         define('SITE_ROOT', '/home/threeerp/public_html'); // Prod Site
 
@@ -48,5 +48,5 @@ $dbconn->set_charset('utf8');
 
 // confirm connected
 if($dbconn->connect_error) {
-    die("We failed to connect to the database: " . $dbconn->connect_error);
+    die('We failed to connect to the database: ' . $dbconn->connect_error);
 }

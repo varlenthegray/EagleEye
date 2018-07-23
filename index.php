@@ -65,6 +65,28 @@ require 'includes/header_start.php';
 
     if($server[0] === 'dev') {
       echo '<style>body, html, .account-pages, #topnav .topbar-main, .footer {background-color: #750909 !important; }</style>';
+    } elseif($server[0] === 'eagleeye') {
+      echo <<<HEREDOC
+      <style>
+        #topnav .topbar-main {
+          background: #7d7e7d;
+        }
+      
+        body, html, .account-pages {
+          /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#7d7e7d+0,0e0e0e+100;Black+3D */
+          background: #7d7e7d; /* Old browsers */
+          background: -moz-linear-gradient(top, #7d7e7d 0%, #0e0e0e 100%); /* FF3.6-15 */
+          background: -webkit-linear-gradient(top, #7d7e7d 0%,#0e0e0e 100%); /* Chrome10-25,Safari5.1-6 */
+          background: linear-gradient(to bottom, #7d7e7d 0%,#0e0e0e 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#7d7e7d', endColorstr='#0e0e0e',GradientType=0 ); /* IE6-9 */
+        }
+        
+        .footer {
+          background: #0e0e0e;
+        }
+      </style>
+HEREDOC;
+
     } else {
 //      echo "<script>$.fn.dataTable.ext.errMode = 'throw';</script>";
     }
@@ -307,6 +329,8 @@ require 'includes/header_start.php';
     <?php
     if($server[0] === 'dev') {
       echo "var socket = io.connect('//dev.3erp.us:4000');";
+    } elseif($server[0] === 'eagleeye') {
+      echo "var socket = io.connect('//localhost:4000');";
     } else {
       echo "var socket = io.connect('//3erp.us:4100');";
     }
