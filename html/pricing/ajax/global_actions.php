@@ -989,8 +989,12 @@ HEREDOC;
 
     if($room['door_design_id'] !== '1544' && $room['species_grade_id'] !== '11') {
       $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$room['door_design_id']} AND species_id = {$room['species_grade_id']}");
-      $price_group = $price_group_qry->fetch_assoc();
-      $price_group = $price_group['price_group_id'];
+
+      // error resolution, brand new rooms do not have this data
+      if($price_group_qry->num_rows === 1) {
+        $price_group = $price_group_qry->fetch_assoc();
+        $price_group = $price_group['price_group_id'];
+      }
     } else {
       $price_group = 'Unknown';
     }
