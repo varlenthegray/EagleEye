@@ -588,7 +588,7 @@ HEREDOC;
     }
 
     if(!empty($room_id)) {
-      if($dbconn->query("UPDATE rooms SET room = '$room_letter', room_name = '$room_name', iteration = '$iteration', product_type = '$product_type', order_status = '$order_status', days_to_ship = '$days_to_ship', delivery_date = '$del_date_unix' WHERE id = $room_id;")) {
+      if($dbconn->query("UPDATE rooms SET room = '$room_letter', room_name = '$room_name', iteration = '$iteration', product_type = '$product_type', order_status = '$order_status', days_to_ship = '$days_to_ship', delivery_date = $del_date_unix WHERE id = $room_id;")) {
         echo displayToast('success', "Successfully updated the global information for room $room_name.", 'Room Updated');
       } else {
         dbLogSQLErr($dbconn);
