@@ -169,11 +169,10 @@ $("body")
     }
 
     determineOpts();
+
+    productTypeSwitch();
   })
   .on("change", "#show_image_popups", function() {
     adjustImgPopups();
-  })
-  .on("click", "#dropdown_p_type", function() {
-    productTypeSwitch();
   })
 ;

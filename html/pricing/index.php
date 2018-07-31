@@ -1314,5 +1314,13 @@ if($pg_qry->num_rows > 0) {
         node.setExpanded();
       });
     }, 100);
+
+    if($("#ship_via").val() === '4') {
+      let ship_info = $("input[name='ship_to_name']").parent().parent();
+
+      ship_info.hide();
+      ship_info.next("tr").hide();
+      ship_info.next("tr").next("tr").hide();
+    }
   });
 </script>

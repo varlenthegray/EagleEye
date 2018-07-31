@@ -23,6 +23,7 @@ function recalcSummary() {
   let cabinet_only_skus = ''; // a list (for transparency report) of cabinets only
   let non_cabinet_total = 0.00; // non-cabinet total (for transparency report)
   let non_cabinet_skus = ''; // non-cabinet SKU's (for transparency report)
+  let shipVia = $("#ship_via").val(); // shipping method
 
   //******************************************************************
   // parse per line
@@ -86,7 +87,6 @@ function recalcSummary() {
   $("#itemListTotal").text(line_total.formatMoney());
   //******************************************************************
 
-
   //******************************************************************
   // done parsing per line, moving into the global charges for the page
 
@@ -118,9 +118,15 @@ function recalcSummary() {
   // add the glaze technique to the total amount of global upcharges
   global_cab_charges += gt_cost;
 
-  // Grab the shipping price
-  let shipPrice = $("#shipping_cost").attr("data-cost");
-  global_room_charges += parseFloat(shipPrice);
+  let shipPrice = 0;
+
+  // Grab the shipping price IF it's not pickup
+  if(shipVia !== '4') {
+    shipPrice = $("#shipping_cost").attr("data-cost");
+    global_room_charges += parseFloat(shipPrice);
+
+    console.log("ShipVia is not customer pickup.");
+  }
 
   //// Global Cabinet Details
   $("#itemListGlobalCabDetails").text(global_cab_charges.formatMoney());
@@ -178,13 +184,18 @@ function recalcSummary() {
   $("#calcLeadTime").text('Lead Time (Green) * Total [Hardcoded]');
   $("#calcLeadTimeTotal").text('$0.00 [Hardcoded]');
 
-  $("#calcShipVIA").text('[Hardcoded]');
+  $("#calcShipVIA").text('Cycle Truck [Hardcoded]');
   $("#calcShipVIATotal").text('$0.00 [Hardcoded]');
 
   let shipMileInfo = JSON.parse(calcShipInfo);
 
-  $("#calcShipZone").html('Mileage (' + shipMileInfo.miles + ') - ' + shipMileInfo.zone + '<br /><br />Calculated based on Shipping Zip entered into Ship To, if that is empty, use Dealer Zip.<br /><br />0-100 Ship Zone A, $0.00<br />100-200 Ship Zone B, $150.00<br />200-300 Ship Zone C, $300.00<br />300-400 Ship Zone D, $450.00<br />400-500 Ship Zone E, $600.00');
-  $("#calcShipZoneTotal").text(shipMileInfo.cost.formatMoney());
+  if(shipVia !== '4') {
+    $("#calcShipZone").html('Mileage (' + shipMileInfo.miles + ') - ' + shipMileInfo.zone + '<br /><br />Calculated based on Shipping Zip entered into Ship To, if that is empty, use Dealer Zip.<br /><br />0-100 Ship Zone A, $0.00<br />100-200 Ship Zone B, $150.00<br />200-300 Ship Zone C, $300.00<br />300-400 Ship Zone D, $450.00<br />400-500 Ship Zone E, $600.00');
+    $("#calcShipZoneTotal").text(shipMileInfo.cost.formatMoney());
+  } else {
+    $("#calcShipZone").html('Customer Pickup');
+    $("#calcShipZoneTotal").text('$0.00');
+  }
 
   $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') * Glaze Markup (' + gt_markup + ')');
   $("#calcGlazeTechTotal").html(gt_cost.formatMoney());
@@ -612,12 +623,13 @@ $("body")
     let dropdown_list = $(this).parent().parent();
 
     if(dropdown_list.attr("data-for") === 'ship_via') {
-      let ship_info = $("input[name='ship_to_1']").parent().parent();
+      let ship_info = $("input[name='ship_to_name']").parent().parent();
 
       if($(this).attr("data-value") === '4') {
         ship_info.hide();
         ship_info.next("tr").hide();
         ship_info.next("tr").next("tr").hide();
+
 
       } else {
         ship_info.show();

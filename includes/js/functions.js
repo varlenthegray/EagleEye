@@ -162,48 +162,93 @@ function getLocalTime() {
 }
 
 function productTypeSwitch() {
-  function setPcts(g, y, n, r) {
-    $(".dts_pct_g").html(g);
-    $(".dts_pct_y").html(y);
-    $(".dts_pct_n").html(n);
-    $(".dts_pct_r").html(r);
+  function setPcts(obj) {
+    let gPct = 2;
+    let yPct = 2;
+    let nPct = 2;
+    let rPct = 2;
+
+    if(obj.green.unavailable !== true) {
+      $(".dts_pct_g").html("[" + obj.green.ship_days + " Days] (" + (obj.green.pct * 100) + "%)");
+      gPct = obj.green.pct;
+    } else {
+      $(".dts_pct_g").html("[Not Available]");
+    }
+
+    if(obj.yellow.unavailable !== true) {
+      $(".dts_pct_y").html("[" + obj.yellow.ship_days + " Days] (" + (obj.yellow.pct * 100) + "%)");
+      yPct = obj.yellow.pct;
+    } else {
+      $(".dts_pct_y").html("[Not Available]");
+    }
+
+    if(obj.orange.unavailable !== true) {
+      $(".dts_pct_n").html("[" + obj.orange.ship_days + " Days] (" + (obj.orange.pct * 100) + "%)");
+      nPct = obj.orange.pct;
+    } else {
+      $(".dts_pct_n").html("[Not Available]");
+    }
+
+    if(obj.red.unavailable !== true) {
+      $(".dts_pct_r").html("[" + obj.red.ship_days + " Days] (" + (obj.red.pct * 100) + "%)");
+      rPct = obj.red.pct;
+    } else {
+      $(".dts_pct_r").html("[Not Available]");
+    }
+
+    let dts_id = $("#days_to_ship");
+
+    switch($("#product_type").val()) {
+      case 'G':
+        dts_id.attr("data-pct", gPct);
+        break;
+      case 'N':
+        dts_id.attr("data-pct", nPct);
+        break;
+      case 'Y':
+        dts_id.attr("data-pct", yPct);
+        break;
+      case 'R':
+        dts_id.attr("data-pct", rPct);
+        break;
+    }
   }
 
   switch($("#product_type").val()) {
     case 'C':
-      setPcts('[26 Days] (0%)', '[19 Days] (25%)', '[13 Days] (50%)', '(Not Available)');
+      setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'ship_days': 19, 'pct': 0.25}, 'orange': {'ship_days': 13, 'pct': 0.5}, 'red': {'unavailable': true}});
       break;
 
     case 'L':
-      setPcts('[10 Days] (0%)', '[6 Days] (25%)', '(Not Available)', '[3 Days] (50%)');
+      setPcts({'green': {'ship_days': 10, 'pct': 0}, 'yellow': {'ship_days': 6, 'pct': 0.25}, 'orange': {'unavailable': true}, 'red': {'ship_days': 3, 'pct': 0.5}});
       break;
 
     case 'S':
-      setPcts('(Not Available)', '(Not Available)', '[13 Days] (0%)', '[6 Days] (0%)');
+      setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'ship_days': 6, 'pct': 0}});
       break;
 
     case 'D':
-      setPcts('[26 Days] (0%)', '(Not Available)', '(Not Available)', '(Not Available)');
+      setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'unavailable': true}, 'orange': {'unavailable': true}, 'red': {'unavailable': true}});
       break;
 
     case 'A':
-      setPcts('(Not Available)', '[19 Days] (0%)', '[13 Days] (25%)', '[6 Days] (25%)');
+      setPcts({'green': {'unavailable': true}, 'yellow': {'ship_days': 19, 'pct': 0}, 'orange': {'ship_days': 13, 'pct': 0.25}, 'red': {'ship_days': 6, 'pct': 0.25}});
       break;
 
     case 'W':
-      setPcts('(Not Available)', '[19 Days] (0%)', '[13 Days] (0%)', '[6 Days] (0%)');
+      setPcts({'green': {'unavailable': true}, 'yellow': {'ship_days': 19, 'pct': 0}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'ship_days': 6, 'pct': 0}});
       break;
 
     case 'H':
-      setPcts('(Not Available)', '(Not Available)', '[13 Days] (0%)', '(Not Available)');
+      setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'unavailable': true}});
       break;
 
     case 'N':
-      setPcts('(Not Available)', '(Not Available)', '[13 Days] (0%)', '(Not Available)');
+      setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'unavailable': true}});
       break;
 
     case 'R':
-      setPcts('(Not Available)', '(Not Available)', '(Not Available)', '(Not Available)');
+      setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'unavailable': true}, 'red': {'unavailable': true}});
       break;
   }
 }

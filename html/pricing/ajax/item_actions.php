@@ -14,7 +14,7 @@ switch($_REQUEST['action']) {
     $room_id = sanitizeInput($_REQUEST['room_id']);
 
     $item_qry = $dbconn->query("SELECT 
-      pn.sku, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog, detail.image_path AS image, detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup
+      pn.sku, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog, detail.image_path AS image, detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.fixed_price
     FROM pricing_nomenclature pn
       LEFT JOIN pricing_catalog catalog on pn.catalog_id = catalog.id
       LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -28,6 +28,7 @@ switch($_REQUEST['action']) {
     WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'");
 
     $room = $room_qry->fetch_assoc();
+    $item = $item_qry->num_rows === 1 ? $item_qry->fetch_assoc() : null;
 
     //****************************************************************************
     // Calculate price group
@@ -41,14 +42,18 @@ switch($_REQUEST['action']) {
 
         $price = $price['price'];
       }
+    } else if((bool)$item['fixed_price']) {
+      if($price_qry = $dbconn->query("SELECT price FROM pricing_price_map map WHERE map.price_group_id = 1 AND map.nomenclature_id = $id;")) {
+        $price = $price_qry->fetch_assoc();
+
+        $price = $price['price'];
+      }
     } else {
       $price = 'N/A';
     }
     //****************************************************************************
 
-    if($item_qry->num_rows === 1) {
-      $item = $item_qry->fetch_assoc();
-
+    if(!empty($item_qry)) {
       $img = !empty($item['image']) ? "/html/pricing/images/{$item['image']}" : 'fa fa-magic';
 
       $item['icon'] = $img;
