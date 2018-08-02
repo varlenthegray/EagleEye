@@ -53,7 +53,7 @@ $("body")
 
         timer = setTimeout(function () {
           if (input.val().length >= 1) {
-            $.post("/ondemand/livesearch/search_results.php?search=general", {find: input.val()}, function (data) {
+            $.post("/html/search/so_list.php", {find: input.val()}, function (data) {
               searchTable.html(data);
               $("#search_results_global_table").trigger("update");
 
@@ -200,23 +200,7 @@ $("body")
     $(this).parent().remove();
   })
 
-  .on("click", ".add_room_trigger", function(e) {
-    thisClick = this;
 
-    e.stopPropagation();
-
-    checkTransition(function() {
-      active_so_num = $(thisClick).data('sonum');
-
-      toggleDisplay();
-
-      $.post("/html/search/room_add.php?so_num=" + active_so_num, function(data) {
-        $("#" + active_so_num + ".add_room").show().find('div').html(data).slideDown(150);
-      });
-    });
-
-    scrollLocation("#" + active_so_num + ".add_room");
-  })
 
   /** Deprecated
    .on("click", ".add_room_save", function() {

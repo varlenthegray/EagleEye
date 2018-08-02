@@ -8,7 +8,6 @@
 
 namespace Search;
 
-
 class search {
     function displayResults($find) {
         global $dbconn;

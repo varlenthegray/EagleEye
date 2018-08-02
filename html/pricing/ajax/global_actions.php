@@ -976,24 +976,35 @@ HEREDOC;
 
     break;
   case 'getPriceGroup':
-    $room_id = sanitizeInput($_REQUEST['room_id']);
+    $speciesGrade = sanitizeInput($_REQUEST['speciesGrade']);
+    $doorDesign = sanitizeInput($_REQUEST['doorDesign']);
 
-    $room_qry = $dbconn->query("SELECT 
-      vs1.id AS species_grade_id, vs2.id AS door_design_id
-    FROM rooms r 
-      LEFT JOIN vin_schema vs1 ON r.species_grade = vs1.key
-      LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key
-    WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'");
+    $doorDesignID = null;
+    $speciesGradeID = null;
 
-    $room = $room_qry->fetch_assoc();
+    foreach($vin_schema['species_grade'] AS $line) {
+      if($line['key'] === $speciesGrade) {
+        $speciesGradeID = $line['id'];
+        break;
+      }
+    }
 
-    if($room['door_design_id'] !== '1544' && $room['species_grade_id'] !== '11') {
-      $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$room['door_design_id']} AND species_id = {$room['species_grade_id']}");
+    foreach($vin_schema['door_design'] AS $line) {
+      if($line['key'] === $doorDesign) {
+        $doorDesignID = $line['id'];
+        break;
+      }
+    }
 
-      // error resolution, brand new rooms do not have this data
+    if($doorDesignID !== '1544' && $speciesGradeID !== '11') {
+      $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = $doorDesignID AND species_id = $speciesGradeID");
+
+      // error resolution
       if($price_group_qry->num_rows === 1) {
         $price_group = $price_group_qry->fetch_assoc();
         $price_group = $price_group['price_group_id'];
+      } else {
+        echo 'Unknown';
       }
     } else {
       $price_group = 'Unknown';

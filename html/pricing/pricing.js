@@ -503,7 +503,7 @@ $("body")
       let addlInfo = '';
 
       if(v.data.addlInfo !== undefined) {
-        addlInfo = " by " + v.data.addlInfo;
+        addlInfo = " " + v.data.addlInfo;
       }
 
       let fixedPrice = parseFloat(v.data.price).toFixed(2);
@@ -732,8 +732,11 @@ $("body")
 
     recalcSummary();
   })
-  .on("click", ".option", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=getPriceGroup&room_id=" + active_room_id, function(data) {
+  .on("click", "#pricingSpeciesGrade, #pricingDoorDesign", function() {
+    let speciesGrade = $("#species_grade").val();
+    let doorDesign = $("#door_design").val();
+
+    $.post("/html/pricing/ajax/global_actions.php?action=getPriceGroup&speciesGrade=" + speciesGrade + "&doorDesign=" + doorDesign, function(data) {
       $("#cab_spec_pg").text(data);
       priceGroup = data;
     });
@@ -748,8 +751,6 @@ $("body")
   })
   .on("click", ".add_item_mod", function() {
     $("#modalAddModification").modal('show');
-
-    console.log("Adding item modification");
   })
   .on("click", ".item_copy", function() {
     let activeNode = cabinetList.fancytree("getTree").getActiveNode();

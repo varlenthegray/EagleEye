@@ -175,7 +175,7 @@ HEREDOC;
       <div class="container">
         <div id="navigation">
           <!-- Navigation Menu-->
-          <?php require_once("includes/nav_menu.php"); ?>
+          <?php require_once 'includes/nav_menu.php'; ?>
           <!-- End navigation menu  -->
         </div>
       </div>
@@ -225,6 +225,12 @@ HEREDOC;
 
       <!-- Add Customer modal -->
       <div id="modalAddContact" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddContactLabel" aria-hidden="true">
+        <!-- Inserted via AJAX -->
+      </div>
+      <!-- /.modal -->
+
+      <!-- Add Room modal -->
+      <div id="modalAddRoom" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddRoomLabel" aria-hidden="true">
         <!-- Inserted via AJAX -->
       </div>
       <!-- /.modal -->
@@ -280,7 +286,7 @@ HEREDOC;
                 <div class="col-md-4">
                   <select name="feedback_to" id="feedback_to" class="form-control">
                     <?php
-                    $usr_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE AND id != 16 ORDER BY FIELD(id, 9) DESC, name ASC;");
+                    $usr_qry = $dbconn->query('SELECT * FROM user WHERE account_status = TRUE AND id != 16 ORDER BY FIELD(id, 9) DESC, name ASC;');
 
                     while($usr = $usr_qry->fetch_assoc()) {
                       echo "<option value='{$usr['id']}'>{$usr['name']}</option>";
@@ -313,10 +319,10 @@ HEREDOC;
         <div class="container">
           <div class="row">
             <div class="col-xs-6 pull-left">
-              <?php echo date("Y"); ?> &copy; <?php echo FOOTER_TEXT; ?>
+              <?php echo date('Y'); ?> &copy; <?php echo FOOTER_TEXT; ?>
             </div>
 
-            <div class="col-xs-6 pull-right text-md-right"><?php echo "RELEASE DATE " . RELEASE_DATE; ?></div>
+            <div class="col-xs-6 pull-right text-md-right"><?php echo 'RELEASE DATE ' . RELEASE_DATE; ?></div>
           </div>
 
           <div class="global-feedback"></div>
@@ -1436,7 +1442,11 @@ HEREDOC;
   <!-- Math, fractions and more -->
   <script src="/assets/plugins/math.min.js"></script>
 
+  <!-- Pricing program -->
   <script src="/html/pricing/pricing.min.js?v=<?php echo VERSION; ?>"></script>
+
+  <!-- Adding Room -->
+  <script src="/html/search/add_room.min.js?v=<?php echo VERSION; ?>"></script>
 
   <!-- Fancytree -->
   <script src="/assets/plugins/fancytree/jquery.fancytree.js"></script>
@@ -1450,7 +1460,6 @@ HEREDOC;
 
   <!-- Float TableHead -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/floatthead/2.1.2/jquery.floatThead.min.js"></script>
-
   <script src="//cdn.jsdelivr.net/npm/ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
 
   <!-- Unsaved Changes -->

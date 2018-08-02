@@ -28,6 +28,8 @@ require '../includes/header_start.php';
     </div>
 </div>
 
+
+
 <script>
     $("#so_global_list").DataTable({
         "ajax": "/ondemand/so_actions.php?action=get_so_list",

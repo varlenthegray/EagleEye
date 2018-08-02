@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AAAA,IAAK,CACH,SAAS,CAAE,KAAK,CAChB,WAAW,CAAE,IAAI,CAGnB,QAAS,CACP,WAAW,CAAE,IAAI,CAGnB,OAAQ,CACN,UAAU,CAAE,CAAC",
-"sources": ["fin_prod.scss"],
-"names": [],
-"file": "fin_prod.min.css"
-}

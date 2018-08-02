@@ -135,7 +135,7 @@ $("body")
 
     determineOpts();
   })
-  .on("click", ".option", function() {
+  .on("click", ".option", function() cab_spec_pg{
     var field;
     var display;
     var addl_info = '';

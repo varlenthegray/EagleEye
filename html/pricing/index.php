@@ -314,7 +314,7 @@ if($pg_qry->num_rows > 0) {
                     <th>Cost</th>
                   </tr>
                   <tr class="border_top">
-                    <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc"><?php echo displayVINOpts('species_grade'); ?></div></td>
+                    <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc"><?php echo displayVINOpts('species_grade', null, 'pricingSpeciesGrade'); ?></div></td>
                     <td class="border_thin_bottom"></td>
                     <td class="border_thin_bottom"></td>
                   </tr>
@@ -324,7 +324,7 @@ if($pg_qry->num_rows > 0) {
                     <td class="border_thin_bottom" id="const_amt">$0.00</td>
                   </tr>-->
                   <tr>
-                    <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo displayVINOpts('door_design'); ?></div></td>
+                    <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo displayVINOpts('door_design', null, 'pricingDoorDesign'); ?></div></td>
                     <td class="border_thin_bottom text-md-center" id="const_pg" colspan="2">Price Group <span id="cab_spec_pg"><?php echo $price_group; ?></span></td>
                   </tr>
                   <tr>
