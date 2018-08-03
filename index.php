@@ -47,9 +47,7 @@ require 'includes/header_start.php';
     <link rel="stylesheet" type="text/css" href="/assets/plugins/fancytree/skin-win8-n/ui.fancytree.css"/>
 
     <!-- Datatables -->
-    <link href="/assets/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.0/css/rowReorder.dataTables.min.css"/>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.1.3/css/fixedHeader.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-html5-1.5.2/b-print-1.5.2/fh-3.1.4/rg-1.0.3/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
 
     <!-- Date Picker -->
     <link href="/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
@@ -1404,11 +1402,9 @@ HEREDOC;
   <link href="/assets/plugins/toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
 
   <!-- Datatables -->
-  <script src="/assets/plugins/datatables/jquery.dataTables.min.js"></script>
-  <script src="/assets/plugins/datatables/dataTables.bootstrap4.min.js"></script>
-  <script src="/assets/plugins/datatables/vfs_fonts.js"></script>
-  <script src="/assets/plugins/datatables/dataTables.responsive.min.js"></script>
-  <script src="/assets/plugins/datatables/responsive.bootstrap4.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+  <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-html5-1.5.2/b-print-1.5.2/fh-3.1.4/rg-1.0.3/sc-1.5.0/sl-1.2.6/datatables.min.js"></script>
 
   <!-- Moment.js for Timekeeping -->
   <script src="/assets/plugins/moment/moment.js"></script>

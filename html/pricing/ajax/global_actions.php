@@ -474,6 +474,7 @@ HEREDOC;
     $product_type = displayVINOpts('product_type', null, 'dropdown_p_type');
     $order_status = displayVINOpts('order_status');
     $days_to_ship = displayVINOpts('days_to_ship');
+    $room_type = displayVINOpts('room_type');
     // end of function run for heredoc
 
     // days to ship calculation info
@@ -519,30 +520,34 @@ HEREDOC;
                     <col width="70%">
                   </colgroup>
                   <tr>
-                    <td><label for="room">Room</label></td>
+                    <td>Room:</td>
                     <td>
                       <input type="text" class="form-control" id="room_letter" name="room_letter" placeholder="Room" value="{$room['room']}" style="float:left;width:15%;" readonly>
                       <input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name" value="{$room['room_name']}" style="float:left;width:80%;margin-left:5px;">
                     </td>
                   </tr>
                   <tr>
-                    <td><label for="iteration">Iteration</label></td>
+                    <td>Iteration:</td>
                     <td><input type="text" class="form-control" id="iteration" name="iteration" placeholder="Iteration" value="{$room['iteration']}" readonly></td>
                   </tr>
                   <tr>
-                    <td><label for="product_type">Product Type</label></td>
+                    <td>Product Type:</td>
                     <td>$product_type</td>
                   </tr>
                   <tr>
-                    <td><label for="order_status">Order Status</label></td>
+                    <td>Order Status:</td>
                     <td>$order_status</td>
                   </tr>
                   <tr>
-                    <td><label for="days_to_ship">Days to Ship</label></td>
+                    <td>Days to Ship:</td>
                     <td>$days_to_ship</td>
                   </tr>
                   <tr>
-                    <td><label for="delivery_date">Delivery Date</label></td>
+                    <td>Room Type:</td>
+                    <td>$room_type</td>
+                  </tr>
+                  <tr>
+                    <td>Delivery Date:</td>
                     <td>
                       <div class="input-group">
                         <input type="text" class="form-control delivery_date $dd_class" name="delivery_date" placeholder="Delivery Date" value="$dd_value">

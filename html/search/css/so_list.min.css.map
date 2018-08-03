@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,wBAAyB,CACvB,OAAO,CAAE,QAAQ",
+"sources": ["so_list.scss"],
+"names": [],
+"file": "so_list.min.css"
+}

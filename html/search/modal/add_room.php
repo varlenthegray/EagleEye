@@ -133,7 +133,7 @@ echo <<<HEREDOC
                   </tr>
                 </table>
                 
-                <input type="hidden" name="so_num" 
+                <input type="hidden" name="add_room_so_num" id="add_room_so_num" value="$so_num" />
               </form>
             </div>
           </div>
