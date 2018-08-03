@@ -146,7 +146,8 @@ require '../includes/header_start.php';
             scrollY: '31.5vh',
             scrollCollapse: true,
             "dom": '<"#quote_header.dt-custom-header">tipr',
-            "order": [[0, "asc"]]
+            "order": [[0, "asc"]],
+            "ordering": false
         });
 
         $("#quote_header").html("<h4>Quotes</h4>");
@@ -160,7 +161,8 @@ require '../includes/header_start.php';
             scrollY: '31.5vh',
             scrollCollapse: true,
             "dom": '<"#order_header.dt-custom-header">tipr',
-            "order": [[0, "asc"]]
+            "order": [[0, "asc"]],
+          "ordering": false
         });
 
         $("#order_header").html("<h4>Production</h4>");
@@ -178,7 +180,8 @@ require '../includes/header_start.php';
         "columnDefs": [
             {"targets": [0], "orderable": false, className: "nowrap"}
         ],
-        "order": [[1, "desc"]]
+        "order": [[1, "desc"]],
+      "ordering": false
     });
 
     var queue_table = $("#queue_ops_global_table").DataTable({
@@ -202,7 +205,8 @@ require '../includes/header_start.php';
             var index = iDisplayIndexFull + 1;
             $('td:eq(1)', nRow).html(index);
             return nRow;
-        }
+        },
+      "ordering": false
     });
 
     $("#queue_header").html("<h4 class='pull-left'>Operations for " + op_queue_list + "</h4>");

@@ -219,11 +219,6 @@ label {
   }
 }
 
-// data-table adjustments
-.table-responsive .table {
-  margin-top: 5px; // weird, i know, but it adjusts for datatable table.
-}
-
 .table th, .table td {
   padding: 2px;
 }
@@ -403,17 +398,6 @@ table tbody td {
     text-align: right;
     width: 100%;
   }
-}
-
-// adjusting the datatable search box
-.dt-search-l {
-  float: left;
-}
-
-// datatable header stuffs!
-.dt-custom-header {
-  float: left;
-  margin-top: 4px;
 }
 
 // adjustment for centering button

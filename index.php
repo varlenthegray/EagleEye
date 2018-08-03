@@ -25,9 +25,6 @@ require 'includes/header_start.php';
     <!-- Global JS functions -->
     <script src="/includes/js/functions.js?v=<?php echo VERSION; ?>"></script>
     <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
-
-    <!-- App CSS -->
-    <link href="/assets/css/style.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
     <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -55,8 +52,12 @@ require 'includes/header_start.php';
     <!-- Alert Windows -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
 
+    <!-- Select2 -->
     <link href="/assets/plugins/select2/css/select2.css" rel="stylesheet" />
     <script src="/assets/plugins/select2/js/select2.min.js"></script>
+
+    <!-- App CSS -->
+    <link href="/assets/css/style.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
 
     <?php
     $server = explode('.', $_SERVER['HTTP_HOST']);

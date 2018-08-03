@@ -22,7 +22,7 @@ $find = sanitizeInput($_REQUEST['find']);
       <table id="search_results" style="width:100%;">
         <colgroup>
           <col width="20px">
-          <col width="75px">
+          <col width="55px">
           <col>
           <col width="250px">
           <col width="250px">
@@ -50,16 +50,16 @@ $find = sanitizeInput($_REQUEST['find']);
       '<colgroup>' +
         '<col width="20px">' +
         '<col>' +
-        '<col width="8.3%">' +
-        '<col width="8.3%">' +
-        '<col width="8.3%">' +
-        '<col width="8.3%">' +
-        '<col width="8.3%">' +
-        '<col width="8.3%">' +
-        '<col width="8.3%">' +
-        '<col width="8.3%">' +
-        '<col width="8.3%">' +
-        '<col width="8.3%">' +
+        '<col width="8.6%">' +
+        '<col width="8.6%">' +
+        '<col width="8.6%">' +
+        '<col width="8.6%">' +
+        '<col width="8.6%">' +
+        '<col width="8.6%">' +
+        '<col width="8.6%">' +
+        '<col width="8.6%">' +
+        '<col width="8.6%">' +
+        '<col width="8.6%">' +
       '</colgroup>' +
       '<thead>' +
         '<tr>' +
@@ -103,27 +103,30 @@ $find = sanitizeInput($_REQUEST['find']);
           roomTable = $("#" + data.soID).DataTable({
             "ajax": { "url": "/html/search/ajax/room_list.php?so_id=" + data.soID, "dataSrc": ""},
             "columns": [
-              { "data": "" },
-              { "data": function(data) { return data.room + data.iteration + "-" + data.product_type + data.order_status + data.days_to_ship + ": " + data.room_name; } },
-              { "data": "sales_bracket.job_title" },
-              { "data": "sample_bracket.job_title" },
-              { "data": "preproduction_bracket.job_title" },
-              { "data": "doordrawer_bracket.job_title" },
-              { "data": "main_bracket.job_title" },
-              { "data": "custom_bracket.job_title" },
-              { "data": "shipping_bracket.job_title" },
-              { "data": "install_bracket.job_title" },
-              { "data": "pick_materials_bracket.job_title" },
-              { "data": "edgebanding_bracket.job_title" }
+              { "data": "", "defaultContent": "" },
+              { "data": function(data) { return data.room + data.iteration + "-" + data.product_type + data.order_status + data.days_to_ship + ": " + data.room_name; }, "defaultContent": "" },
+              { "data": "sales_bracket.job_title", "defaultContent": "" },
+              { "data": "sample_bracket.job_title", "defaultContent": "" },
+              { "data": "preproduction_bracket.job_title", "defaultContent": "" },
+              { "data": "doordrawer_bracket.job_title", "defaultContent": "" },
+              { "data": "main_bracket.job_title", "defaultContent": "" },
+              { "data": "custom_bracket.job_title", "defaultContent": "" },
+              { "data": "shipping_bracket.job_title", "defaultContent": "" },
+              { "data": "install_bracket.job_title", "defaultContent": "" },
+              { "data": "pick_materials_bracket.job_title", "defaultContent": "" },
+              { "data": "edgebanding_bracket.job_title", "defaultContent": "" },
             ],
             paging: false,
             "ordering": false,
-            "searching": false
+            "searching": false,
+            "bInfo": false
           });
-        }, 100);
+        }, 50);
       },
       "searching": false,
-      paging: false
+      paging: false,
+      "bInfo": false,
+      fixedHeader: true
     });
 
     // Add event listener for opening and closing details
