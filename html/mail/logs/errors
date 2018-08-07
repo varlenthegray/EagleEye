@@ -1,0 +1,7 @@
+[07-Aug-2018 14:40:24 +0000]: <l39875t2> DB Error: SQLSTATE[HY000] [1045] Access denied for user 'roundcube'@'localhost' (using password: NO) in C:\Users\Ben\OneDrive\SMCM\Eagle Eye\SMCDev\html\mail\program\lib\Roundcube\rcube_db.php on line 175 (GET /html/mail/)
+[07-Aug-2018 14:40:25 +0000]: <l39875t2> PHP Error: config.inc.php was not found. (GET /html/mail/)
+[07-Aug-2018 15:47:46 UTC] ERROR: No connection could be made because the target machine actively refused it.
+ (10061)
+[07-Aug-2018 15:47:46 +0000]: <samd5ep0> PHP Error: Unable to connect to managesieve on localhost:4190 in C:\Users\Ben\OneDrive\SMCM\Eagle Eye\SMCDev\html\mail\plugins\managesieve\lib\Roundcube\rcube_sieve_engine.php on line 222 (GET /html/mail/?_task=settings&_action=plugin.managesieve)
+[07-Aug-2018 15:47:46 UTC] ERROR: Not currently in AUTHORISATION state (1)
+[07-Aug-2018 15:47:46 UTC] ERROR: Not currently connected (1)

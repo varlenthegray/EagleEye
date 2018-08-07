@@ -144,7 +144,7 @@ HEREDOC;
               <!-- End mobile menu toggle-->
             </li>
 
-            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-email noti-icon"></i></a></li>
+            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/index.php?page=mail/cross_page" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-email noti-icon"></i></a></li>
 
             <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/index.php?page=calendar/index" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-calendar noti-icon"></i></a></li>
 

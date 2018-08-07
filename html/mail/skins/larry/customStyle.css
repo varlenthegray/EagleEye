@@ -1,0 +1,15 @@
+#topline {
+  display: none;
+}
+
+#toplogo {
+  display: none;
+}
+
+#mainscreen {
+  top: 57px;
+}
+
+#taskbar .minmodetoggle {
+  display: none;
+}

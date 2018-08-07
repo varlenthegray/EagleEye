@@ -1,0 +1,10 @@
+{
+  "name": "EagleEye Mail",
+  "author": "EagleEye Inc",
+  "url": "https://3erp.us/",
+  "license": "GPL",
+  "license-url": "",
+  "localization": true,
+  "config": [],
+  "extends": "larry"
+}
