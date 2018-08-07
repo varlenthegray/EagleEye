@@ -2,3 +2,4 @@ node_modules
 .idea
 .well-known
 stats
+/html/mail/config/config.inc.php
