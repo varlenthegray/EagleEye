@@ -639,6 +639,12 @@ table tbody td {
   }
 }
 
+@media (max-width: 600px) {
+  .custom-logo {
+    display: none;
+  }
+}
+
 // EagleEye Text
 .custom-logo {
   font-family: 'Patua One', cursive;
@@ -1024,4 +1030,8 @@ h5 {
   padding: 7px 10px;
   margin: -7px -8px;
   margin-right: 5px;
+}
+
+.no-wrap {
+  white-space: nowrap;
 }

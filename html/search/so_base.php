@@ -4,32 +4,22 @@ require_once '../../includes/header_start.php';
 $find = sanitizeInput($_REQUEST['find']);
 ?>
 
-<style>
-  td.details-control {
-    background: url('/assets/plugins/datatables/resources/details_open.png') no-repeat center center;
-    cursor: pointer;
-  }
-  tr.shown td.details-control {
-    background: url('/assets/plugins/datatables/resources/details_close.png') no-repeat center center;
-  }
-</style>
-
 <link href="/html/search/css/so_list.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
 
 <div class="card-box">
   <div class="row">
     <div class="col-md-12">
-      <table id="search_results" style="width:100%;">
+      <table id="search_results" class="table table-striped table-bordered dataTable no-footer" style="width:100%;">
         <colgroup>
-          <col width="20px">
-          <col width="55px">
+          <col width="15px">
+          <col width="60px">
           <col>
           <col width="250px">
           <col width="250px">
         </colgroup>
         <thead>
         <tr>
-          <th></th>
+          <th width="15px"></th>
           <th>SO #</th>
           <th>PO</th>
           <th>Project Manager</th>
@@ -45,8 +35,9 @@ $find = sanitizeInput($_REQUEST['find']);
   var soTable;
   var roomTable;
 
+  // @getRoom(so_id) - creates the framework for each room table, singular table under the SO as a child
   function getRoom(so_id) {
-    return '<table id="' + so_id + '" class="room_listing" style="width:100%;">' +
+    return '<table id="' + so_id + '" class="table table-striped table-bordered dataTable no-footer room_listing child_table" style="width:100%;">' +
       '<colgroup>' +
         '<col width="20px">' +
         '<col>' +
@@ -80,15 +71,18 @@ $find = sanitizeInput($_REQUEST['find']);
       '</table>';
   }
 
+  function getSOButtons(so_id) {
+    return '<i class="fa fa-pencil-square primary-color cursor-hand edit_so" data-id="' + so_id + '" title="Edit SO Details"></i> <i class="fa fa-plus-square primary-color cursor-hand add_room" data-id="' + so_id + '" title="Add Room to SO"></i>';
+  }
+
   $(document).ready(function() {
     soTable = $('#search_results').DataTable({
       "ajax": { "url": "/html/search/ajax/so_list.php?find=<?php echo $find; ?>", "dataSrc": ""}, // telling it dataSrc of null converts it from an object search to array
       "columns": [
         {
-          "className":      'details-control',
-          "orderable":      false,
-          "data":           null,
-          "defaultContent": ''
+          "className": 'no-wrap so_buttons',
+          "orderable": false,
+          "data": function(data) { return getSOButtons(data.soID) }
         },
         { "data": "so_num" },
         { "data": "project_name" },
@@ -97,11 +91,14 @@ $find = sanitizeInput($_REQUEST['find']);
       ],
       "order": [[1, 'asc']],
       "createdRow": function(row, data, index) {
+        // on creation of the row, add a child to it with a table that contains the information related to it
         soTable.row(':eq(' + index + ')').child(getRoom(data.soID)).show();
 
+        // generate the room datatable, on a delay for loading of the data
         setTimeout(function() {
+          // create the datatable
           roomTable = $("#" + data.soID).DataTable({
-            "ajax": { "url": "/html/search/ajax/room_list.php?so_id=" + data.soID, "dataSrc": ""},
+            "ajax": { "url": "/html/search/ajax/room_list.php?so_id=" + data.soID, "dataSrc": ""}, // fetch the rooms
             "columns": [
               { "data": "", "defaultContent": "" },
               { "data": function(data) { return data.room + data.iteration + "-" + data.product_type + data.order_status + data.days_to_ship + ": " + data.room_name; }, "defaultContent": "" },
@@ -116,17 +113,17 @@ $find = sanitizeInput($_REQUEST['find']);
               { "data": "pick_materials_bracket.job_title", "defaultContent": "" },
               { "data": "edgebanding_bracket.job_title", "defaultContent": "" },
             ],
-            paging: false,
-            "ordering": false,
-            "searching": false,
-            "bInfo": false
+            paging: false, // pagination
+            "ordering": false, // sorting
+            "searching": false, // search box
+            "bInfo": false // bottom info
           });
-        }, 50);
+        }, 10);
       },
-      "searching": false,
-      paging: false,
-      "bInfo": false,
-      fixedHeader: true
+      "searching": false, // search box
+      paging: false, // pagination
+      "bInfo": false, // bottom info
+      fixedHeader: { "headerOffset": 84 } // set the header offset to 84px from the top, accounting for the page header
     });
 
     // Add event listener for opening and closing details

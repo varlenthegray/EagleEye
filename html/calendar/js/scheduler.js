@@ -1,0 +1,3 @@
+var dhtmlCalendar = function( scheduler, $ ) {
+
+}();

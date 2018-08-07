@@ -3,7 +3,7 @@ table.dataTable thead th, table.dataTable thead td, table.dataTable tbody th, ta
   border-bottom: none;
 }
 
-.dataTables_wrapper.no-footer .dataTables_scrollBody {
+.dataTables_wrapper.no-footer .dataTables_scrollBody, table.dataTable.no-footer {
   border-bottom: none;
 }
 

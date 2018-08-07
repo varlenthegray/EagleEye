@@ -144,20 +144,11 @@ HEREDOC;
               <!-- End mobile menu toggle-->
             </li>
 
-            <li class="nav-item notification-list">
-              <a class="nav-link arrow-none waves-light waves-effect" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-email noti-icon"></i></a>
-            </li>
+            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-email noti-icon"></i></a></li>
 
-            <li class="nav-item notification-list">
-              <a class="nav-link arrow-none waves-light waves-effect dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-calendar noti-icon"></i></a>
-              <div class="dropdown-menu dropdown-menu-right dropdown-arrow dropdown-lg" aria-labelledby="Preview">
-                This is a test.
-              </div>
-            </li>
+            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/index.php?page=calendar/index" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-calendar noti-icon"></i></a></li>
 
-            <li class="nav-item notification-list">
-              <a class="nav-link arrow-none waves-light waves-effect" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-comments noti-icon"></i></a>
-            </li>
+<!--            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-comments noti-icon"></i></a></li>-->
 
             <li class="nav-item dropdown notification-list" id="notification_list">
               <!-- AJAX -->
@@ -337,7 +328,7 @@ HEREDOC;
     if($server[0] === 'dev') {
       echo "var socket = io.connect('//dev.3erp.us:4000');";
     } elseif($server[0] === 'eagleeye') {
-      echo "var socket = io.connect('//localhost:4000');";
+      echo "var socket = io.connect('//benit:4000');";
     } else {
       echo "var socket = io.connect('//3erp.us:4100');";
     }

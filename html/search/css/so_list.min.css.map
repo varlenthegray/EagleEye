@@ -1,7 +1,7 @@
 {
 "version": 3,
-"mappings": "",
-"sources": [],
+"mappings": "AACE,2BAAI,CACF,SAAS,CAAE,IAAI,CACf,UAAU,CAAE,GAAG,CAGjB,mCAAY,CACV,OAAO,CAAE,OAAO,CAGlB,oCAAa,CACX,gBAAgB,CAAE,OAAO",
+"sources": ["so_list.scss"],
 "names": [],
 "file": "so_list.min.css"
 }
