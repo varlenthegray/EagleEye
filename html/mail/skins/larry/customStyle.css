@@ -13,3 +13,7 @@
 #taskbar .minmodetoggle {
   display: none;
 }
+
+body {
+  background: #FFF;
+}
