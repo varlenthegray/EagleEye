@@ -25,11 +25,14 @@ require 'includes/header_start.php';
     <!-- Global JS functions -->
     <script src="/includes/js/functions.js?v=<?php echo VERSION; ?>"></script>
     <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
+
+    <!-- App CSS -->
+    <link href="/assets/css/style.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
     <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script> 
     <![endif]-->
     <!-- Modernizr js -->
     <script src="/assets/js/modernizr.min.js"></script>
@@ -44,7 +47,9 @@ require 'includes/header_start.php';
     <link rel="stylesheet" type="text/css" href="/assets/plugins/fancytree/skin-win8-n/ui.fancytree.css"/>
 
     <!-- Datatables -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jszip-2.5.0/dt-1.10.18/b-1.5.2/b-html5-1.5.2/b-print-1.5.2/fh-3.1.4/rg-1.0.3/sc-1.5.0/sl-1.2.6/datatables.min.css"/>
+    <link href="/assets/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowreorder/1.2.0/css/rowReorder.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.1.3/css/fixedHeader.dataTables.min.css"/>
 
     <!-- Date Picker -->
     <link href="/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css" rel="stylesheet">
@@ -55,9 +60,6 @@ require 'includes/header_start.php';
     <!-- Select2 -->
     <link href="/assets/plugins/select2/css/select2.css" rel="stylesheet" />
     <script src="/assets/plugins/select2/js/select2.min.js"></script>
-
-    <!-- App CSS -->
-    <link href="/assets/css/style.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
 
     <?php
     $server = explode('.', $_SERVER['HTTP_HOST']);
