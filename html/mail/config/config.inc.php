@@ -49,7 +49,7 @@ $config['default_port'] = 993;
 // %d - domain (http hostname $_SERVER['HTTP_HOST'] without the first part)
 // %z - IMAP domain (IMAP hostname without the first part)
 // For example %n = mail.domain.tld, %t = domain.tld
-$config['smtp_server'] = 'ssl://smtp.office365.com';
+$config['smtp_server'] = 'tls://smtp.office365.com';
 
 // SMTP port (default is 25; use 587 for STARTTLS or 465 for the
 // deprecated SSL over SMTP (aka SMTPS))
@@ -87,7 +87,7 @@ $config['plugins'] = array('archive', 'attachment_reminder', 'autologon', 'emoti
 //  2 - on reply to HTML message,
 //  3 - on forward or reply to HTML message
 //  4 - always, except when replying to plain text message
-$config['htmleditor'] = 4;
+$config['htmleditor'] = 1;
 
 // save compose message every 300 seconds (5min)
 $config['draft_autosave'] = 60;
