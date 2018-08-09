@@ -5,3 +5,8 @@
 [07-Aug-2018 15:47:46 +0000]: <samd5ep0> PHP Error: Unable to connect to managesieve on localhost:4190 in C:\Users\Ben\OneDrive\SMCM\Eagle Eye\SMCDev\html\mail\plugins\managesieve\lib\Roundcube\rcube_sieve_engine.php on line 222 (GET /html/mail/?_task=settings&_action=plugin.managesieve)
 [07-Aug-2018 15:47:46 UTC] ERROR: Not currently in AUTHORISATION state (1)
 [07-Aug-2018 15:47:46 UTC] ERROR: Not currently connected (1)
+[07-Aug-2018 19:55:46 UTC] ERROR: fsockopen(): unable to connect to ssl://smtp.office365.com:587 (Unknown error) (0)
+[07-Aug-2018 19:55:46 UTC] ERROR: Failed to connect socket: fsockopen(): unable to connect to ssl://smtp.office365.com:587 (Unknown error) ()
+[07-Aug-2018 19:55:46 +0000]: <samd5ep0> SMTP Error: Connection failed: Failed to connect socket: fsockopen(): unable to connect to ssl://smtp.office365.com:587 (Unknown error) in C:\Users\Ben\OneDrive\SMCM\Eagle Eye\SMCDev\html\mail\program\lib\Roundcube\rcube.php on line 1667 (POST /html/mail/?_task=mail&_unlock=loading1533671745986&_lang=en_US&_framed=1&_action=send)
+[07-Aug-2018 19:56:33 UTC] ERROR: Invalid response code received from server (535)
+[07-Aug-2018 19:56:38 +0000]: <samd5ep0> SMTP Error: Authentication failure: Invalid response code received from server (Code: 535) in C:\Users\Ben\OneDrive\SMCM\Eagle Eye\SMCDev\html\mail\program\lib\Roundcube\rcube.php on line 1667 (POST /html/mail/?_task=mail&_unlock=loading1533671787306&_lang=en_US&_framed=1&_action=send)

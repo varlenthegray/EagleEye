@@ -36,9 +36,6 @@ switch($_REQUEST['action']) {
 
                 $status = (!(bool)$op_queue['rework']) ? "New" : "Rework";
 
-                // TODO: Update notes to be aggrigate for all notes
-                //$notes = (!empty($op_queue['notes']) ? $op_queue['notes'] : "None");
-
                 echo <<<HEREDOC
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -151,7 +148,6 @@ HEREDOC;
 HEREDOC;
 
                         break;
-
                     case 'HD00: Honey Do':
                         $operation = $op_info['op_id'] . ": " . $op_info['job_title'];
                         $current_time = date("g:i A");

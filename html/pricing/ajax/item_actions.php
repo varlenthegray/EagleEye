@@ -20,38 +20,35 @@ switch($_REQUEST['action']) {
       LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
     WHERE pn.id = $id");
 
-    $room_qry = $dbconn->query("SELECT 
-      vs1.id AS species_grade_id, vs2.id AS door_design_id
-    FROM rooms r 
-      LEFT JOIN vin_schema vs1 ON r.species_grade = vs1.key
-      LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key
-    WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'");
+    $price = 'N/A';
 
-    $room = $room_qry->fetch_assoc();
-    $item = $item_qry->num_rows === 1 ? $item_qry->fetch_assoc() : null;
+    if($room_qry = $dbconn->query("SELECT vs1.id AS species_grade_id, vs2.id AS door_design_id FROM rooms r LEFT JOIN vin_schema vs1 ON r.species_grade = vs1.key LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'")) {
+      $room = $room_qry->fetch_assoc();
 
-    //****************************************************************************
-    // Calculate price group
-    if($room['door_design_id'] !== '1544' && $room['species_grade_id'] !== '11') {
-      $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$room['door_design_id']} AND species_id = {$room['species_grade_id']}");
-      $price_group = $price_group_qry->fetch_assoc();
-      $price_group = $price_group['price_group_id'];
+      //****************************************************************************
+      // Calculate price group
+      if($room['door_design_id'] !== '1544' && $room['species_grade_id'] !== '11') {
+        if($price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$room['door_design_id']} AND species_id = {$room['species_grade_id']}")) {
+          $price_group = $price_group_qry->fetch_assoc();
+          $price_group = $price_group['price_group_id'];
 
-      if($price_qry = $dbconn->query("SELECT price FROM pricing_price_map map WHERE map.price_group_id = $price_group AND map.nomenclature_id = $id;")) {
-        $price = $price_qry->fetch_assoc();
+          if($price_qry = $dbconn->query("SELECT price FROM pricing_price_map map WHERE map.price_group_id = $price_group AND map.nomenclature_id = $id;")) {
+            $price = $price_qry->fetch_assoc();
 
-        $price = $price['price'];
+            $price = $price['price'];
+          }
+        }
+      } else if((bool)$item['fixed_price']) {
+        if($price_qry = $dbconn->query("SELECT price FROM pricing_price_map map WHERE map.price_group_id = 1 AND map.nomenclature_id = $id;")) {
+          $price = $price_qry->fetch_assoc();
+
+          $price = $price['price'];
+        }
       }
-    } else if((bool)$item['fixed_price']) {
-      if($price_qry = $dbconn->query("SELECT price FROM pricing_price_map map WHERE map.price_group_id = 1 AND map.nomenclature_id = $id;")) {
-        $price = $price_qry->fetch_assoc();
-
-        $price = $price['price'];
-      }
-    } else {
-      $price = 'N/A';
+      //****************************************************************************
     }
-    //****************************************************************************
+
+    $item = $item_qry->num_rows === 1 ? $item_qry->fetch_assoc() : null;
 
     if(!empty($item_qry)) {
       $img = !empty($item['image']) ? "/html/pricing/images/{$item['image']}" : 'fa fa-magic';
