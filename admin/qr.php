@@ -16,5 +16,5 @@ $filename = $PNG_TEMP_DIR . 'tempQR.png';
 
 $md5 = md5("General information goes here.");
 
-QRcode::png("https://3erp.us/qr.php?c=17685", $filename, QR_ECLEVEL_L, 3, 0);
+QRcode::png('https://3erp.us/qr.php?c=17685', $filename, QR_ECLEVEL_L, 3, 0);
 echo '<img src="' . $PNG_WEB_DIR . basename($filename) . '" />';

@@ -11,7 +11,7 @@ require '../includes/header_start.php';
                 <?php
                 $prev_so = null;
                 $exclude_list = '';
-                $sort_order = "r.so_parent, r.room";
+                $sort_order = 'r.so_parent, r.room';
 
                 $list_order_qry = $dbconn->query("SELECT * FROM eng_report WHERE user_id = '{$_SESSION['userInfo']['id']}'");
 
@@ -41,23 +41,23 @@ require '../includes/header_start.php';
 
                 if($quote_qry->num_rows > 0) {
                     while($quote = $quote_qry->fetch_assoc()) {
-                        $hidden_class = (in_array($quote['rID'], $exclude_list)) ? 'quote_card_hidden' : null;
+                        $hidden_class = in_array($quote['rID'], $exclude_list, true) ? 'quote_card_hidden' : null;
 
-                        $find_loc = array_search($quote['rID'], $exclude_list);
+                        $find_loc = array_search($quote['rID'], $exclude_list, true);
 
                         echo "<div class='card $hidden_class' id='{$quote['rID']}' data-room-id='{$quote['rID']}' data-so-id='{$quote['soID']}' data-type='quote'>";
 
                         if (empty($hidden_class)) {
-                            $eye_off = "-off";
-                            $action = "quote_hide_card";
+                            $eye_off = '-off';
+                            $action = 'quote_hide_card';
                         } else {
-                            $eye_off = " text-secondary";
-                            $action = "quote_show_card";
+                            $eye_off = ' text-secondary';
+                            $action = 'quote_show_card';
                         }
 
                         echo "<h4><a href='#' class='view_so_info' id='{$quote['so_parent']}' style='text-decoration:underline;'>{$quote['so_parent']}-{$quote['dealer_code']}_{$quote['room_name']}</a> <div class='pull-right {$action} cursor-hand' style='display:none;'><i class='zmdi zmdi-eye{$eye_off}'></i></div> </h4>";
 
-                        $card_body_hidden = (!empty($hidden_class)) ? "hidden-section" : null;
+                        $card_body_hidden = !empty($hidden_class) ? 'hidden-section' : null;
 
                         echo "<div class='card_body $card_body_hidden'>";
 
@@ -68,7 +68,7 @@ require '../includes/header_start.php';
 
                         if($so_note_qry->num_rows > 0) {
                             while($so_note = $so_note_qry->fetch_assoc()) {
-                                $name = explode(" ", $so_note['name']);
+                                $name = explode(' ', $so_note['name']);
                                 $first_initial = substr($name[0], 0, 1);
                                 $last_initial = substr($name[1], 0, 1);
 
@@ -89,7 +89,7 @@ require '../includes/header_start.php';
 
                         if($room_note_qry->num_rows > 0) {
                             while($room_note = $room_note_qry->fetch_assoc()) {
-                                $name = explode(" ", $room_note['name']);
+                                $name = explode(' ', $room_note['name']);
                                 $first_initial = substr($name[0], 0, 1);
                                 $last_initial = substr($name[1], 0, 1);
 
@@ -103,7 +103,7 @@ require '../includes/header_start.php';
                             echo "<div style='padding-top:5px;'><i class='zmdi zmdi-comments'></i> $comment_count</div>";
                         }
 
-                        echo "</div></div>";
+                        echo '</div></div>';
                     }
                 }
                 ?>
@@ -117,7 +117,7 @@ require '../includes/header_start.php';
                 <?php
                 $prev_so = null;
                 $exclude_list = '';
-                $sort_order = "r.so_parent, r.room";
+                $sort_order = 'r.so_parent, r.room';
 
                 $list_order_qry = $dbconn->query("SELECT * FROM eng_report WHERE user_id = '{$_SESSION['userInfo']['id']}'");
 
@@ -147,23 +147,23 @@ require '../includes/header_start.php';
 
                 if($quote_qry->num_rows > 0) {
                     while($quote = $quote_qry->fetch_assoc()) {
-                        $hidden_class = (in_array($quote['rID'], $exclude_list)) ? 'fineng_card_hidden' : null;
+                        $hidden_class = in_array($quote['rID'], $exclude_list, true) ? 'fineng_card_hidden' : null;
 
-                        $find_loc = array_search($quote['rID'], $exclude_list);
+                        $find_loc = array_search($quote['rID'], $exclude_list, true);
 
                         echo "<div class='card $hidden_class' id='{$quote['rID']}' data-room-id='{$quote['rID']}' data-so-id='{$quote['soID']}' data-type='quote'>";
 
                         if (empty($hidden_class)) {
-                            $eye_off = "-off";
-                            $action = "fineng_hide_card";
+                            $eye_off = '-off';
+                            $action = 'fineng_hide_card';
                         } else {
-                            $eye_off = " text-secondary";
-                            $action = "fineng_show_card";
+                            $eye_off = ' text-secondary';
+                            $action = 'fineng_show_card';
                         }
 
                         echo "<h4><a href='#' class='view_so_info' id='{$quote['so_parent']}' style='text-decoration:underline;'>{$quote['so_parent']}-{$quote['dealer_code']}_{$quote['room_name']}</a> <div class='pull-right {$action} cursor-hand' style='display:none;'><i class='zmdi zmdi-eye{$eye_off}'></i></div> </h4>";
 
-                        $card_body_hidden = (!empty($hidden_class)) ? "hidden-section" : null;
+                        $card_body_hidden = !empty($hidden_class) ? 'hidden-section' : null;
 
                         echo "<div class='card_body $card_body_hidden'>";
 
@@ -174,7 +174,7 @@ require '../includes/header_start.php';
 
                         if($so_note_qry->num_rows > 0) {
                             while($so_note = $so_note_qry->fetch_assoc()) {
-                                $name = explode(" ", $so_note['name']);
+                                $name = explode(' ', $so_note['name']);
                                 $first_initial = substr($name[0], 0, 1);
                                 $last_initial = substr($name[1], 0, 1);
 
@@ -195,7 +195,7 @@ require '../includes/header_start.php';
 
                         if($room_note_qry->num_rows > 0) {
                             while($room_note = $room_note_qry->fetch_assoc()) {
-                                $name = explode(" ", $room_note['name']);
+                                $name = explode(' ', $room_note['name']);
                                 $first_initial = substr($name[0], 0, 1);
                                 $last_initial = substr($name[1], 0, 1);
 
