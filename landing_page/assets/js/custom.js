@@ -315,10 +315,10 @@ $("#login-modal").submit(function(e) {
         email: $("#lm-email").val()
     };
 
-    if ( isValidEmail(data['email']) && (data['password'].length > 1) ) {
+    if ( isValidEmail(data['email']) && (data['phone'].length > 1) ) {
         $.ajax({
             type: "POST",
-            url: "assets/php/subscribe.php",
+            url: "signup.php",
             data: data,
             success: function() {
                 $('.lm-success').fadeIn(1000);
