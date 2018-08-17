@@ -1,7 +1,7 @@
 <?php
 
-$email = $_REQUEST['signup-email'];
-$phone = $_REQUEST['signup-phone'];
+$email = $_REQUEST['email'];
+$phone = $_REQUEST['phone'];
 
 $message = <<<HEREDOC
 A new phone consultation has been requested:
@@ -14,4 +14,4 @@ EagleEye Sales Site
 HEREDOC;
 
 
-mail('ben@smcm.us', 'New Phone Consultation Request', $message);
+mail('it@smcm.us', 'New Phone Consultation Request', $message);
