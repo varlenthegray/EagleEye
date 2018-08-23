@@ -146,7 +146,7 @@ function loadPage(page) {
 
     backFromSearch();
   } else {
-    window.location.replace("index.php?page=" + explodedPage[0]);
+    window.location.replace("main.php?page=" + explodedPage[0]);
   }
 
 }

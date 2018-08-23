@@ -150,7 +150,7 @@ $("body")
 
       toggleDisplay();
 
-      $.post("/html/pricing/index.php?room_id=" + active_room_id, function(data) {
+      $.post("/html/pricing/main.php?room_id=" + active_room_id, function(data) {
         $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
       });
 
@@ -666,7 +666,7 @@ $("body")
       success: function(data){
         let copyFrom = document.createElement("textarea");
         document.body.appendChild(copyFrom);
-        copyFrom.textContent = "https://dev.3erp.us/dealer/index.php?key=" + data;
+        copyFrom.textContent = "https://dev.3erp.us/dealer/main.php?key=" + data;
         copyFrom.select();
         document.execCommand("copy");
         copyFrom.remove();

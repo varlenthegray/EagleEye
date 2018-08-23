@@ -96,7 +96,7 @@ require 'includes/header_start.php';
       <div class="container">
         <!-- LOGO -->
         <div class="topbar-left">
-          <a href="/index.php" class="logo">
+          <a href="/main.php" class="logo">
             <img src="/assets/images/logo.svg" style="max-height:35px;margin-top:-10px;" />
             <span style="margin-left:-15px;"><?php echo LOGO_TEXT; ?></span>
           </a>
@@ -117,11 +117,11 @@ require 'includes/header_start.php';
               <!-- End mobile menu toggle-->
             </li>
 
-            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/index.php?page=dashboards/index_new" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-home noti-icon"></i></a></li>
+            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/main.php?page=dashboards/index_new" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-home noti-icon"></i></a></li>
 
-            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/index.php?page=mail/cross_page" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-email noti-icon"></i></a></li>
+            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/main.php?page=mail/cross_page" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-email noti-icon"></i></a></li>
 
-            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/index.php?page=calendar/index" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-calendar noti-icon"></i></a></li>
+            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/main.php?page=calendar/index" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-calendar noti-icon"></i></a></li>
 
 <!--            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-comments noti-icon"></i></a></li>-->
 

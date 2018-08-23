@@ -87,9 +87,9 @@ if($_SESSION['userInfo']['account_type'] > 4) {
       <div class="container">
         <!-- LOGO -->
         <div class="topbar-left">
-          <a href="/index.php" class="logo">
+          <a href="/main.php" class="logo">
             <i class="zmdi zmdi-group-work icon-c-logo"></i>
-            <span><?php echo LOGO_TEXT . " - Employee Selection"; ?></span>
+            <span><?php echo LOGO_TEXT . ' - Employee Selection'; ?></span>
           </a>
         </div>
         <!-- End Logo container-->
@@ -364,7 +364,7 @@ if($_SESSION['userInfo']['account_type'] > 4) {
           if (data === 'success') {
             $(".js_loading").show();
 
-            window.location.replace("index.php");
+            window.location.replace("main.php");
           } else {
             displayToast("error", "Failed to log in, please try again.", "Login Failure");
             $("#modalLogin").modal('hide');
@@ -377,7 +377,7 @@ if($_SESSION['userInfo']['account_type'] > 4) {
           if (data === 'success') {
             $(".js_loading").show();
 
-            window.location.replace("index.php");
+            window.location.replace("main.php");
           } else {
             displayToast("error", "Failed to log in, please try again.", "Login Failure");
             $("#modalLogin").modal('hide');

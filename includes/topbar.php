@@ -16,7 +16,7 @@ $title_name = 'Dashboard';
     <div class="container">
       <!-- LOGO -->
       <div class="topbar-left">
-        <a href="/index.php" class="logo">
+        <a href="/main.php" class="logo">
           <i class="zmdi zmdi-group-work icon-c-logo"></i>
           <span><?php echo LOGO_TEXT . ' - ' . $title_name; ?></span>
         </a>
@@ -42,7 +42,7 @@ $title_name = 'Dashboard';
           </li>
 
           <li class="nav-item notification-list">
-            <a class="nav-link arrow-none waves-light waves-effect" href="/index.php?page=calendar/index" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-calendar noti-icon"></i></a>
+            <a class="nav-link arrow-none waves-light waves-effect" href="/main.php?page=calendar/index" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-calendar noti-icon"></i></a>
           </li>
 
           <li class="nav-item notification-list">

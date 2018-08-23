@@ -36,28 +36,28 @@ require '../../includes/header_start.php';
   if(!index) {
     var index = {
       goDashboard: function() {
-        window.open("index.php", "_self");
+        window.open("main.php", "_self");
       },
       goCRM: function() {
-        window.open("index.php?page=display_contacts", "_self");
+        window.open("main.php?page=display_contacts", "_self");
       },
       goCalendar: function() {
-        window.open("index.php?page=calendar/index", "_self");
+        window.open("main.php?page=calendar/index", "_self");
       },
       goShopFloor: function() {
-        window.open("index.php?page=workcenter", "_self");
+        window.open("main.php?page=workcenter", "_self");
       },
       goInventory: function() {
-        window.open("index.php?page=inventory/index", "_self");
+        window.open("main.php?page=inventory/index", "_self");
       },
       goAccounting: function() {
-        window.open("index.php?page=accounting/index", "_self");
+        window.open("main.php?page=accounting/index", "_self");
       },
       goEmail: function() {
-        window.open("index.php?page=mail/cross_page", "_self");
+        window.open("main.php?page=mail/cross_page", "_self");
       },
       goReporting: function() {
-        window.open("index.php?page=sales_list", "_self");
+        window.open("main.php?page=sales_list", "_self");
       }
     };
   }
