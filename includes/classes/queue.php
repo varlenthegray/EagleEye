@@ -442,7 +442,7 @@ class queue {
     JOIN operations ON op_queue.operation_id = operations.id
     JOIN rooms ON op_queue.room_id = rooms.id
     JOIN sales_order ON rooms.so_parent = sales_order.so_num
-    WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.job_title != 'N/A'
+    WHERE active = FALSE AND completed = FALSE AND published = TRUE AND operations.job_title != 'N/A' AND operations.responsible_dept != 'N/A'
     ORDER BY sales_order.so_num DESC, operations.op_id DESC;");
 
     $output = array();

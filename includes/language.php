@@ -3,13 +3,13 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define('RELEASE_DATE', '8/8/18');
-define('VERSION', '2.4.154');
+define('RELEASE_DATE', '8/20/18');
+define('VERSION', '2.4.155');
 
 // Global definitions
-define('LOGO_TEXT', 'Stone Mountain Cabinetry'); // The logo text displayed
-define('TAB_TEXT', 'SMCM - Dashboard'); // The text displayed in the title bar/tab
-define('FOOTER_TEXT', 'SMCM'); // Footer copyright name specifically
+define('LOGO_TEXT', 'EagleEye ERP'); // The logo text displayed
+define('TAB_TEXT', 'EagleEye ERP - The Shop Management Software'); // The text displayed in the title bar/tab
+define('FOOTER_TEXT', 'EagleEye'); // Footer copyright name specifically
 define('DATE_TIME_DEFAULT', 'M jS Y g:i:s A T'); // the default date/time format to use
 define('DATE_DEFAULT', 'n/j/y'); // the default date format to use
 define('DATE_TIME_ABBRV', 'n/j/y g:i:s A'); // the abbreviated date/time format to use

@@ -434,7 +434,7 @@ $config['skin_include_php'] = false;
 $config['display_version'] = false;
 
 // Session lifetime in minutes
-$config['session_lifetime'] = 10;
+$config['session_lifetime'] = 480;
 
 // Session domain: .example.org
 $config['session_domain'] = '';

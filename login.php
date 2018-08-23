@@ -46,12 +46,12 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
           $_SESSION['shop_active'] = true;
           $_SESSION['userInfo']['justLoggedIn'] = true;
 
-          echo "<script type='text/javascript'>window.location.replace('index.php');</script>";
+          echo "<script type='text/javascript'>window.location.replace('main.php');</script>";
         } else {
           echo "<script type='text/javascript'>window.location.replace('employees.php');</script>";
         }
       } else {
-        displayToast("error", "You have no permissions set!", "Permissions Unavailable");
+        displayToast('error', 'You have no permissions set!', 'Permissions Unavailable');
       }
     } else {
       ?>
@@ -91,7 +91,7 @@ if($_REQUEST['action'] === 'login') { // if we're trying to log in
     <div class="account-bg">
       <div class="card-box m-b-0">
         <div class="text-xs-center m-t-20">
-          <a href="old/index_old.php" class="logo">
+          <a href="login.php" class="logo">
             <i class="zmdi zmdi-group-work icon-c-logo"></i>
             <span><?php echo LOGO_TEXT; ?></span>
           </a>

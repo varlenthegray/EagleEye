@@ -22,7 +22,12 @@ switch($server[0]) {
 
   case 'eagleeye':
     define('DB_DATABASE', '3erp_dev');
-    define('SITE_ROOT', 'C:/Users/Ben/OneDrive/SMCM/Eagle Eye/SMCDev'); // New Dev Site
+
+    if(file_exists('C:/Users/Ben')) {
+      define('SITE_ROOT', 'C:/Users/Ben/OneDrive/SMCM/Eagle Eye/SMCDev'); // Server Site
+    } else {
+      define ('SITE_ROOT', 'C:/Users/subz3/OneDrive/SMCM/Eagle Eye/SMCDev'); // Desktop site
+    }
 
     break;
 
