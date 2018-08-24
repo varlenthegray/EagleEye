@@ -493,8 +493,8 @@
 
           <div class="col-sm-4">
             <div class="pricing-tab">
-              <p class="price">$30<span>/station/mo</span></p>
-              <h4>Shop Station</h4>
+              <p class="price">$30<span>/cell/mo</span></p>
+              <h4>Shop Cell</h4>
               <ul class="pricing-features">
                 <li>Restricted Access</li>
                 <li>Perform Actions on Tasks</li>
