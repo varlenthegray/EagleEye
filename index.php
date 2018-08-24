@@ -458,15 +458,18 @@
         <div class="row grid-md">
           <div class="col-sm-4">
             <div class="pricing-tab">
-              <p class="price">$30<span>/user/mo</span></p>
-              <h4>Shop User</h4>
+              <div class="ribbon">
+                <h5 class="popular">Required</h5>
+              </div>
+              <p class="price">$135<span>/user/mo</span></p>
+              <h4>Management</h4>
               <ul class="pricing-features">
-                <li>Restricted Access</li>
-                <li>Perform Actions on Tasks</li>
-                <li>Clock In/Out</li>
-                <li>Submit Feedback</li>
-                <li>&nbsp;</li>
-                <li>&nbsp;</li>
+                <li>All Actions of Office & Shop</li>
+                <li>Unrestricted Access</li>
+                <li>Audit Reports</li>
+                <li>Financial Auditing</li>
+                <li>User Creation</li>
+                <li>Subscription Management</li>
               </ul>
               <a href="#canvas-bg" class="btn btn-color scrollto">Get Started</a>
             </div>
@@ -490,18 +493,15 @@
 
           <div class="col-sm-4">
             <div class="pricing-tab">
-              <div class="ribbon">
-                <h5 class="popular">Required</h5>
-              </div>
-              <p class="price">$135<span>/user/mo</span></p>
-              <h4>Management</h4>
+              <p class="price">$30<span>/station/mo</span></p>
+              <h4>Shop User</h4>
               <ul class="pricing-features">
-                <li>All Actions of Office & Shop</li>
-                <li>Unrestricted Access</li>
-                <li>Audit Reports</li>
-                <li>Financial Auditing</li>
-                <li>User Creation</li>
-                <li>Subscription Management</li>
+                <li>Restricted Access</li>
+                <li>Perform Actions on Tasks</li>
+                <li>Clock In/Out</li>
+                <li>Submit Feedback</li>
+                <li>&nbsp;</li>
+                <li>&nbsp;</li>
               </ul>
               <a href="#canvas-bg" class="btn btn-color scrollto">Get Started</a>
             </div>
