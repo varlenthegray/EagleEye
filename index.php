@@ -494,7 +494,7 @@
           <div class="col-sm-4">
             <div class="pricing-tab">
               <p class="price">$30<span>/station/mo</span></p>
-              <h4>Shop User</h4>
+              <h4>Shop Station</h4>
               <ul class="pricing-features">
                 <li>Restricted Access</li>
                 <li>Perform Actions on Tasks</li>
