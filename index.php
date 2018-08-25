@@ -462,7 +462,7 @@
                 <h5 class="popular">Required</h5>
               </div>
               <p class="price">$135<span>/user/mo</span></p>
-              <h4>Management</h4>
+              <h4>Super User</h4>
               <ul class="pricing-features">
                 <li>All Actions of Office & Shop</li>
                 <li>Unrestricted Access</li>
