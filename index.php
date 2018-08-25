@@ -463,6 +463,7 @@
               </div>
               <p class="price">$135<span>/user/mo</span></p>
               <h4>Super User</h4>
+              <h5>(Owner)</h5>
               <ul class="pricing-features">
                 <li>All Actions of Office & Shop</li>
                 <li>Unrestricted Access</li>
@@ -479,6 +480,7 @@
             <div class="pricing-tab">
               <p class="price">$99<span>/user/mo</span></p>
               <h4>Office/Admin</h4>
+              <h5>(Management)</h5>
               <ul class="pricing-features">
                 <li>All actions of Shop</li>
                 <li>Standard Access</li>
@@ -494,7 +496,8 @@
           <div class="col-sm-4">
             <div class="pricing-tab">
               <p class="price">$30<span>/cell/mo</span></p>
-              <h4>Shop Cell</h4>
+              <h4>Shop Device</h4>
+              <h5>(Workstation)</h5>
               <ul class="pricing-features">
                 <li>Restricted Access</li>
                 <li>Perform Actions on Tasks</li>
