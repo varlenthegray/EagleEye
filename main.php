@@ -72,9 +72,7 @@ require 'includes/header_start.php';
   </head>
 
   <body>
-  <!--<div id="server_failure">
-    <h1>Server down for maintenance. Please contact IT.</h1>
-  </div>-->
+  <div id="server_failure" style="display:none;"><i class="fa fa-exclamation-triangle"></i> Server Communication Error</div>
 
   <!-- Navigation Bar-->
   <header id="topnav">
@@ -351,7 +349,11 @@ require 'includes/header_start.php';
 
     // -- Socket Handling --
     socket.on("connect", function() {
-      $("#server_failure").hide();
+      $("#server_failure").slideUp(250);
+    });
+
+    socket.on("connect_error", function() {
+      $("#server_failure").slideDown(250);
     });
 
     // if there's an unhandled error
@@ -382,7 +384,7 @@ require 'includes/header_start.php';
 
     // when disconnecting from the socket
     socket.on("disconnect", function() {
-      $("#server_failure").show();
+      $("#server_failure").slideDown(250);
     });
 
     // global function to refresh (and interrupt) everyone
