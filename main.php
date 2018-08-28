@@ -352,8 +352,10 @@ require 'includes/header_start.php';
       $("#server_failure").slideUp(250);
     });
 
-    socket.on("connect_error", function() {
+    socket.on("connect_error", function(e) {
       $("#server_failure").slideDown(250);
+      
+      console.log(e);
     });
 
     // if there's an unhandled error

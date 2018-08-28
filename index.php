@@ -6,8 +6,8 @@
   <!-- TITLE OF SITE -->
   <title>EagleEye ERP | The Shop Management Software</title>
 
-  <meta name="description" content="EagleEye ERP - Simple Implementation for your Cabinet and Closet Shop" />
-  <meta name="keywords" content="smartmvp, startup theme, startup template, startup example, startup landing page, one page, responsive, app landing, html template, mobile application, responsive landing page" />
+  <meta name="description" content="EagleEye ERP - Simplify Management for your Cabinet and Closet Shop" />
+  <meta name="keywords" content="EagleEye, EagleEye ERP, Shop Management Software, MRP, IWF2018, IWF 2018" />
   <meta name="author" content="EagleEye">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
