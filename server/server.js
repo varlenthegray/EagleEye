@@ -58,12 +58,6 @@ if(scriptArgs[2] === 'dev') {
 // connect to the database using the specific SQL details
 var db = mysql.createConnection(sqlLoc);
 
-db.connect(function(err) {
-  if (err) throw err;
-
-  console.log("DB Connected!");
-});
-
 /******************************************
  * Global connection
  *****************************************/
