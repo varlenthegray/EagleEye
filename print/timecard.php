@@ -4,8 +4,8 @@ require '../includes/header_start.php';
 //outputPHPErrs();
 
 $employee = sanitizeInput($_REQUEST['employee']);
-$start_date = (!empty($_REQUEST['start_date'])) ? sanitizeInput($_REQUEST['start_date']) : time();
-$end_date = (!empty($_REQUEST['start_date'])) ? sanitizeInput($_REQUEST['end_date']) : time();
+$start_date = !empty($_REQUEST['start_date']) ? sanitizeInput($_REQUEST['start_date']) : time();
+$end_date = !empty($_REQUEST['start_date']) ? sanitizeInput($_REQUEST['end_date']) : time();
 
 $user_qry = $dbconn->query("SELECT * FROM user WHERE id = $employee");
 
@@ -19,24 +19,26 @@ function getHMM($duration) {
   $mins_readable = floor($mins_remainder / 60);
 
   if (strlen($mins_readable) === 1) {
-    $mins_readable = "0" . $mins_readable;
+    $mins_readable = '0' . $mins_readable;
   }
 
   return "$hours_worked:$mins_readable";
 }
 
 function getHMMSS($duration) {
-  if ($duration == 0) return '---';
+  if ($duration == 0) {
+    return '---';
+  }
   $hours_worked = floor($duration / 3600);
   $mins_remainder = ($duration % 3600);
   $mins_readable = floor($mins_remainder / 60);
   $seconds_readable = ($duration % 60);
 
   if (strlen($mins_readable) === 1) {
-    $mins_readable = "0" . $mins_readable;
+    $mins_readable = '0' . $mins_readable;
   }
   if (strlen($seconds_readable) === 1) {
-    $seconds_readable = "0" . $seconds_readable;
+    $seconds_readable = '0' . $seconds_readable;
   }
 
   return "$hours_worked:$mins_readable:$seconds_readable";
@@ -63,30 +65,30 @@ function getHMMSS($duration) {
           <label for="employee_select">Employee: </label>
           <select name="employee_select" id="employee_select" class="form-control">
             <?php
-            $emp_qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC");
+            $emp_qry = $dbconn->query('SELECT * FROM user WHERE account_status = TRUE AND display = TRUE ORDER BY name ASC');
 
             if ($emp_qry->num_rows > 0) {
               echo "<optgroup label='Active'>";
 
               while ($employee_select = $emp_qry->fetch_assoc()) {
-                $selected = ($_REQUEST['employee'] === $employee_select['id']) ? "selected" : null;
+                $selected = ($_REQUEST['employee'] === $employee_select['id']) ? 'selected' : null;
                 echo "<option value='{$employee_select['id']}' $selected>{$employee_select['name']}</option>";
               }
 
-              echo "</optgroup>";
+              echo '</optgroup>';
             }
 
-            $emp_qry = $dbconn->query("SELECT * FROM user WHERE account_status = FALSE ORDER BY name ASC");
+            $emp_qry = $dbconn->query('SELECT * FROM user WHERE account_status = FALSE ORDER BY name ASC');
 
             if ($emp_qry->num_rows > 0) {
               echo "<optgroup label='Inactive'>";
 
               while ($employee_select = $emp_qry->fetch_assoc()) {
-                $selected = ($_REQUEST['employee'] === $employee_select['id']) ? "selected" : null;
+                $selected = ($_REQUEST['employee'] === $employee_select['id']) ? 'selected' : null;
                 echo "<option value='{$employee_select['id']}' $selected>{$employee_select['name']}</option>";
               }
 
-              echo "</optgroup>";
+              echo '</optgroup>';
             }
             ?>
           </select>
@@ -111,7 +113,7 @@ function getHMMSS($duration) {
           </tr>
           <tr class="page_type_subhead">
             <td>Date Range:</td>
-            <td><?php echo date(DATE_DEFAULT, $start_date) . " - " . date(DATE_DEFAULT, $end_date); ?></td>
+            <td><?php echo date(DATE_DEFAULT, $start_date) . ' - ' . date(DATE_DEFAULT, $end_date); ?></td>
           </tr>
           <tr class="page_type_subhead">
             <td>Printed:</td>
@@ -149,7 +151,7 @@ function getHMMSS($duration) {
 
         $day_total = 0; // the day total (in seconds)
 
-        $day_readable = date("l (" . DATE_DEFAULT . ")", $current_day); // format the date with DAY (DATE)
+        $day_readable = date('l (' . DATE_DEFAULT . ')', $current_day); // format the date with DAY (DATE)
         echo "<tr class='border_solid'><th colspan='7'><h4>$day_readable</h4></th><th colspan='3' style='border:solid #FFF;border-width:0 0 1px 1px;text-align:center;'><h4>Payable</h4></th></tr>"; // show the date with DAY (DATE)
 
         // fkn black magic query (just kidding, it is a nested select) - Credit Brandon Christensen
@@ -202,7 +204,7 @@ ORDER BY c_start_time ASC;");
             $time_out = $clocked['time_out'];
 
             $time_in_human = date(TIME_ONLY, $clocked['time_in']);
-            $time_out_human = (!empty($clocked['time_out'])) ? date(TIME_ONLY, $clocked['time_out']) : "N/A";
+            $time_out_human = !empty($clocked['time_out']) ? date(TIME_ONLY, $clocked['time_out']) : 'N/A';
           }
         }
 
@@ -265,8 +267,12 @@ ORDER BY c_start_time ASC;");
 
             $timeframes[$key]['real_time'] = $timeframe['end_time'] - $timeframe['start_time'];
             # Save the "split" time value based on how many operations were active at the time
-            if ($open_ops == 0) $timeframes[$key]['actual_time'] = 0;
-            else $timeframes[$key]['actual_time'] = floor(($timeframe['end_time'] - $timeframe['start_time']) / $open_ops);
+            if ($open_ops == 0) {
+              $timeframes[$key]['actual_time'] = 0;
+            }
+            else {
+              $timeframes[$key]['actual_time'] = floor(($timeframe['end_time'] - $timeframe['start_time']) / $open_ops);
+            }
           }
 
           # Debug value
@@ -284,12 +290,9 @@ ORDER BY c_start_time ASC;");
                   # If this timeframe applies to this operation, add the timeframe's split time
                   $total_time += $timeframe['actual_time'];
                 }
-              } else {
-                # Find which timeframes apply to this particular operation by checking the start and end times
-                if ($timeframe['start_time'] >= $time['c_start_time'] && $timeframe['end_time'] <= $time['c_end_time']) {
-                  # If this timeframe applies to this operation, add the timeframe's split time
-                  $total_time += $timeframe['actual_time'];
-                }
+              } else if ($timeframe['start_time'] >= $time['c_start_time'] && $timeframe['end_time'] <= $time['c_end_time']) {
+                # If this timeframe applies to this operation, add the timeframe's split time
+                $total_time += $timeframe['actual_time'];
               }
             }
 
@@ -298,7 +301,7 @@ ORDER BY c_start_time ASC;");
 
             $time_split_total += $total_time;
 
-            $timesplit_audit = "P";
+            $timesplit_audit = 'P';
           }
 
           foreach ($op_data as $audit) {
@@ -324,7 +327,7 @@ ORDER BY c_start_time ASC;");
               $so = "{$audit['so_parent']}{$audit['room']}-{$audit['iteration']}"; // set it as such
               $notes = null; // don't worry about notes
             } else { // otherwise, if there is no SO for the operation
-              $so = "Non-Billable"; // set the SO as non-billable
+              $so = 'Non-Billable'; // set the SO as non-billable
 
               $notes_qry = $dbconn->query("SELECT * FROM notes WHERE note_type = 'op_note' AND type_id = '{$audit['queueID']}'"); // grab the notes
 
@@ -339,10 +342,10 @@ ORDER BY c_start_time ASC;");
             if (empty($ended)) { // if there is no end time
               if (!empty($time_out)) { // and there is a clocked time out
                 $ended = $time_out; // set the ended time to clocked out time
-                $ended_na = "(*)"; // note it for the audit trail that this time was calculated by the system
+                $ended_na = '(*)'; // note it for the audit trail that this time was calculated by the system
               } else { // otherwise, if there is no clock out time
                 $ended = time();  // the current time is the end time for the operation
-                $ended_na = "(**)"; // note that the current time was used
+                $ended_na = '(**)'; // note that the current time was used
               }
             }
 
@@ -357,23 +360,23 @@ ORDER BY c_start_time ASC;");
 
               // if the operation is break
               if ((int)$audit['operationID'] === 201) {
-                $non_payable_time = (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to non-payable time
-                $non_payable_total += (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to non-payable time total
+                $non_payable_time = !empty($audit['split_time']) ? $audit['split_time'] : $total_worked; // add the time to non-payable time
+                $non_payable_total += !empty($audit['split_time']) ? $audit['split_time'] : $total_worked; // add the time to non-payable time total
               } elseif ($audit['op_id'] === 'NB00') { // if the operation is non-billable
-                $non_billable_time = (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to non-billable time
-                $non_billable_total += (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to non-billable time total
+                $non_billable_time = !empty($audit['split_time']) ? $audit['split_time'] : $total_worked; // add the time to non-billable time
+                $non_billable_total += !empty($audit['split_time']) ? $audit['split_time'] : $total_worked; // add the time to non-billable time total
               } else { // we've covered everything else, so now it's time to add the time to billable
-                $billable_time = (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to billable time
-                $billable_total += (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // add the time to billable time total
+                $billable_time = !empty($audit['split_time']) ? $audit['split_time'] : $total_worked; // add the time to billable time
+                $billable_total += !empty($audit['split_time']) ? $audit['split_time'] : $total_worked; // add the time to billable time total
               }
 
-              $running_total += (!empty($audit['split_time'])) ? $audit['split_time'] : $total_worked; // the running total can now be added in too
+              $running_total += !empty($audit['split_time']) ? $audit['split_time'] : $total_worked; // the running total can now be added in too
             } else {
               $length_worked = "<b style='color:red;'>** 0:00 **</b>"; // throw all sorts of bells and alerts that something went wrong
             }
 
             $started_readable = date(TIME_ONLY, $started); // when the operation started
-            $ended_readable = (!empty($ended)) ? date(TIME_ONLY, $ended) : "<b style='color:red;'>** N/A**</b>"; // when the operation ended, should NEVER evaluate to N/A
+            $ended_readable = !empty($ended) ? date(TIME_ONLY, $ended) : "<b style='color:red;'>** N/A**</b>"; // when the operation ended, should NEVER evaluate to N/A
 
             // subtract non-payable time from running total
             $running_total -= $non_payable_time;
@@ -389,7 +392,7 @@ ORDER BY c_start_time ASC;");
             $temp_started = substr($started, -5, 5);
             $temp_ended = substr($ended, -5, 5);
 
-            echo "<tr>";
+            echo '<tr>';
             #echo "<td>{$audit['op_id']} - $so</td>";
             echo "<td>$so</td>";
             echo "<td>{$audit['responsible_dept']}</td>";
@@ -404,7 +407,7 @@ ORDER BY c_start_time ASC;");
             echo "<td class='border_solid center_text'>$nb_readable</td>";
             echo "<td class='border_solid center_text'>$billable_readable</td>";
             echo "<td class='border_solid center_text'>$running_readable</td>";
-            echo "</tr>";
+            echo '</tr>';
           }
 
           if ($time_out_human !== 'N/A') {
@@ -412,8 +415,8 @@ ORDER BY c_start_time ASC;");
             $length_worked_output = getHMMSS($total_length_worked);
             $day_output = getHMMSS($day_total);
           } else {
-            $length_worked_output = "N/A";
-            $day_output = "N/A";
+            $length_worked_output = 'N/A';
+            $day_output = 'N/A';
           }
 
           $np_total_readable = getHMMSS($non_payable_total);
@@ -440,7 +443,7 @@ ORDER BY c_start_time ASC;");
               $time_out = $timecard['time_out'];
 
               $time_in_human = date(TIME_ONLY, $time_in);
-              $time_out_human = (!empty($timecard['time_out'])) ? date(TIME_ONLY, $timecard['time_out']) : "N/A";
+              $time_out_human = !empty($timecard['time_out']) ? date(TIME_ONLY, $timecard['time_out']) : 'N/A';
 
               if ($time_out_human !== 'N/A') {
                 $total_length_worked = $time_out - $time_in;
@@ -449,7 +452,7 @@ ORDER BY c_start_time ASC;");
 
                 $length_worked_output = getHMMSS($total_length_worked);
               } else {
-                $length_worked_output = "N/A";
+                $length_worked_output = 'N/A';
               }
 
               echo "<tr class='excluded_bg'><td colspan='6'>Clocked In: $time_in_human / Clocked Out: $time_out_human</td><td colspan='3'>Day Timecard Total:</td><td>$length_worked_output</td></tr>";
@@ -496,8 +499,10 @@ ORDER BY c_start_time ASC;");
 
     $("#from_date").datepicker({
       <?php
-      $setDate = date("n/j/Y", $_REQUEST['start_date']);
-      if (!empty($_REQUEST['start_date'])) echo "defaultDate: '$setDate'";
+      $setDate = date('n/j/Y', $_REQUEST['start_date']);
+      if (!empty($_REQUEST['start_date'])) {
+        echo "defaultDate: '$setDate'";
+      }
       ?>
     }).change(function () {
       sDate = Date.parse($("#from_date").val()) / 1000;
@@ -507,8 +512,10 @@ ORDER BY c_start_time ASC;");
 
     $("#to_date").datepicker({
       <?php
-      $setDate = date("n/j/Y", $_REQUEST['end_date']);
-      if (!empty($_REQUEST['end_date'])) echo "defaultDate: '$setDate'";
+      $setDate = date('n/j/Y', $_REQUEST['end_date']);
+      if (!empty($_REQUEST['end_date'])) {
+        echo "defaultDate: '$setDate'";
+      }
       ?>
     }).change(function () {
       eDate = Date.parse($("#to_date").val()) / 1000;

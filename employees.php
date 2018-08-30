@@ -1,14 +1,13 @@
 <?php
 require 'includes/header_start.php';
-require("assets/php/composer/vendor/autoload.php"); // require carbon for date formatting, http://carbon.nesbot.com/
+require 'assets/php/composer/vendor/autoload.php'; // require carbon for date formatting, http://carbon.nesbot.com/
 
 $version = '2.1.02';
 
 use Carbon\Carbon; // prep carbon
 
 if($_SESSION['userInfo']['account_type'] > 4) {
-  unset($_SESSION['shop_user']);
-  unset($_SESSION['shop_active']);
+  unset($_SESSION['shop_user'], $_SESSION['shop_active']);
 }
 ?>
   <!DOCTYPE html>
@@ -58,15 +57,15 @@ if($_SESSION['userInfo']['account_type'] > 4) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
 
     <?php
-    $server = explode(".", $_SERVER['HTTP_HOST']);
+    $server = explode('.', $_SERVER['HTTP_HOST']);
 
     if($server[0] === 'dev') {
-      echo "<style>body, html, .account-pages, #topnav .topbar-main, .footer {background-color: #750909 !important; }</style>";
+      echo '<style>body, html, .account-pages, #topnav .topbar-main, .footer {background-color: #750909 !important; }</style>';
     } else {
       echo "<script>$.fn.dataTable.ext.errMode = 'throw';</script>";
     }
 
-    if(stristr($_SERVER["REQUEST_URI"],  'inset_sizing.php')) {
+    if(false !== stripos($_SERVER['REQUEST_URI'], 'inset_sizing.php')) {
       echo '<link href="/assets/css/inset_sizing.css" rel="stylesheet">';
     }
     ?>
@@ -124,9 +123,9 @@ if($_SESSION['userInfo']['account_type'] > 4) {
           <ul class="navigation-menu">
             <?php
             if($_SESSION['userInfo']['account_type'] <= 4) {
-              include_once('includes/nav_menu.php');
+              include_once 'includes/nav_menu.php';
             } else {
-              echo "<li id='nav_logout'><a href='/login.php?logout=true'><i class='fa fa-sign-out m-r-5'></i><span>" . NAV_LOGOUT . "</span></a></li>";
+              echo "<li id='nav_logout'><a href='/login.php?logout=true'><i class='fa fa-sign-out m-r-5'></i><span>" . NAV_LOGOUT . '</span></a></li>';
             }
             ?>
           </ul>
@@ -162,9 +161,9 @@ if($_SESSION['userInfo']['account_type'] > 4) {
                 <tbody id="room_search_table">
                 <?php
                 if($_SESSION['userInfo']['account_type'] <= 4) {
-                  $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE ORDER BY name ASC;");
+                  $qry = $dbconn->query('SELECT * FROM user WHERE account_status = TRUE AND display = TRUE ORDER BY name ASC;');
                 } else {
-                  $qry = $dbconn->query("SELECT * FROM user WHERE account_status = TRUE AND id != 7 AND id != 8 AND id != 1 ORDER BY name ASC;");
+                  $qry = $dbconn->query('SELECT * FROM user WHERE account_status = TRUE AND display = TRUE AND id != 7 AND id != 8 AND id != 1 ORDER BY name ASC;');
                 }
 
                 while($result = $qry->fetch_assoc()) {
@@ -174,7 +173,7 @@ if($_SESSION['userInfo']['account_type'] > 4) {
                     if($last_login_qry->num_rows > 0) {
                       $last_login = $last_login_qry->fetch_assoc();
 
-                      if($last_login['time_in'] > strtotime("today")) {
+                      if($last_login['time_in'] > strtotime('today')) {
                         $time = date(DATE_TIME_ABBRV, $last_login['time_in']);
                       } else {
                         $time = date(DATE_TIME_ABBRV, $last_login['time_in']);
@@ -187,13 +186,13 @@ if($_SESSION['userInfo']['account_type'] > 4) {
                           $carbon_time = Carbon::createFromTimestamp($time_unix);
                           $time_in_display = $carbon_time->diffForHumans(null, true);
                         } else {
-                          $time_in_display = "Never logged in";
+                          $time_in_display = 'Never logged in';
                         }
                       } else {
-                        $time_in_display = "Not Logged In";
+                        $time_in_display = 'Not Logged In';
                       }
                     } else {
-                      $time = "Never";
+                      $time = 'Never';
                       $time_unix = null;
                     }
 
@@ -215,14 +214,14 @@ if($_SESSION['userInfo']['account_type'] > 4) {
                           $subtask = null;
                         }
 
-                        $operation = $so_info . $ops['op_id'] . ": " . $ops['job_title'] . $subtask;
-                        $final_ops .= $operation . ", ";
+                        $operation = $so_info . $ops['op_id'] . ': ' . $ops['job_title'] . $subtask;
+                        $final_ops .= $operation . ', ';
                       }
                     } else {
-                      $final_ops = "None";
+                      $final_ops = 'None';
                     }
 
-                    $final_ops = rtrim($final_ops, ", ");
+                    $final_ops = rtrim($final_ops, ', ');
 
                     $clock_out_btn = null;
 
@@ -236,7 +235,7 @@ if($_SESSION['userInfo']['account_type'] > 4) {
                       echo "<td><button class='btn btn-primary waves-effect waves-light btn-sm clock_out' data-id='{$result['id']}'>Clock Out</button></td>";
                     }
 
-                    echo "</tr>";
+                    echo '</tr>';
                   }
                 }
                 ?>
@@ -277,10 +276,10 @@ if($_SESSION['userInfo']['account_type'] > 4) {
         <div class="container">
           <div class="row">
             <div class="col-xs-6 pull-left">
-              <?php echo date("Y"); ?> &copy; <?php echo FOOTER_TEXT; ?>
+              <?php echo date('Y'); ?> &copy; <?php echo FOOTER_TEXT; ?>
             </div>
 
-            <div class="col-xs-6 pull-right text-md-right"><?php echo "RELEASE DATE " . RELEASE_DATE; ?></div>
+            <div class="col-xs-6 pull-right text-md-right"><?php echo 'RELEASE DATE ' . RELEASE_DATE; ?></div>
           </div>
 
           <div class="global-feedback"></div>
