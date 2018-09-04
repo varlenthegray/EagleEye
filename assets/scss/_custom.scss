@@ -1072,3 +1072,11 @@ h5 {
   padding: 5px;
   border-bottom-color: #000000;
 }
+
+.project_name_popup {
+  position: absolute;
+  border: 1px solid rgba(0,0,0,.25);
+  background-color: rgba(64,64,64,.5);
+  padding: 4px;
+  z-index: 10;
+}

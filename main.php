@@ -69,6 +69,8 @@ require 'includes/header_start.php';
     <!-- X-editable css -->
     <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
 
+    <link rel="stylesheet" type="text/css" href="//cdn.dhtmlx.com/edge/dhtmlx.css">
+
     <?php
     $server = explode('.', $_SERVER['HTTP_HOST']);
 
@@ -1448,6 +1450,8 @@ require 'includes/header_start.php';
   <!-- XEditable Plugin -->
   <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
 
+
+  <script src="//cdn.dhtmlx.com/edge/dhtmlx.js"></script>
   </body>
   </html>
 <?php
