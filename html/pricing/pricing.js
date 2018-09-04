@@ -618,6 +618,8 @@ $("body")
     });
 
     $("#modalGeneral").html("").modal("hide");
+
+    unsaved = false;
   })
   .on("click", ".option", function() {
     let dropdown_list = $(this).parent().parent();

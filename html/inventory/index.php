@@ -89,16 +89,16 @@ require '../../includes/header_start.php';
 
 <script>
   $(function() {
-    $('#example').DataTable( {
-      "ajax": "/html/accounting/ajax/accounting.json",
-      "columns": [
-        { "data": "type" },
-        { "data": "number" },
-        { "data": "date" },
-        { "data": "account" },
-        { "data": "amount" }
-      ],
-      "pageLength": 25
-    });
+      $('#example').DataTable( {
+        "ajax": "/html/accounting/ajax/accounting.json",
+        "columns": [
+          { "data": "type" },
+          { "data": "number" },
+          { "data": "date" },
+          { "data": "account" },
+          { "data": "amount" }
+        ],
+        "pageLength": 25
+      });
   });
 </script>

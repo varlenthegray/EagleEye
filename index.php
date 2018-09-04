@@ -118,7 +118,6 @@
         <div class="row">
           <div class="col-md-8">
             <div class="hero-section">
-
               <!-- Welcome - Hero Message -->
               <h1 class="text-white">Complete management software for cabinetry & closets</h1>
               <p class="text-white">There to simplify your workload as an automated employee.</p>
@@ -127,7 +126,6 @@
               <div class="btn-box">
                 <a href="#about" class="btn btn-ghost scrollto">Learn More</a>
               </div>
-
             </div><!-- /End Intro-Section -->
           </div><!-- /End Col -->
         </div><!-- /End Row -->

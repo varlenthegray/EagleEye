@@ -62,6 +62,13 @@ require 'includes/header_start.php';
     <link href="/assets/plugins/select2/css/select2.css" rel="stylesheet" />
     <script src="/assets/plugins/select2/js/select2.min.js"></script>
 
+    <!-- DHTMLX -->
+    <link rel="stylesheet" href="http://cdn.dhtmlx.com/edge/dhtmlx.css" type="text/css">
+    <script src="http://cdn.dhtmlx.com/edge/dhtmlx.js" type="text/javascript"></script>
+
+    <!-- X-editable css -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+
     <?php
     $server = explode('.', $_SERVER['HTTP_HOST']);
 
@@ -1437,6 +1444,10 @@ require 'includes/header_start.php';
 
   <!-- Sticky table header -->
   <script src="https://cdn.datatables.net/fixedheader/3.1.3/js/dataTables.fixedHeader.min.js"></script>
+
+  <!-- XEditable Plugin -->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+
   </body>
   </html>
 <?php

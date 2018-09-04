@@ -46,6 +46,14 @@ body, html, .account-pages {
 
 .cursor-hand {
   cursor: pointer;
+
+  &:hover {
+    background-color: rgba(192,192,192,.5) !important;
+  }
+
+  &:active {
+    background-color: rgba(192,192,192,.75) !important;
+  }
 }
 
 // override the padding on both blocks and boxes
@@ -107,17 +115,16 @@ body, html, .account-pages {
  * This is where all of the overrides take place
  */
 
-// Override the nav link custom (this is for tabs at the top of view_contact specifically)
-.nav-link.active {
-  background-color: #f5f5f5 !important;
-}
-
 // override tabs and their padding information
 .nav-tabs {
   margin-top: -3px;
 
   .nav-link {
     padding: 1px 1em !important;
+  }
+
+  .nav-link.active {
+    background-color: #f5f5f5 !important;
   }
 }
 
@@ -432,12 +439,6 @@ table tbody td {
 // destroy the tiny MCE annoying domain settings popup because we cannot add sub-domain...
 .mce-notification-warning {
   display: none;
-}
-
-// fix the "add so" in the top near the logo
-.nav-item > a {
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: bold;
 }
 
 // adjust the search icon
@@ -1063,4 +1064,11 @@ h5 {
 
 .no-wrap {
   white-space: nowrap;
+}
+
+// customize page header
+.page-header {
+  margin-top: 2px;
+  padding: 5px;
+  border-bottom-color: #000000;
 }

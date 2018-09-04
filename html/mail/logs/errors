@@ -50,3 +50,5 @@
 [23-Aug-2018 11:41:39 +0000]: <u0r2s52p> PHP Error: php_zip extension is required for the zipdownload plugin in /home/threeerp/public_html/html/mail/plugins/zipdownload/zipdownload.php on line 36 (GET /html/mail/?_task=mail&_action=getunread&_page=1&_remote=1&_unlock=0&_=1535024499741)
 [23-Aug-2018 19:39:13 +0000]: <umme9fqf> DB Error: SQLSTATE[HY000] [1044] Access denied for user 'threeerp'@'localhost' to database '3erp' in C:\Users\Ben\OneDrive\SMCM\Eagle Eye\SMCDev\html\mail\program\lib\Roundcube\rcube_db.php on line 175 (GET /html/mail/index.php)
 [23-Aug-2018 19:39:13 +0000]: <umme9fqf> DB Error: SQLSTATE[HY000] [1044] Access denied for user 'threeerp'@'localhost' to database '3erp' (GET /html/mail/index.php)
+[30-Aug-2018 14:30:19 +0000]: <cv5d1337> DB Error: SQLSTATE[HY000] [1044] Access denied for user 'threeerp'@'localhost' to database '3erp' in C:\Users\Ben\OneDrive\SMCM\Eagle Eye\SMCDev\html\mail\program\lib\Roundcube\rcube_db.php on line 175 (GET /html/mail/index.php)
+[30-Aug-2018 14:30:19 +0000]: <cv5d1337> DB Error: SQLSTATE[HY000] [1044] Access denied for user 'threeerp'@'localhost' to database '3erp' (GET /html/mail/index.php)

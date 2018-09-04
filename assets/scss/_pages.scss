@@ -78,7 +78,7 @@ h3.timeline-title {
   .timeline-desk {
     .arrow {
       border-bottom: 12px solid transparent;
-      border-right: 12px solid $white !important;
+      border-right: 12px solid $white;
       border-top: 12px solid transparent;
       display: block;
       height: 0;
@@ -106,7 +106,7 @@ h3.timeline-title {
   .timeline-desk {
     .arrow-alt {
       border-bottom: 12px solid transparent;
-      border-left: 12px solid $white !important;
+      border-left: 12px solid $white;
       border-top: 12px solid transparent;
       display: block;
       height: 0;

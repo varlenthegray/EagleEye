@@ -31,41 +31,41 @@ require '../../includes/header_start.php';
   </div>
 
   <div class="col-md-2">
-    <div class="card-box tilebox-one tilebox-bg-light-blue">
+    <div class="card-box tilebox-one tilebox-bg-red">
       <i class="icon-clock pull-right text-muted"></i>
-      <h6 class="text-muted text-uppercase m-b-20">Quotes</h6>
+      <h6 class="text-muted text-uppercase m-b-20">Request to Invoice Client</h6>
       <h2 class="m-b-20">7</h2>
     </div>
   </div>
 
   <div class="col-md-2">
-    <div class="card-box tilebox-one tilebox-bg-light-green">
+    <div class="card-box tilebox-one tilebox-bg-orange">
       <i class="icon-note pull-right text-muted"></i>
-      <h6 class="text-muted text-uppercase m-b-20">Orders</h6>
+      <h6 class="text-muted text-uppercase m-b-20">Pending Invoice Response from Client</h6>
       <h2 class="m-b-20">11</h2>
     </div>
   </div>
 
   <div class="col-md-2">
-    <div class="card-box tilebox-one tilebox-bg-light-yellow">
+    <div class="card-box tilebox-one tilebox-bg-yellow">
       <i class="icon-drawar pull-right text-muted"></i>
-      <h6 class="text-muted text-uppercase m-b-20">Open Invoices</h6>
+      <h6 class="text-muted text-uppercase m-b-20">New Vendor Request</h6>
       <h2 class="m-b-20">11</h2>
     </div>
   </div>
 
   <div class="col-md-2">
-    <div class="card-box tilebox-one tilebox-bg-light-red">
+    <div class="card-box tilebox-one tilebox-bg-orange">
       <i class="icon-ban pull-right text-muted"></i>
-      <h6 class="text-muted text-uppercase m-b-20">Overdue Invoices</h6>
+      <h6 class="text-muted text-uppercase m-b-20">Review Invoice</h6>
       <h2 class="m-b-20">12</h2>
     </div>
   </div>
 
   <div class="col-md-2">
-    <div class="card-box tilebox-one tilebox-bg-light-green">
+    <div class="card-box tilebox-one tilebox-bg-red">
       <i class="icon-check pull-right text-muted"></i>
-      <h6 class="text-muted text-uppercase m-b-20">Paid Invoices</h6>
+      <h6 class="text-muted text-uppercase m-b-20">Pay Invoice</h6>
       <h2 class="m-b-20">7</h2>
     </div>
   </div>

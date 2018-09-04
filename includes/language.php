@@ -3,8 +3,8 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define('RELEASE_DATE', '8/27/18');
-define('VERSION', '2.4.157');
+define('RELEASE_DATE', '9/4/18');
+define('VERSION', '2.4.162');
 
 // Global definitions
 define('LOGO_TEXT', 'EagleEye ERP'); // The logo text displayed
@@ -44,6 +44,7 @@ define('NAV_ADMIN', 'Admin'); // Navigation menu Admin
 define('NAV_KPI', 'KPI'); // Navigation menu KPI
 define('NAV_PBP', 'PBP'); // Navigation menu Performance Based Pay
 define('NAV_REPORTS', 'Reports'); // Navigation menu Reports
+define('NAV_NEW', 'New'); // Navigation menu New
 
 // Navigation > CPanel
 define('NAV_CPANEL', 'CPanel'); // Control panel section
