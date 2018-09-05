@@ -437,7 +437,13 @@
       </div><!-- /End Row-->
     </div><!-- /End Container-->
     <!-- Image Col -->
-    <div class="hidden-sm hidden-xs col-md-6 img-col-bg img-right"></div>
+    <div class="hidden-sm hidden-xs col-md-6 img-col-bg img-right">
+      <video width="950" height="544" controls autoplay loop>
+        <source src="lp_assets/images/video/brochure.mp4" type="video/mp4">
+        <source src="lp_assets/images/video/brochure.ogg" type="video/ogg">
+        Your browser does not support videos.
+      </video>
+    </div>
   </section>
   <!-- =============================
        /END SECTION

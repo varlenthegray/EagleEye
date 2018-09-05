@@ -865,10 +865,10 @@ p {
 
 .img-right {
   right: 0;
-  background: url(../images/img-right.jpg) 50% 0 no-repeat;
+  /*background: url(../images/img-right.jpg) 50% 0 no-repeat;
   -webkit-background-size: cover;
   -moz-background-size: cover;
-  background-size: cover;
+  background-size: cover;*/
 }
 
 

@@ -272,7 +272,7 @@ $id = sanitizeInput($_REQUEST['id']);
       </div>
 
       <div class="col-md-10">
-        <div class="row" style="min-height:220px;">
+        <div class="row" style="min-height:300px;">
           <div class="col-md-8">
             <ul class="nav nav-tabs" id="companySummary" role="tablist">
               <li class="nav-item">
