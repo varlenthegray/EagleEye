@@ -46,6 +46,11 @@
   <script src="lp_assets/js/plugins/respond.min.js"></script>
   <![endif]-->
 
+  <style>
+    .navbar {
+      min-height: 115px;
+    }
+  </style>
 </head>
 
 <body>
@@ -90,7 +95,7 @@
                 </a>-->
 
                 <a href="#top" class="navbar-brand img-logo scrollto" title="EagleEye ERP">
-                  <img src="assets/images/mini_logo_inverse.png" alt="Logo">
+                  <img src="lp_assets/images/mini_logo_inverse.png" alt="Logo" style="height:100px;">
                 </a>
 
               </div><!-- /End Navbar-Header -->
@@ -114,7 +119,7 @@
       <!-- =========================================
            Hero-Section
       ========================================== -->
-      <div class="container vmiddle">
+      <div class="container vmiddle" style="top:40%;">
         <div class="row">
           <div class="col-md-8">
             <div class="hero-section">
@@ -124,7 +129,7 @@
 
               <!-- Learn More & Video Buttons -->
               <div class="btn-box">
-                <a href="#about" class="btn btn-ghost scrollto">Learn More</a>
+                <a href="#canvas-bg" class="btn btn-ghost scrollto">Get Started</a>
               </div>
             </div><!-- /End Intro-Section -->
           </div><!-- /End Col -->
@@ -137,81 +142,6 @@
   <!-- =========================
        /END HEADER
   ============================== -->
-
-
-  <!-- =================================
-       SECTION ABOUT - INTRO FEATURES
-  ====================================== -->
-  <section class="intro-features" id="about">
-    <div class="container">
-      <!-- Padding -->
-      <div class="wrapper-lg">
-        <div class="row">
-          <!-- Section Header Title -->
-          <div class="col-xs-12">
-            <h2>Single Source of Truth</h2>
-            <p class="large">Complete management software for cabinetry & closets.</p>
-          </div>
-        </div>
-        <!-- Three Main Features with Icons -->
-        <div class="row">
-          <div class="col-sm-4 intro-content">
-            <div class="icon-lg">
-              <i class="icon icon_documents_alt"></i>
-            </div>
-            <h4>Custom Reporting</h4>
-            <p>Reports customized directly in the reporting tool allow management, supervisors and staff to review performance.</p>
-          </div>
-          <div class="col-sm-4 intro-content">
-            <div class="icon-lg">
-              <i class="icon icon-browser"></i>
-            </div>
-            <h4>Touchscreen, PC, MAC, Tablet</h4>
-            <p>Available on all types of 8" and larger displays allowing you to access and work from any location.</p>
-          </div>
-          <div class="col-sm-4 intro-content">
-            <div class="icon-lg">
-              <i class="icon icon_group"></i>
-            </div>
-            <h4>User Control</h4>
-            <p>A variety of user levels are provided allowing complete control over information within the system.</p>
-          </div>
-        </div><!-- /End Row -->
-      </div><!-- /End Wrapper -->
-    </div><!-- /End Container -->
-  </section>
-  <!-- =============================
-       /END INTRO FEATURES
-  ============================== -->
-
-
-  <!-- ==================================================
-       SECTION 2 COLS - IMAGE RIGHT AND TEXT WITH CALL TO ACTION
-  ======================================================= -->
-  <section class="img-with-action light-bg">
-    <div class="container wrapper-lg">
-      <div class="row">
-        <div class="col-lg-5 col-md-5">
-          <!-- Text Col -->
-          <h3>Easy to use from small to large scale environments</h3>
-          <p>For every size company from a small shop to a large-scale manufacturing environment, we provide a solution. No matter the size of your cabinet or closet business, information is organized and easy to access. Every step is available from the very first customer contact to the final invoice.</p>
-          <!-- Call To Action Buttons -->
-          <div class="btn-box">
-            <a href="#features" class="btn btn-grey scrollto">Learn More</a>
-            <a href="#canvas-bg" class="btn btn-color scrollto"><i class="icon arrow_carrot-2dwnn_alt"></i>Get Started</a>
-          </div>
-          <!-- Div Required for Correct Charts Animation -->
-          <div class="start-charts"></div>
-        </div>
-      </div><!-- /End Row-->
-    </div><!-- /End Container-->
-    <!-- Image Col -->
-    <div class="hidden-sm hidden-xs col-md-6 img-col-bg img-right"></div>
-  </section>
-  <!-- =============================
-       /END SECTION
-  ============================== -->
-
 
   <!-- ==================================================
       FEATURES SECTION
@@ -276,6 +206,33 @@
                   <i class="icon icon_currency_alt"></i>
                 </div>
                 <h5 class="text-white">Automated <br>Sales Cycle</h5>
+              </a>
+            </li>
+            <!-- Feature Icon -->
+            <li class="tab">
+              <a href="#tab-feature-6">
+                <div class="icon-sm">
+                  <i class="icon icon_documents_alt"></i>
+                </div>
+                <h5 class="text-white">Custom<br/>Reporting</h5>
+              </a>
+            </li>
+            <!-- Feature Icon -->
+            <li class="tab">
+              <a href="#tab-feature-7">
+                <div class="icon-sm">
+                  <i class="icon icon-browser"></i>
+                </div>
+                <h5 class="text-white">Touchscreen<br/>PC, MAC, Tablet</h5>
+              </a>
+            </li>
+            <!-- Feature Icon -->
+            <li class="tab">
+              <a href="#tab-feature-8">
+                <div class="icon-sm">
+                  <i class="icon icon_group"></i>
+                </div>
+                <h5 class="text-white">User <br>Control</h5>
               </a>
             </li>
           </ul><!-- /End Etabs -->
@@ -387,6 +344,66 @@
               </div>
             </div><!-- / End Tab-content -->
 
+            <div class="tab-content" id="tab-feature-6">
+              <div class="container">
+                <div class="row">
+                  <!-- Feature Description 2col Text both -->
+                  <div class="col-xs-12">
+                    <div class="col-sm-6">
+                      <h4>Custom reports built by you, for you.</h4>
+                      <p>Reports customized directly in the reporting tool allow management, supervisors and staff to review performance.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <!-- Image below -->
+                  <div class="col-xs-12 hidden-xs wow fadeInUp" data-wow-duration="1s">
+                    <img src="assets/images/features/feature5.png" class="img-device" alt="">
+                  </div>
+                </div>
+              </div>
+            </div><!-- / End Tab-content -->
+
+            <div class="tab-content" id="tab-feature-7">
+              <div class="container">
+                <div class="row">
+                  <!-- Feature Description 2col Text both -->
+                  <div class="col-xs-12">
+                    <div class="col-sm-6">
+                      <h4>Available as touchscreen, PC, MAC and Tablet (8" screen or larger).</h4>
+                      <p>EagleEye allows you to access and work using any device that fits your work-style. Most features are available on mobile phones, however not all features are guaranteed to function.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <!-- Image below -->
+                  <div class="col-xs-12 hidden-xs wow fadeInUp" data-wow-duration="1s">
+                    <img src="assets/images/features/feature5.png" class="img-device" alt="">
+                  </div>
+                </div>
+              </div>
+            </div><!-- / End Tab-content -->
+
+            <div class="tab-content" id="tab-feature-8">
+              <div class="container">
+                <div class="row">
+                  <!-- Feature Description 2col Text both -->
+                  <div class="col-xs-12">
+                    <div class="col-sm-6">
+                      <h4>Personalize and curate unique user accounts.</h4>
+                      <p>A variety of user levels are provided allowing complete control over information within the system. Each user can be granted access to modules or unique views, based on their role within the company.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <!-- Image below -->
+                  <div class="col-xs-12 hidden-xs wow fadeInUp" data-wow-duration="1s">
+                    <img src="assets/images/features/feature5.png" class="img-device" alt="">
+                  </div>
+                </div>
+              </div>
+            </div><!-- / End Tab-content -->
+
           </div><!-- / End Panel-Container -->
         </div><!-- / End Tabs -->
       </div><!-- /End Col -->
@@ -395,6 +412,39 @@
   <!-- =============================
        /END FEATURES TAB
   ============================== -->
+
+
+
+
+  <!-- ==================================================
+       SECTION 2 COLS - IMAGE RIGHT AND TEXT WITH CALL TO ACTION
+  ======================================================= -->
+  <section class="img-with-action light-bg">
+    <div class="container wrapper-lg">
+      <div class="row">
+        <div class="col-lg-5 col-md-5">
+          <!-- Text Col -->
+          <h3>Easy to use from small to large scale environments</h3>
+          <p>For every size company from a small shop to a large-scale manufacturing environment, we provide a solution. No matter the size of your cabinet or closet business, information is organized and easy to access. Every step is available from the very first customer contact to the final invoice.</p>
+          <!-- Call To Action Buttons -->
+          <div class="btn-box">
+            <a href="#features" class="btn btn-grey scrollto">Learn More</a>
+            <a href="#canvas-bg" class="btn btn-color scrollto"><i class="icon arrow_carrot-2dwnn_alt"></i>Get Started</a>
+          </div>
+          <!-- Div Required for Correct Charts Animation -->
+          <div class="start-charts"></div>
+        </div>
+      </div><!-- /End Row-->
+    </div><!-- /End Container-->
+    <!-- Image Col -->
+    <div class="hidden-sm hidden-xs col-md-6 img-col-bg img-right"></div>
+  </section>
+  <!-- =============================
+       /END SECTION
+  ============================== -->
+
+
+
 
 
   <!-- ==================================================

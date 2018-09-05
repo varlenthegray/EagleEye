@@ -946,12 +946,11 @@ p {
   content: '';
   position: relative;
   bottom: -141px;
-  margin-left: 48px;
+  margin-left: -1px;
   vertical-align: middle;
-  content: " ";
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 12px solid #f9f9fa;
+  border-left: 44px solid transparent;
+  border-right: 44px solid transparent;
+  border-bottom: 53px solid #f9f9fa;
   border-style: none double solid;
   width: 0;
   height: 0;
@@ -972,7 +971,7 @@ p {
 }
 
 .tab-features .etabs .active h5, .tab-features .etabs .active i {
-  color: #ffffff;
+  color: #ffa432;
 }
 
 .tab-features .tab-content {
