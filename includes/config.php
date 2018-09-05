@@ -16,7 +16,7 @@ define('DB_PASS', '8h294et9hVaLvp0K*s!&');
 switch($server[0]) {
   case 'dev':
     define('DB_DATABASE', '3erp_dev');
-    define('SITE_ROOT', '/home/threeerp/domains/dev.3erp.us/public_html'); // Current Dev Site
+    define('SITE_ROOT', '/home/dev/public_html'); // Current Dev Site
 
     break;
 

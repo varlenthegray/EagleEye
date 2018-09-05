@@ -26,10 +26,11 @@ var companies = (function() {
         ],
         "pageLength": 25,
         "createdRow": function(row,data,dataIndex) {
-          $(row).addClass("cursor-hand get-company");
-          $(row).attr("data-id", data.id);
+          $(row).addClass("cursor-hand get-company").attr("data-id", data.id);
         }
       });
+
+      console.log("Trigger getCompanyList");
     });
   };
 
@@ -43,9 +44,14 @@ var companies = (function() {
     });
   };
 
+  var setContainer = function(newContainer) {
+    container = $(newContainer);
+  };
+
   return {
     initCompanyList: initCompanyList,
     getCompany: getCompany,
-    getCompanyList: getCompanyList
+    getCompanyList: getCompanyList,
+    setContainer: setContainer
   };
 })();

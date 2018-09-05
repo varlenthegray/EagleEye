@@ -49,7 +49,8 @@
 
   .new_note_actions {
     border-top: 1px solid rgba(0,0,0,.25);
-    margin-top: 5px;
+    margin: 5px 0;
+    padding: 5px;
 
     h6 {
       padding: 5px;
@@ -68,6 +69,14 @@
 
       a:hover {
         border-bottom: 1px solid #000;
+      }
+    }
+
+    .crm_assoc_add {
+      background-color:rgba(27,185,154,1);
+
+      &:hover {
+        background-color:rgba(27,185,154,.25) !important;
       }
     }
   }

@@ -20,9 +20,9 @@ if(scriptArgs[2] === 'dev') {
 
   // setup the dev server for HTTPS
   server = https.createServer({
-    key: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.key'),
-    cert: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.cert'),
-    ca: fs.readFileSync('/home/threeerp/domains/dev.3erp.us/ssl.ca'),
+    key: fs.readFileSync('/home/dev/ssl.key'),
+    cert: fs.readFileSync('/home/dev/ssl.cert'),
+    ca: fs.readFileSync('/home/dev/ssl.ca'),
     requestCert: false,
     rejectUnauthorized: false
   }, sconn);

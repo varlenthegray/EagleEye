@@ -67,7 +67,7 @@ require 'includes/header_start.php';
     <script src="http://cdn.dhtmlx.com/edge/dhtmlx.js" type="text/javascript"></script>
 
     <!-- X-editable css -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+    <link href="/assets/plugins/x-editable/css/bootstrap-editable.css" type="text/css" rel="stylesheet"/>
 
     <link rel="stylesheet" type="text/css" href="//cdn.dhtmlx.com/edge/dhtmlx.css">
 
@@ -1448,7 +1448,7 @@ require 'includes/header_start.php';
   <script src="https://cdn.datatables.net/fixedheader/3.1.3/js/dataTables.fixedHeader.min.js"></script>
 
   <!-- XEditable Plugin -->
-  <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+  <script src="/assets/plugins/x-editable/js/bootstrap-editable.min.js"></script>
 
 
   <script src="//cdn.dhtmlx.com/edge/dhtmlx.js"></script>

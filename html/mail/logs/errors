@@ -52,3 +52,5 @@
 [23-Aug-2018 19:39:13 +0000]: <umme9fqf> DB Error: SQLSTATE[HY000] [1044] Access denied for user 'threeerp'@'localhost' to database '3erp' (GET /html/mail/index.php)
 [30-Aug-2018 14:30:19 +0000]: <cv5d1337> DB Error: SQLSTATE[HY000] [1044] Access denied for user 'threeerp'@'localhost' to database '3erp' in C:\Users\Ben\OneDrive\SMCM\Eagle Eye\SMCDev\html\mail\program\lib\Roundcube\rcube_db.php on line 175 (GET /html/mail/index.php)
 [30-Aug-2018 14:30:19 +0000]: <cv5d1337> DB Error: SQLSTATE[HY000] [1044] Access denied for user 'threeerp'@'localhost' to database '3erp' (GET /html/mail/index.php)
+[05-Sep-2018 13:34:41 +0000]: <vot301ru> DB Error: SQLSTATE[HY000] [1044] Access denied for user 'threeerp'@'localhost' to database '3erp' in C:\Users\Ben\OneDrive\SMCM\Eagle Eye\SMCDev\html\mail\program\lib\Roundcube\rcube_db.php on line 175 (GET /html/mail/index.php)
+[05-Sep-2018 13:34:41 +0000]: <vot301ru> DB Error: SQLSTATE[HY000] [1044] Access denied for user 'threeerp'@'localhost' to database '3erp' (GET /html/mail/index.php)
