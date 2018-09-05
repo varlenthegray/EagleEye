@@ -152,7 +152,7 @@
         <div class="row">
           <div class="col-md-12">
             <h2 class="text-white">Explore Features</h2>
-            <p class="large text-white">EagleEye provides a solution unmatched in comparison to other products.</p>
+            <p class="large text-white" style="margin:0;">EagleEye provides a solution unmatched in comparison to other products.</p>
           </div>
         </div>
       </div>
