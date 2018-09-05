@@ -115,6 +115,12 @@ body, html, .account-pages {
  * This is where all of the overrides take place
  */
 
+.radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
+  width: auto;
+  margin-left: 0;
+  margin-top: 0.125rem;
+}
+
 // override tabs and their padding information
 .nav-tabs {
   margin-top: -3px;
