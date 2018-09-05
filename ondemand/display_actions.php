@@ -284,7 +284,7 @@ switch($_REQUEST['action']) {
           $output['data'][$i][] = '&nbsp;';
           $output['data'][$i][] = '&nbsp;';
           $output['data'][$i]['DT_RowId'] = $usr_ops['so_parent'];
-          $output['data'][$i]['project_name'] = $op_queue['project_name'];
+          $output['data'][$i]['project_name'] = $usr_ops['project_name'];
 //                    $output['data'][$i]['weight'] = $priority;
 
           ++$i;
