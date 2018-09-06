@@ -1,10 +1,10 @@
 <?php
-require_once ("../../includes/header_start.php");
-require_once("../../includes/classes/mail_handler.php");
+require_once '../../includes/header_start.php';
+require_once '../../includes/classes/mail_handler.php';
 
 $mail = new \MailHandler\mail_handler();
 
-//outputPHPErrs();
+outputPHPErrs();
 
 $action = sanitizeInput($_REQUEST['action']);
 
@@ -34,7 +34,7 @@ switch($action) {
 
       $mail->sendMessage($notify['email'], $_SESSION['userInfo']['email'], 'New Feedback Logged', $msg_body, true);
 
-      echo displayToast("success", "Successfully logged feedback.", "Feedback Logged");
+      echo displayToast('success', 'Successfully logged feedback.', 'Feedback Logged');
     } else {
       dbLogSQLErr($dbconn);
     }

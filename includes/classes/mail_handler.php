@@ -74,7 +74,7 @@ HEADER;
     </div>
 
     <div class="footer">
-        <div class="copyright"><a href="https://3erp.us/">Copyright &copy; 2017 - EagleEye</a></div>
+        <div class="copyright"><a href="https://3erp.us/">Copyright &copy; 2018 - EagleEye</a></div>
     </div>
 </div>
 </body>
