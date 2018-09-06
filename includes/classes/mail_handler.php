@@ -8,9 +8,16 @@
 
 namespace MailHandler;
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require '../../vendor/autoload.php';
+
 
 class mail_handler {
+
   public function sendMessage($to, $from, $subject, $message, $null) {
+    $mail = new PHPMailer(true);
+
     global $dbconn;
 
     $headers = "From: EagleEye <dashboard@3erp.us>\r\n";
@@ -87,7 +94,34 @@ BODY;
 
     sendText($sms['phone'], "$subject: $message");
 
+    try {
+      //Server settings
+      $mail->isSMTP();                                      // Set mailer to use SMTP
+      $mail->Host = 'smtp.office365.com';  // Specify main and backup SMTP servers
+      $mail->SMTPAuth = true;                               // Enable SMTP authentication
+      $mail->Username = 'ben@smcm.us';                 // SMTP username
+      $mail->Password = 'm90gmo4RlUKYtYgl';                           // SMTP password
+      $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+      $mail->Port = 587;                                    // TCP port to connect to
 
-    return mail($to, $subject, $message_out, $headers);
+      //Recipients
+      $mail->setFrom('eagleeye@smcm.us', 'EagleEye ERP');
+      $mail->addAddress($to);     // Add a recipient
+      $mail->addReplyTo(strip_tags($from)); // adds reply-to
+
+      //Content
+      $mail->isHTML(true);                                  // Set email format to HTML
+      $mail->Subject = $subject;
+      $mail->Body    = $message_out;
+      $mail->AltBody = $message_out;
+
+      $mail->send();
+      return true;
+    } catch (Exception $e) {
+      echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
+    }
+
+
+//    return mail($to, $subject, $message_out, $headers);
   }
 }
