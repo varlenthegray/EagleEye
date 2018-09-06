@@ -152,7 +152,7 @@
         <div class="row">
           <div class="col-md-12">
             <h2 class="text-white">Explore Features</h2>
-            <p class="large text-white" style="margin:0;">EagleEye provides a solution unmatched in comparison to other products.</p>
+            <p class="large text-white" style="margin:0;">EagleEye<span class="mini-erp">ERP</span> provides a solution unmatched in comparison to other products.</p>
           </div>
         </div>
       </div>
@@ -244,7 +244,7 @@
                 <div class="row">
                   <!-- Feature Description 2cols Text-Left with Buttons -->
                   <div class="col-md-5 col-sm-6">
-                    <h4>EagleEye has multiple views available depending on your employee.</h4>
+                    <h4>EagleEye<span class="mini-erp">ERP</span> has multiple views available depending on your employee.</h4>
                     <p>We know how hard it can be when there is too much information displayed on a screen. The simplified shop interface allows shop floor employees to quickly identify what task to start, where their next responsibility is, and when it was made available to them. Management can select which specific operations are available per employee, merging across departments, or they can access departments they are qualified in as they move from position to position.</p>
                   </div>
                   <!-- Image-right -->
@@ -267,7 +267,7 @@
                         <i class="icon icon_datareport_alt"></i>
                       </div>
                       <p class="large">Timecard Reporting</p>
-                      <p> EagleEye was designed with the goal of a Single Source of Truth - with that, you can view employee timecard reports directly within the system.</p>
+                      <p> EagleEye<span class="mini-erp">ERP</span> was designed with the goal of a Single Source of Truth - with that, you can view employee timecard reports directly within the system.</p>
                     </div>
                     <div class="tab-icon">
                       <div class="icon-sm">
@@ -290,8 +290,8 @@
                 <div class="row">
                   <!-- Feature Description 2cols Text-Left -->
                   <div class="col-md-5 col-sm-6">
-                    <h4>Hosted in the cloud, EagleEye is available anywhere and everywhere you can access the internet.</h4>
-                    <p>Access your systems anywhere, wired or wireless, on a tablet (8" screen or larger), touchscreen PC, laptop, or desktop computer. EagleEye was designed to be always-on and always ready for production with zero downtime.</p>
+                    <h4>Hosted in the cloud, EagleEye<span class="mini-erp">ERP</span> is available anywhere and everywhere you can access the internet.</h4>
+                    <p>Access your systems anywhere, wired or wireless, on a tablet (8" screen or larger), touchscreen PC, laptop, or desktop computer. EagleEye<span class="mini-erp">ERP</span> was designed to be always-on and always ready for production with zero downtime.</p>
                   </div>
                   <!-- Image-Right -->
                   <div class="col-md-7 col-sm-6 hidden-xs wow fadeInRight" data-wow-duration="1s">
@@ -371,7 +371,7 @@
                   <div class="col-xs-12">
                     <div class="col-sm-6">
                       <h4>Available as touchscreen, PC, MAC and Tablet (8" screen or larger).</h4>
-                      <p>EagleEye allows you to access and work using any device that fits your work-style. Most features are available on mobile phones, however not all features are guaranteed to function.</p>
+                      <p>EagleEye<span class="mini-erp">ERP</span> allows you to access and work using any device that fits your work-style. Most features are available on mobile phones, however not all features are guaranteed to function.</p>
                     </div>
                   </div>
                 </div>
@@ -503,7 +503,7 @@
         <div class="row">
           <div class="col-xs-12">
             <!--<img src="/landing_page/assets/images/" />-->
-            <h2>EagleEye Pricing Packages</h2>
+            <h2>EagleEye<span class="mini-erp">ERP</span> Pricing Packages</h2>
             <p class="large">Choose the plan that suits you best. <br /><em>One time $1,500.00 startup fee, no matter the number of users.</em></p>
           </div>
         </div>
@@ -593,10 +593,10 @@
           <div class="col-md-5">
             <!-- Logo -->
             <a href="#top" class="scrollto" title="SmartMvp">
-              <span class="text-logo">EagleEye</span>
+              <span class="text-logo">EagleEye<span class="mini-erp">ERP</span></span>
             </a>
             <p class="footer-hero"><strong>$150,000</strong> saved on shop management since 2017.<br>
-              EagleEye is the essence to saving manpower and running a smooth cabinet shop.</p>
+              EagleEye<span class="mini-erp">ERP</span> is the essence to saving manpower and running a smooth cabinet shop.</p>
             <p class="footer-cta">What are you waiting for?
               <a href="#canvas-bg" class="btn btn-color">Get Started</a>
             </p>
@@ -609,7 +609,7 @@
                 <i class="icon icon_mail"></i>
               </div>
               <div class="contact-content">
-                <a href="mailto:it@smcm.us">it@smcm.us</a>
+                <a href="mailto:eagleeye@smcm.us">eagleeye@smcm.us</a>
               </div>
             </div>
             <div class="contact-item">
@@ -634,7 +634,7 @@
           <!-- Footer Menu and Copy -->
           <div class="row">
             <div class="col-md-12">
-              <p class="footer-copy">&copy; 2018 EagleEye</p>
+              <p class="footer-copy">&copy; 2018 EagleEye<span class="mini-erp">ERP</span></p>
             </div>
           </div>
 

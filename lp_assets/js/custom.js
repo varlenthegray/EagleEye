@@ -152,13 +152,6 @@ $(document).ready(function() {
   new WOW().init();
 
 
-  /* =================================
-      VIDEO BACKGROUND
-  =================================== */
-  $("#top").vide("assets/images/video/ocean", {
-    posterType: "jpg"
-  });
-
 
   /* =================================
       YOUTUBE VIDEO BACKGROUND

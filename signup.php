@@ -1,5 +1,4 @@
 <?php
-
 $email = $_REQUEST['email'];
 $phone = $_REQUEST['phone'];
 
@@ -14,4 +13,4 @@ EagleEye Sales Site
 HEREDOC;
 
 
-mail('it@smcm.us', 'New Phone Consultation Request', $message);
+mail('eagleeye@smcm.us', 'New Phone Consultation Request', $message);
