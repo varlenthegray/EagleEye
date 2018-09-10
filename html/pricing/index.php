@@ -1198,6 +1198,13 @@ if($pg_qry->num_rows > 0) {
         leavesOnly: false, // Match end nodes only
         nodata: false,      // Display a 'no data' status node if result is empty
         mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
+      },
+      renderNode: function(event, data) {
+        var node = data.node;
+
+        $(node.li).attr("data-id", node.key);
+
+        // node.attr("data-id", node.key);
       }
     });
 
