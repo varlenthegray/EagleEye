@@ -115,10 +115,16 @@ body, html, .account-pages {
  * This is where all of the overrides take place
  */
 
+// adjust text box padding
 .radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
   width: auto;
   margin-left: 0;
   margin-top: 0.125rem;
+}
+
+// change logo to match text sizing
+.logo {
+  text-transform: none;
 }
 
 // override tabs and their padding information

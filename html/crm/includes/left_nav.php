@@ -8,8 +8,8 @@
       <div class="col-md-12">
         <nav class="vert-nav">
           <ul>
-            <li><a href=""><i class="fa fa-fw fa-user-plus"></i> Add Company</a></li>
-            <li><a href="" class="nav_add_contact"><i class="fa fa-fw fa-plus-circle"></i> Add Contact</a></li>
+            <li><a href="#"><i class="fa fa-fw fa-user-plus"></i> Add Company</a></li>
+            <li><a href="#" class="nav_add_contact"><i class="fa fa-fw fa-plus-circle"></i> Add Contact</a></li>
             <li><a href="/main.php?page=crm/company_list" onClick="companies.getCompanyList('.bottom-container');"><i class="fa fa-fw fa-building-o"></i> Company List</a></li>
           </ul>
         </nav>
@@ -75,6 +75,14 @@
       counter: false,
       mode: "hide",
       highlight: false
+    },
+    activate: function(event, data) {
+      let node = data.node;
+      let tree = $("#searchResultTree").fancytree("getTree");
+
+      if(node.isFolder()) {
+        tree.filterBranches(node.title);
+      }
     }
   });
 

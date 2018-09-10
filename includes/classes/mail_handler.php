@@ -10,7 +10,7 @@ namespace MailHandler;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
-require '../../vendor/autoload.php';
+require SITE_ROOT . '/vendor/autoload.php';
 
 
 class mail_handler {
@@ -19,11 +19,6 @@ class mail_handler {
     $mail = new PHPMailer(true);
 
     global $dbconn;
-
-    $headers = "From: EagleEye <dashboard@3erp.us>\r\n";
-    $headers .= "Reply-To: ". strip_tags($from) . "\r\n";
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
     $message_out = '<!DOCTYPE html><html lang="en">';
 
@@ -118,7 +113,7 @@ BODY;
       $mail->send();
       return true;
     } catch (Exception $e) {
-      echo 'Message could not be sent. Mailer Error: ', $mail->ErrorInfo;
+      return 'Message could not be sent. Mailer Error: ' . $mail->ErrorInfo;
     }
 
 

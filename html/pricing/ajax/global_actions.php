@@ -9,9 +9,11 @@ require '../../../includes/header_start.php';
 require '../../../includes/classes/mail_handler.php';
 require '../php/catalog.php';
 
+outputPHPErrs();
+
 use catalog\catalog as Catalog;
 
-//outputPHPErrs();
+$mail = new \MailHandler\mail_handler();
 
 $vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
  FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC");

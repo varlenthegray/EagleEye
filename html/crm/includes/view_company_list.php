@@ -1,3 +1,7 @@
+<div class="col-md-10">
+  <h6 style="color:#FFF;">CRM</h6>
+</div>
+
 <div class="col-md-2">
   <div class="card-box tilebox-one tilebox-bg-red">
     <i class="icon-clock pull-right text-muted"></i>
