@@ -9,7 +9,7 @@ require '../../../includes/header_start.php';
 require '../../../includes/classes/mail_handler.php';
 require '../php/catalog.php';
 
-outputPHPErrs();
+//outputPHPErrs();
 
 use catalog\catalog as Catalog;
 
@@ -309,8 +309,8 @@ switch($_REQUEST['action']) {
     $fin_sample_notes = sanitizeInput($cabinet_specifications['fin_sample_notes']);
     $fin_sample_notes_id = sanitizeInput($cabinet_specifications['fin_sample_notes_id']);
 
-    $delivery_notes = sanitizeInput($cabinet_specifications['fin_sample_notes']);
-    $delivery_notes_id = sanitizeInput($cabinet_specifications['fin_sample_notes_id']);
+    $delivery_notes = sanitizeInput($cabinet_specifications['delivery_notes']);
+    $delivery_notes_id = sanitizeInput($cabinet_specifications['delivery_notes_id']);
 
     if(!empty($notes)) {
       $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");

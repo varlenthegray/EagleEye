@@ -3,6 +3,7 @@
     <div class="row">
       <div class="col-md-12 m-b-10">
         <input type="text" placeholder="Search CRM..." class="form-control ignoreSaveAlert" id="crm_search" name="crm_search" autocomplete="off">
+        <a class="cursor-hand" id="clear-search" onclick="crmNav.clearAll();"><i class="zmdi zmdi-close"></i></a>
       </div>
 
       <div class="col-md-12">
@@ -10,14 +11,25 @@
           <ul>
             <li><a href="#"><i class="fa fa-fw fa-user-plus"></i> Add Company</a></li>
             <li><a href="#" class="nav_add_contact"><i class="fa fa-fw fa-plus-circle"></i> Add Contact</a></li>
-            <li><a href="/main.php?page=crm/company_list" onClick="companies.getCompanyList('.bottom-container');"><i class="fa fa-fw fa-building-o"></i> Company List</a></li>
+            <li><a href="#" onClick="crmCompany.getCompanyList();"><i class="fa fa-fw fa-building-o"></i> Company List</a></li>
           </ul>
         </nav>
       </div>
 
       <div class="col-md-12 m-t-10 crm_search_results" style="display:none;">
         <h3>Search Results</h3>
-        <div id="searchResultTree">
+
+        <div class="radio" style="display:inline;padding-right:10px;">
+          <input type="radio" name="crmSearchResults" value="job" id="searchByJob" checked="checked">
+          <label for="searchByJob">By Job</label>
+        </div>
+
+        <div class="radio" style="display:inline;">
+          <input type="radio" name="crmSearchResults" value="so" id="searchBySO">
+          <label for="searchBySO">By SO</label>
+        </div>
+
+        <div id="searchResultTree" class="m-t-10">
           <ul id="searchResultTreeData" style="display: none;">
             <li id="id3" class="folder">Distinctive Cabinetry
               <ul>
@@ -68,29 +80,10 @@
   </div>
 </div>
 
+<script src="/html/crm/js/crmNav.min.js?v=<?php echo VERSION; ?>"></script>
+
 <script>
-  $("#searchResultTree").fancytree({
-    extensions: ["filter"],
-    filter: {
-      counter: false,
-      mode: "hide",
-      highlight: false
-    },
-    activate: function(event, data) {
-      let node = data.node;
-      let tree = $("#searchResultTree").fancytree("getTree");
-
-      if(node.isFolder()) {
-        tree.filterBranches(node.title);
-      }
-    }
-  });
-
-  $("body").on("keyup", "#crm_search", function() {
-    if($(this).val().length > 0) {
-      $(".crm_search_results").show();
-    } else {
-      $(".crm_search_results").hide();
-    }
-  });
+  // initialize the tree for searching
+  crmNav.initTree();
+  crmNav.startListening();
 </script>

@@ -80,4 +80,17 @@
       }
     }
   }
+
+  #clear-search {
+    position: absolute;
+    top: .2rem;
+    right: 1.25rem;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #AA0000;
+
+    &:hover {
+      background-color: transparent !important;
+    }
+  }
 }

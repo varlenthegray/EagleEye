@@ -63,8 +63,8 @@ require 'includes/header_start.php';
     <script src="/assets/plugins/select2/js/select2.min.js"></script>
 
     <!-- DHTMLX -->
-    <link rel="stylesheet" href="http://cdn.dhtmlx.com/edge/dhtmlx.css" type="text/css">
-    <script src="http://cdn.dhtmlx.com/edge/dhtmlx.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://cdn.dhtmlx.com/edge/dhtmlx.css" type="text/css">
+    <script src="https://cdn.dhtmlx.com/edge/dhtmlx.js" type="text/javascript"></script>
 
     <!-- X-editable css -->
     <link href="/assets/plugins/x-editable/css/bootstrap-editable.css" type="text/css" rel="stylesheet"/>
