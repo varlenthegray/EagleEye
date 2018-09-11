@@ -31,29 +31,6 @@ $days_to_ship = displayVINOpts('days_to_ship', null, 'modalAddRoomDTS');
 $room_type = displayVINOpts('room_type');
 // end of function run for heredoc
 
-// days to ship calculation info
-switch($room['days_to_ship']) {
-  case 'G':
-    $dd_class = 'job-color-green';
-    break;
-
-  case 'Y':
-    $dd_class = 'job-color-yellow';
-    break;
-
-  case 'N':
-    $dd_class = 'job-color-orange';
-    break;
-
-  case 'R':
-    $dd_class = 'job-color-red';
-    break;
-
-  default:
-    $dd_class = 'job-color-gray';
-    break;
-}
-
 $dd_value = !empty($room['delivery_date']) ? date('m/d/Y', $room['delivery_date']) : '';
 // end days to ship calculation info
 
@@ -62,7 +39,7 @@ $blacklist = ['I','O'];
 $letter_series = [];
 $letter_out = '';
 
-$blacklist_qry = $dbconn->query("SELECT DISTINCT(room) FROM rooms WHERE so_parent = '$so_num' ORDER BY room, iteration");
+$blacklist_qry = $dbconn->query("SELECT DISTINCT(room) FROM rooms WHERE so_parent = '$so_num' ORDER BY room");
 
 if($blacklist_qry->num_rows > 0) {
   while($blacklist_result = $blacklist_qry->fetch_assoc()) {

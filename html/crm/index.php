@@ -12,56 +12,47 @@ require '../../includes/header_start.php';
 
   <div class="bottom-container">
     <div class="col-md-10">
-      <h6 style="color:#FFF;">CRM</h6>
-    </div>
-
-    <div class="col-md-2">
-      <div class="card-box tilebox-one tilebox-bg-red">
-        <i class="icon-clock pull-right text-muted"></i>
-        <h6 class="text-muted text-uppercase m-b-20">Leads</h6>
-        <h2 class="m-b-20">7</h2>
-      </div>
-    </div>
-
-    <div class="col-md-2">
-      <div class="card-box tilebox-one tilebox-bg-orange">
-        <i class="icon-location-pin pull-right text-muted"></i>
-        <h6 class="text-muted text-uppercase m-b-20">To Process</h6>
-        <h2 class="m-b-20">4</h2>
-      </div>
-    </div>
-
-    <div class="col-md-2">
-      <div class="card-box tilebox-one tilebox-bg-yellow">
-        <i class="icon-clock pull-right text-muted"></i>
-        <h6 class="text-muted text-uppercase m-b-20">Pending Response</h6>
-        <h2 class="m-b-20">3</h2>
-      </div>
-    </div>
-
-    <div class="col-md-2">
-      <div class="card-box tilebox-one tilebox-bg-green">
-        <i class="icon-drawar pull-right text-muted"></i>
-        <h6 class="text-muted text-uppercase m-b-20">In Progress</h6>
-        <h2 class="m-b-20">6</h2>
-      </div>
-    </div>
-
-    <div class="col-md-2">
-      <div class="card-box tilebox-one tilebox-bg-red">
-        <i class="icon-check pull-right text-muted"></i>
-        <h6 class="text-muted text-uppercase m-b-20">Backorders</h6>
-        <h2 class="m-b-20">4</h2>
-      </div>
-    </div>
-
-    <div class="col-md-10">
-      <div class="card-box" id="crmUID" style="min-height:73vh;">
+      <div id="crmUID" style="min-height:86vh;">
         <div class="row crm-main">
           <!-- Handled via AJAX -->
           <div id="objId" style="display: none;">
-            <div style="margin: 5px 8px;">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <div class="col-md-12">
+              <div class="row">
+                <div class="col-md-2 col-md-offset-1">
+                  <div class="card-box tilebox-one tilebox-bg-red">
+                    <h6 class="text-muted text-uppercase m-b-20">Leads</h6>
+                    <h2 class="m-b-20">7</h2>
+                  </div>
+                </div>
+
+                <div class="col-md-2">
+                  <div class="card-box tilebox-one tilebox-bg-orange">
+                    <h6 class="text-muted text-uppercase m-b-20">To Process</h6>
+                    <h2 class="m-b-20">4</h2>
+                  </div>
+                </div>
+
+                <div class="col-md-2">
+                  <div class="card-box tilebox-one tilebox-bg-yellow">
+                    <h6 class="text-muted text-uppercase m-b-20">Pending</h6>
+                    <h2 class="m-b-20">3</h2>
+                  </div>
+                </div>
+
+                <div class="col-md-2">
+                  <div class="card-box tilebox-one tilebox-bg-green">
+                    <h6 class="text-muted text-uppercase m-b-20">In Progress</h6>
+                    <h2 class="m-b-20">6</h2>
+                  </div>
+                </div>
+
+                <div class="col-md-2">
+                  <div class="card-box tilebox-one tilebox-bg-red">
+                    <h6 class="text-muted text-uppercase m-b-20">Backorders</h6>
+                    <h2 class="m-b-20">4</h2>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -133,7 +124,7 @@ require '../../includes/header_start.php';
     w3 = wins.createWindow("w3", winPos.w3.x, winPos.w3.y, containerWidth, containerHeight);
     w4 = wins.createWindow("w4", winPos.w4.x, winPos.w4.y, containerWidth, containerHeight);
 
-    w1.setText("Widget 1");
+    w1.setText("CRM");
     w1.attachObject("objId");
 
     w2.setText("Widget 2");

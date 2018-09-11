@@ -23,7 +23,7 @@ require 'includes/header_start.php';
     <link href="/includes/css/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
 
     <!-- Global JS functions -->
-    <script src="/includes/js/functions.js?v=<?php echo VERSION; ?>"></script>
+    <script src="/includes/js/functions.min.js?v=<?php echo VERSION; ?>"></script>
     <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
 
     <!-- App CSS -->
@@ -59,17 +59,12 @@ require 'includes/header_start.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
 
     <!-- Select2 -->
-    <link href="/assets/plugins/select2/css/select2.css" rel="stylesheet" />
+    <link href="/assets/plugins/select2/css/select2.min.css" rel="stylesheet" />
     <script src="/assets/plugins/select2/js/select2.min.js"></script>
 
     <!-- DHTMLX -->
-    <link rel="stylesheet" href="https://cdn.dhtmlx.com/edge/dhtmlx.css" type="text/css">
+    <link rel="stylesheet" href="/assets/css/dhtmlx/dhtmlx.min.css" type="text/css">
     <script src="https://cdn.dhtmlx.com/edge/dhtmlx.js" type="text/javascript"></script>
-
-    <!-- X-editable css -->
-    <link href="/assets/plugins/x-editable/css/bootstrap-editable.css" type="text/css" rel="stylesheet"/>
-
-    <link rel="stylesheet" type="text/css" href="//cdn.dhtmlx.com/edge/dhtmlx.css">
 
     <?php
     $server = explode('.', $_SERVER['HTTP_HOST']);

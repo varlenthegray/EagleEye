@@ -22,6 +22,8 @@ switch($_REQUEST['action']) {
     $room_type = sanitizeInput($data['room_type']);
     $so_num = sanitizeInput($data['add_room_so_num']);
 
+    echo "<script>console.log('SELECT * FROM default_bracket WHERE product_type = \'$product_type\' AND room_type = \'$room_type\'');</script>";
+
     // obtain the default bracket to set this up under
     if($bracket_qry = $dbconn->query("SELECT * FROM default_bracket WHERE product_type = '$product_type' AND room_type = '$room_type'")) {
       $bracket = $bracket_qry->fetch_assoc();

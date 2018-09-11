@@ -16,5 +16,7 @@ $("body")
     $.post("/html/search/ajax/room_actions.php?action=add_new_room", {data: room_data}, function(data) {
       $("body").append(data);
     });
+
+    $("#modalAddRoom").modal("hide")
   })
 ;

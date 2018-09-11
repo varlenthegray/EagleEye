@@ -320,53 +320,47 @@ switch($_REQUEST['action']) {
       echo displayToast('success', 'Successfully updated the room with the notes attached.', 'Room Updated with Notes');
     }
 
-    if(!empty($cabinet_specifications['delivery_notes'])) {
-      if(!empty($cabinet_specifications['delivery_notes_id'])) {
-        $dbconn->query("UPDATE notes SET note = '$delivery_notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$delivery_notes_id'");
+    if(!empty($cabinet_specifications['delivery_notes_id'])) {
+      $dbconn->query("UPDATE notes SET note = '$delivery_notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$delivery_notes_id'");
 
-        $changed[] = 'Delivery Notes Updated';
+      $changed[] = 'Delivery Notes Updated';
+    } else if(!empty($cabinet_specifications['delivery_notes'])) {
+      if ($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_delivery'")->num_rows === 0) {
+        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$delivery_notes', 'room_note_delivery', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+
+        $changed[] = 'Delivery Notes Created';
       } else {
-        if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_delivery'")->num_rows === 0) {
-          $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$delivery_notes', 'room_note_delivery', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-
-          $changed[] = 'Delivery Notes Created';
-        } else {
-          echo displayToast('warning', 'Delivery Note already exists. Please refresh your page and try again.', 'Delivery Note Exists');
-        }
+        echo displayToast('warning', 'Delivery Note already exists. Please refresh your page and try again.', 'Delivery Note Exists');
       }
     }
 
-    if(!empty($cabinet_specifications['room_note_design'])) {
-      if(!empty($cabinet_specifications['design_notes_id'])) {
-        $dbconn->query("UPDATE notes SET note = '$room_note_design', timestamp = UNIX_TIMESTAMP() WHERE id = '$room_note_design_id'");
+    if(!empty($cabinet_specifications['design_notes_id'])) {
+      $dbconn->query("UPDATE notes SET note = '$room_note_design', timestamp = UNIX_TIMESTAMP() WHERE id = '$room_note_design_id'");
 
-        $changed[] = 'Design Notes Updated';
+      $changed[] = 'Design Notes Updated';
+    } else if(!empty($cabinet_specifications['room_note_design'])) {
+      if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_design'")->num_rows === 0) {
+        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$room_note_design', 'room_note_design', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+
+        $changed[] = 'Design Notes Created';
       } else {
-        if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_design'")->num_rows === 0) {
-          $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$room_note_design', 'room_note_design', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-
-          $changed[] = 'Design Notes Created';
-        } else {
-          echo displayToast('warning', 'Design Note already exists. Please refresh your page and try again.', 'Design Note Exists');
-        }
+        echo displayToast('warning', 'Design Note already exists. Please refresh your page and try again.', 'Design Note Exists');
       }
     }
 
-    if(!empty($cabinet_specifications['fin_sample_notes'])) {
-      if(!empty($cabinet_specifications['fin_sample_notes_id'])) {
-        if($dbconn->query("UPDATE notes SET note = '$fin_sample_notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$fin_sample_notes_id'")) {
-          $changed[] = 'Finishing/Sample Notes Updated';
-        } else {
-          dbLogSQLErr($dbconn);
-        }
+    if(!empty($cabinet_specifications['fin_sample_notes_id'])) {
+      if($dbconn->query("UPDATE notes SET note = '$fin_sample_notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$fin_sample_notes_id'")) {
+        $changed[] = 'Finishing/Sample Notes Updated';
       } else {
-        if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
-          $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$fin_sample_notes', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+        dbLogSQLErr($dbconn);
+      }
+    } else if(!empty($cabinet_specifications['fin_sample_notes'])) {
+      if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
+        $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$fin_sample_notes', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
-          $changed[] = 'Finishing/Sample Notes Created';
-        } else {
-          echo displayToast('warning', 'Finishing/Sample Note already exists. Please refresh your page and try again.', 'Finishing/Sample Note Exists');
-        }
+        $changed[] = 'Finishing/Sample Notes Created';
+      } else {
+        echo displayToast('warning', 'Finishing/Sample Note already exists. Please refresh your page and try again.', 'Finishing/Sample Note Exists');
       }
     }
     //</editor-fold>

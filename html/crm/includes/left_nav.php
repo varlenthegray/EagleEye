@@ -26,7 +26,7 @@
 
         <div class="radio" style="display:inline;">
           <input type="radio" name="crmSearchResults" value="so" id="searchBySO">
-          <label for="searchBySO">By SO</label>
+          <label for="searchBySO">By Status</label>
         </div>
 
         <div id="searchResultTree" class="m-t-10">
