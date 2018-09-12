@@ -1,5 +1,5 @@
 var crmCompany = {
-  container: $(".crm-main"),
+  container: $("#crmBody"),
   editor: null,
 
   getCompany: function(id) {
@@ -37,9 +37,6 @@ var crmCompany = {
       .on("click", ".get-company", function() {
         crmCompany.getCompany($(this).attr("data-id"));
       })
-      .on("click", "#searchResultTree", function() {
-        crmCompany.getCompany($(this).attr("data-id"));
-      })
     ;
   },
 
@@ -49,6 +46,19 @@ var crmCompany = {
       toolbar: true, // force dhtmlxToolbar using
       iconsPath: "/assets/plugins/dhtmlXEditor/imgs/", // path for toolbar icons
       content: ""
+    });
+  },
+
+  reInitEditor: function() {
+    let curContent = crmCompany.editor.getContent();
+
+    crmCompany.editor.unload();
+
+    crmCompany.editor = new dhtmlXEditor({
+      parent: "new_note",
+      toolbar: true, // force dhtmlxToolbar using
+      iconsPath: "/assets/plugins/dhtmlXEditor/imgs/", // path for toolbar icons
+      content: curContent
     });
   }
 };

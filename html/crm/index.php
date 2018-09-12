@@ -2,7 +2,29 @@
 require '../../includes/header_start.php';
 
 //outputPHPErrs();
+
+// TODO: Fix the custom button icon and style
 ?>
+
+
+
+<style>
+  .dhtmlx_skin_dhx_web div.dhtmlx_window_active div.dhtmlx_wins_btns .dhtmlx_button_popOut_default {
+    background-color: red;
+  }
+
+  .dhtmlx_skin_dhx_skyblue div.dhtmlx_window_active div.dhtmlx_wins_btns .dhtmlx_button_popOut_disabled {
+    background-color: orange;
+  }
+
+  .dhtmlx_skin_dhx_skyblue div.dhtmlx_window_active div.dhtmlx_wins_btns .dhtmlx_button_popOut_over_default {
+    background-color: orangered;
+  }
+
+  .dhtmlx_skin_dhx_skyblue div.dhtmlx_window_active div.dhtmlx_wins_btns .dhtmlx_button_popOut_over_pressed {
+    background-color: yellow;
+  }
+</style>
 
 <link rel="stylesheet" type="text/css" href="/html/css/standard.min.css?v=<?php echo VERSION; ?>"/>
 <link rel="stylesheet" type="text/css" href="/html/crm/css/crm.min.css?v=<?php echo VERSION; ?>" />
@@ -13,11 +35,11 @@ require '../../includes/header_start.php';
   <div class="bottom-container">
     <div class="col-md-10">
       <div id="crmUID" style="min-height:86vh;">
-        <div class="row crm-main">
+        <div class="crm-main">
           <!-- Handled via AJAX -->
-          <div id="objId" style="display: none;">
+          <div id="objId" style="display:none;width:100%;height:100%;overflow:auto;">
             <div class="col-md-12">
-              <div class="row">
+              <div class="row" style="width:100%">
                 <div class="col-md-2 col-md-offset-1">
                   <div class="card-box tilebox-one tilebox-bg-red">
                     <h6 class="text-muted text-uppercase m-b-20">Leads</h6>
@@ -53,24 +75,73 @@ require '../../includes/header_start.php';
                   </div>
                 </div>
               </div>
+
+              <div class="row" id="crmBody" style="width:100%">
+
+              </div>
             </div>
           </div>
 
           <div id="objId2" style="display: none;">
-            <div style="margin: 5px 8px;">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card-box table-responsive" style="min-height:42vh;">
+                  <table id="quote_global_table" class="table table-striped table-bordered" width="100%">
+                    <thead>
+                    <tr>
+                      <th width="5%">SO#</th>
+                      <th width="40%">Project</th>
+                      <th>Sales</th>
+                      <th>Sample</th>
+                    </tr>
+                    </thead>
+                    <tbody id="quote_table"></tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
 
           <div id="objId3" style="display: none;">
-            <div style="margin: 5px 8px;">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card-box table-responsive" style="min-height:42vh;">
+                  <table id="orders_global_table" class="table table-striped table-bordered" width="100%">
+                    <thead>
+                    <tr>
+                      <th width="5%">SO#</th>
+                      <th width="40%">Project</th>
+                      <th>Pre-Production</th>
+                      <th>Main</th>
+                    </tr>
+                    </thead>
+                    <tbody id="orders_table"></tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
 
           <div id="objId4" style="display: none;">
-            <div style="margin: 5px 8px;">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card-box table-responsive" style="min-height:42vh;">
+                  <table id="active_ops_global_table" class="table table-striped table-bordered" width="100%">
+                    <thead>
+                    <tr>
+                      <th style="min-width:20px;">&nbsp;</th>
+                      <th width="35px">SO#</th>
+                      <th width="125px">Room</th>
+                      <th width="125px">Department</th>
+                      <th width="225px">Operation</th>
+                      <th width="100px">Activated At</th>
+                      <th width="90px">Time In</th>
+                    </tr>
+                    </thead>
+                    <tbody id="active_ops_table"></tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -124,16 +195,18 @@ require '../../includes/header_start.php';
     w3 = wins.createWindow("w3", winPos.w3.x, winPos.w3.y, containerWidth, containerHeight);
     w4 = wins.createWindow("w4", winPos.w4.x, winPos.w4.y, containerWidth, containerHeight);
 
+    wins.window('w1').addUserButton('popOut', 0, 'Pop Out', 'popOut');
+
     w1.setText("CRM");
     w1.attachObject("objId");
 
-    w2.setText("Widget 2");
+    w2.setText("Quotes");
     w2.attachObject("objId2");
 
-    w3.setText("Widget 3");
+    w3.setText("Production");
     w3.attachObject("objId3");
 
-    w4.setText("Widget 4");
+    w4.setText("Active Operations");
     w4.attachObject("objId4");
 
     wins.attachViewportTo('crmUID');
@@ -142,5 +215,58 @@ require '../../includes/header_start.php';
     wins.window('w2').keepInViewport(true);
     wins.window('w3').keepInViewport(true);
     wins.window('w4').keepInViewport(true);
+
+    wins.attachEvent("onResizeFinish", function(win) {
+      crmCompany.reInitEditor();
+    });
+
+    wins.attachEvent("onMaximize", function(win) {
+      crmCompany.reInitEditor();
+    });
+
+    wins.attachEvent("onFocus", function(win) {
+      $(".request_header").text(win.getText());
+    });
+
+    wins.window('w1').bringToTop();
+
+    var quote_table = $("#quote_global_table").DataTable({
+      "ajax": "/ondemand/display_actions.php?action=display_quotes",
+      "createdRow": function (row, data, dataIndex) {
+        $(row).addClass("cursor-hand view_so_info").attr('data-project-name', data.project_name);
+      },
+      "paging": false,
+      scrollY: '30vh',
+      scrollCollapse: true,
+      "dom": '<"#quote_header.dt-custom-header">tipr',
+      "order": [[0, "asc"]]
+    });
+
+    var order_table = $("#orders_global_table").DataTable({
+      "ajax": "/ondemand/display_actions.php?action=display_orders",
+      "createdRow": function (row, data, dataIndex) {
+        $(row).addClass("cursor-hand view_so_info").attr('data-project-name', data.project_name);
+      },
+      "paging": false,
+      scrollY: '30vh',
+      scrollCollapse: true,
+      "dom": '<"#order_header.dt-custom-header">tipr',
+      "order": [[0, "asc"]]
+    });
+
+    var active_table = $("#active_ops_global_table").DataTable({
+      "ajax": "/ondemand/display_actions.php?action=display_ind_active_jobs",
+      "createdRow": function(row,data,dataIndex) {
+        $(row).addClass("cursor-hand view_so_info").attr('data-project-name', data.project_name);
+      },
+      "paging": false,
+      scrollY: '31.5vh',
+      scrollCollapse: true,
+      "dom": '<"#active_header.dt-custom-header">tipr',
+      "columnDefs": [
+        {"targets": [0], "orderable": false, className: "nowrap"}
+      ],
+      "order": [[1, "desc"]]
+    });
   });
 </script>

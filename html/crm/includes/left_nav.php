@@ -2,6 +2,12 @@
   <div class="card-box">
     <div class="row">
       <div class="col-md-12 m-b-10">
+        <i class="fa fa-bars fa-2x cursor-hand pull-left"></i> <h3 class="pull-left request_header">CRM</h3>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12 m-b-10">
         <input type="text" placeholder="Search CRM..." class="form-control ignoreSaveAlert" id="crm_search" name="crm_search" autocomplete="off">
         <a class="cursor-hand" id="clear-search" onclick="crmNav.clearAll();"><i class="zmdi zmdi-close"></i></a>
       </div>

@@ -1444,9 +1444,6 @@ require 'includes/header_start.php';
 
   <!-- XEditable Plugin -->
   <script src="/assets/plugins/x-editable/js/bootstrap-editable.min.js"></script>
-
-
-  <script src="//cdn.dhtmlx.com/edge/dhtmlx.js"></script>
   </body>
   </html>
 <?php

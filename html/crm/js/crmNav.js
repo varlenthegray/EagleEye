@@ -1,7 +1,7 @@
 var crmNav = {
   tree: $("#searchResultTree"),
-  getTree: null,
-  mainContainer: $(".crm-main"),
+  getTree: null, // assigned in init
+  mainContainer: $("#crmBody"),
 
   initTree: function() {
     this.tree.fancytree({
