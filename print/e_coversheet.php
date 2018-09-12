@@ -168,6 +168,11 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <td class="total_text border_thin_bottom">Cabinet List Price:</td>
           <td class="text-md-right border_thin_bottom total_text">$<input type="text" name="list_price" value="0.00" maxlength="10"></td>
         </tr>
+        <tr class="subtotal">
+          <td></td>
+          <td class="total_text border_thin_bottom">Samples</td>
+          <td class="text-md-right border_thin_bottom total_text">$<span id="final_samples"></span></td>
+        </tr>
       </table>
 
       <table style="width:80%;margin:0 auto;">
@@ -583,11 +588,6 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
           <td class="total_text">&nbsp;</td>
           <td class="text-md-right total_text">$<span id="final_cc"></span></td>
         </tr>
-        <tr class="border_thin_bottom">
-          <td class="total_text">Samples</td>
-          <td class="total_text">&nbsp;</td>
-          <td class="text-md-right total_text">$<span id="final_samples"></span></td>
-        </tr>
         <tr class="em_box">
           <td class="total_text">Sub Total:</td>
           <td class="total_text">&nbsp;</td>
@@ -999,6 +999,28 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       }
     })
     .on("change", "input", function() {
+      final_samples = 0.00;
+
+      if($("#sample_block").is(':checked')) {
+        final_samples = final_samples + sample_block_price;
+      }
+
+      if($("#door_only").is(':checked')) {
+        final_samples = final_samples + door_only_price;
+      }
+
+      if($("#door_drawer").is(':checked')) {
+        final_samples = final_samples + door_drawer_price;
+      }
+
+      if($("#inset_square").is(':checked')) {
+        final_samples = final_samples + inset_square_price;
+      }
+
+      if($("#inset_beaded").is(':checked')) {
+        final_samples = final_samples + inset_beaded_price;
+      }
+
       /** Cabinet pricing */
       cabinet_list_price = $("input[name='list_price']").val().replace(/,/g , "");
       mods_accessories = $("input[name='mods_accessories']").val().replace(/,/g , "");
@@ -1030,27 +1052,29 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       frame_opt_qty = $("input[name='frame_opt_qty']").val();
       /** End Qty Fields */
 
+      let cabSample = parseFloat(cabinet_list_price) + parseFloat(final_samples);
+
       /** Attribute Subtotals */
-      glaze_tech_subtotal = (!emptyOrZero(glaze_tech_pct)) ? (glaze_tech_pct / 100) * cabinet_list_price : 0;
-      sheen_subtotal = (!emptyOrZero(sheen_pct)) ? (sheen_pct / 100) * cabinet_list_price : 0;
-      construction_subtotal = (!emptyOrZero(construction_pct)) ? (construction_pct / 100) * cabinet_list_price : 0;
-      ext_species_subtotal = (!emptyOrZero(exterior_species_pct)) ? (exterior_species_pct / 100) * cabinet_list_price : 0;
+      glaze_tech_subtotal = (!emptyOrZero(glaze_tech_pct)) ? (glaze_tech_pct / 100) * cabSample : 0;
+      sheen_subtotal = (!emptyOrZero(sheen_pct)) ? (sheen_pct / 100) * cabSample : 0;
+      construction_subtotal = (!emptyOrZero(construction_pct)) ? (construction_pct / 100) * cabSample : 0;
+      ext_species_subtotal = (!emptyOrZero(exterior_species_pct)) ? (exterior_species_pct / 100) * cabSample : 0;
       ext_finish_code_subtotal = (!emptyOrZero(ext_finish_code_amount)) ? parseFloat(ext_finish_code_amount) : 0;
-      ext_glaze_tech_subtotal = (!emptyOrZero(ext_glaze_tech_pct)) ? (ext_glaze_tech_pct / 100) * cabinet_list_price : 0;
-      int_species_subtotal = (!emptyOrZero(interior_species_pct)) ? (interior_species_pct / 100) * cabinet_list_price : 0;
+      ext_glaze_tech_subtotal = (!emptyOrZero(ext_glaze_tech_pct)) ? (ext_glaze_tech_pct / 100) * cabSample : 0;
+      int_species_subtotal = (!emptyOrZero(interior_species_pct)) ? (interior_species_pct / 100) * cabSample : 0;
       int_finish_code_subtotal = (!emptyOrZero(interior_finish_code_amount)) ? parseFloat(interior_finish_code_amount) : 0;
-      int_glaze_tech_subtotal = (!emptyOrZero(interior_glaze_tech_pct)) ? (interior_glaze_tech_pct / 100) * cabinet_list_price : 0;
-      dd_species_subtotal = (!emptyOrZero(dd_species_pct)) ? (dd_species_pct / 100) * cabinet_list_price : 0;
-      dd_deign_subtotal = (!emptyOrZero(dd_design_pct)) ? (dd_design_pct / 100) * cabinet_list_price : 0;
+      int_glaze_tech_subtotal = (!emptyOrZero(interior_glaze_tech_pct)) ? (interior_glaze_tech_pct / 100) * cabSample : 0;
+      dd_species_subtotal = (!emptyOrZero(dd_species_pct)) ? (dd_species_pct / 100) * cabSample : 0;
+      dd_deign_subtotal = (!emptyOrZero(dd_design_pct)) ? (dd_design_pct / 100) * cabSample : 0;
       dd_style_rail_subtotal = (!emptyOrZero(style_rail_qty)) ? style_rail_qty * styles_rails_price : 0;
       dd_sd_raise_subtotal = (!emptyOrZero(sd_raise_qty)) ? sd_raise_qty * short_drawer_raise_price : 0;
       dd_td_raise_subtotal = (!emptyOrZero(td_raise_qty)) ? td_raise_qty * tall_drawer_raise_price : 0;
       dd_edge_profile_subtotal = (!emptyOrZero(edge_profile_qty)) ? edge_profile_qty * edge_profile_price : 0;
       dd_frame_option_subtotal = (!emptyOrZero(frame_opt_qty)) ? frame_opt_qty * frame_option_price : 0;
-      dd_antiquing_subtotal = (!emptyOrZero(antiquing_pct)) ? (antiquing_pct / 100) * cabinet_list_price : 0;
-      dd_distressing_subtotal = (!emptyOrZero(distressing_pct)) ? (distressing_pct / 100) * cabinet_list_price : 0;
-      dd_worn_edges_subtotal = (!emptyOrZero(worn_edges_pct)) ? (worn_edges_pct / 100) * cabinet_list_price : 0;
-      dd_drawer_box_subtotal = (!emptyOrZero(drawer_boxes_pct)) ? (drawer_boxes_pct / 100) * cabinet_list_price : 0;
+      dd_antiquing_subtotal = (!emptyOrZero(antiquing_pct)) ? (antiquing_pct / 100) * cabSample : 0;
+      dd_distressing_subtotal = (!emptyOrZero(distressing_pct)) ? (distressing_pct / 100) * cabSample : 0;
+      dd_worn_edges_subtotal = (!emptyOrZero(worn_edges_pct)) ? (worn_edges_pct / 100) * cabSample : 0;
+      dd_drawer_box_subtotal = (!emptyOrZero(drawer_boxes_pct)) ? (drawer_boxes_pct / 100) * cabSample : 0;
       finish_code_subtotal = (!emptyOrZero(finish_code_amount)) ? parseFloat(finish_code_amount) : 0;
 
       $("#glaze_tech_subtotal").html(addCommas(glaze_tech_subtotal.toFixed(2)));
@@ -1115,8 +1139,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       echo $sm;
       ?>
 
-      final_leadtime = parseFloat(shipping_multiplier) * parseFloat(cabinet_list_price);
-      final_subtotal = parseFloat(final_upcharges) + parseFloat(cabinet_list_price) + parseFloat(mods_accessories) + parseFloat(final_leadtime);
+      final_leadtime = parseFloat(shipping_multiplier) * parseFloat(cabSample);
+      final_subtotal = parseFloat(final_upcharges) + parseFloat(cabSample) + parseFloat(mods_accessories) + parseFloat(final_leadtime);
       final_multiplier = $("input[name='multiplier']").val();
       final_net = parseFloat(final_subtotal) * parseFloat(final_multiplier);
       final_shipping = parseFloat($("#final_shipping").val());
@@ -1139,27 +1163,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         final_cc = 0.00;
       }
 
-      final_samples = 0.00;
 
-      if($("#sample_block").is(':checked')) {
-        final_samples = final_samples + sample_block_price;
-      }
-
-      if($("#door_only").is(':checked')) {
-        final_samples = final_samples + door_only_price;
-      }
-
-      if($("#door_drawer").is(':checked')) {
-        final_samples = final_samples + door_drawer_price;
-      }
-
-      if($("#inset_square").is(':checked')) {
-        final_samples = final_samples + inset_square_price;
-      }
-
-      if($("#inset_beaded").is(':checked')) {
-        final_samples = final_samples + inset_beaded_price;
-      }
 
       if(!ship_charges_changed) {
         switch($("input[name='final_ship_zone']").val().toUpperCase()) {
@@ -1197,7 +1201,9 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
         $("#final_shipping").val(final_shipping.toFixed(2));
       }
 
-      final_last_subtotal = parseFloat(final_net) + parseFloat(final_shipping) + parseFloat(final_freight) + parseFloat(final_jobsite) + parseFloat(final_cc) + parseFloat(final_samples);
+
+
+      final_last_subtotal = parseFloat(final_net) + parseFloat(final_shipping) + parseFloat(final_freight) + parseFloat(final_jobsite) + parseFloat(final_cc);
       final_total = parseFloat(final_last_subtotal);
       final_deposit = parseFloat(final_total) * .5;
 
@@ -1211,6 +1217,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       $("#final_jobsite").html(addCommas(final_jobsite.toFixed(2)));
       $("#final_cc").html(addCommas(final_cc.toFixed(2)));
       $("#final_samples").html(addCommas(final_samples.toFixed(2)));
+
       $("#final_last_subtotal").html(addCommas(final_last_subtotal.toFixed(2)));
       $("#final_tax").html(addCommas(final_tax.toFixed(2)));
       $("#final_total").html(addCommas(final_total.toFixed(2)));
