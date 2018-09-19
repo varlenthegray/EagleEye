@@ -57,6 +57,12 @@ foreach($result AS $ans) {
     case '+':
       $icon = 'fa fa-thumbs-up';
       break;
+    case 'P':
+      $icon = 'fa fa-hourglass-3';
+      break;
+    default:
+      $icon = 'fa fa-exclamation-triangle';
+      break;
   }
 
   if(true) {

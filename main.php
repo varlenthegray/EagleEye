@@ -1441,9 +1441,6 @@ require 'includes/header_start.php';
 
   <!-- Sticky table header -->
   <script src="https://cdn.datatables.net/fixedheader/3.1.3/js/dataTables.fixedHeader.min.js"></script>
-
-  <!-- XEditable Plugin -->
-  <script src="/assets/plugins/x-editable/js/bootstrap-editable.min.js"></script>
   </body>
   </html>
 <?php

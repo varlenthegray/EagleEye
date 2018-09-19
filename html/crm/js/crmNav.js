@@ -33,6 +33,9 @@ var crmNav = {
           case '+':
             $span.addClass("crmSearchCompleted");
             break;
+          case 'P':
+            $span.addClass("crmSearchPending");
+            break;
         }
       },
       activate: function(event, data) {
@@ -84,6 +87,7 @@ var crmNav = {
     showHide('search_prod', '.crmSearchProd');
     showHide('search_lost', '.crmSearchLost');
     showHide('search_completed', '.crmSearchCompleted');
+    showHide('search_pending', '.crmSearchPending');
   },
 
   startListening: function() {

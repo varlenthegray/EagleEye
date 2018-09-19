@@ -159,133 +159,36 @@ require '../../includes/header_start.php';
 </div>
 
 <script src="/html/crm/js/crmCompany.min.js"></script>
+<script src="/html/crm/js/crmMain.js"></script>
+<script src="/includes/js/window-manager.min.js"></script>
 
 <script>
   crmCompany.startListening();
 
   $("#left-nav").resizable();
 
-  var wins, w1, w2, w3, w4;
-  var winHolder = $("#crmUID");
-  var winPos = {};
-
   $(function() {
-    let containerWidth;
-    let containerHeight;
+    winMgr.init();
 
-    wins = new dhtmlXWindows();
+    winMgr.newWin('crm', 1, 'CRM', 'objId');
 
-    if(winHolder.width() > 320 && winHolder.height() > 240) {
-      containerWidth = winHolder.outerWidth() / 2;
-      containerHeight = winHolder.outerHeight() / 2;
+    // setup windows and then init them (datatables initialization)
+    winMgr.newWin('quotes', 2, 'Quotes', 'objId2'); crmMain.initQuote();
+    winMgr.newWin('production', 3, 'Production', 'objId3'); crmMain.initProduction();
+    winMgr.newWin('activeOps', 4, 'Active Operations', 'objId4'); crmMain.initActiveOps();
 
-      winPos.w1 = {};
-      winPos.w2 = {};
-      winPos.w3 = {};
-      winPos.w4 = {};
+    winMgr.setFocus('crm');
 
-      winPos.w1.x = 0;
-      winPos.w1.y = 0;
-
-      winPos.w2.x = containerWidth;
-      winPos.w2.y = 0;
-
-      winPos.w3.x = 0;
-      winPos.w3.y = containerHeight;
-
-      winPos.w4.x = containerWidth;
-      winPos.w4.y = containerHeight;
-    } else {
-      containerWidth = 320;
-      containerHeight = 240;
-    }
-
-    w1 = wins.createWindow("w1", winPos.w1.x, winPos.w1.y, containerWidth, containerHeight);
-    w2 = wins.createWindow("w2", winPos.w2.x, winPos.w2.y, containerWidth, containerHeight);
-    w3 = wins.createWindow("w3", winPos.w3.x, winPos.w3.y, containerWidth, containerHeight);
-    w4 = wins.createWindow("w4", winPos.w4.x, winPos.w4.y, containerWidth, containerHeight);
-
-    wins.window('w1').addUserButton('popout', 0, 'Pop Out');
-    wins.window('w2').addUserButton('popout', 0, 'Pop Out');
-    wins.window('w3').addUserButton('popout', 0, 'Pop Out');
-    wins.window('w4').addUserButton('popout', 0, 'Pop Out');
-
-    w1.button('popout').attachEvent("onClick", function() {
-      // TODO: Make functional
-
-      return false;
-    });
-
-    w1.setText("CRM");
-    w1.attachObject("objId");
-
-    w2.setText("Quotes");
-    w2.attachObject("objId2");
-
-    w3.setText("Production");
-    w3.attachObject("objId3");
-
-    w4.setText("Active Operations");
-    w4.attachObject("objId4");
-
-    wins.attachViewportTo('crmUID');
-
-    wins.window('w1').keepInViewport(true);
-    wins.window('w2').keepInViewport(true);
-    wins.window('w3').keepInViewport(true);
-    wins.window('w4').keepInViewport(true);
-
-    wins.attachEvent("onResizeFinish", function(win) {
-      crmCompany.reInitEditor();
-    });
-
-    wins.attachEvent("onMaximize", function(win) {
-      crmCompany.reInitEditor();
-    });
-
-    wins.attachEvent("onFocus", function(win) {
+    winMgr.getWins().attachEvent("onFocus", function(win) {
       $(".request_header").text(win.getText());
     });
 
-    wins.window('w1').bringToTop();
+    crmMain.startCompanyResizeWatcher();
 
-    var quote_table = $("#quote_global_table").DataTable({
-      "ajax": "/ondemand/display_actions.php?action=display_quotes",
-      "createdRow": function (row, data, dataIndex) {
-        $(row).addClass("cursor-hand view_so_info").attr('data-project-name', data.project_name);
-      },
-      "paging": false,
-      scrollY: '30vh',
-      scrollCollapse: true,
-      "dom": '<"#quote_header.dt-custom-header">tipr',
-      "order": [[0, "asc"]]
-    });
+    /*w1.button('popout').attachEvent("onClick", function() {
+      // TODO: Make functional
 
-    var order_table = $("#orders_global_table").DataTable({
-      "ajax": "/ondemand/display_actions.php?action=display_orders",
-      "createdRow": function (row, data, dataIndex) {
-        $(row).addClass("cursor-hand view_so_info").attr('data-project-name', data.project_name);
-      },
-      "paging": false,
-      scrollY: '30vh',
-      scrollCollapse: true,
-      "dom": '<"#order_header.dt-custom-header">tipr',
-      "order": [[0, "asc"]]
-    });
-
-    var active_table = $("#active_ops_global_table").DataTable({
-      "ajax": "/ondemand/display_actions.php?action=display_ind_active_jobs",
-      "createdRow": function(row,data,dataIndex) {
-        $(row).addClass("cursor-hand view_so_info").attr('data-project-name', data.project_name);
-      },
-      "paging": false,
-      scrollY: '31.5vh',
-      scrollCollapse: true,
-      "dom": '<"#active_header.dt-custom-header">tipr',
-      "columnDefs": [
-        {"targets": [0], "orderable": false, className: "nowrap"}
-      ],
-      "order": [[1, "desc"]]
-    });
+      return false;
+    });*/
   });
 </script>

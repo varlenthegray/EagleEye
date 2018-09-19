@@ -94,6 +94,7 @@
             <div class="checkbox checkbox-primary"><input id="search_prod" type="checkbox" checked><label for="search_prod"> <i class="fa fa-fw fa-sitemap"></i> Production</label></div>
             <div class="checkbox checkbox-primary"><input id="search_lost" type="checkbox"><label for="search_lost"> <i class="fa fa-fw fa-thumbs-o-down"></i> Lost</label></div>
             <div class="checkbox checkbox-primary"><input id="search_completed" type="checkbox"><label for="search_completed"> <i class="fa fa-fw fa-thumbs-up"></i> Completed</label></div>
+            <div class="checkbox checkbox-primary"><input id="search_pending" type="checkbox"><label for="search_pending"> <i class="fa fa-fw fa-hourglass-3"></i> Pending</label></div>
           </form>
         </div>
 
