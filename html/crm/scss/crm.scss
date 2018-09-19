@@ -94,18 +94,89 @@
     }
   }
 
+  .fancytree-container {
+    border: none;
+  }
+
   .request_header {
     text-transform: uppercase;
   }
 
-  .dhtmlx_skin_dhx_web div.dhtmlx_wins_btns div.dhtmlx_wins_btns_button .dhtmlx_button_popOut_default{
-    background-color: #FFF;
-  }
-  .dhtmlx_skin_dhx_web div.dhtmlx_wins_btns div.dhtmlx_wins_btns_button .dhtmlx_button_popOut_over_default{
-
+  .dhxwins_vp_dhx_web div.dhxwin_hdr div.dhxwin_btns div.dhxwin_button.dhxwin_button_popout {
+    background-image: url('/html/crm/images/popout.png');
   }
 
-  .dhtmlx_skin_dhx_web div.dhtmlx_wins_btns div.dhtmlx_wins_btns_button .dhtmlx_button_popOut_over_pressed{
+  .dhxwins_vp_dhx_web div.dhxwin_hdr div.dhxwin_btns div.dhxwin_button_dis.dhxwin_button_popout_dis {
+    background-image: url('/html/crm/images/popout.png');
+  }
 
+  .summary_info ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  .crm_search_results {
+    .checkbox {
+      display: inline-block;
+
+      label {
+        line-height: 18px;
+      }
+    }
+  }
+
+  #searchResultTree {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  #widget_box {
+    .widget-item {
+      text-align: center;
+      padding: .75rem 0;
+
+      /* safari and chrome */
+      @-webkit-keyframes wiggle {
+        0% {-webkit-transform:rotate(5deg);}
+        50% {-webkit-transform:rotate(-5deg);}
+        100% {-webkit-transform:rotate(5deg);}
+      }
+
+      /* firefox */
+      @-moz-keyframes wiggle {
+        0% {-moz-transform:rotate(5deg);}
+        50% {-moz-transform:rotate(-5deg);}
+        100% {-moz-transform:rotate(5deg);}
+      }
+
+      /* anyone brave enough to implement the ideal method */
+      @keyframes wiggle {
+        0% {transform:rotate(5deg);}
+        50% {transform:rotate(-5deg);}
+        100% {transform:rotate(5deg);}
+      }
+
+      &:hover {
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,.3);
+        color: #000;
+
+        i {
+          -webkit-animation: wiggle 0.25s 1;
+          -moz-animation: wiggle 0.25s 1;
+          animation: wiggle 0.25s 1;
+        }
+      }
+    }
+
+    .widget-active {
+      background: #7d7e7d; /* Old browsers */
+      color: #FFFFFF;
+    }
   }
 }

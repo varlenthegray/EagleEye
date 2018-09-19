@@ -39,7 +39,7 @@ require '../../includes/header_start.php';
         window.open("main.php", "_self");
       },
       goCRM: function() {
-        window.open("main.php?page=display_contacts", "_self");
+        window.open("main.php?page=crm/index", "_self");
       },
       goCalendar: function() {
         window.open("main.php?page=calendar/index", "_self");

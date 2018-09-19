@@ -2,29 +2,7 @@
 require '../../includes/header_start.php';
 
 //outputPHPErrs();
-
-// TODO: Fix the custom button icon and style
 ?>
-
-
-
-<style>
-  .dhtmlx_skin_dhx_web div.dhtmlx_window_active div.dhtmlx_wins_btns .dhtmlx_button_popOut_default {
-    background-color: red;
-  }
-
-  .dhtmlx_skin_dhx_skyblue div.dhtmlx_window_active div.dhtmlx_wins_btns .dhtmlx_button_popOut_disabled {
-    background-color: orange;
-  }
-
-  .dhtmlx_skin_dhx_skyblue div.dhtmlx_window_active div.dhtmlx_wins_btns .dhtmlx_button_popOut_over_default {
-    background-color: orangered;
-  }
-
-  .dhtmlx_skin_dhx_skyblue div.dhtmlx_window_active div.dhtmlx_wins_btns .dhtmlx_button_popOut_over_pressed {
-    background-color: yellow;
-  }
-</style>
 
 <link rel="stylesheet" type="text/css" href="/html/css/standard.min.css?v=<?php echo VERSION; ?>"/>
 <link rel="stylesheet" type="text/css" href="/html/crm/css/crm.min.css?v=<?php echo VERSION; ?>" />
@@ -42,36 +20,66 @@ require '../../includes/header_start.php';
               <div class="row" style="width:100%">
                 <div class="col-md-2 col-md-offset-1">
                   <div class="card-box tilebox-one tilebox-bg-red">
-                    <h6 class="text-muted text-uppercase m-b-20">Leads</h6>
-                    <h2 class="m-b-20">7</h2>
+                    <h6 class="text-muted text-uppercase m-b-10">Leads</h6>
+                    <div class="summary_info">
+                      <ul>
+                        <li>John: <strong>7</strong></li>
+                        <li>Bill: <strong>10</strong></li>
+                        <li>Joe: <strong>3</strong></li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
                 <div class="col-md-2">
                   <div class="card-box tilebox-one tilebox-bg-orange">
-                    <h6 class="text-muted text-uppercase m-b-20">To Process</h6>
-                    <h2 class="m-b-20">4</h2>
+                    <h6 class="text-muted text-uppercase m-b-10">To Process</h6>
+                    <div class="summary_info">
+                      <ul>
+                        <li>John: <strong>1</strong></li>
+                        <li>Bill: <strong>3</strong></li>
+                        <li>Joe: <strong>0</strong></li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
                 <div class="col-md-2">
                   <div class="card-box tilebox-one tilebox-bg-yellow">
-                    <h6 class="text-muted text-uppercase m-b-20">Pending</h6>
-                    <h2 class="m-b-20">3</h2>
+                    <h6 class="text-muted text-uppercase m-b-10">Pending</h6>
+                    <div class="summary_info">
+                      <ul>
+                        <li>John: <strong>2</strong></li>
+                        <li>Bill: <strong>2</strong></li>
+                        <li>Joe: <strong>3</strong></li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
                 <div class="col-md-2">
                   <div class="card-box tilebox-one tilebox-bg-green">
-                    <h6 class="text-muted text-uppercase m-b-20">In Progress</h6>
-                    <h2 class="m-b-20">6</h2>
+                    <h6 class="text-muted text-uppercase m-b-10">In Progress</h6>
+                    <div class="summary_info">
+                      <ul>
+                        <li>John: <strong>6</strong></li>
+                        <li>Bill: <strong>4</strong></li>
+                        <li>Joe: <strong>2</strong></li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
 
                 <div class="col-md-2">
                   <div class="card-box tilebox-one tilebox-bg-red">
-                    <h6 class="text-muted text-uppercase m-b-20">Backorders</h6>
-                    <h2 class="m-b-20">4</h2>
+                    <h6 class="text-muted text-uppercase m-b-10">Backorders</h6>
+                    <div class="summary_info">
+                      <ul>
+                        <li>John: <strong>1</strong></li>
+                        <li>Bill: <strong>1</strong></li>
+                        <li>Joe: <strong>0</strong></li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -155,6 +163,8 @@ require '../../includes/header_start.php';
 <script>
   crmCompany.startListening();
 
+  $("#left-nav").resizable();
+
   var wins, w1, w2, w3, w4;
   var winHolder = $("#crmUID");
   var winPos = {};
@@ -195,7 +205,16 @@ require '../../includes/header_start.php';
     w3 = wins.createWindow("w3", winPos.w3.x, winPos.w3.y, containerWidth, containerHeight);
     w4 = wins.createWindow("w4", winPos.w4.x, winPos.w4.y, containerWidth, containerHeight);
 
-    wins.window('w1').addUserButton('popOut', 0, 'Pop Out', 'popOut');
+    wins.window('w1').addUserButton('popout', 0, 'Pop Out');
+    wins.window('w2').addUserButton('popout', 0, 'Pop Out');
+    wins.window('w3').addUserButton('popout', 0, 'Pop Out');
+    wins.window('w4').addUserButton('popout', 0, 'Pop Out');
+
+    w1.button('popout').attachEvent("onClick", function() {
+      // TODO: Make functional
+
+      return false;
+    });
 
     w1.setText("CRM");
     w1.attachObject("objId");

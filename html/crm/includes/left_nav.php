@@ -1,8 +1,70 @@
-<div class="col-md-2" style="min-height:80vh;">
+<div class="col-md-2" id="left-nav" style="min-height:80vh;">
   <div class="card-box">
     <div class="row">
       <div class="col-md-12 m-b-10">
-        <i class="fa fa-bars fa-2x cursor-hand pull-left"></i> <h3 class="pull-left request_header">CRM</h3>
+        <i class="fa fa-bars fa-2x cursor-hand pull-left" id="display_widgets"></i> <h3 class="pull-left request_header">CRM</h3>
+      </div>
+
+      <div class="col-md-12 m-b-10" id="widget_box" style="display:none;">
+        <div class="col-md-3 cursor-hand widget-item widget-active" id="widget_crm">
+          <i class="fa fa-book fa-3x"></i>
+          <h5>CRM</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item" id="widget_reports">
+          <i class="fa fa-inbox fa-3x"></i>
+          <h5>Reports</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item" id="widget_calendar">
+          <i class="fa fa-calendar fa-3x"></i>
+          <h5>Calendar</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item" id="widget_inventory">
+          <i class="fa fa-barcode fa-3x"></i>
+          <h5>Inventory</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item" id="widget_accounting">
+          <i class="fa fa-bank fa-3x"></i>
+          <h5>Accounting</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item" id="widget_email">
+          <i class="fa fa-envelope-o fa-3x"></i>
+          <h5>Email</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item widget-active" id="widget_quotes">
+          <i class="fa fa-pencil-square-o fa-3x"></i>
+          <h5>Quotes</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item widget-active" id="widget_production">
+          <i class="fa fa-sitemap fa-3x"></i>
+          <h5>Production</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item widget-active" id="widget_production">
+          <i class="fa fa-check fa-3x"></i>
+          <h5>Operations</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item" id="widget_feedback">
+          <i class="fa fa-envelope-square fa-3x"></i>
+          <h5>Feedback</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item" id="widget_opl">
+          <i class="fa fa-list fa-3x"></i>
+          <h5>OPL</h5>
+        </div>
+
+        <div class="col-md-3 cursor-hand widget-item" id="widget_documents">
+          <i class="fa fa-file-pdf-o fa-3x"></i>
+          <h5>Documents</h5>
+        </div>
       </div>
     </div>
 
@@ -25,61 +87,18 @@
       <div class="col-md-12 m-t-10 crm_search_results" style="display:none;">
         <h3>Search Results</h3>
 
-        <div class="radio" style="display:inline;padding-right:10px;">
-          <input type="radio" name="crmSearchResults" value="job" id="searchByJob" checked="checked">
-          <label for="searchByJob">By Job</label>
+        <div class="col-md-12">
+          <form id="searchFilter">
+            <div class="checkbox checkbox-primary"><input id="search_lead" type="checkbox" checked><label for="search_lead"> <i class="fa fa-fw fa-fire"></i> Lead</label></div>
+            <div class="checkbox checkbox-primary"><input id="search_quote" type="checkbox" checked><label for="search_quote"> <i class="fa fa-fw fa-flag-o"></i> Quote</label></div>
+            <div class="checkbox checkbox-primary"><input id="search_prod" type="checkbox" checked><label for="search_prod"> <i class="fa fa-fw fa-sitemap"></i> Production</label></div>
+            <div class="checkbox checkbox-primary"><input id="search_lost" type="checkbox"><label for="search_lost"> <i class="fa fa-fw fa-thumbs-o-down"></i> Lost</label></div>
+            <div class="checkbox checkbox-primary"><input id="search_completed" type="checkbox"><label for="search_completed"> <i class="fa fa-fw fa-thumbs-up"></i> Completed</label></div>
+          </form>
         </div>
 
-        <div class="radio" style="display:inline;">
-          <input type="radio" name="crmSearchResults" value="so" id="searchBySO">
-          <label for="searchBySO">By Status</label>
-        </div>
-
-        <div id="searchResultTree" class="m-t-10">
-          <ul id="searchResultTreeData" style="display: none;">
-            <li id="id3" class="folder">Distinctive Cabinetry
-              <ul>
-                <li id="id3.1"><strong>907 - Miller</strong>
-                  <ul>
-                    <li id="id3.1.1">A1.01 - Bath 1
-                    <li id="id3.1.2">A1.02 - Bath 2 Vanity
-                    <li id="id3.1.3">B1.01 - Kitchen
-                  </ul>
-                <li id="id3.2"><strong>923 - Donnely</strong>
-                  <ul>
-                    <li id="id3.2.1">A1.01 - Plane Wood
-                  </ul>
-              </ul>
-            </li>
-            <li id="id3" class="folder">Distinctive Vision
-              <ul>
-                <li id="id3.1"><strong>907 - Miller</strong>
-                  <ul>
-                    <li id="id3.1.1">A1.01 - Bath 1
-                    <li id="id3.1.2">A1.02 - Bath 2 Vanity
-                    <li id="id3.1.3">B1.01 - Kitchen
-                  </ul>
-                <li id="id3.2"><strong>923 - Donnely</strong>
-                  <ul>
-                    <li id="id3.2.1">A1.01 - Plane Wood
-                  </ul>
-              </ul>
-            </li>
-            <li id="id3" class="folder">Distinctive Radio
-              <ul>
-                <li id="id3.1"><strong>907 - Miller</strong>
-                  <ul>
-                    <li id="id3.1.1">A1.01 - Bath 1
-                    <li id="id3.1.2">A1.02 - Bath 2 Vanity
-                    <li id="id3.1.3">B1.01 - Kitchen
-                  </ul>
-                <li id="id3.2"><strong>923 - Donnely</strong>
-                  <ul>
-                    <li id="id3.2.1">A1.01 - Plane Wood
-                  </ul>
-              </ul>
-            </li>
-          </ul>
+        <div class="col-md-12">
+          <div id="searchResultTree" class="m-t-10"></div>
         </div>
       </div>
     </div>

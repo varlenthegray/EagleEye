@@ -119,7 +119,7 @@
       <!-- =========================================
            Hero-Section
       ========================================== -->
-      <div class="container vmiddle" style="top:40%;">
+      <div class="container vmiddle" style="top:50%;">
         <div class="row">
           <div class="col-md-8">
             <div class="hero-section">
