@@ -3,14 +3,6 @@ require '../../includes/header_start.php';
 
 //outputPHPErrs();
 ?>
-<script src="../../assets/plugins/dhtmlxScheduler/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>
-<link rel="stylesheet" href="../../assets/plugins/dhtmlxScheduler/dhtmlxscheduler_material.css" type="text/css"  title="no title" charset="utf-8">
-
-<script src="../../assets/plugins/dhtmlxScheduler/ext/dhtmlxscheduler_limit.js" type="text/javascript" charset="utf-8"></script>
-<script src="../../assets/plugins/dhtmlxScheduler/ext/dhtmlxscheduler_tooltip.js" type="text/javascript" charset="utf-8"></script>
-<script src="../../assets/plugins/dhtmlxScheduler/ext/dhtmlxscheduler_recurring.js" type="text/javascript"></script>
-
-<link rel="stylesheet" href="/html/calendar/ajax/events.php?action=getEventCSS&v=<?php echo VERSION; ?>" type="text/css" charset="utf-8">
 
 <style type="text/css" >
   html, body {

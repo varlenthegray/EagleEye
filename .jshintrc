@@ -3,7 +3,9 @@
     "$": false,
     "winMgr": true,
     "crmCompany": true,
-    "dhtmlXWindows": true
+    "dhtmlXWindows": true,
+    "dhtmlXEditor": true,
+    "crmMain": true
   },
   "curly": true,
   "eqeqeq": true,

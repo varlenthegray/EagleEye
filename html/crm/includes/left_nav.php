@@ -6,65 +6,18 @@
       </div>
 
       <div class="col-md-12 m-b-10" id="widget_box" style="display:none;">
-        <div class="col-md-3 cursor-hand widget-item widget-active" id="widget_crm">
-          <i class="fa fa-book fa-3x"></i>
-          <h5>CRM</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item" id="widget_reports">
-          <i class="fa fa-inbox fa-3x"></i>
-          <h5>Reports</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item" id="widget_calendar">
-          <i class="fa fa-calendar fa-3x"></i>
-          <h5>Calendar</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item" id="widget_inventory">
-          <i class="fa fa-barcode fa-3x"></i>
-          <h5>Inventory</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item" id="widget_accounting">
-          <i class="fa fa-bank fa-3x"></i>
-          <h5>Accounting</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item" id="widget_email">
-          <i class="fa fa-envelope-o fa-3x"></i>
-          <h5>Email</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item widget-active" id="widget_quotes">
-          <i class="fa fa-pencil-square-o fa-3x"></i>
-          <h5>Quotes</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item widget-active" id="widget_production">
-          <i class="fa fa-sitemap fa-3x"></i>
-          <h5>Production</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item widget-active" id="widget_production">
-          <i class="fa fa-check fa-3x"></i>
-          <h5>Operations</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item" id="widget_feedback">
-          <i class="fa fa-envelope-square fa-3x"></i>
-          <h5>Feedback</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item" id="widget_opl">
-          <i class="fa fa-list fa-3x"></i>
-          <h5>OPL</h5>
-        </div>
-
-        <div class="col-md-3 cursor-hand widget-item" id="widget_documents">
-          <i class="fa fa-file-pdf-o fa-3x"></i>
-          <h5>Documents</h5>
-        </div>
+        <div class="col-md-3 cursor-hand widget-item widget-active" data-window="crm"><i class="fa fa-book fa-3x"></i><h5>CRM</h5></div>
+        <div class="col-md-3 cursor-hand widget-item widget-active" data-window="quotes"><i class="fa fa-pencil-square-o fa-3x"></i><h5>Quotes</h5></div>
+        <div class="col-md-3 cursor-hand widget-item widget-active" data-window="production"><i class="fa fa-sitemap fa-3x"></i><h5>Production</h5></div>
+        <div class="col-md-3 cursor-hand widget-item widget-active" data-window="operations"><i class="fa fa-check fa-3x"></i><h5>Operations</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="reports"><i class="fa fa-inbox fa-3x"></i><h5>Reports</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="calendar"><i class="fa fa-calendar fa-3x"></i><h5>Calendar</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="inventory"><i class="fa fa-barcode fa-3x"></i><h5>Inventory</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="accounting"><i class="fa fa-bank fa-3x"></i><h5>Accounting</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="email"><i class="fa fa-envelope-o fa-3x"></i><h5>Email</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="feedback"><i class="fa fa-envelope-square fa-3x"></i><h5>Feedback</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="opl"><i class="fa fa-list fa-3x"></i><h5>OPL</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="documents"><i class="fa fa-file-pdf-o fa-3x"></i><h5>Documents</h5></div>
       </div>
     </div>
 
@@ -79,7 +32,7 @@
           <ul>
             <li><a href="#"><i class="fa fa-fw fa-user-plus"></i> Add Company</a></li>
             <li><a href="#" class="nav_add_contact"><i class="fa fa-fw fa-plus-circle"></i> Add Contact</a></li>
-            <li><a href="#" onClick="crmCompany.getCompanyList();"><i class="fa fa-fw fa-building-o"></i> Company List</a></li>
+            <li><a href="#" class="crm_view_company_list"><i class="fa fa-fw fa-building-o"></i> Company List</a></li>
           </ul>
         </nav>
       </div>

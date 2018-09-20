@@ -1,4 +1,6 @@
 var crmMain = {
+  body: null, // the main body to insert ALL CRM data into
+
   dtSkeleton: function(ajaxURL, customDefs) {
     if(customDefs !== '' || customDefs !== null || customDefs !== undefined) {
       return {
@@ -26,32 +28,27 @@ var crmMain = {
       };
     }
   },
+  widgetInit: function() {
+    $("body")
+      .on("click", ".widget-item", function() {
+        let windowID = $(this).attr('data-window');
 
-  initQuote: function() {
-    return $("#quote_global_table").DataTable(crmMain.dtSkeleton('/ondemand/display_actions.php?action=display_quotes'));
+        if(winMgr.wins[windowID] === undefined) {
+          if(winMgr.newAutoWin(windowID)) {
+            $(this).addClass("widget-active");
+          }
+        } else {
+          winMgr.window.window(windowID).close();
+        }
+      })
+    ;
   },
-
-  initProduction: function() {
-    return $("#orders_global_table").DataTable(crmMain.dtSkeleton('/ondemand/display_actions.php?action=display_orders'));
-  },
-
-  initActiveOps: function() {
-    // active operations has a custom sort order and column definition setup
-    let custDefs = {
-      "columnDefs": [ { "targets": [0], "orderable": false, className: "nowrap" } ],
-      "order": [[1, "desc"]]
-    };
-
-    return $("#active_ops_global_table").DataTable(crmMain.dtSkeleton('/ondemand/display_actions.php?action=display_ind_active_jobs', custDefs));
-  },
-
-  startCompanyResizeWatcher: function() {
-    winMgr.getWins().attachEvent("onResizeFinish", function(win) {
-      crmCompany.reInitEditor();
-    });
-
-    winMgr.getWins().attachEvent("onMaximize", function(win) {
-      crmCompany.reInitEditor();
-    });
+  setBody: function(container) {
+    /**********************************************
+     * Sets the body container
+     * ****************************************** *
+     * @container = the container of the main body, this is to update the variable name
+     ********************************************/
+    crmMain.body = container;
   }
 };

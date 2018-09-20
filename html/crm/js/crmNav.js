@@ -1,7 +1,6 @@
 var crmNav = {
   tree: $("#searchResultTree"),
   getTree: null, // assigned in init
-  mainContainer: $("#crmBody"),
   search: null, // what's being searched for
 
   initTree: function() {
@@ -48,6 +47,10 @@ var crmNav = {
         }
 
         crmCompany.getCompany($(this).attr("data-id"));
+
+        $.post("/html/crm/includes/view_company.php", function(data) {
+          crmMain.body.html(data);
+        });
       },
       expand: function(event, data) {
         crmNav.checkFilters();
@@ -56,11 +59,9 @@ var crmNav = {
 
     crmNav.getTree = crmNav.tree.fancytree("getTree");
   },
-
   clearMain: function() {
-    crmNav.mainContainer.html("");
+    crmMain.body.html("");
   },
-
   clearAll: function() {
     crmNav.clearMain();
     $("#crm_search").val('');
@@ -72,7 +73,6 @@ var crmNav = {
 
     $(".crm_search_results").hide();
   },
-
   checkFilters: function() {
     function showHide(checkbox, element) {
       if($("#" + checkbox).is(":checked")) {
@@ -89,7 +89,6 @@ var crmNav = {
     showHide('search_completed', '.crmSearchCompleted');
     showHide('search_pending', '.crmSearchPending');
   },
-
   startListening: function() {
     $("body")
       .on("keyup", "#crm_search", function() {

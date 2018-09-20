@@ -3,26 +3,45 @@ var winMgr = {
   windowContainer: null, // the container object (used for sizing, emptying, etc)
   containerWidth: null, // the width of the container divided in half to square out 4 windows
   containerHeight: null, // the height of the container divided in half to square out 4 windows
-  window: null, // the window management system, itself (ORIGINALLY WINS)
+  window: null, // the window management system, itself (ORIGINALLY wins/myWins)
   winPos: {}, // the positions of the windows
   wins: {}, // the windows that are created
+  winPosOffset: {'x': 0, 'y': 0}, // offset for window position automatic creation
 
-  init: function() {
-    winMgr.windowContainerSimple = 'crmUID';
-    winMgr.windowContainer = $("#" + this.windowContainerSimple);
-    winMgr.containerWidth = this.windowContainer.outerWidth() / 2;
-    winMgr.containerHeight = this.windowContainer.outerHeight() / 2;
-    winMgr.window = new dhtmlXWindows();
+  init: function(simpleContainer) {
+    winMgr.windowContainerSimple = simpleContainer; // the simple name of the window container, without identifying the object
+    winMgr.windowContainer = $("#" + this.windowContainerSimple); // the window container object
+    winMgr.containerWidth = this.windowContainer.outerWidth() / 2; // width divided in half for initial view of windows
+    winMgr.containerHeight = this.windowContainer.outerHeight() / 2; // height divided in half for initial view of windows
+    winMgr.window = new dhtmlXWindows(); // the window management system itself
+
+    winMgr.window.attachEvent("onClose", function(win) {
+      let eleID = win._idd;
+
+      $(".widget-item[data-window='" + eleID + "']").removeClass("widget-active");
+
+      return winMgr.removeWinVar(eleID);
+    });
   },
+  newWin: function(winVarName, pos, windowTitle, attachObj, ajaxURL, ajaxPass) {
+    /***************************************************************************
+     * Manages the spawning of new windows
+     * *********************************************************************** *
+     * @winVarName = name of container that holds the windows
+     * @pos = which position to spawn in
+     * @windowTitle = the title of the window itself
+     * @attachObj = if attaching an in-page HTML object, deprecated
+     * @ajaxURL = the URL of the window that we're loading via AJAX
+     * @ajaxPass = any POST variables to send to the window alongside the AJAX request
+    **************************************************************************/
+    winMgr.winPos[winVarName] = {}; // initialize the empty container for window positions
 
-  // @winVarName = name of container that holds the windows, @pos = which position to spawn in
-  newWin: function(winVarName, pos, windowTitle, attachObj) {
-    winMgr.winPos[winVarName] = {};
-
+    // based on the numerical position of the window
+    // 1 = top left; 2 = top right; 3 = bottom left; 4 = bottom right
     switch(pos) {
       case 1:
-        winMgr.winPos[winVarName].x = 0;
-        winMgr.winPos[winVarName].y = 0;
+        winMgr.winPos[winVarName].x = 0; // set the object of {window position.window name.x} to 0
+        winMgr.winPos[winVarName].y = 0; // set the object of {window position.window name.y} to 0
         break;
       case 2:
         winMgr.winPos[winVarName].x = winMgr.containerWidth;
@@ -37,33 +56,103 @@ var winMgr = {
         winMgr.winPos[winVarName].y = winMgr.containerHeight;
         break;
       default:
+        winMgr.winPos[winVarName].x = (winMgr.containerWidth / 2) + winMgr.winPosOffset.x;
+        winMgr.winPos[winVarName].y = (winMgr.containerHeight / 2) + winMgr.winPosOffset.y;
 
+        winMgr.winPosOffset.x += 20;
+        winMgr.winPosOffset.y += 20;
         break;
     }
 
+    // create a new window based on {this object.wins.window variable name}
     winMgr.wins[winVarName] = winMgr.window.createWindow({
-      id: winVarName,
-      left: winMgr.winPos[winVarName].x,
-      top: winMgr.winPos[winVarName].y,
-      width: winMgr.containerWidth,
-      height: winMgr.containerHeight,
-      caption: windowTitle
+      id: winVarName, // this windows variable name (crm, quotes, active_ops, etc)
+      left: winMgr.winPos[winVarName].x, // the position of that window
+      top: winMgr.winPos[winVarName].y, // the position of that window
+      width: winMgr.containerWidth, // width of the containers (generic)
+      height: winMgr.containerHeight, // height of the containers (generic)
+      caption: windowTitle // the title of the window, passed through the function
     });
 
-    winMgr.wins[winVarName].attachObject(attachObj);
+    if(attachObj !== null) { // if we're attaching an object
+      winMgr.wins[winVarName].attachObject(attachObj);
+    } else if(ajaxURL !== null) { // otherwise, if we're attaching ajax
+      winMgr.wins[winVarName].attachURL(ajaxURL, true, ajaxPass);
+    }
 
-    winMgr.window.attachViewportTo(winMgr.windowContainerSimple);
+    winMgr.window.attachViewportTo(winMgr.windowContainerSimple); // stick the windows inside of the container that we're spawning them in
 
-    winMgr.window.window(winVarName).addUserButton('popout', 0, 'Pop Out');
-    winMgr.window.window(winVarName).keepInViewport(true);
+    winMgr.window.window(winVarName).addUserButton('popout', 0, 'Pop Out'); // add the pop-out button
+    winMgr.window.window(winVarName).keepInViewport(true); // keep the windows in that viewport (do not allow draginging outside of that box)
   },
+  newAutoWin: function(winVarName) {
+    let windowTranslator = {
+      'crm': {
+        'position': 1, // first 4 definitions are defaulted to this position
+        'windowTitle': 'CRM',
+        'attachObj': null,
+        'ajaxURL': '/html/windows/crm.php'
+      },
+      'quotes': {
+        'position': 2,
+        'windowTitle': 'Quotes',
+        'attachObj': null,
+        'ajaxURL': '/html/windows/quotes.php'
+      },
+      'production': {
+        'position': 3,
+        'windowTitle': 'Production',
+        'attachObj': null,
+        'ajaxURL': '/html/windows/production.php'
+      },
+      'operations': {
+        'position': 4,
+        'windowTitle': 'Active Operations',
+        'attachObj': null,
+        'ajaxURL': '/html/windows/active_operations.php'
+      },
+      'calendar': {
+        // position is skipped
+        'windowTitle': 'Calendar',
+        'attachObj': null,
+        'ajaxURL': '/html/calendar/index.php'
+      },
+      'email': {
+        // position skipped
+        'windowTitle': 'Email',
+        'attachObj': null,
+        'ajaxURL': '/html/mail/cross_page.php'
+      }
+    };
 
+    if(windowTranslator[winVarName] !== undefined) {
+      winMgr.newWin(winVarName, windowTranslator[winVarName].position, windowTranslator[winVarName].windowTitle, windowTranslator[winVarName].attachObj, windowTranslator[winVarName].ajaxURL);
+
+      if(winMgr.winPosOffset.x > 0 && winMgr.winPosOffset.y > 0) {
+        winMgr.winPosOffset.x += 20;
+        winMgr.winPosOffset.y += 20;
+      }
+
+      return true;
+    } else {
+      console.log("Error: Window Translator was unable to find the information for window " + winVarName);
+
+      return false;
+    }
+  },
   getWins: function() {
     return winMgr.window;
   },
-
+  removeWinVar: function(w) {
+    return delete winMgr.wins[w];
+  },
   setFocus: function(focusContainerName) {
     winMgr.window.window(focusContainerName).bringToTop();
     $(".request_header").text(winMgr.window.window(focusContainerName).getText());
+  },
+  autoTitle: function() {
+    winMgr.getWins().attachEvent("onFocus", function(win) {
+      $(".request_header").text(win.getText());
+    });
   }
 };

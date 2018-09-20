@@ -1,19 +1,17 @@
 var crmCompany = {
-  container: $("#crmBody"),
   editor: null,
 
   getCompany: function(id) {
     $.post("/html/crm/includes/view_company.php", function(data) {
-      crmCompany.container.html(data);
+      crmMain.body.html(data);
     });
   },
-
   getCompanyList: function() {
     // get the company list
-    $.post("/html/crm/includes/view_company_list.php", function(data) {
-      crmCompany.container.html(data); // load it into the container
+    $.post("/html/crm/templates/view_company_list.php", function(data) {
+      crmMain.body.html(data); // load it into the container
     }).done(function() {
-      $('#companies').DataTable( { // init datatables
+      $('.crmCompanies').DataTable( { // init datatables
         "ajax": "/html/crm/ajax/company.php?action=getCompanyList",
         "columns": [
           { "data": "name" },
@@ -37,9 +35,11 @@ var crmCompany = {
       .on("click", ".get-company", function() {
         crmCompany.getCompany($(this).attr("data-id"));
       })
+      .on("click", ".crm_view_company_list", function() {
+        crmCompany.getCompanyList();
+      })
     ;
   },
-
   initEditor: function() {
     crmCompany.editor = new dhtmlXEditor({
       parent: "new_note",
@@ -48,17 +48,18 @@ var crmCompany = {
       content: ""
     });
   },
-
   reInitEditor: function() {
-    let curContent = crmCompany.editor.getContent();
+    if(crmCompany.editor !== undefined) {
+      let curContent = crmCompany.editor.getContent();
 
-    crmCompany.editor.unload();
+      crmCompany.editor.unload();
 
-    crmCompany.editor = new dhtmlXEditor({
-      parent: "new_note",
-      toolbar: true, // force dhtmlxToolbar using
-      iconsPath: "/assets/plugins/dhtmlXEditor/imgs/", // path for toolbar icons
-      content: curContent
-    });
+      crmCompany.editor = new dhtmlXEditor({
+        parent: "new_note",
+        toolbar: true, // force dhtmlxToolbar using
+        iconsPath: "/assets/plugins/dhtmlXEditor/imgs/", // path for toolbar icons
+        content: curContent
+      });
+    }
   }
 };
