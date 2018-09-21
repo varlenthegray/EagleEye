@@ -49,7 +49,7 @@ var crmCompany = {
     });
   },
   reInitEditor: function() {
-    if(crmCompany.editor !== undefined) {
+    if(crmCompany.editor !== undefined && crmCompany.editor !== null) {
       let curContent = crmCompany.editor.getContent();
 
       crmCompany.editor.unload();

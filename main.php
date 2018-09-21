@@ -1388,7 +1388,7 @@ require 'includes/header_start.php';
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 
   <!-- Mask -->
-  <script src="/assets/plugins/jquery.mask.min.js"></script>
+<!--  <script src="/assets/plugins/jquery.mask.min.js"></script> 9/21/18-->
 
   <!-- Counter Up  -->
   <script src="/assets/plugins/waypoints/lib/jquery.waypoints.js"></script>
@@ -1402,10 +1402,10 @@ require 'includes/header_start.php';
   <script type="text/javascript" src="/assets/plugins/tinysort/tinysort.min.js"></script>
 
   <!-- Input Masking -->
-  <script type="text/javascript" src="/assets/plugins/jquery.mask.min.js"></script>
+<!--  <script type="text/javascript" src="/assets/plugins/jquery.mask.min.js"></script> 9/21/18-->
 
   <!-- Datepicker -->
-  <script src="/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
+<!--  <script src="/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script> 9/21/18-->
 
   <!-- JScroll -->
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.0/jquery.scrollTo.min.js"></script>

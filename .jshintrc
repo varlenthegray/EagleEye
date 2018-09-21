@@ -5,7 +5,8 @@
     "crmCompany": true,
     "dhtmlXWindows": true,
     "dhtmlXEditor": true,
-    "crmMain": true
+    "crmMain": true,
+    "window": true
   },
   "curly": true,
   "eqeqeq": true,

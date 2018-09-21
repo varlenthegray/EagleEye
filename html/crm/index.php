@@ -21,9 +21,9 @@ require '../../includes/header_start.php';
   </div>
 </div>
 
-<script src="/html/crm/js/crmCompany.min.js"></script>
-<script src="/html/crm/js/crmMain.js"></script>
-<script src="/includes/js/window-manager.min.js"></script>
+<script src="/html/crm/js/crmCompany.min.js?v=<?php echo VERSION; ?>"></script>
+<script src="/html/crm/js/crmMain.js?v=<?php echo VERSION; ?>"></script>
+<script src="/includes/js/window-manager.min.js?v=<?php echo VERSION; ?>"></script>
 
 <script>
   $(function() {
@@ -31,22 +31,21 @@ require '../../includes/header_start.php';
     winMgr.init('crmUID');
     crmMain.widgetInit();
 
-    // default windows
-    winMgr.newAutoWin('crm');
-    winMgr.newAutoWin('quotes');
-    winMgr.newAutoWin('production');
-    winMgr.newAutoWin('operations');
+    if(crmMain.getURLParams('maximized') === 'true') {
+      let win = crmMain.getURLParams('win');
 
-    winMgr.setFocus('crm');
+      winMgr.newAutoWin(win, true);
 
-    // sets the title above navigation, next to widgets, automatically
-    winMgr.autoTitle();
+      winMgr.setFocus(win);
+    } else {
+      // default windows
+      winMgr.newAutoWin('crm');
+      winMgr.newAutoWin('quotes');
+      winMgr.newAutoWin('production');
+      winMgr.newAutoWin('operations');
 
-    /*w1.button('popout').attachEvent("onClick", function() {
-      // TODO: Make functional
-
-      return false;
-    });*/
+      winMgr.setFocus('crm');
+    }
 
     winMgr.getWins().attachEvent("onResizeFinish", function(win) {
       crmCompany.reInitEditor();

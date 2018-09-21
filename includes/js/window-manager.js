@@ -20,8 +20,13 @@ var winMgr = {
 
       $(".widget-item[data-window='" + eleID + "']").removeClass("widget-active");
 
+      winMgr.winPosOffset.x -= 20;
+      winMgr.winPosOffset.y -= 20;
+
       return winMgr.removeWinVar(eleID);
     });
+
+    winMgr.autoTitle(); // sets the title above navigation, next to widgets, automatically
   },
   newWin: function(winVarName, pos, windowTitle, attachObj, ajaxURL, ajaxPass) {
     /***************************************************************************
@@ -84,8 +89,14 @@ var winMgr = {
 
     winMgr.window.window(winVarName).addUserButton('popout', 0, 'Pop Out'); // add the pop-out button
     winMgr.window.window(winVarName).keepInViewport(true); // keep the windows in that viewport (do not allow draginging outside of that box)
+
+    winMgr.window.window(winVarName).button('popout').attachEvent("onClick", function() {
+      window.open('/main.php?page=crm/index&maximized=true&win=' + winVarName, '_blank', 'toolbar=0,location=0,menubar=0,left=0,top=0');
+
+      return false;
+    });
   },
-  newAutoWin: function(winVarName) {
+  newAutoWin: function(winVarName, maximized) {
     let windowTranslator = {
       'crm': {
         'position': 1, // first 4 definitions are defaulted to this position
@@ -122,6 +133,12 @@ var winMgr = {
         'windowTitle': 'Email',
         'attachObj': null,
         'ajaxURL': '/html/mail/cross_page.php'
+      },
+      'opl': {
+        // position skipped
+        'windowTitle': 'OPL',
+        'attachObj': null,
+        'ajaxURL': '/html/opl/index.php'
       }
     };
 
@@ -131,6 +148,10 @@ var winMgr = {
       if(winMgr.winPosOffset.x > 0 && winMgr.winPosOffset.y > 0) {
         winMgr.winPosOffset.x += 20;
         winMgr.winPosOffset.y += 20;
+      }
+
+      if(maximized) {
+        winMgr.window.window(winVarName).maximize();
       }
 
       return true;
