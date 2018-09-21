@@ -2,7 +2,7 @@ var crmCompany = {
   editor: null,
 
   getCompany: function(id) {
-    $.post("/html/crm/includes/view_company.php", function(data) {
+    $.post("/html/crm/templates/crm_view.php", function(data) {
       crmMain.body.html(data);
     });
   },

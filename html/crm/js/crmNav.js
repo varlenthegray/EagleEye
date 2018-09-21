@@ -48,11 +48,11 @@ var crmNav = {
 
         crmCompany.getCompany($(this).attr("data-id"));
 
-        $.post("/html/crm/includes/view_company.php", function(data) {
+        $.post("/html/crm/templates/crm_view.php", function(data) {
           crmMain.body.html(data);
         });
       },
-      expand: function(event, data) {
+      beforeExpand: function() {
         crmNav.checkFilters();
       }
     });
