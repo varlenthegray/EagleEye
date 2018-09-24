@@ -13,7 +13,8 @@ $qry = $dbconn->query('SELECT
     r.room,
     r.iteration,
     r.room_name,
-    r.order_status
+    r.order_status,
+    d.dealer_id
   FROM sales_order so
     LEFT JOIN dealers d ON so.dealer_code = d.dealer_id
     LEFT JOIN rooms r ON so.so_num = r.so_parent
@@ -71,7 +72,7 @@ foreach($result AS $ans) {
       break;
   }
 
-  $altData = "{$ans['dealer_name']}, {$ans['project_name']}, {$ans['so_num']}, {$ans['room']}, {$ans['room_name']}, {$ans['so_num']}{$ans['room']}{$ans['iteration']}, $altOStatus";
+  $altData = "{$ans['dealer_name']}, {$ans['project_name']}, {$ans['so_num']}, {$ans['room']}, {$ans['room_name']}, {$ans['so_num']}{$ans['room']}{$ans['iteration']}, $altOStatus, {$ans['dealer_id']}";
 
   if($ans['dealer_name'] !== $prevDealer) {
     $pd++; // increment the dealer code
