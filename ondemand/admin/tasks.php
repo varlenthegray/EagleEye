@@ -4,7 +4,7 @@ require_once '../../includes/classes/mail_handler.php';
 
 $mail = new \MailHandler\mail_handler();
 
-outputPHPErrs();
+//outputPHPErrs();
 
 $action = sanitizeInput($_REQUEST['action']);
 

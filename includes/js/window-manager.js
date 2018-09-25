@@ -141,6 +141,30 @@ var winMgr = {
         'windowTitle': 'OPL',
         'attachObj': null,
         'ajaxURL': '/html/opl/index.php'
+      },
+      'reports': {
+        // position skipped
+        'windowTitle': 'Reports',
+        'attachObj': null,
+        'ajaxURL': '/html/sales_list.php?win=true'
+      },
+      'inventory': {
+        // position skipped
+        'windowTitle': 'Inventory',
+        'attachObj': null,
+        'ajaxURL': '/html/inventory/index.php'
+      },
+      'accounting': {
+        // position skipped
+        'windowTitle': 'Inventory',
+        'attachObj': null,
+        'ajaxURL': '/html/accounting/index.php'
+      },
+      'feedback': {
+        // position skipped
+        'windowTitle': 'Feedback/Tasks',
+        'attachObj': null,
+        'ajaxURL': '/html/tasks.php'
       }
     };
 

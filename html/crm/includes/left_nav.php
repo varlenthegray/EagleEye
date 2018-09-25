@@ -17,7 +17,7 @@
         <div class="col-md-3 cursor-hand widget-item" data-window="email"><i class="fa fa-envelope-o fa-3x"></i><h5>Email</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="feedback"><i class="fa fa-envelope-square fa-3x"></i><h5>Feedback</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="opl"><i class="fa fa-list fa-3x"></i><h5>OPL</h5></div>
-        <div class="col-md-3 cursor-hand widget-item" data-window="documents"><i class="fa fa-file-pdf-o fa-3x"></i><h5>Documents</h5></div>
+<!--        <div class="col-md-3 cursor-hand widget-item" data-window="documents"><i class="fa fa-file-pdf-o fa-3x"></i><h5>Documents</h5></div>-->
       </div>
     </div>
 

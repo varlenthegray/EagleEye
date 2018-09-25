@@ -5,6 +5,7 @@ require_once '../../includes/header_start.php';
 
 $find = sanitizeInput($_REQUEST['find']);
 $exact = (bool)sanitizeInput($_REQUEST['exact']);
+$rid = sanitizeInput($_REQUEST['rID']);
 
 function determineColor($room, $bracket) {
   global $dbconn;

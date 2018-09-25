@@ -7,7 +7,19 @@ $type = sanitizeInput($_REQUEST['type']);
 $project_disabled = $type === 'dID' ? 'disabled' : null;
 $room_disabled = $type !== 'rID' ? 'disabled': null;
 
-echo "Disabled: $room_disabled";
+$soNum = false;
+
+if($type === 'rID') {
+  $soNum_qry = $dbconn->query("SELECT so_id FROM rooms WHERE id = $id");
+
+  if($soNum_qry->num_rows > 0) {
+    $soNum = $soNum_qry->fetch_assoc();
+
+    $soNum = $soNum['so_id'];
+  }
+}
+
+//echo "Disabled: $room_disabled";
 ?>
 
 <div class="col-md-12 m-t-10">
@@ -18,7 +30,7 @@ echo "Disabled: $room_disabled";
          id="home-tab" href="#crmCompany" role="tab" aria-controls="home" aria-expanded="true"><i class="fa fa-building-o m-r-5"></i> Company</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link tab-ajax <?php echo $project_disabled; ?>" data-ajax="/html/search/so_list.php?find=<?php echo $id; ?>&exact=true" data-toggle="tab"
+      <a class="nav-link tab-ajax <?php echo $project_disabled; ?>" data-ajax="/html/search/so_list.php?find=<?php echo $soNum !== false ? $soNum : $id; ?>&exact=true" data-toggle="tab"
          id="project-tab" href="#crmProject" role="tab" aria-controls="profile"><i class="fa fa-folder-o m-r-5"></i> Project</a>
     </li>
     <li class="nav-item ">
@@ -31,7 +43,7 @@ echo "Disabled: $room_disabled";
       <?php require_once 'tab_company.php'; ?>
     </div>
     <div class="tab-pane fade" id="crmProject" role="tabpanel" aria-labelledby="profile-tab"></div>
-    <div class="tab-pane fade" id="crmBatch" role="tabpanel" aria-labelledby="dropdown1-tab"></div>
+    <div class="tab-pane fade" id="crmBatch" role="tabpanel" aria-labelledby="batch-tab"></div>
   </div>
 </div>
 

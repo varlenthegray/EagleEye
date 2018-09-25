@@ -21,6 +21,7 @@ switch($server[0]) {
     break;
 
   case 'eagleeye':
+//    define('DB_DATABASE', '3erp_old_pricing');
     define('DB_DATABASE', '3erp_dev');
 
     if(file_exists('C:/Users/Ben')) {
