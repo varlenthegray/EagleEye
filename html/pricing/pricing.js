@@ -211,24 +211,24 @@ function recalcSummary() {
 // @footCalc() - calculates by square foot or linear foot
 function footCalc(node) {
   let $tdList = $(node.tr).find(">td");
-  let outprice = 0.00;
+  let outprice = node.data.price;
 
   // noinspection JSCheckFunctionSignatures
-  if(parseInt(node.data.sqft) === 1) {
-    let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.depth)) / 144;
-    let line_total = line_sqft * node.data.singlePrice;
+  if(node.data.width > 0 && node.data.height > 0) {
+    if(parseInt(node.data.sqft) === 1) {
+      let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.height)) / 144;
+      let line_total = line_sqft * node.data.singlePrice;
 
-    $tdList.eq(8).text(line_total.formatMoney());
+      $tdList.eq(8).text(line_total.formatMoney());
 
-    outprice =  line_total;
-  } else if(parseInt(node.data.linft) === 1) {
-    let line_linft = (parseFloat(node.data.width) / 12) * node.data.singlePrice;
+      outprice = line_total;
+    } else if(parseInt(node.data.linft) === 1) {
+      let line_linft = (parseFloat(node.data.width) / 12) * node.data.singlePrice;
 
-    $tdList.eq(8).text(line_linft.formatMoney());
+      $tdList.eq(8).text(line_linft.formatMoney());
 
-    outprice = line_linft;
-  } else {
-    outprice = node.data.price;
+      outprice = line_linft;
+    }
   }
 
   return outprice;

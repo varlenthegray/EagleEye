@@ -38,21 +38,27 @@ var crmNav = {
         }
       },
       activate: function(event, data) {
-        let node = data.node;
+        let node = data.node; // capture the node
 
-        if(node.isFolder()) {
-          crmNav.tree.fancytree("getTree").filterBranches(node.title);
+        if(node.isFolder()) { // if it's a folder
+          crmNav.tree.fancytree("getTree").filterBranches(node.title); // filter by branch
         } else {
-          crmNav.tree.fancytree("getTree").filterBranches(node.getParentList()[0].title);
+          crmNav.tree.fancytree("getTree").filterBranches(node.getParentList()[0].title); // otherwise filter by the parent branch
         }
 
-        crmCompany.getCompany($(this).attr("data-id"));
+        crmCompany.getCompany($(this).attr("data-id")); // get the company information for that listing and display it
 
-        $.post("/html/crm/templates/crm_view.php", function(data) {
-          crmMain.body.html(data);
+        /********************************************************
+         * Begin management of clicking on SO or Room
+         *******************************************************/
+        let activateType = node.data.keyType;
+        let typeID = node.key;
+
+        $.post("/html/crm/templates/crm_view.php", {'type': activateType, 'id': typeID}, function(data) { // pull the data for the main tab of the CRM
+          crmMain.body.html(data); // insert it into the body
         });
       },
-      beforeExpand: function() {
+      expand: function() {
         crmNav.checkFilters();
       }
     });

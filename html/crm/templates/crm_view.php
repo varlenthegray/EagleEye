@@ -2,6 +2,12 @@
 require '../../../includes/header_start.php';
 
 $id = sanitizeInput($_REQUEST['id']);
+$type = sanitizeInput($_REQUEST['type']);
+
+$project_disabled = $type === 'dID' ? 'disabled' : null;
+$room_disabled = $type !== 'rID' ? 'disabled': null;
+
+echo "Disabled: $room_disabled";
 ?>
 
 <div class="col-md-12 m-t-10">
@@ -12,11 +18,12 @@ $id = sanitizeInput($_REQUEST['id']);
          id="home-tab" href="#crmCompany" role="tab" aria-controls="home" aria-expanded="true"><i class="fa fa-building-o m-r-5"></i> Company</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link tab-ajax disabled" data-ajax="/html/crm/templates/tab_company.php" data-toggle="tab"
+      <a class="nav-link tab-ajax <?php echo $project_disabled; ?>" data-ajax="/html/search/so_list.php?find=<?php echo $id; ?>&exact=true" data-toggle="tab"
          id="project-tab" href="#crmProject" role="tab" aria-controls="profile"><i class="fa fa-folder-o m-r-5"></i> Project</a>
     </li>
     <li class="nav-item ">
-      <a class="nav-link tab-ajax disabled" id="batch-tab" data-toggle="tab" href="#crmBatch" role="tab" aria-controls="profile"><i class="fa fa-archive m-r-5"></i> Batch</a>
+      <a class="nav-link tab-ajax <?php echo $room_disabled; ?>" data-ajax="/html/pricing/index.php?room_id=<?php echo $id; ?>" data-toggle="tab"
+         id="batch-tab" data-toggle="tab" href="#crmBatch" role="tab" aria-controls="profile"><i class="fa fa-archive m-r-5"></i> Batch</a>
     </li>
   </ul>
   <div class="tab-content" id="crmViewGlobalContent">

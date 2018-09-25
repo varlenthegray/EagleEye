@@ -16,8 +16,8 @@ $qry = $dbconn->query('SELECT
     r.order_status,
     d.dealer_id
   FROM sales_order so
-    LEFT JOIN dealers d ON so.dealer_code = d.dealer_id
     LEFT JOIN rooms r ON so.so_num = r.so_parent
+    LEFT JOIN dealers d ON so.dealer_code = d.dealer_id
   ORDER BY d.dealer_name, so.so_num, r.room, r.iteration ASC;');
 
 $result = [];

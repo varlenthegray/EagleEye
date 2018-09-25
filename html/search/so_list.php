@@ -4,6 +4,7 @@ require_once '../../includes/header_start.php';
 //outputPHPErrs();
 
 $find = sanitizeInput($_REQUEST['find']);
+$exact = (bool)sanitizeInput($_REQUEST['exact']);
 
 function determineColor($room, $bracket) {
   global $dbconn;
@@ -164,9 +165,17 @@ while($vin = $vin_qry->fetch_assoc()) {
   $vin_schema[$vin['segment']][$vin['key']] = $vin['value'];
 }
 
-$qry = $dbconn->query("SELECT * FROM sales_order WHERE (so_num LIKE '%$find%' OR LOWER(dealer_code) LIKE LOWER('%$find%') 
-    OR LOWER(project_name) LIKE LOWER('%$find%') OR LOWER(project_mgr) LIKE LOWER('%$find%') OR LOWER(name_1) LIKE LOWER('%$find%') OR LOWER(name_2) LIKE LOWER('%$find%')) $dealer_filter
-    ORDER BY so_num DESC");
+if($exact) {
+  $qry = $dbconn->query("SELECT * FROM sales_order WHERE id = $find $dealer_filter ORDER BY so_num DESC");
+
+  $so_display_immediately = 'style="display:block;"';
+} else {
+  $qry = $dbconn->query("SELECT * FROM sales_order WHERE (so_num LIKE '%$find%' OR LOWER(dealer_code) LIKE LOWER('%$find%') 
+    OR LOWER(project_name) LIKE LOWER('%$find%') OR LOWER(project_mgr) LIKE LOWER('%$find%') OR LOWER(name_1) LIKE LOWER('%$find%') 
+    OR LOWER(name_2) LIKE LOWER('%$find%')) $dealer_filter ORDER BY so_num DESC");
+
+  $so_display_immediately = 'style="display:none;"';
+}
 
 if($qry->num_rows > 0) {
   while($result = $qry->fetch_assoc()) {
@@ -197,8 +206,8 @@ if($qry->num_rows > 0) {
       if ($bouncer->validate('edit_so')) {
 
         /** BEGIN EDIT SO DISPLAY */
-        echo "<tr id='tr_edit_so_{$result['so_num']}' style='display: none;'>";
-        echo "  <td colspan='8'><div id='div_edit_so_{$result['so_num']}' style='display: none;'>";
+        echo "<tr id='tr_edit_so_{$result['so_num']}' $so_display_immediately>";
+        echo "  <td colspan='8'><div id='div_edit_so_{$result['so_num']}' $so_display_immediately>";
         ?>
 
         <div class="col-md-12">

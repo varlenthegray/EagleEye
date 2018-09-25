@@ -91,7 +91,9 @@ var winMgr = {
     winMgr.window.window(winVarName).keepInViewport(true); // keep the windows in that viewport (do not allow draginging outside of that box)
 
     winMgr.window.window(winVarName).button('popout').attachEvent("onClick", function() {
+      // open a new window (forced) on user, maximized with the window requested
       window.open('/main.php?page=crm/index&maximized=true&win=' + winVarName, '_blank', 'toolbar=0,location=0,menubar=0,left=0,top=0');
+      winMgr.closeWin(winVarName); // close the widget that was popped out
 
       return false;
     });
@@ -175,5 +177,8 @@ var winMgr = {
     winMgr.getWins().attachEvent("onFocus", function(win) {
       $(".request_header").text(win.getText());
     });
+  },
+  closeWin: function(winName) {
+    winMgr.window.window(winName).close();
   }
 };

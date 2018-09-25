@@ -60,15 +60,11 @@ $("body")
               if (data !== '') {
                 $('[data-toggle="tooltip"]').tooltip(); // enable tooltips
 
-                // setup field masks
-                $(".mask-zip").mask('00000-0000');
-                $(".mask-phone").mask('(000) 000-0000');
-
                 // setup date picker
                 $(".delivery_date").datepicker({
                   autoclose: true,
                   todayHighlight: true
-                }).mask('00/00/0000');
+                });
               } else {
                 searchTable.html(searchEmpty);
               }
@@ -89,7 +85,6 @@ $("body")
       e.preventDefault();
 
       $("#global_search").trigger("keyup");
-
 
       return false;
     }

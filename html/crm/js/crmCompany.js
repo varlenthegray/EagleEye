@@ -28,7 +28,6 @@ var crmCompany = {
       });
     });
   },
-
   startListening: function() {
     // bindings
     $('body')

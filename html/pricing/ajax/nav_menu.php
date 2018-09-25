@@ -47,8 +47,8 @@ function makeTree($parent_id) {
   foreach($data as $item) {
     if(!empty($item['sku'])) {
       if(!isset($sku_items[$item['item_catID']])) {
-        $object = array('key' => $item['catID'], 'title' => $item['name'], 'folder' => true, 'children' => array());
-//        $object = array('key' => $item['catID'], 'title' => "{$item['name']} ({$item['catID']})", 'folder' => true, 'children' => array());
+//        $object = array('key' => $item['catID'], 'title' => $item['name'], 'folder' => true, 'children' => array());
+        $object = array('key' => $item['catID'], 'title' => "{$item['name']} ({$item['catID']})", 'folder' => true, 'children' => array());
         $sku_items[$item['item_catID']] = $object;
         $ret[] = &$sku_items[$item['item_catID']];
       }
@@ -65,8 +65,8 @@ function makeTree($parent_id) {
         $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'],'icon' => $img, 'title' => $title, 'is_item' => true, 'qty' => 1);
       }
     } else {
-      $object = array('key' => $item['catID'], 'folder' => true, 'title' => $item['name']);
-//      $object = array('key' => $item['catID'], 'folder' => true, 'title' => "{$item['name']} ({$item['catID']})");
+//      $object = array('key' => $item['catID'], 'folder' => true, 'title' => $item['name']);
+      $object = array('key' => $item['catID'], 'folder' => true, 'title' => "{$item['name']} ({$item['catID']})");
 
       $children = makeTree($item['catID']);
 
