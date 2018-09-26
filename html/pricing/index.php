@@ -453,6 +453,7 @@ if($pg_qry->num_rows > 0) {
             <h5><u>Item List</u></h5>
 
             <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" />
+            <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="item_note"><span class="btn-label"><i class="fa fa-commenting-o"></i> </span>Custom Note</button>
             <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="item_custom_line"><span class="btn-label"><i class="fa fa-plus"></i> </span>Custom Line</button>
             <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="detailed_item_summary"><span class="btn-label"><i class="fa fa-list"></i> </span>Detailed Report</button>
 
@@ -985,20 +986,24 @@ if($pg_qry->num_rows > 0) {
         }
 
         // Index #9 => Price (individual)
-        if(!isNaN(price)) {
-          $tdList.eq(9).text(price.formatMoney()).removeAttr("style title"); // price column
-
-          $(".no_global_info").css("display", "none");
-
-          if(!already_submitted) {
-            $("#submit_for_quote").attr("disabled", false).attr("title", "");
-          }
+        if(node.data.customPrice === 1) {
+          $tdList.eq(9).html('<input type="text" class="form-control custom_price" placeholder="Price" data-id="' + node.key + '" >');
         } else {
-          $tdList.eq(9).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
+          if (!isNaN(price)) {
+            $tdList.eq(9).text(price.formatMoney()).removeAttr("style title"); // price column
 
-          $("#submit_for_quote").attr("disabled", true).attr("title", "Unknown global attributes, unable to submit.");
+            $(".no_global_info").css("display", "none");
 
-          $(".no_global_info").css("display", "block");
+            if (!already_submitted) {
+              $("#submit_for_quote").attr("disabled", false).attr("title", "");
+            }
+          } else {
+            $tdList.eq(9).css("background-color", "#FF0000").attr("title", "Unknown global attributes, unable to find price.");
+
+            $("#submit_for_quote").attr("disabled", true).attr("title", "Unknown global attributes, unable to submit.");
+
+            $(".no_global_info").css("display", "block");
+          }
         }
 
         //** Adjustments based on the line items being added

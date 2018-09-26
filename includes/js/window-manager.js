@@ -156,7 +156,7 @@ var winMgr = {
       },
       'accounting': {
         // position skipped
-        'windowTitle': 'Inventory',
+        'windowTitle': 'Accounting',
         'attachObj': null,
         'ajaxURL': '/html/accounting/index.php'
       },

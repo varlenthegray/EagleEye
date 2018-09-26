@@ -52,11 +52,24 @@ function recalcSummary() {
       });
     }
 
+    let lineTotal = 0.00;
+
     // set the line total equal to the quantity * price
-    let lineTotal = qty * price;
+    lineTotal = qty * price;
 
     // now update the last column (total) with the final price for that line item
-    $tdList.eq(9).text(lineTotal.formatMoney());
+    if(line.data.customPrice === 1) {
+      let cPrice = parseFloat(price.toString().replace('$', ''));
+
+      $tdList.eq(9).find("input").val(cPrice.formatMoney());
+
+      lineTotal = qty * cPrice;
+    } else {
+      // set the line total equal to the quantity * price
+      lineTotal = qty * price;
+
+      $tdList.eq(9).text(lineTotal.formatMoney());
+    }
 
     // if the line item is a cabinet only (excludes tops, accessories, fillers, moldings) then we're adding that to a cabinet only price (inset specific pricing)
     if(line.data.cabinet === '1') {
@@ -293,7 +306,7 @@ $("body")
     // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
     // TODO: https://github.com/mar10/fancytree/issues/551
   })
-  .on("click", "#item_custom_line", function() { // the click of the "Add Item" button
+  .on("click", "#item_note", function() { // the click of the "Add Item" button
     // delNoData(); // wtc does this do?
 
     var root = cabinetList.fancytree("getRootNode");
@@ -313,6 +326,29 @@ $("body")
     let $tdList = $(node.tr).find(">td");
 
     $tdList.eq(4).html('<input type="text" class="form-control custom-line-item" placeholder="Custom Description..." data-id="' + node.key + '" >');
+  })
+  .on("click", "#item_custom_line", function() { // the click of the "Add Item" button
+    // delNoData(); // wtc does this do?
+
+    var root = cabinetList.fancytree("getRootNode");
+
+    var node = root.addChildren({
+      qty: 1,
+      title: 'CUSTOMLINE',
+      price: 0.00,
+      key: genKey(),
+      icon: 'fa fa-hand-o-right',
+      name: 'Error',
+      sqft: 0,
+      singlePrice: 0.00,
+      cabinet: 0,
+      customPrice: 1
+    });
+
+    let $tdList = $(node.tr).find(">td");
+
+    $tdList.eq(4).html('<input type="text" class="form-control custom-line-item" placeholder="Custom Description..." data-id="' + node.key + '" >');
+    $tdList.eq(9).html('<input type="text" class="form-control custom_price" placeholder="Price" data-id="' + node.key + '" >');
   })
   .on("click", ".delete_item", function() { // removes whatever is checked
     var tree = cabinetList.fancytree("getTree"); // get the tree
@@ -731,6 +767,17 @@ $("body")
     node.data.price = footCalc(node);
 
     recalcSummary();
+  })
+  .on("blur", ".custom_price", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+
+    node.data.price = $(this).val();
+
+    recalcSummary();
+  })
+  .on("focus mouseup", ".custom_price", function() {
+    $(this).select();
   })
   .on("click", "#pricingSpeciesGrade, #pricingDoorDesign", function() {
     let speciesGrade = $("#species_grade").val();
