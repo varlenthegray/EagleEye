@@ -124,8 +124,6 @@ function recalcSummary() {
   if(shipVia !== '4') {
     shipPrice = $("#shipping_cost").attr("data-cost");
     global_room_charges += parseFloat(shipPrice);
-
-    console.log("ShipVia is not customer pickup.");
   }
 
   //// Global Cabinet Details
@@ -516,7 +514,7 @@ $("body")
         key: genKey(),
         icon: v.icon,
         name: v.data.description + addlInfo,
-        sqft: v.sqft,
+        sqft: v.data.sqft,
         linft: v.data.linft,
         singlePrice: fixedPrice,
         cabinet: v.data.cabinet,
