@@ -342,7 +342,8 @@ $("body")
       sqft: 0,
       singlePrice: 0.00,
       cabinet: 0,
-      customPrice: 1
+      customPrice: 1,
+      itemID: 1
     });
 
     let $tdList = $(node.tr).find(">td");
@@ -772,7 +773,7 @@ $("body")
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    node.data.price = $(this).val();
+    node.data.price = parseFloat($(this).val().replace(/[^0-9-.]/g, ''));
 
     recalcSummary();
   })

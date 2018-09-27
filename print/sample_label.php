@@ -45,7 +45,7 @@ $so = $so_qry->fetch_assoc();
     <div class="details_container">
         <div class="details_left">
             Species/Grade:<br />
-            Construction:<br />
+<!--            Construction:<br />-->
             Design:<br />
             Panel Raise:<br />
             <span>Short Drawer:<br /></span>
@@ -65,7 +65,7 @@ $so = $so_qry->fetch_assoc();
 
         <div class="details_right">
             <?php echo translateVIN("species_grade", $room['species_grade']); ?><br />
-            <?php echo translateVIN("construction_method", $room['construction_method']); ?><br />
+<!--            --><?php //echo translateVIN("construction_method", $room['construction_method']); ?><!--<br />-->
             <?php echo translateVIN("door_design", $room['door_design']); ?><br />
             <?php echo translateVIN("panel_raise", $room['panel_raise_door']); ?><br />
             <?php echo translateVIN("panel_raise", $room['panel_raise_sd']); ?><br />

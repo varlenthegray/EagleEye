@@ -1026,6 +1026,9 @@ if($pg_qry->num_rows > 0) {
       },
       modifyChild: function(event, data) {
         recalcSummary();
+      },
+      activate: function(event, node) {
+        console.log(node);
       }
     }).on("nodeCommand", function(event, data) {
       // Custom event handler that is triggered by keydown-handler and
@@ -1291,8 +1294,6 @@ if($pg_qry->num_rows > 0) {
     $("#modalAddModification").on("show.bs.modal", function() {
       $("#modificationsFilter").val('');
       itemModifications.fancytree("getTree").clearFilter();
-
-      console.log("PriceGroup: " + priceGroup);
 
       let modificationTree = {
         url: "/html/pricing/ajax/modifications.php?priceGroup=" + priceGroup + "&itemID=" + cabinetList.fancytree("getTree").getActiveNode().data.itemID,
