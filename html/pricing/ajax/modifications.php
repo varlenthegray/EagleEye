@@ -81,7 +81,7 @@ function makeTree($parent_id) {
           $ret[] = &$sku_items[$item['item_catID']];
         }
 
-        $info = " <span class='actions'><div class='info_container'><i class='fa fa-info-circle primary-color view_item_info' data-id='{$item['itemID']}'></i></div></span>";
+        $info = "<span class='actions'><div class='info_container'><i class='fa fa-info-circle primary-color view_item_info' data-id='{$item['itemID']}'></i></div></span>";
 
         $img = !empty($item['image_path']) ? "/html/pricing/images/{$item['image_path']}" : 'fa fa-magic';
 

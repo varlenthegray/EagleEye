@@ -83,6 +83,10 @@ function recalcSummary() {
       non_cabinet_skus += line.title + ", ";
     }
 
+    if(line.data.exclude_markup === '1') {
+
+    }
+
     // this is the final running total for the system
     line_total += parseFloat(lineTotal);
   });

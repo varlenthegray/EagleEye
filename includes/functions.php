@@ -322,7 +322,7 @@ function translateVIN($segment, $key, $db_col = null) {
 
 function calcMiles($zip1, $zip2) {
   // https://developers.google.com/maps/documentation/distance-matrix/intro
-  $url = "http://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=$zip1&destinations=$zip2&mode=driving&language=en-EN&sensor=false";
+  $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=$zip1&destinations=$zip2&mode=driving&language=en-EN&key=AIzaSyCgT-ElMyXtA-YVsPvYjEiiVnf9bWtlBhM";
 
   $data = @file_get_contents($url);
 
@@ -334,6 +334,7 @@ function calcMiles($zip1, $zip2) {
 
 function calcShipZone($dealer_zip) {
   $mileage = calcMiles(28704, $dealer_zip);
+
   $out = [];
   $out['miles'] = $mileage;
 

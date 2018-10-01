@@ -201,6 +201,18 @@ if($pg_qry->num_rows > 0) {
                 <tr>
                   <th colspan="3">&nbsp;</th>
                 </tr>
+                <!--<tr>
+                  <td>Room Name:</td>
+                  <td colspan="2"><input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name" value="<?php /*echo $room['room_name']; */?>"></td>
+                </tr>
+                <tr>
+                  <td>Order Status:</td>
+                  <td colspan="2"><?php /*echo displayVINOpts('order_status'); */?></td>
+                </tr>
+                <tr>
+                  <td>Room Type:</td>
+                  <td colspan="2"><?php /*echo displayVINOpts('room_type'); */?></td>
+                </tr>-->
                 <tr>
                   <td>Product Type:</td>
                   <td><?php echo displayVINOpts('product_type'); ?></td>
@@ -863,11 +875,27 @@ if($pg_qry->num_rows > 0) {
 </form>
 
 <script>
+  function getUrlParams(prop) {
+    var params = {};
+    var search = decodeURIComponent( window.location.href.slice( window.location.href.indexOf('?') + 1));
+    var definitions = search.split('&');
+
+    definitions.forEach(function(val, key) {
+      var parts = val.split('=', 2);
+      params[parts[0]] = parts[1];
+    } );
+
+    return (prop && prop in params) ? params[prop] : params;
+  }
+
   <?php
   echo "active_room_id = $room_id;";
   echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
 
-  $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip']; $ship_zone_info = calcShipZone($shipZone);
+  $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip'];
+
+  echo "console.log('Ship Zone: ". $shipZone . "');";
+  $ship_zone_info = calcShipZone($shipZone);
 
   $shipInfo = json_encode($ship_zone_info, true);
 
@@ -1026,9 +1054,6 @@ if($pg_qry->num_rows > 0) {
       },
       modifyChild: function(event, data) {
         recalcSummary();
-      },
-      activate: function(event, node) {
-        console.log(node);
       }
     }).on("nodeCommand", function(event, data) {
       // Custom event handler that is triggered by keydown-handler and
@@ -1306,7 +1331,7 @@ if($pg_qry->num_rows > 0) {
     
     $(".room_note_log").hide();
 
-    <?php echo !empty($room['custom_vin_info']) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}')": null; ?>
+    <?php echo !empty($room['custom_vin_info']) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}');": null; ?>
 
     productTypeSwitch();
 
@@ -1334,6 +1359,11 @@ if($pg_qry->num_rows > 0) {
       ship_info.hide();
       ship_info.next("tr").hide();
       ship_info.next("tr").next("tr").hide();
+    }
+
+    if(getUrlParams('print') === 'true') {
+      window.print();
+      window.close();
     }
   });
 </script>
