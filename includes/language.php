@@ -3,8 +3,8 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define('RELEASE_DATE', '9/27/18');
-define('VERSION', '2.4.179');
+define('RELEASE_DATE', '10/1/18');
+define('VERSION', '2.4.180');
 
 // Global definitions
 define('LOGO_TEXT', 'EagleEye ERP'); // The logo text displayed

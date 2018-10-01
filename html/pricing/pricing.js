@@ -54,16 +54,13 @@ function recalcSummary() {
 
     let lineTotal = 0.00;
 
-    // set the line total equal to the quantity * price
-    lineTotal = qty * price;
-
     // now update the last column (total) with the final price for that line item
     if(line.data.customPrice === 1) {
       let cPrice = parseFloat(price.toString().replace('$', ''));
 
-      $tdList.eq(9).find("input").val(cPrice.formatMoney());
+      lineTotal = cPrice;
 
-      lineTotal = qty * cPrice;
+      $tdList.eq(9).find("input").val(cPrice.formatMoney());
     } else {
       // set the line total equal to the quantity * price
       lineTotal = qty * price;
