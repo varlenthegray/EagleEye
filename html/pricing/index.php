@@ -1362,8 +1362,12 @@ if($pg_qry->num_rows > 0) {
     }
 
     if(getUrlParams('print') === 'true') {
-      window.print();
-      window.close();
+      setTimeout(function() {
+        window.print();
+        window.close();
+      }, 250);
+
+
     }
   });
 </script>
