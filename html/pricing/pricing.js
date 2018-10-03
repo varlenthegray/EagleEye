@@ -300,6 +300,13 @@ $("body")
     // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
     // TODO: https://github.com/mar10/fancytree/issues/551
   })
+  .on("keyup", "#addItemFilter", function() { // filters per keystroke on search catalog
+    // grab this value and filter it down to the node needed
+    $("#add_item_categories").fancytree("getTree").filterNodes($(this).val());
+
+    // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
+    // TODO: Resolution can be found in CRM tree (for searching companies)
+  })
   .on("keyup", "#modificationsFilter", function() { // filters per keystroke on search catalog
     // grab this value and filter it down to the node needed
     itemModifications.fancytree("getTree").filterNodes($(this).val());
@@ -535,6 +542,8 @@ $("body")
     let modifications = itemModifications.fancytree("getTree").getSelectedNodes();
     let cablist = cabinetList.fancytree("getTree").getActiveNode();
 
+    let outputPrice = 0.00;
+
     $.each(modifications, function(i, v) {
       let addlInfo = '';
 
@@ -542,22 +551,27 @@ $("body")
         addlInfo = " " + v.data.addlInfo;
       }
 
-      let fixedPrice = parseFloat(v.data.price).toFixed(2);
+      if(v.data.percentMarkup === 1) {
+        outputPrice = parseFloat(cablist.data.price * 0.5).toFixed(2);
+      } else {
+        outputPrice = parseFloat(v.data.price).toFixed(2);
+      }
 
       cablist.addChildren({
         qty: 1,
         title: v.title,
         itemID: v.itemID,
-        price: fixedPrice,
+        price: outputPrice,
         key: genKey(),
         icon: v.icon,
         name: v.data.description + addlInfo,
         sqft: v.data.sqft,
         linft: v.data.linft,
-        singlePrice: fixedPrice,
+        singlePrice: outputPrice,
         cabinet: v.data.cabinet,
         addlMarkup: v.data.addlMarkup,
-        subLine: true
+        subLine: true,
+        pctMarkup: v.data.percentMarkup
       });
     });
 
@@ -808,5 +822,10 @@ $("body")
   })
   .on("click", "#detailed_item_summary", function() {
     $("#modalDetailedItemList").modal("show")
+  })
+  .on("click", "#catalog_add_item", function() {
+    $.get("/html/pricing/ajax/add_item.php", function(data) {
+      $("#modalGeneral").html(data).modal("show");
+    });
   })
 ;

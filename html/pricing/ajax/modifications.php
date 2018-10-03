@@ -28,7 +28,7 @@ if(!empty($itemID)) {
 }
 
 $parent_qry = $dbconn->prepare('SELECT
-  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, detail.title, pn.addl_info, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup
+  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, detail.title, pn.addl_info, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.percent
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -43,7 +43,7 @@ function makeTree($parent_id) {
   $ret = array();
 
   $parent_qry->bind_param('i', $parent_id);
-  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $sku_title, $addl_info, $sqft, $linft, $cabinet, $addl_markup);
+  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $sku_title, $addl_info, $sqft, $linft, $cabinet, $addl_markup, $pct_markup);
   $parent_qry->execute();
   $parent_qry->store_result();
 
@@ -64,7 +64,8 @@ function makeTree($parent_id) {
       'sqft' => $sqft,
       'linft' => $linft,
       'cabinet' => $cabinet,
-      'addlMarkup' => $addl_markup
+      'addlMarkup' => $addl_markup,
+      'percentMarkup' => $pct_markup
     );
   }
 
@@ -105,7 +106,8 @@ function makeTree($parent_id) {
             'linft' => $item['linft'],
             'cabinet' => $item['cabinet'],
             'addlMarkup' => $item['addlMarkup'],
-            'itemID' => $item['itemID']);
+            'itemID' => $item['itemID'],
+            'percentMarkup' => $item['percentMarkup']);
         } else {
           $sku_items[$item['item_catID']]['children'][] = array(
             'key' => $item['itemID'],
@@ -122,7 +124,8 @@ function makeTree($parent_id) {
             'linft' => $item['linft'],
             'cabinet' => $item['cabinet'],
             'addlMarkup' => $item['addlMarkup'],
-            'itemID' => $item['itemID']);
+            'itemID' => $item['itemID'],
+            'percentMarkup' => $item['percentMarkup']);
         }
       }
     } else {

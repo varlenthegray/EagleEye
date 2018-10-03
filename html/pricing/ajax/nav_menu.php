@@ -7,7 +7,7 @@ require '../../../includes/header_start.php';
 $result = array();
 
 $parent_qry = $dbconn->prepare('SELECT
-  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, pc.catalog_id AS catalog_id, pn.catalog_id AS itemCatalogID
+  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, pc.catalog_id AS catalog_id, pn.catalog_id AS itemCatalogID, pn.percent
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -19,7 +19,7 @@ function makeTree($parent_id) {
   $ret = array();
 
   $parent_qry->bind_param('i', $parent_id);
-  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $catCatalogID, $itemCatalogID);
+  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $catCatalogID, $itemCatalogID, $pctMarkup);
   $parent_qry->execute();
   $parent_qry->store_result();
 
@@ -36,7 +36,8 @@ function makeTree($parent_id) {
       'sku' => $sku,
       'image_path' => $image,
       'catCatalogID' => $catCatalogID,
-      'itemCatalogID' => $itemCatalogID
+      'itemCatalogID' => $itemCatalogID,
+      'percentMarkup' => $pctMarkup
     );
   }
 

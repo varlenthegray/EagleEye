@@ -93,12 +93,12 @@ if($pg_qry->num_rows > 0) {
 <link href="https://fonts.googleapis.com/css?family=Marck+Script" rel="stylesheet">
 
 <script>
-  <?php echo !empty($submit_disabled) ? 'var already_submitted = true;' : 'var already_submitted = false;'; ?>
+  <?php echo $submit_disabled !== null ? 'var already_submitted = true;' : 'var already_submitted = false;'; ?>
 </script>
 
 <div class="card-box">
   <div class="row sticky no-print" style="background-color:#FFF;z-index:2;top:84px;padding:4px;">
-    <div class="col-md-3">
+    <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
       <button class="btn waves-effect btn-success-outline" title="Submit Quote" id="submit_for_quote" <?php echo $submit_disabled; ?>> <i class="fa fa-paper-plane-o fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Global Information" id="global_info"> <i class="fa fa-globe fa-2x"></i> </button>
@@ -120,9 +120,10 @@ if($pg_qry->num_rows > 0) {
       <button class="btn waves-effect btn-secondary" title="Door Sizing" onclick="window.open('/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>','_blank')"> <i class="fa fa-arrows-alt fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Appliance Worksheets" id='appliance_ws' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-cubes fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Recalculate Ship Date" id='ship_date_recalc' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-truck fa-2x"></i> </button>
+      <?php echo $bouncer->validate('pricing_add_catalog_item') ? '<button class="btn waves-effect btn-secondary" title="Add Item to Catalog" id="catalog_add_item"> <i class="fa fa-plus-square fa-2x"></i> </button>' : null; ?>
     </div>
 
-    <div class="col-md-7 text-md-right"><h4 style="margin:0;padding:0;"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']} $submitted"; ?></h4></div>
+    <div class="col-md-6 text-md-right"><h4 style="margin:0;padding:0;"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']} $submitted"; ?></h4></div>
   </div>
 
   <div class="row">
