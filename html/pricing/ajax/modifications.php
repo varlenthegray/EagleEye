@@ -32,7 +32,7 @@ $parent_qry = $dbconn->prepare('SELECT
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
-WHERE parent = ? AND pc.id BETWEEN 258 AND 280 ORDER BY parent, sort_order, catID ASC');
+WHERE parent = ? AND pc.id BETWEEN 15000 AND 16000 ORDER BY parent, sort_order, catID, pn.sku ASC');
 
 function makeTree($parent_id) {
   global $parent_qry;
@@ -144,6 +144,6 @@ function makeTree($parent_id) {
   return $ret;
 }
 
-$result = makeTree(258);
+$result = makeTree(15000);
 
 echo json_encode($result);
