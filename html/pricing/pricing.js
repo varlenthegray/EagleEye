@@ -552,7 +552,9 @@ $("body")
       }
 
       if(v.data.percentMarkup === 1) {
-        outputPrice = parseFloat(cablist.data.price * 0.5).toFixed(2);
+        outputPrice = parseFloat(cablist.data.price * (v.data.price / 100)).toFixed(2);
+
+        console.log(v.data.price);
       } else {
         outputPrice = parseFloat(v.data.price).toFixed(2);
       }

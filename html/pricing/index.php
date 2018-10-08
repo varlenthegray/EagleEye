@@ -226,12 +226,12 @@ if($pg_qry->num_rows > 0) {
                 </tr>
                 <tr>
                   <td>Ship Date (*):</td>
-                  <td><strong id="calcd_ship_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : '---'; ?></strong></td>
+                  <td><strong id="calcd_ship_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : 'TBD'; ?></strong></td>
                   <td></td>
                 </tr>
                 <tr>
                   <td>Delivery Date (*):</td>
-                  <td><strong id="calcd_del_date"><?php echo date(DATE_DEFAULT, $room['delivery_date']); ?></strong></td>
+                  <td><strong id="calcd_del_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['delivery_date']) : 'TBD'; ?></strong></td>
                   <td></td>
                 </tr>
                 <tr>
