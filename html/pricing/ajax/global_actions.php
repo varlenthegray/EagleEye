@@ -257,6 +257,7 @@ switch($_REQUEST['action']) {
     $antiquing = sanitizeInput($cabinet_specifications['antiquing']);
     $worn_edges = sanitizeInput($cabinet_specifications['worn_edges']);
     $distress_level = sanitizeInput($cabinet_specifications['distress_level']);
+    $green_gard = sanitizeInput($cabinet_specifications['green_gard']);
     //</editor-fold>
 
     //<editor-fold desc="Capture Global Info">
@@ -288,6 +289,7 @@ switch($_REQUEST['action']) {
       $changed[] = whatChanged($sheen, $room_info['sheen'], 'Sheen');
       $changed[] = whatChanged($glaze, $room_info['glaze'], 'Glaze');
       $changed[] = whatChanged($glaze_technique, $room_info['glaze_technique'], 'Glaze Technique');
+      $changed[] = whatChanged($green_gard, $room_info['green_gard'], 'Green Gard');
       $changed[] = whatChanged($antiquing, $room_info['antiquing'], 'Antiquing');
       $changed[] = whatChanged($worn_edges, $room_info['worn_edges'], 'Worn Edges');
       $changed[] = whatChanged($distress_level, $room_info['distress_level'], 'Distress Level');
@@ -421,6 +423,7 @@ HEREDOC;
         sheen = '$sheen', 
         glaze = '$glaze', 
         glaze_technique = '$glaze_technique', 
+        green_gard = '$green_gard', 
         antiquing = '$antiquing', 
         worn_edges = '$worn_edges', 
         distress_level = '$distress_level', 

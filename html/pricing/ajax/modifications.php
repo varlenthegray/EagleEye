@@ -14,7 +14,7 @@ if(!empty($itemID)) {
   $mod_type_qry = $dbconn->query("SELECT mod_type FROM pricing_nomenclature WHERE id = $itemID;");
   $mod_type = $mod_type_qry->fetch_assoc();
 
-  $mod_type = $mod_type['mod_type'];
+  $mod_type = '`' . $mod_type['mod_type'] . '`';
 
   $item_mod_qry = $dbconn->query("SELECT pn.id FROM pricing_modification_details pmd
     LEFT JOIN pricing_nomenclature pn on pmd.nomenclature_id = pn.id

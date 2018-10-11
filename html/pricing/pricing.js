@@ -107,7 +107,10 @@ function recalcSummary() {
   //// Glaze Technique
   let gt_pct = $("#gt_pct");
   let gt_amt = $("#gt_amt");
+  let ggard_pct = $("#ggard_pct");
+  let ggard_amt = $("#ggard_amt");
   let gt_markup = 0.00; // glaze technique markup
+  let ggard_markup = 0.00;
 
   // grab the glaze technique, determine what the amount to markup is
   switch($("#glaze_technique").val()) {
@@ -122,15 +125,34 @@ function recalcSummary() {
       break;
   }
 
+  // grab the green gard, determine what the amount to markup is
+  switch($("#green_gard").val()) {
+    case 'G1':
+      ggard_markup = 0.05; // toss this into the function variable for markup
+      break;
+    case 'G0':
+      ggard_amt.text("");
+      break;
+    default:
+      ggard_amt.text("ERR");
+      break;
+  }
+
   // calculate out the cost of the glaze technique
   let gt_cost = line_total * gt_markup;
+  let ggard_cost = line_total * ggard_markup;
 
   // Glaze Technique fields
   gt_amt.text(gt_cost.formatMoney());
   gt_pct.text((gt_markup * 100).toFixed(2) + "%");
 
+  // Green Gard fields
+  ggard_amt.text(ggard_cost.formatMoney());
+  ggard_pct.text((ggard_markup * 100).toFixed(2) + "%");
+
   // add the glaze technique to the total amount of global upcharges
   global_cab_charges += gt_cost;
+  global_cab_charges += ggard_cost;
 
   let shipPrice = 0;
 
@@ -211,6 +233,9 @@ function recalcSummary() {
 
   $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') * Glaze Markup (' + gt_markup + ')');
   $("#calcGlazeTechTotal").html(gt_cost.formatMoney());
+
+  $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') * Green Gard Markup (' + ggard_markup + ')');
+  $("#calcGreenGardTotal").html(ggard_cost.formatMoney());
 
   $("#calcCabinetLines").html('Cabinets: ' + cabinet_only_skus);
   $("#calcCabinetLinesTotal").html(cabinet_only_total.formatMoney());
@@ -342,17 +367,19 @@ $("body")
 
     var node = root.addChildren({
       qty: 1,
-      title: 'CUSTOMLINE',
+      title: ' ',
       price: 0.00,
       key: genKey(),
       icon: 'fa fa-hand-o-right',
       name: 'Error',
       sqft: 0,
       singlePrice: 0.00,
-      cabinet: 0,
+      cabinet: 1,
       customPrice: 1,
-      itemID: 1
+      itemID: 1321
     });
+
+    console.log(node);
 
     let $tdList = $(node.tr).find(">td");
 
@@ -553,8 +580,6 @@ $("body")
 
       if(v.data.percentMarkup === 1) {
         outputPrice = parseFloat(cablist.data.price * (v.data.price / 100)).toFixed(2);
-
-        console.log(v.data.price);
       } else {
         outputPrice = parseFloat(v.data.price).toFixed(2);
       }

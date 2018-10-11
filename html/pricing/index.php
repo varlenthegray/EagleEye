@@ -421,6 +421,11 @@ if($pg_qry->num_rows > 0) {
                     <td class="border_thin_bottom" id="dist_pct"></td>
                     <td class="border_thin_bottom" id="dist_amt"></td>
                   </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Green Gard:<div class="cab_specifications_desc"><?php echo displayVINOpts('green_gard'); ?></div></td>
+                    <td class="border_thin_bottom" id="ggard_pct"><?php echo $room['green_gard'] === 'G1' ? '5.00%' : null; ?></td>
+                    <td class="border_thin_bottom" id="ggard_amt"></td>
+                  </tr>
                 </table>
               </div>
             </div>
@@ -817,6 +822,11 @@ if($pg_qry->num_rows > 0) {
                 <td>Glaze Technique</td>
                 <td id="calcGlazeTech"></td>
                 <td id="calcGlazeTechTotal"></td>
+              </tr>
+              <tr>
+                <td>Green Gard</td>
+                <td id="calcGreenGard"></td>
+                <td id="calcGreenGardTotal"></td>
               </tr>
               <tr>
                 <td>Cabinet Lines</td>
