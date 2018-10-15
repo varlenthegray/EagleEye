@@ -520,11 +520,11 @@ $("body")
       info += "<div class='description'>" + result.description + "</div></div>";
     }).done(function() {
       let infoHeight = infoPopup.height();
-      let infoTop = mouseY - 91;
+      let infoTop = mouseY - 190;
       let windowOverflow = $(window).scrollTop() + $(window).height();
 
       if((infoHeight + infoTop + 100) > windowOverflow) {
-        infoPopup.css({"bottom": 0, "top": "inherit", "left" : mouseX});
+        infoPopup.css({"bottom": 0, "top": "inherit", "left": (mouseX - 20)});
       } else {
         infoPopup.css({"top": infoTop, "bottom": "inherit", "left": mouseX});
       }
@@ -584,12 +584,24 @@ $("body")
         outputPrice = parseFloat(v.data.price).toFixed(2);
       }
 
+      let width = null;
+      let height = null;
+
+      if(v.data.sqft === 1) {
+        width = parseFloat(cablist.data.width);
+        height = parseFloat(cablist.data.height);
+
+        outputPrice = ((width * height) / 144) * outputPrice;
+      }
+
       cablist.addChildren({
         qty: 1,
         title: v.title,
         itemID: v.itemID,
         price: outputPrice,
         key: genKey(),
+        width: width,
+        height: height,
         icon: v.icon,
         name: v.data.description + addlInfo,
         sqft: v.data.sqft,
