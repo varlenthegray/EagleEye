@@ -274,34 +274,26 @@ switch($_REQUEST['action']) {
     //</editor-fold>
 
     //<editor-fold desc="What's Changed">
-    if(!empty($room_info['vin_code'])) {
-      $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
-      $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
-      $changed[] = whatChanged($door_design, $room_info['door_design'], 'Door Design');
-      $changed[] = whatChanged($panel_raise_door, $room_info['panel_raise_door'], 'Panel Raise (Door)');
-      $changed[] = whatChanged($panel_raise_sd, $room_info['panel_raise_sd'], 'Panel Raise Shoot Drawer');
-      $changed[] = whatChanged($panel_raise_td, $room_info['panel_raise_td'], 'Panel Raise Tall Drawer');
-      $changed[] = whatChanged($edge_profile, $room_info['edge_profile'], 'Edge Profile');
-      $changed[] = whatChanged($framing_bead, $room_info['framing_bead'], 'Framing Bead');
-      $changed[] = whatChanged($framing_options, $room_info['framing_options'], 'Framing Options');
-      $changed[] = whatChanged($style_rail_width, $room_info['style_rail_width'], 'Style/Rail Width');
-      $changed[] = whatChanged($finish_code, $room_info['finish_code'], 'Finish Code');
-      $changed[] = whatChanged($sheen, $room_info['sheen'], 'Sheen');
-      $changed[] = whatChanged($glaze, $room_info['glaze'], 'Glaze');
-      $changed[] = whatChanged($glaze_technique, $room_info['glaze_technique'], 'Glaze Technique');
-      $changed[] = whatChanged($green_gard, $room_info['green_gard'], 'Green Gard');
-      $changed[] = whatChanged($antiquing, $room_info['antiquing'], 'Antiquing');
-      $changed[] = whatChanged($worn_edges, $room_info['worn_edges'], 'Worn Edges');
-      $changed[] = whatChanged($distress_level, $room_info['distress_level'], 'Distress Level');
-      $changed[] = whatChanged($drawer_box_mount, $room_info['drawer_box_mount'], 'Drawer Box Mount');
-      $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
-    } else {
-      if(!empty($vin_final)) {
-        if($vin_final !== $room_info['vin_code']) {
-          $changed[] = 'Established VIN values';
-        }
-      }
-    }
+    $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
+    $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
+    $changed[] = whatChanged($door_design, $room_info['door_design'], 'Door Design');
+    $changed[] = whatChanged($panel_raise_door, $room_info['panel_raise_door'], 'Panel Raise (Door)');
+    $changed[] = whatChanged($panel_raise_sd, $room_info['panel_raise_sd'], 'Panel Raise Shoot Drawer');
+    $changed[] = whatChanged($panel_raise_td, $room_info['panel_raise_td'], 'Panel Raise Tall Drawer');
+    $changed[] = whatChanged($edge_profile, $room_info['edge_profile'], 'Edge Profile');
+    $changed[] = whatChanged($framing_bead, $room_info['framing_bead'], 'Framing Bead');
+    $changed[] = whatChanged($framing_options, $room_info['framing_options'], 'Framing Options');
+    $changed[] = whatChanged($style_rail_width, $room_info['style_rail_width'], 'Style/Rail Width');
+    $changed[] = whatChanged($finish_code, $room_info['finish_code'], 'Finish Code');
+    $changed[] = whatChanged($sheen, $room_info['sheen'], 'Sheen');
+    $changed[] = whatChanged($glaze, $room_info['glaze'], 'Glaze');
+    $changed[] = whatChanged($glaze_technique, $room_info['glaze_technique'], 'Glaze Technique');
+    $changed[] = whatChanged($green_gard, $room_info['green_gard'], 'Green Gard');
+    $changed[] = whatChanged($antiquing, $room_info['antiquing'], 'Antiquing');
+    $changed[] = whatChanged($worn_edges, $room_info['worn_edges'], 'Worn Edges');
+    $changed[] = whatChanged($distress_level, $room_info['distress_level'], 'Distress Level');
+    $changed[] = whatChanged($drawer_box_mount, $room_info['drawer_box_mount'], 'Drawer Box Mount');
+    $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
     //</editor-fold>
 
     //<editor-fold desc="DB: Notes">

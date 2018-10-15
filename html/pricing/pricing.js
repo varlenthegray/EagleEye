@@ -279,18 +279,22 @@ function fullRecalc() {
     var tree = cabinetList.fancytree("getTree");
 
     $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: itemID, room_id: active_room_id}, function(data) {
-      let itemInfo = JSON.parse(data);
-      let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
-      let node = tree.getNodeByKey(key);
+      if(data !== '') {
+        let itemInfo = JSON.parse(data);
+        let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
+        let node = tree.getNodeByKey(key);
 
-      node.title = itemInfo.sku;
-      node.data.price = fixedPrice;
-      node.icon = itemInfo.icon;
-      node.data.name = itemInfo.title;
-      node.data.sqft = itemInfo.sqft;
-      node.data.singlePrice = fixedPrice;
-      node.data.cabinet = itemInfo.cabinet;
-      node.data.addlMarkup = itemInfo.addl_markup;
+        node.title = itemInfo.sku;
+        node.data.price = fixedPrice;
+        node.icon = itemInfo.icon;
+        node.data.name = itemInfo.title;
+        node.data.sqft = itemInfo.sqft;
+        node.data.singlePrice = fixedPrice;
+        node.data.cabinet = itemInfo.cabinet;
+        node.data.addlMarkup = itemInfo.addl_markup;
+      }
+    }).done(function() {
+      recalcSummary();
     });
   });
 }
@@ -510,27 +514,30 @@ $("body")
     let infoPopup = $(".info-popup");
 
     $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: thisEle.data('id'), room_id: active_room_id}, function(data) {
-      let result = JSON.parse(data);
+      if(data !== '') {
+        let result = JSON.parse(data);
 
-      if(result.image !== null) {
-        info += "<div class='image'><img src='/html/pricing/images/" + result.image + "' /></div>";
+        if(result.image !== null) {
+          info += "<div class='image'><img src='/html/pricing/images/" + result.image + "' /></div>";
+        }
+
+        info += "<div class='right_content'><div class='header'><h4>" + result.title + "</h4></div>";
+        info += "<div class='description'>" + result.description + "</div></div>";
       }
-
-      info += "<div class='right_content'><div class='header'><h4>" + result.title + "</h4></div>";
-      info += "<div class='description'>" + result.description + "</div></div>";
     }).done(function() {
-      let infoHeight = infoPopup.height();
-      let infoTop = mouseY - 190;
-      let windowOverflow = $(window).scrollTop() + $(window).height();
+      if(info !== '') {
+        let infoHeight = infoPopup.height();
+        let infoTop = mouseY - 190;
+        let windowOverflow = $(window).scrollTop() + $(window).height();
 
-      if((infoHeight + infoTop + 100) > windowOverflow) {
-        infoPopup.css({"bottom": 0, "top": "inherit", "left": (mouseX - 20)});
-      } else {
-        infoPopup.css({"top": infoTop, "bottom": "inherit", "left": mouseX});
+        if((infoHeight + infoTop + 100) > windowOverflow) {
+          infoPopup.css({"bottom": 0, "top": "inherit", "left": (mouseX - 20)});
+        } else {
+          infoPopup.css({"top": infoTop, "bottom": "inherit", "left": mouseX});
+        }
+
+        infoPopup.fadeIn(250).html(info);
       }
-
-      infoPopup.fadeIn(250).html(info);
-
     });
   })
   .on("mouseleave", ".view_item_info", function() {

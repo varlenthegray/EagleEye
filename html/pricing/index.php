@@ -490,7 +490,6 @@ if($pg_qry->num_rows > 0) {
               <col width="50px">
               <col width="50px">
               <col width="50px">
-              <col width="50px">
             </colgroup>
             <thead>
             <tr>
@@ -1065,6 +1064,11 @@ if($pg_qry->num_rows > 0) {
       },
       modifyChild: function(event, data) {
         recalcSummary();
+      },
+      init: function() {
+        setTimeout(function() {
+          cabinetList.floatThead({ top: 151 });
+        }, 500);
       }
     }).on("nodeCommand", function(event, data) {
       // Custom event handler that is triggered by keydown-handler and
