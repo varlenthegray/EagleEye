@@ -862,7 +862,13 @@ $("body")
     $("#modalAddModification").modal('show');
   })
   .on("click", ".item_copy", function() {
-    let activeNode = cabinetList.fancytree("getTree").getActiveNode();
+    let activeNode = cabinetList.fancytree("getTree").getActiveNode().toDict(true);
+
+    activeNode.key = genKey();
+
+    $.each(activeNode.children, function(key) {
+      activeNode.children[key].key = genKey();
+    });
 
     cabinetList.fancytree("getRootNode").addChildren(activeNode);
   })
