@@ -601,6 +601,26 @@ $("body")
         outputPrice = ((width * height) / 144) * outputPrice;
       }
 
+      var $tdList = $(cablist.tr).find(">td");
+
+      switch(parseInt(v.key)) {
+        case 90048:
+        case 90051:
+          $tdList.eq(5).find("input").val(addlInfo.trim());
+          cablist.data.width = addlInfo.trim();
+          break;
+        case 90049:
+        case 90052:
+          $tdList.eq(6).find("input").val(addlInfo.trim());
+          cablist.data.height = addlInfo.trim();
+          break;
+        case 90050:
+        case 90053:
+          $tdList.eq(7).find("input").val(addlInfo.trim());
+          cablist.data.depth = addlInfo.trim();
+          break;
+      }
+
       cablist.addChildren({
         qty: 1,
         title: v.title,
