@@ -331,11 +331,11 @@ if($pg_qry->num_rows > 0) {
                     <td class="border_thin_bottom"></td>
                     <td class="border_thin_bottom"></td>
                   </tr>
-                  <!--<tr>
-                    <td class="border_thin_bottom">Construction:<div class="cab_specifications_desc"><?php /*echo displayVINOpts('construction_method'); */?></div></td>
+                  <tr>
+                    <td class="border_thin_bottom">Construction:<div class="cab_specifications_desc"><?php echo displayVINOpts('construction_method'); ?></div></td>
                     <td class="border_thin_bottom" id="const_pct">0.00%</td>
                     <td class="border_thin_bottom" id="const_amt">$0.00</td>
-                  </tr>-->
+                  </tr>
                   <tr>
                     <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo displayVINOpts('door_design', null, 'pricingDoorDesign'); ?></div></td>
                     <td class="border_thin_bottom text-md-center" id="const_pg" colspan="2">Price Group <span id="cab_spec_pg"><?php echo $price_group; ?></span></td>
@@ -377,8 +377,13 @@ if($pg_qry->num_rows > 0) {
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc"><?php echo displayVINOpts('drawer_boxes'); ?></div></td>
-                    <td class="border_thin_bottom" id="const_pct"></td>
-                    <td class="border_thin_bottom" id="const_amt"></td>
+                    <td class="border_thin_bottom" id="drwr_pct"></td>
+                    <td class="border_thin_bottom" id="drwr_amt"></td>
+                  </tr>
+                  <tr>
+                    <td class="border_thin_bottom">Drawer Guide:<div class="cab_specifications_desc"><?php echo displayVINOpts('drawer_guide'); ?></div></td>
+                    <td class="border_thin_bottom" id="drwguide_pct"></td>
+                    <td class="border_thin_bottom" id="drwguide_amt"></td>
                   </tr>
                 </table>
               </div>
@@ -388,7 +393,11 @@ if($pg_qry->num_rows > 0) {
                   <tr><th colspan="3" style="padding-left:5px;" class="th_17">Finish</th></tr>
                   <tr class="border_top">
                     <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc"><?php displayFinishOpts("finish_code", "finish_code"); ?></div></td>
-                    <td class="border_thin_bottom" id="fc_pct"></td>
+                    <td class="border_thin_bottom" id="fc_pct">
+                      <?php
+                        if($room['product_type'] === 'P' && (false !== stripos($room['finish_code'], 'p') || $room['finish_code'] === '1cXXXX')) { echo '10.00%'; }
+                      ?>
+                    </td>
                     <td class="border_thin_bottom" id="fc_amt"></td>
                   </tr>
                   <tr>
@@ -826,6 +835,11 @@ if($pg_qry->num_rows > 0) {
                 <td>Green Gard</td>
                 <td id="calcGreenGard"></td>
                 <td id="calcGreenGardTotal"></td>
+              </tr>
+              <tr>
+                <td>Finish Cost</td>
+                <td id="calcFinishCode"></td>
+                <td id="calcFinishCodeTotal"></td>
               </tr>
               <tr>
                 <td>Cabinet Lines</td>

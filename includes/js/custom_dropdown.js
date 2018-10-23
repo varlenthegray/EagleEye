@@ -22,9 +22,9 @@ function determineOpts() {
   // for now, this is going to be hard-coded and limited to drawer boxes only
   // TODO: Make this based on database values? I don't know how to handle this
 
-  $("[data-for='drawer_boxes']").find(".option_list").children(".option").each(function() {$(this).show();});
+  /*$("[data-for='drawer_boxes']").find(".option_list").children(".option").each(function() {$(this).show();});*/
 
-  switch($("#construction_method").val()) {
+  /*switch($("#construction_method").val()) {
     case 'C': // cam
       hideOption("A4");
       hideOption("A5");
@@ -37,7 +37,7 @@ function determineOpts() {
       hideOption("A2");
       hideOption("A3");
       break;
-  }
+  }*/
 }
 
 $("body")
@@ -135,7 +135,7 @@ $("body")
 
     determineOpts();
   })
-  .on("click", ".option", function() cab_spec_pg{
+  .on("click", ".option", function() {
     var field;
     var display;
     var addl_info = '';

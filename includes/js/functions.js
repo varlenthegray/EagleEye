@@ -220,7 +220,11 @@ function productTypeSwitch() {
       break;
 
     case 'L':
-      setPcts({'green': {'ship_days': 10, 'pct': 0}, 'yellow': {'ship_days': 6, 'pct': 0.25}, 'orange': {'unavailable': true}, 'red': {'ship_days': 3, 'pct': 0.5}});
+      setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'ship_days': 19, 'pct': 0.25}, 'orange': {'ship_days': 13, 'pct': 0.5}, 'red': {'ship_days': 6, 'pct': 0.5}});
+      break;
+
+    case 'P':
+      setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'ship_days': 19, 'pct': 0.25}, 'orange': {'ship_days': 13, 'pct': 0.5}, 'red': {'ship_days': 6, 'pct': 0.5}});
       break;
 
     case 'S':

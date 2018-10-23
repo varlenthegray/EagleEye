@@ -250,6 +250,7 @@ switch($_REQUEST['action']) {
     $framing_bead = sanitizeInput($cabinet_specifications['framing_bead']);
     $framing_options = sanitizeInput($cabinet_specifications['framing_options']);
     $drawer_boxes = sanitizeInput($cabinet_specifications['drawer_boxes']);
+    $drawer_guide = sanitizeInput($cabinet_specifications['drawer_guide']);
     $finish_code = sanitizeInput($cabinet_specifications['finish_code']);
     $sheen = sanitizeInput($cabinet_specifications['sheen']);
     $glaze = sanitizeInput($cabinet_specifications['glaze']);
@@ -294,6 +295,7 @@ switch($_REQUEST['action']) {
     $changed[] = whatChanged($distress_level, $room_info['distress_level'], 'Distress Level');
     $changed[] = whatChanged($drawer_box_mount, $room_info['drawer_box_mount'], 'Drawer Box Mount');
     $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
+    $changed[] = whatChanged($drawer_guide, $room_info['drawer_guide'], 'Drawer Guide');
     //</editor-fold>
 
     //<editor-fold desc="DB: Notes">
@@ -420,6 +422,7 @@ HEREDOC;
         worn_edges = '$worn_edges', 
         distress_level = '$distress_level', 
         drawer_boxes = '$drawer_boxes', 
+        drawer_guide = '$drawer_guide', 
         custom_vin_info = '$custom_vals',
         payment_deposit = $deposit_received, 
         payment_final = $final_payment, 

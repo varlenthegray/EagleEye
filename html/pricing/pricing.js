@@ -105,12 +105,10 @@ function recalcSummary() {
   // done parsing per line, moving into the global charges for the page
 
   //// Glaze Technique
-  let gt_pct = $("#gt_pct");
-  let gt_amt = $("#gt_amt");
-  let ggard_pct = $("#ggard_pct");
-  let ggard_amt = $("#ggard_amt");
-  let gt_markup = 0.00; // glaze technique markup
-  let ggard_markup = 0.00;
+  let gt_pct = $("#gt_pct"), gt_amt = $("#gt_amt");
+  let ggard_pct = $("#ggard_pct"), ggard_amt = $("#ggard_amt");
+  let fcode_pct = $("#fc_pct"), fcode_amt = $("#fc_amt");
+  let gt_markup = 0.00, ggard_markup = 0.00, fcode_markup = 0.00; // glaze technique markup
 
   // grab the glaze technique, determine what the amount to markup is
   switch($("#glaze_technique").val()) {
@@ -138,9 +136,17 @@ function recalcSummary() {
       break;
   }
 
+  if(($("#finish_code").val().indexOf('p') >= 0 ||  $("#finish_code").val() === '1cXXXX') && $("#product_type").val() === 'P') {
+    fcode_markup = 0.10;
+  } else {
+    fcode_markup = 0;
+    fcode_amt.text("");
+  }
+
   // calculate out the cost of the glaze technique
   let gt_cost = line_total * gt_markup;
   let ggard_cost = line_total * ggard_markup;
+  let fcode_cost = line_total * fcode_markup;
 
   // Glaze Technique fields
   gt_amt.text(gt_cost.formatMoney());
@@ -150,9 +156,14 @@ function recalcSummary() {
   ggard_amt.text(ggard_cost.formatMoney());
   ggard_pct.text((ggard_markup * 100).toFixed(2) + "%");
 
+  // Finish Code fields
+  fcode_amt.text(fcode_cost.formatMoney());
+  fcode_pct.text((fcode_markup * 100).toFixed(2) + "%");
+
   // add the glaze technique to the total amount of global upcharges
   global_cab_charges += gt_cost;
   global_cab_charges += ggard_cost;
+  global_cab_charges += fcode_cost;
 
   let shipPrice = 0;
 
@@ -236,6 +247,9 @@ function recalcSummary() {
 
   $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') * Green Gard Markup (' + ggard_markup + ')');
   $("#calcGreenGardTotal").html(ggard_cost.formatMoney());
+
+  $("#calcFinishCode").html('Total (' + line_total.toFixed(2) + ') * Finish Markup (' + fcode_markup + ')');
+  $("#calcFinishCodeTotal").html(fcode_cost.formatMoney());
 
   $("#calcCabinetLines").html('Cabinets: ' + cabinet_only_skus);
   $("#calcCabinetLinesTotal").html(cabinet_only_total.formatMoney());
