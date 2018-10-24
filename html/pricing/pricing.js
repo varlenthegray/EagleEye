@@ -900,9 +900,11 @@ $("body")
 
     activeNode.key = genKey();
 
-    $.each(activeNode.children, function(key) {
-      activeNode.children[key].key = genKey();
-    });
+    if(activeNode.children !== null) {
+      $.each(activeNode.children, function(key) {
+        activeNode.children[key].key = genKey();
+      });
+    }
 
     cabinetList.fancytree("getRootNode").addChildren(activeNode);
   })
@@ -913,5 +915,8 @@ $("body")
     $.get("/html/pricing/ajax/add_item.php", function(data) {
       $("#modalGeneral").html(data).modal("show");
     });
+  })
+  .on("click", "#catalog_recalculate", function() {
+    fullRecalc();
   })
 ;

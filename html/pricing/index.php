@@ -122,7 +122,7 @@ if($pg_qry->num_rows > 0) {
       <button class="btn waves-effect btn-secondary" title="Door Sizing" onclick="window.open('/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>','_blank')"> <i class="fa fa-arrows-alt fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Appliance Worksheets" id='appliance_ws' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-cubes fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Recalculate Ship Date" id='ship_date_recalc' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-truck fa-2x"></i> </button>
-      <?php echo $bouncer->validate('pricing_add_catalog_item') ? '<button class="btn waves-effect btn-secondary" title="Add Item to Catalog" id="catalog_add_item"> <i class="fa fa-plus-square fa-2x"></i> </button>' : null; ?>
+      <button class="btn waves-effect btn-secondary" title="Recalculate Pricing" id="catalog_recalculate"> <i class="fa fa-retweet fa-2x"></i> </button>
     </div>
 
     <div class="col-md-6 text-md-right"><h4 style="margin:0;padding:0;"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']} $submitted"; ?></h4></div>
@@ -334,7 +334,7 @@ if($pg_qry->num_rows > 0) {
                     <td class="border_thin_bottom"></td>
                   </tr>
                   <tr>
-                    <td class="border_thin_bottom">Construction:<div class="cab_specifications_desc"><?php echo displayVINOpts('construction_method'); ?></div></td>
+                    <td class="border_thin_bottom">Box Construction:<div class="cab_specifications_desc"><?php echo displayVINOpts('construction_method'); ?></div></td>
                     <td class="border_thin_bottom" id="const_pct">0.00%</td>
                     <td class="border_thin_bottom" id="const_amt">$0.00</td>
                   </tr>
@@ -1041,7 +1041,7 @@ if($pg_qry->num_rows > 0) {
 
         // Index #9 => Price (individual)
         if(node.data.customPrice === 1) {
-          $tdList.eq(9).html('<input type="text" class="form-control custom_price" placeholder="Price" data-id="' + node.key + '" >');
+          $tdList.eq(9).html('<input type="text" class="form-control custom_price" placeholder="Price" data-id="' + node.key + '" value="' + parseFloat(node.data.price).formatMoney() + '" >');
         } else {
           if (!isNaN(price)) {
             $tdList.eq(9).text(price.formatMoney()).removeAttr("style title"); // price column
