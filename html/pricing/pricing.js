@@ -108,7 +108,8 @@ function recalcSummary() {
   let gt_pct = $("#gt_pct"), gt_amt = $("#gt_amt");
   let ggard_pct = $("#ggard_pct"), ggard_amt = $("#ggard_amt");
   let fcode_pct = $("#fc_pct"), fcode_amt = $("#fc_amt");
-  let gt_markup = 0.00, ggard_markup = 0.00, fcode_markup = 0.00; // glaze technique markup
+  let sheen_pct = $("#sheen_pct"), sheen_amt = $("#sheen_amt");
+  let gt_markup = 0.00, ggard_markup = 0.00, fcode_markup = 0.00, sheen_markup = 0.00; // glaze technique markup
 
   // grab the glaze technique, determine what the amount to markup is
   switch($("#glaze_technique").val()) {
@@ -136,6 +137,25 @@ function recalcSummary() {
       break;
   }
 
+  // grab the green gard, determine what the amount to markup is
+  switch($("#sheen").val()) {
+    case 'a':
+      sheen_markup = 0.05; // toss this into the function variable for markup
+      break;
+    case 'c':
+      sheen_pct.text("");
+      break;
+    case 'h':
+      sheen_markup = 0.05; // toss this into the function variable for markup
+      break;
+    case 'X':
+      sheen_markup = 0.05; // toss this into the function variable for markup
+      break;
+    default:
+      sheen_amt.text("ERR");
+      break;
+  }
+
   if(($("#finish_code").val().indexOf('p') >= 0 ||  $("#finish_code").val() === '1cXXXX') && $("#product_type").val() === 'P') {
     fcode_markup = 0.10;
   } else {
@@ -147,6 +167,7 @@ function recalcSummary() {
   let gt_cost = line_total * gt_markup;
   let ggard_cost = line_total * ggard_markup;
   let fcode_cost = line_total * fcode_markup;
+  let sheen_cost = line_total * sheen_markup;
 
   // Glaze Technique fields
   gt_amt.text(gt_cost.formatMoney());
@@ -160,10 +181,15 @@ function recalcSummary() {
   fcode_amt.text(fcode_cost.formatMoney());
   fcode_pct.text((fcode_markup * 100).toFixed(2) + "%");
 
+  // Sheen fields
+  sheen_amt.text(sheen_cost.formatMoney());
+  sheen_pct.text((sheen_markup * 100).toFixed(2) + "%");
+
   // add the glaze technique to the total amount of global upcharges
   global_cab_charges += gt_cost;
   global_cab_charges += ggard_cost;
   global_cab_charges += fcode_cost;
+  global_cab_charges += sheen_cost;
 
   let shipPrice = 0;
 
@@ -247,6 +273,9 @@ function recalcSummary() {
 
   $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') * Green Gard Markup (' + ggard_markup + ')');
   $("#calcGreenGardTotal").html(ggard_cost.formatMoney());
+
+  $("#calcSheen").html('Total (' + line_total.toFixed(2) + ') * Sheen Markup (' + sheen_markup + ')');
+  $("#calcSheenTotal").html(sheen_cost.formatMoney());
 
   $("#calcFinishCode").html('Total (' + line_total.toFixed(2) + ') * Finish Markup (' + fcode_markup + ')');
   $("#calcFinishCodeTotal").html(fcode_cost.formatMoney());

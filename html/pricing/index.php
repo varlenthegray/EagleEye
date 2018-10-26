@@ -395,16 +395,12 @@ if($pg_qry->num_rows > 0) {
                   <tr><th colspan="3" style="padding-left:5px;" class="th_17">Finish</th></tr>
                   <tr class="border_top">
                     <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc"><?php displayFinishOpts("finish_code", "finish_code"); ?></div></td>
-                    <td class="border_thin_bottom" id="fc_pct">
-                      <?php
-                        if($room['product_type'] === 'P' && (false !== stripos($room['finish_code'], 'p') || $room['finish_code'] === '1cXXXX')) { echo '10.00%'; }
-                      ?>
-                    </td>
+                    <td class="border_thin_bottom" id="fc_pct"><?php if($room['product_type'] === 'P' && (false !== stripos($room['finish_code'], 'p') || $room['finish_code'] === '1cXXXX')) { echo '10.00%'; } ?></td>
                     <td class="border_thin_bottom" id="fc_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc"><?php echo displayVINOpts('sheen'); ?></div></td>
-                    <td class="border_thin_bottom" id="sheen_pct"></td>
+                    <td class="border_thin_bottom" id="sheen_pct"><?php if($room['sheen'] === 'a' || $room['sheen'] === 'X' || $room['sheen'] === 'h' ) { echo '5.00%'; } ?></td>
                     <td class="border_thin_bottom" id="sheen_amt"></td>
                   </tr>
                   <tr>
@@ -832,6 +828,11 @@ if($pg_qry->num_rows > 0) {
                 <td>Glaze Technique</td>
                 <td id="calcGlazeTech"></td>
                 <td id="calcGlazeTechTotal"></td>
+              </tr>
+              <tr>
+                <td>Sheen</td>
+                <td id="calcSheen"></td>
+                <td id="calcSheenTotal"></td>
               </tr>
               <tr>
                 <td>Green Gard</td>
