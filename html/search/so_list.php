@@ -216,8 +216,7 @@ if($qry->num_rows > 0) {
             <div class="row">
               <div class="col-md-3">
                 <table style="width:100%;margin-top:8px;" class="table table-custom-nb">
-                  <?php if((bool)$_SESSION['userInfo']['dealer']) { ?>
-                    <?php
+                  <?php if((bool)$_SESSION['userInfo']['dealer']) {
                     $dealer_code = ucwords($_SESSION['userInfo']['username']);
 
                     echo "<input type='hidden' name='dealer_code' id='dealer_code' value='$dealer_code'>";
@@ -1029,25 +1028,35 @@ if($qry->num_rows > 0) {
                     case '$':
                       $order_status = '<strong>Job</strong>';
                       break;
-
                     case '#':
                       $order_status = '<strong>Quote</strong>';
                       break;
-
                     case '+':
                       $order_status = '<strong>Completed</strong>';
                       break;
-
                     case '-':
                       $order_status = '<strong>Lost</strong>';
                       break;
-
                     case 'A':
                       $order_status = '<strong>Add-on</strong>';
                       break;
-
                     case 'W':
                       $order_status = '<strong>Warranty</strong>';
+                      break;
+                    case 'H':
+                      $order_status = '<strong>Hold</strong>';
+                      break;
+                    case 'P':
+                      $order_status = '<strong>Pending</strong>';
+                      break;
+                    case 'R':
+                      $order_status = '<strong>Referred</strong>';
+                      break;
+                    case 'N':
+                      $order_status = '<strong>Inquiry</strong>';
+                      break;
+                    case '!':
+                      $order_status = '<strong>Pillar Missing</strong>';
                       break;
                   }
 

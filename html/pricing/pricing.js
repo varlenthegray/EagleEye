@@ -322,12 +322,12 @@ function fullRecalc() {
     var tree = cabinetList.fancytree("getTree");
 
     $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: itemID, room_id: active_room_id}, function(data) {
-      if(data !== '') {
+      if(data !== '' && line.data.customPrice !== 1) {
         let itemInfo = JSON.parse(data);
         let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
         let node = tree.getNodeByKey(key);
 
-        node.title = itemInfo.sku;
+        node.setTitle(itemInfo.sku);
         node.data.price = fixedPrice;
         node.icon = itemInfo.icon;
         node.data.name = itemInfo.title;
@@ -505,7 +505,7 @@ $("body")
 
       let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
 
-      root.addChildren({
+      let insertedNode = root.addChildren({
         qty: 1,
         title: itemInfo.sku,
         width: itemInfo.width,
@@ -521,6 +521,8 @@ $("body")
         cabinet: itemInfo.cabinet,
         addlMarkup: itemInfo.addlMarkup
       });
+
+
 
       recalcSummary();
     });
@@ -667,7 +669,7 @@ $("body")
       cablist.addChildren({
         qty: 1,
         title: v.title,
-        itemID: v.itemID,
+        itemID: v.data.itemID,
         price: outputPrice,
         key: genKey(),
         width: width,
@@ -734,6 +736,8 @@ $("body")
   })
   .on("click", "#modalGlobalsUpdate", function() {
     let globalInfo = $("#modalGlobalData").serialize();
+
+    console.log(globalInfo);
 
     $.post("/html/pricing/ajax/global_actions.php?action=updateGlobals&roomID=" + active_room_id, {globalInfo: globalInfo}, function(data) {
       $("body").append(data);
@@ -947,5 +951,8 @@ $("body")
   })
   .on("click", "#catalog_recalculate", function() {
     fullRecalc();
+  })
+  .on("click", "#dl_ord_file", function() {
+    $("#dlORDfile").attr("src", "/html/pricing/ajax/make_ord.php?roomID=" + active_room_id);
   })
 ;

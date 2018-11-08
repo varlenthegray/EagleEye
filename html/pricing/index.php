@@ -117,12 +117,13 @@ if($pg_qry->num_rows > 0) {
         </div>
       </div>
       <button class="btn waves-effect btn-secondary" title="Room Attachments" id="add_attachment"> <i class="fa fa-paperclip fa-2x"></i> </button>
-      <button class="btn waves-effect btn-secondary" title="Copy Room" id="copy_room"> <i class="fa fa-copy fa-2x"></i> </button>
+<!--      <button class="btn waves-effect btn-secondary" title="Copy Room" id="copy_room"> <i class="fa fa-copy fa-2x"></i> </button>-->
       <button class="btn waves-effect btn-secondary" title="Bracket Management" id="bracket_management"> <i class="fa fa-code-fork fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Door Sizing" onclick="window.open('/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>','_blank')"> <i class="fa fa-arrows-alt fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Appliance Worksheets" id='appliance_ws' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-cubes fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Recalculate Ship Date" id='ship_date_recalc' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-truck fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Recalculate Pricing" id="catalog_recalculate"> <i class="fa fa-retweet fa-2x"></i> </button>
+      <button class="btn waves-effect btn-secondary" title="Download ORD File" id="dl_ord_file"><i class="fa fa-file-text-o fa-2x"></i></button>
     </div>
 
     <div class="col-md-6 text-md-right"><h4 style="margin:0;padding:0;"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']} $submitted"; ?></h4></div>
@@ -429,7 +430,7 @@ if($pg_qry->num_rows > 0) {
                     <td class="border_thin_bottom" id="dist_amt"></td>
                   </tr>
                   <tr>
-                    <td class="border_thin_bottom">Green Gard:<div class="cab_specifications_desc"><?php echo displayVINOpts('green_gard'); ?></div></td>
+                    <td class="border_thin_bottom">Enviro-finish:<div class="cab_specifications_desc"><?php echo displayVINOpts('green_gard'); ?></div></td>
                     <td class="border_thin_bottom" id="ggard_pct"><?php echo $room['green_gard'] === 'G1' ? '5.00%' : null; ?></td>
                     <td class="border_thin_bottom" id="ggard_amt"></td>
                   </tr>
@@ -900,6 +901,8 @@ if($pg_qry->num_rows > 0) {
   </div>
   <!-- /.modal -->
 </form>
+
+<iframe id="dlORDfile" src="" style="display:none;visibility:hidden;"></iframe>
 
 <script>
   function getUrlParams(prop) {

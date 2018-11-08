@@ -15,29 +15,7 @@ function adjustImgPopups() {
 }
 
 function determineOpts() {
-  function hideOption(opt) {
-    $("[data-for='drawer_boxes']").find(".option_list").find("[data-value='" + opt + "']").hide();
-  }
 
-  // for now, this is going to be hard-coded and limited to drawer boxes only
-  // TODO: Make this based on database values? I don't know how to handle this
-
-  /*$("[data-for='drawer_boxes']").find(".option_list").children(".option").each(function() {$(this).show();});*/
-
-  /*switch($("#construction_method").val()) {
-    case 'C': // cam
-      hideOption("A4");
-      hideOption("A5");
-      hideOption("A6");
-      hideOption("A7");
-      hideOption("A8");
-      hideOption("A9");
-      break;
-    default:
-      hideOption("A2");
-      hideOption("A3");
-      break;
-  }*/
 }
 
 $("body")

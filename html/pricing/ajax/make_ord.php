@@ -1,6 +1,5 @@
 <?php
-require '../includes/header_start.php';
-
+require '../../../includes/header_start.php';
 
 header('Content-Description: File Transfer');
 header('Content-Type: text/plain');
@@ -82,6 +81,17 @@ if($info_qry->num_rows === 1) {
     } else {
       $_material_addon = null;
     }
+  }
+
+  // if this is green gard or enviro-finish and a frameless cabinet and maple
+  if($info['green_gard'] === 'G1' && $info['product_type'] === 'C' && ($info['species_grade'] === 'Pm' || $info['species_grade'] === 'Mv' || $info['species_grade'] === 'Mups')) {
+    $_species = 'Maple Stain';
+    $_material_addon = ' (MUV2)';
+  }
+
+  if($info['green_gard'] === 'G1' && $info['product_type'] === 'P' && ($info['species_grade'] === 'Pm' || $info['species_grade'] === 'Mv' || $info['species_grade'] === 'Mups')) {
+    $_species = 'Maple Stain';
+    $_material_addon = ' (MUV2)';
   }
 
   $_CabinetMaterials = "$_species{$_material_addon}";
@@ -178,7 +188,7 @@ if($info_qry->num_rows === 1) {
 
   $_itemList = <<<HEREDOC
   [Catalog]
-  Name="SMCM Frameless.cvc"
+  Name="1 - SMCM Frameless.cvc"
   
   [Cabinets]
   $_cabinets

@@ -15,7 +15,7 @@ switch($_REQUEST['action']) {
 
     $item_qry = $dbconn->query("SELECT 
       pn.sku, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog, detail.image_path AS image, 
-      detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.fixed_price
+      detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.fixed_price, pn.kit_id
     FROM pricing_nomenclature pn
       LEFT JOIN pricing_catalog catalog on pn.catalog_id = catalog.id
       LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
