@@ -327,6 +327,8 @@ function fullRecalc() {
         let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
         let node = tree.getNodeByKey(key);
 
+        console.log(itemInfo);
+
         node.setTitle(itemInfo.sku);
         node.data.price = fixedPrice;
         node.icon = itemInfo.icon;
@@ -945,7 +947,7 @@ $("body")
     $("#modalDetailedItemList").modal("show")
   })
   .on("click", "#catalog_add_item", function() {
-    $.get("/html/pricing/ajax/add_item.php", function(data) {
+    $.get("/html/pricing/ajax/modify_item.php", function(data) {
       $("#modalGeneral").html(data).modal("show");
     });
   })
@@ -954,5 +956,90 @@ $("body")
   })
   .on("click", "#dl_ord_file", function() {
     $("#dlORDfile").attr("src", "/html/pricing/ajax/make_ord.php?roomID=" + active_room_id);
+  })
+  .on("click", "#editCatalogLock", function() {
+    if($(this).hasClass('fa-lock')) {
+      $(this).removeClass('fa-lock').addClass('fa-unlock');
+    } else {
+      $(this).removeClass('fa-unlock').addClass('fa-lock');
+    }
+  })
+  .on("click", "#modalSaveCatItemSubmit", function() {
+    let node = catalog.fancytree("getTree").getActiveNode();
+    let fields = $("#catalogAddEditItem").serialize();
+
+    let sku = $("#catalogAddEditItem input[name='title']").val();
+
+    $.post("/html/pricing/ajax/item_actions.php?action=updateItem", {key: node.key, folder: node.folder, update: fields}, function(data, status) {
+      $("body").append(data);
+
+      if(status === 'success') {
+        let title = sku +
+          '<span class="actions">' +
+            '<div class="info_container"><i class="fa fa-info-circle primary-color view_item_info" data-id="' + node.key + '"></i></div>' +
+            '<i class="fa fa-plus-circle success-color add_item_cabinet_list" data-id="' + node.key + '" title="Add To Cabinet List"></i>' +
+          '</span>';
+
+        node.setTitle(title);
+        $("#modalGeneral").html(data).modal("hide");
+      }
+    });
+
+    unsaved = false;
+  })
+  .on("click", "#modalAddCatItemSubmit", function() {
+    let node = catalog.fancytree("getTree").getActiveNode();
+    let fields = $("#catalogAddEditItem").serialize();
+    let catID = node.key;
+    let createFolder = false;
+    let folderType = null;
+
+    let sku = $("#catalogAddEditItem input[name='title']").val();
+
+    if($(this).attr("data-type") === 'newSameFolder') {
+      createFolder = true;
+      folderType = 'alongside';
+    } else if($(this).attr('data-type') === 'newSubFolder') {
+      createFolder = true;
+      folderType = 'child';
+    }
+
+    if(!node.isFolder()) {
+      catID = node.parent.key;
+    }
+
+    $.post("/html/pricing/ajax/item_actions.php?action=createItem", {key: catID, folder: createFolder, folderType: folderType, update: fields}, function(data, status) {
+      if(status === 'success') {
+        let insertID = data;
+
+        if(createFolder) {
+          if(folderType === 'alongside') {
+            catalog.fancytree("getTree").getNodeByKey(catID).parent.addChildren({'key': insertID, 'title': sku, 'folder': true});
+          } else {
+            catalog.fancytree("getTree").getNodeByKey(catID).addChildren({'key': insertID, 'title': sku, 'folder': true});
+          }
+
+          displayToast('success', 'Successfully created category', 'Category Created');
+
+          $("#modalGeneral").html(data).modal("hide");
+        } else {
+          let title = sku +
+            '<span class="actions">' +
+            '<div class="info_container"><i class="fa fa-info-circle primary-color view_item_info" data-id="' + insertID + '"></i></div>' +
+            '<i class="fa fa-plus-circle success-color add_item_cabinet_list" data-id="' + insertID + '" title="Add To Cabinet List"></i>' +
+            '</span>';
+
+          catalog.fancytree("getTree").getNodeByKey(catID).addChildren({'key': insertID, 'icon': 'fa fa-magic', 'title': title, 'is_item': true, 'qty': 1});
+
+          displayToast('success', 'Successfully created item.', 'Item Created');
+
+          $("#modalGeneral").html(data).modal("hide");
+        }
+      } else {
+        displayToast('error', 'Unable to create the requested item/category.', 'Error');
+      }
+    });
+
+    unsaved = false;
   })
 ;

@@ -96,4 +96,109 @@ switch($_REQUEST['action']) {
     }
 
     break;
+  case 'updateItem':
+    $id = sanitizeInput($_REQUEST['key']);
+    $folder = sanitizeInput($_REQUEST['folder']);
+    parse_str(sanitizeInput($_REQUEST['update']), $update);
+
+    if($folder === 'true') {
+      if($dbconn->query("UPDATE pricing_categories SET name = '{$update['title']}' WHERE id = $id")) {
+        http_response_code(200);
+        echo displayToast('success', 'Successfully updated category.', "Updated {$update['title']}");
+      } else {
+        http_response_code(400);
+        dbLogSQLErr($dbconn);
+      }
+    } else {
+      // now we're working on an item
+      if($dbconn->query("UPDATE pricing_nomenclature SET sku = '{$update['title']}', width = '{$update['width']}', height = '{$update['height']}', depth = '{$update['depth']}' WHERE id = $id")) {
+        http_response_code(200);
+        echo displayToast('success', 'Successfully updated item.', "Updated {$update['title']}");
+      } else {
+        http_response_code(400);
+        dbLogSQLErr($dbconn);
+      }
+    }
+
+    break;
+  case 'createItem':
+    $id = sanitizeInput($_REQUEST['key']);
+    $folder = sanitizeInput($_REQUEST['folder']);
+    $folderType = sanitizeInput($_REQUEST['folderType']);
+    parse_str(sanitizeInput($_REQUEST['update']), $update);
+    $parentID = null;
+
+    $result = array();
+
+    if($folder === 'true') { // if we're creating a folder
+      $cat_qry = $dbconn->query("SELECT * FROM pricing_categories WHERE id = $id"); // get the current node's information
+      $cat = $cat_qry->fetch_assoc(); // current node
+
+      if($folderType === 'alongside') {
+        $sort_qry = $dbconn->query("SELECT MAX(sort_order) AS maxSO FROM pricing_categories WHERE parent = {$cat['parent']}"); // current node's parent max sort order
+        $sort = $sort_qry->fetch_assoc(); // max sort order for parent
+
+        $parentID = $cat['parent'];
+      } elseif($folderType === 'child') {
+        $sort_qry = $dbconn->query("SELECT MAX(sort_order) AS maxSO FROM pricing_categories WHERE parent = $id");
+        $sort = $sort_qry->fetch_assoc();
+
+        $parentID = $id;
+      }
+
+      $sort_order = $sort['maxSO'] + 1; // add one so that it's now at the bottom
+
+      if($dbconn->query("INSERT INTO pricing_categories (catalog_id, name, parent, enabled, sort_order) VALUES (1, '{$update['title']}', $parentID, 1, $sort_order)")) {
+        http_response_code(200);
+        echo $dbconn->insert_id;
+      } else {
+        http_response_code(400);
+        dbLogSQLErr($dbconn);
+      }
+    } else {
+      $width = !empty($update['width']) ? $update['width'] : 0;
+      $height = !empty($update['height']) ? $update['height'] : 0;
+      $depth = !empty($update['depth']) ? $update['depth'] : 0;
+
+      // now we're working on an item
+      if($dbconn->query("INSERT INTO pricing_nomenclature (catalog_id, category_id, sku, width, height, depth, modification, cabinet, sqft, linft, fixed_price, percent) VALUES 
+      (1, $id, '{$update['title']}', $width, $height, $depth, 0, 1, 0, 0, 0, 0)")) {
+        http_response_code(200);
+
+        echo $dbconn->insert_id;
+      } else {
+        http_response_code(400);
+        dbLogSQLErr($dbconn);
+      }
+    }
+
+    break;
+  case 'updateCategoryOrder':
+    $order = $_REQUEST['newOrder'];
+    $order = json_decode($order);
+    $new_parent = sanitizeInput($_REQUEST['parent']);
+    $current_cat = sanitizeInput($_REQUEST['curCat']);
+    $isFolder = sanitizeInput($_REQUEST['isFolder']);
+
+    if($isFolder === 'true') {
+      foreach($order AS $key => $line) {
+        $key++;
+        $dbconn->query("UPDATE pricing_categories SET sort_order = $key WHERE id = $line");
+      }
+
+      $dbconn->query("UPDATE pricing_categories SET parent = $new_parent WHERE id = $current_cat");
+
+      echo displayToast('success', 'Successfully updated the category.', 'Category Updated');
+    } else {
+      foreach($order AS $key => $line) {
+        $key++;
+        $dbconn->query("UPDATE pricing_nomenclature SET sort_order = $key WHERE id = $line");
+      }
+
+      $dbconn->query("UPDATE pricing_nomenclature SET category_id = $new_parent WHERE id = $current_cat");
+
+      echo displayToast('success', 'Successfully updated the item.', 'Item Updated');
+    }
+
+    break;
 }

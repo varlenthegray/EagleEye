@@ -1088,7 +1088,7 @@ if($qry->num_rows > 0) {
 
                   echo "</tr>";
 
-                  echo ($bouncer->validate('edit_room')) ? "<tr class='tr_room_actions' id='{$room['id']}' style='display:none;'><td colspan='11'><div style='display:none;'></div></td></tr>" : null;
+                  echo ($bouncer->validate('edit_room')) ? "<tr class='tr_room_actions' id='{$room['id']}' style='display:none;'><td colspan='12'><div style='display:none;'></div></td></tr>" : null;
 
                   //<editor-fold desc="Attachments">
                   /** BEGIN DISPLAY OF ATTACHMENTS */

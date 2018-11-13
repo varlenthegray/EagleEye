@@ -134,6 +134,7 @@ if($pg_qry->num_rows > 0) {
       <div class="sticky nav_filter">
         <div class="form-group">
           <label for="treeFilter">Search Catalog</label>
+          <?php echo $bouncer->validate('pricing_change_catalog') ? '<span class="pull-right"><i id="editCatalogLock" class="fa fa-fw fa-lock cursor-hand" title="Lock/Unlock Catalog for Changes"></i></span>' : null ?>
           <input type="text" class="form-control fc-simple ignoreSaveAlert" id="treeFilter" placeholder="Find" width="100%" >
         </div>
 
@@ -918,6 +919,14 @@ if($pg_qry->num_rows > 0) {
     return (prop && prop in params) ? params[prop] : params;
   }
 
+  function catalogCanEdit() {
+    if(editCatalog.hasClass("fa-unlock")) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   <?php
   echo "active_room_id = $room_id;";
   echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
@@ -934,12 +943,14 @@ if($pg_qry->num_rows > 0) {
   echo "var calcShipInfo = '$shipInfo';";
   ?>
 
-  let numPages = 1;
+  var numPages = 1,
 
-  CLIPBOARD = null;
-  cabinetList = $("#cabinet_list");
-  catalog = $("#catalog_categories");
-  itemModifications = $("#item_modifications");
+    CLIPBOARD = null,
+
+    editCatalog = $("#editCatalogLock"),
+    cabinetList = $("#cabinet_list"),
+    catalog = $("#catalog_categories"),
+    itemModifications = $("#item_modifications");
 
   $(function() {
     /******************************************************************************
@@ -1252,9 +1263,8 @@ if($pg_qry->num_rows > 0) {
 
     // this is the navigation menu on the left side
     catalog.fancytree({
+      extensions: ["dnd", "filter"],
       source: { url: "/html/pricing/ajax/nav_menu.php" },
-      extensions: ["filter"],
-      debugLevel: 0,
       filter: {
         autoApply: true,   // Re-apply last filter if lazy data is loaded
         autoExpand: true, // Expand all branches that contain matches while filtered
@@ -1267,12 +1277,314 @@ if($pg_qry->num_rows > 0) {
         nodata: false,      // Display a 'no data' status node if result is empty
         mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
       },
-      renderNode: function(event, data) {
-        var node = data.node;
+      dnd: {
+        autoExpandMS: 800,
+        focusOnClick: true,
+        preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
+        preventRecursiveMoves: true, // Prevent dropping nodes on own descendants
+        dragStart: function(node, data) {
+          /** This function MUST be defined to enable dragging for the tree.
+           *  Return false to cancel dragging of node.
+           */
+          return catalogCanEdit();
+        },
+        dragEnter: function(node, data) {
+          /** data.otherNode may be null for non-fancytree droppables.
+           *  Return false to disallow dropping on node. In this case
+           *  dragOver and dragLeave are not called.
+           *  Return 'over', 'before, or 'after' to force a hitMode.
+           *  Return ['before', 'after'] to restrict available hitModes.
+           *  Any other return value will calc the hitMode from the cursor position.
+           */
+          // Prevent dropping a parent below another parent (only sort
+          // nodes under the same parent)
+          /*           if(node.parent !== data.otherNode.parent){
+                      return false;
+                    }
+                    // Don't allow dropping *over* a node (would create a child)
+                    return ["before", "after"];
+          */
+          // return true;
+          if(node.isFolder()) {
+            return true;
+          } else {
+            return ["before", "after"];
+          }
+        },
+        dragDrop: function(node, data) {
+          /** This function MUST be defined to enable dropping of items on
+           *  the tree.
+           */
+          data.otherNode.moveTo(node, data.hitMode);
+        },
+        dragStop: function(node, data) {
+          var neworder = [];
+          var i = 0;
+          var all_drop_data = node.getParent();
 
-        $(node.li).attr("data-id", node.key);
+          if(node.isFolder()) {
+            all_drop_data.visit(function(all_drop_data) {
+              if(all_drop_data.isFolder()) {
+                neworder[i] = all_drop_data.key;
+                i++;
+              }
+            });
+          } else {
+            all_drop_data.visit(function(all_drop_data) {
+              if(!all_drop_data.isFolder()) {
+                neworder[i] = all_drop_data.key;
+                i++;
+              }
+            });
+          }
 
-        // node.attr("data-id", node.key);
+          neworder = JSON.stringify(neworder);
+
+          $.post("/html/pricing/ajax/item_actions.php?action=updateCategoryOrder", {newOrder: neworder, parent: node.parent.key, curCat: node.key, isFolder: node.isFolder()}, function(data) {
+            $("body").append(data);
+          });
+        }
+      }
+    }).on("nodeCommand", function(event, data){
+      // Custom event handler that is triggered by keydown-handler and
+      // context menu:
+      var refNode, moveMode,
+        tree = $(this).fancytree("getTree"),
+        node = tree.getActiveNode(),
+        addType = null;
+
+      if(editCatalog.hasClass("fa-unlock")) {
+        switch (data.cmd) {
+          case "moveUp":
+            refNode = node.getPrevSibling();
+            if (refNode) {
+              node.moveTo(refNode, "before");
+              node.setActive();
+            }
+            break;
+          case "moveDown":
+            refNode = node.getNextSibling();
+            if (refNode) {
+              node.moveTo(refNode, "after");
+              node.setActive();
+            }
+            break;
+          case "indent":
+            refNode = node.getPrevSibling();
+            if (refNode) {
+              node.moveTo(refNode, "child");
+              refNode.setExpanded();
+              node.setActive();
+            }
+            break;
+          case "outdent":
+            if (!node.isTopLevel()) {
+              node.moveTo(node.getParent(), "after");
+              node.setActive();
+            }
+            break;
+          case "addChild":
+            if(node.isFolder()) {
+              addType = 'child';
+            } else {
+              addType = 'after';
+            }
+
+            $.get("/html/pricing/ajax/modify_item.php", {type: 'addItem', id: node.key}, function(data) {
+              $("#modalGeneral").html(data).modal("show");
+            });
+            break;
+          case "cut":
+            CLIPBOARD = {mode: data.cmd, data: node};
+            break;
+          case "copy":
+            CLIPBOARD = {
+              mode: data.cmd,
+              data: node.toDict(function (n) {
+                delete n.key;
+              })
+            };
+            break;
+          case "clear":
+            CLIPBOARD = null;
+            break;
+          case "paste":
+            if (CLIPBOARD.mode === "cut") {
+              // refNode = node.getPrevSibling();
+              CLIPBOARD.data.moveTo(node, "child");
+              CLIPBOARD.data.setActive();
+            } else if (CLIPBOARD.mode === "copy") {
+              node.addChildren(CLIPBOARD.data).setActive();
+            }
+            break;
+          case "deselect":
+            if (node !== null)
+              node.setActive(false);
+            break;
+          case "delete":
+            $.confirm({
+              title: "Are you sure you want to remove this item?",
+              content: "You are about to remove " + node.title + ". Are you sure?",
+              type: 'red',
+              buttons: {
+                yes: function() {
+                  node.remove();
+                },
+                no: function() {}
+              }
+            });
+            break;
+          case "addSubFolder":
+            $.get("/html/pricing/ajax/modify_item.php", {type: 'newSubFolder', id: node.key}, function(data) {
+              $("#modalGeneral").html(data).modal("show");
+            });
+            break;
+          case "addFolder":
+            $.get("/html/pricing/ajax/modify_item.php", {type: 'newSameFolder', id: node.key}, function(data) {
+              $("#modalGeneral").html(data).modal("show");
+            });
+            break;
+          case "save":
+            $("#saveOPL").trigger('click');
+            break;
+          case "edit":
+            let type = null;
+
+            if(node.isFolder()) {
+              type = 'folder';
+            } else {
+              type = 'item';
+            }
+
+            $.get("/html/pricing/ajax/modify_item.php", {type: type, id: node.key}, function(data) {
+              $("#modalGeneral").html(data).modal("show");
+            });
+            break;
+          default:
+            alert("Unhandled command: " + data.cmd);
+            return;
+        }
+      }
+    }).on("keydown", function(e){
+      var cmd = null;
+
+      switch( $.ui.fancytree.eventToString(e) ) {
+        case "ctrl+shift+n":
+        case "meta+shift+n": // mac: cmd+shift+n
+          cmd = "addChild";
+          break;
+        case "ctrl+shift+e":
+        case "meta+shift+e":
+          cmd = "addSibling";
+          break;
+        case "ctrl+shift+f":
+        case "meta+shift+f":
+          cmd = "addFolder";
+          break;
+        case "ctrl+r": // beacause this is refresh and I lost my changes :(
+        case "meta+r":
+        case "ctrl+shift+r":
+        case "meta+shift+r":
+          e.preventDefault();
+          break;
+        case "ctrl+f":
+        case "meta+f":
+          e.preventDefault();
+          cmd = "addSubFolder";
+          break;
+        case "ctrl+e":
+        case "meta+e":
+          cmd = "addChild";
+          break;
+        case "ctrl+c":
+        case "meta+c": // mac
+          cmd = "copy";
+          break;
+        case "ctrl+v":
+        case "meta+v": // mac
+          cmd = "paste";
+          break;
+        case "ctrl+x":
+        case "meta+x": // mac
+          cmd = "cut";
+          break;
+        case "ctrl+s":
+        case "meta+s":
+          e.preventDefault();
+          cmd = "save";
+          break;
+        case "ctrl+o":
+        case "meta+o":
+          // TODO: Assign an SO # to lines, we're gonna show operations and edit SO's from here
+          break;
+        case "ctrl+shift+up":
+        case "ctrl+up":
+          cmd = "moveUp";
+          break;
+        case "ctrl+shift+down":
+        case "ctrl+down":
+          cmd = "moveDown";
+          break;
+        case "ctrl+right":
+        case "ctrl+shift+right": // mac
+          cmd = "indent";
+          break;
+        case "ctrl+left":
+        case "ctrl+shift+left": // mac
+          cmd = "outdent";
+          break;
+        case "ctrl+del":
+          cmd = "delete";
+          break;
+        case "esc":
+          cmd = "deselect";
+          break;
+      }
+
+      if(cmd) {
+        $(this).trigger("nodeCommand", {cmd: cmd});
+        return false;
+      }
+    });
+
+    catalog.contextmenu({
+      delegate: "span.fancytree-node",
+      menu: [
+        {title: "Edit <kbd>[F2]</kbd>", cmd: "edit", uiIcon: "ui-icon-pencil" },
+        {title: "----"},
+        {title: "New Item <kbd>[Ctrl+E]</kbd>", cmd: "addChild", uiIcon: "ui-icon-plus"},
+        {title: "----"},
+        {title: "New Same Level Category <kbd>[Ctrl+Shift+F]</kbd>", cmd: "addFolder", uiIcon: "ui-icon-folder-collapsed"},
+        {title: "New Sub-Category <kbd>[Ctrl+F]</kbd>", cmd: "addSubFolder", uiIcon: "ui-icon-folder-open"},
+        {title: "----"},
+        {title: "Delete <kbd>[Ctrl+Del]</kbd>", cmd: "delete", uiIcon: "ui-icon-circle-minus"}
+      ],
+      beforeOpen: function(event, ui) {
+        var node = $.ui.fancytree.getNode(ui.target);
+        catalog.contextmenu("enableEntry", "paste", !!CLIPBOARD);
+        node.setActive();
+
+        ui.menu.css('zIndex', 1001);
+
+        // check each sub-node for the active node
+        catalog.fancytree("getTree").getActiveNode().visit(function(e) {
+          if(e.isFolder()) { // if there is a folder, we're disabling add new item
+            catalog.contextmenu('updateEntry', 'addChild', {disabled: true}); // update addchild (item) menu item to be disabled
+            return false; // no need to continue, we've found a folder
+          } else { // otherwise, there are no folders, we can proceed with adding items but cannot add folders
+            catalog.contextmenu('updateEntry', 'addChild', {disabled: false});
+          }
+        });
+
+        return catalogCanEdit();
+      },
+      select: function(event, ui) {
+        var that = this;
+        // delay the event, so the menu can close and the click event does
+        // not interfere with the edit control
+        setTimeout(function(){
+          $(that).trigger("nodeCommand", {cmd: ui.cmd});
+        }, 100);
       }
     });
 

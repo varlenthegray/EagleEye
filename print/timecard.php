@@ -141,13 +141,26 @@ function getHMMSS($duration) {
   <div id="main_section">
     <table>
       <?php
-      $total_days = ($end_date - $start_date) / 86400; // this gets the total number of days between the period requested
+      $dt_start_date = new DateTime(); $dt_start_date->setTimestamp($start_date);
+      $dt_end_date = new DateTime(); $dt_end_date->setTimestamp($end_date);
+
+      $total_days = $dt_start_date->diff($dt_end_date)->format('%a');
+
+//      $total_days = ($end_date - $start_date) / 86400; // this gets the total number of days between the period requested
       $current_day = $start_date; // current day that we're starting with
 
       $week_total = 0; // total amount of time for the week (in seconds)
 
       for($i = 0; $i <= $total_days; $i++) { // for each day between total days, increment
-        $next_day = (int)$current_day + 86400; // the next day is the current day + 24 hours in seconds
+        $dt_next_day = new DateTime(); $dt_next_day->setTimestamp($current_day);
+
+        try {
+          $next_day = $dt_next_day->add(new DateInterval('P1D'))->getTimestamp();
+        } catch (Exception $e) {
+          echo $e;
+        }
+
+//        $next_day = (int)$current_day + 86400; // the next day is the current day + 24 hours in seconds
 
         $day_total = 0; // the day total (in seconds)
 
