@@ -102,8 +102,8 @@ if($pg_qry->num_rows > 0) {
   <div class="row sticky no-print" style="background-color:#FFF;z-index:2;top:84px;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
-      <button class="btn waves-effect btn-success-outline" title="Submit Quote" id="submit_for_quote" <?php echo $submit_disabled; ?>> <i class="fa fa-paper-plane-o fa-2x"></i> </button>
-      <button class="btn waves-effect btn-secondary" title="Global Information" id="global_info"> <i class="fa fa-globe fa-2x"></i> </button>
+      <!--<button class="btn waves-effect btn-success-outline" title="Submit Quote" id="submit_for_quote" <?php /*echo $submit_disabled; */?>> <i class="fa fa-paper-plane-o fa-2x"></i> </button>-->
+      <button class="btn waves-effect btn-secondary" title="Edit Global Information" id="global_info"> <i class="fa fa-globe fa-2x"></i> </button>
       <div class="btn-group">
         <button type="button" title="Print" class="btn btn-secondary dropdown-toggle waves-effect" data-toggle="dropdown" aria-expanded="false"> <i class="fa fa-print fa-2x"></i> </button>
         <div class="dropdown-menu" x-placement="bottom-start" style="position:absolute;transform:translate3d(0,38px,0);top:0;left:0;will-change:transform;">
@@ -111,7 +111,7 @@ if($pg_qry->num_rows > 0) {
           <?php
           echo $bouncer->validate('print_sample') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=sample_req' target='_blank' class='dropdown-item'>Print Sample Request</a>" : null;
           echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Coversheet</a>" : null;
-          echo $bouncer->validate('print_shop_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=no_totals' target='_blank' class='dropdown-item'>Print Shop Coversheet</a>" : null;
+          echo $bouncer->validate('print_shop_coversheet') ? "<a href='/main.php?page=pricing/index?room_id=$room_id&print=true&hidePrice=true' target='_blank' class='dropdown-item'>Print Shop Coversheet</a>" : null;
           echo $bouncer->validate('print_sample_label') ? "<a href='/print/sample_label.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Sample Label</a>" : null;
           ?>
         </div>
@@ -219,14 +219,19 @@ if($pg_qry->num_rows > 0) {
                   <td colspan="2"><?php /*echo displayVINOpts('room_type'); */?></td>
                 </tr>-->
                 <tr>
-                  <td>Product Type:</td>
+                  <td>Order Type:</td>
                   <td><?php echo displayVINOpts('product_type'); ?></td>
-                  <td id="product_type_cost">$0.00</td>
+                  <td id="product_type_cost" class="pricing_value">$0.00</td>
                 </tr>
                 <tr>
                   <td>Lead Time:</td>
                   <td><?php echo displayVINOpts('days_to_ship'); ?></td>
-                  <td>$0.00</td>
+                  <td class="pricing_value">$0.00</td>
+                </tr>
+                <tr>
+                  <td>Order Status:</td>
+                  <td><?php echo displayVINOpts('order_status'); ?></td>
+                  <td></td>
                 </tr>
                 <tr>
                   <td>Ship Date (*):</td>
@@ -241,7 +246,7 @@ if($pg_qry->num_rows > 0) {
                 <tr>
                   <td>Ship VIA:</td>
                   <td><?php echo displayVINOpts('ship_via'); ?></td>
-                  <td>$0.00</td>
+                  <td class="pricing_value">$0.00</td>
                 </tr>
                 <tr rowspan="3">
                   <td style="vertical-align:top !important;">Ship To:</td>
@@ -255,7 +260,7 @@ if($pg_qry->num_rows > 0) {
                   <td>Shipping Zone:</td>
                   <?php $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip']; $ship_zone_info = calcShipZone($shipZone); ?>
                   <td><strong><?php echo $ship_zone_info['zone']; ?></strong></td>
-                  <td id="shipping_cost" data-cost="<?php echo $ship_zone_info['cost']; ?>">$<?php echo "{$ship_zone_info['cost']}.00"; ?></td>
+                  <td id="shipping_cost" class="pricing_value" data-cost="<?php echo $ship_zone_info['cost']; ?>">$<?php echo "{$ship_zone_info['cost']}.00"; ?></td>
                 </tr>
                 <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" />
                 <!--<tr>
@@ -337,8 +342,8 @@ if($pg_qry->num_rows > 0) {
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Box Construction:<div class="cab_specifications_desc"><?php echo displayVINOpts('construction_method'); ?></div></td>
-                    <td class="border_thin_bottom" id="const_pct">0.00%</td>
-                    <td class="border_thin_bottom" id="const_amt">$0.00</td>
+                    <td class="border_thin_bottom pricing_value" id="const_pct">0.00%</td>
+                    <td class="border_thin_bottom pricing_value" id="const_amt">$0.00</td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo displayVINOpts('door_design', null, 'pricingDoorDesign'); ?></div></td>
@@ -346,48 +351,48 @@ if($pg_qry->num_rows > 0) {
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_door'); ?></div></td>
-                    <td class="border_thin_bottom"></td>
-                    <td class="border_thin_bottom"></td>
+                    <td class="border_thin_bottom pricing_value"></td>
+                    <td class="border_thin_bottom pricing_value"></td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Short Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_sd'); ?></div></td>
-                    <td class="border_thin_bottom" id="sdr_pct"></td>
-                    <td class="border_thin_bottom" id="sdr_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="sdr_pct"></td>
+                    <td class="border_thin_bottom pricing_value" id="sdr_amt"></td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Tall Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('panel_raise', 'panel_raise_td'); ?></div></td>
-                    <td class="border_thin_bottom" id="tdr_pct"></td>
-                    <td class="border_thin_bottom" id="tdr_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="tdr_pct"></td>
+                    <td class="border_thin_bottom pricing_value" id="tdr_amt"></td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Style/Rail Width:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('style_rail_width'); ?></div></td>
-                    <td class="border_thin_bottom" id="srw_pct"></td>
-                    <td class="border_thin_bottom" id="srw_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="srw_pct"></td>
+                    <td class="border_thin_bottom pricing_value" id="srw_amt"></td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Edge Profile:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('edge_profile'); ?></div></td>
-                    <td class="border_thin_bottom"></td>
-                    <td class="border_thin_bottom"></td>
+                    <td class="border_thin_bottom pricing_value"></td>
+                    <td class="border_thin_bottom pricing_value"></td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Framing Bead:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('framing_bead'); ?></div></td>
-                    <td class="border_thin_bottom"></td>
-                    <td class="border_thin_bottom"></td>
+                    <td class="border_thin_bottom pricing_value"></td>
+                    <td class="border_thin_bottom pricing_value"></td>
                   </tr>
                   <tr>
                     <td style="padding-left:20px;">Frame Option:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo displayVINOpts('framing_options'); ?></div></td>
-                    <td class="border_thin_bottom" id="fo_pct"></td>
-                    <td class="border_thin_bottom" id="fo_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="fo_pct"></td>
+                    <td class="border_thin_bottom pricing_value" id="fo_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc"><?php echo displayVINOpts('drawer_boxes'); ?></div></td>
-                    <td class="border_thin_bottom" id="drwr_pct"></td>
-                    <td class="border_thin_bottom" id="drwr_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="drwr_pct"></td>
+                    <td class="border_thin_bottom pricing_value" id="drwr_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Drawer Guide:<div class="cab_specifications_desc"><?php echo displayVINOpts('drawer_guide'); ?></div></td>
-                    <td class="border_thin_bottom" id="drwguide_pct"></td>
-                    <td class="border_thin_bottom" id="drwguide_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="drwguide_pct"></td>
+                    <td class="border_thin_bottom pricing_value" id="drwguide_amt"></td>
                   </tr>
                 </table>
               </div>
@@ -397,43 +402,43 @@ if($pg_qry->num_rows > 0) {
                   <tr><th colspan="3" style="padding-left:5px;" class="th_17">Finish</th></tr>
                   <tr class="border_top">
                     <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc"><?php displayFinishOpts("finish_code", "finish_code"); ?></div></td>
-                    <td class="border_thin_bottom" id="fc_pct"><?php if($room['product_type'] === 'P' && (false !== stripos($room['finish_code'], 'p') || $room['finish_code'] === '1cXXXX')) { echo '10.00%'; } ?></td>
-                    <td class="border_thin_bottom" id="fc_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="fc_pct"><?php if($room['product_type'] === 'P' && (false !== stripos($room['finish_code'], 'p') || $room['finish_code'] === '1cXXXX')) { echo '10.00%'; } ?></td>
+                    <td class="border_thin_bottom pricing_value" id="fc_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc"><?php echo displayVINOpts('sheen'); ?></div></td>
-                    <td class="border_thin_bottom" id="sheen_pct"><?php if($room['sheen'] === 'a' || $room['sheen'] === 'X' || $room['sheen'] === 'h' ) { echo '5.00%'; } ?></td>
-                    <td class="border_thin_bottom" id="sheen_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="sheen_pct"><?php if($room['sheen'] === 'a' || $room['sheen'] === 'X' || $room['sheen'] === 'h' ) { echo '5.00%'; } ?></td>
+                    <td class="border_thin_bottom pricing_value" id="sheen_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc"><?php echo displayVINOpts('glaze'); ?></div></td>
-                    <td class="border_thin_bottom" id="gc_pct"></td>
-                    <td class="border_thin_bottom" id="gc_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="gc_pct"></td>
+                    <td class="border_thin_bottom pricing_value" id="gc_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc"><?php echo displayVINOpts('glaze_technique'); ?></div></td>
-                    <td class="border_thin_bottom" id="gt_pct"><?php echo $room['glaze_technique'] === 'G2' ? '10.00%' : null; ?></td>
-                    <td class="border_thin_bottom" id="gt_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="gt_pct"><?php echo $room['glaze_technique'] === 'G2' ? '10.00%' : null; ?></td>
+                    <td class="border_thin_bottom pricing_value" id="gt_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc"><?php echo displayVINOpts('antiquing'); ?></div></td>
-                    <td class="border_thin_bottom" id="ant_pct"></td>
-                    <td class="border_thin_bottom" id="ant_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="ant_pct"></td>
+                    <td class="border_thin_bottom pricing_value" id="ant_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc"><?php echo displayVINOpts('worn_edges'); ?></div></td>
-                    <td class="border_thin_bottom" id="we_pct"></td>
-                    <td class="border_thin_bottom" id="we_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="we_pct"></td>
+                    <td class="border_thin_bottom pricing_value" id="we_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc"><?php echo displayVINOpts('distress_level'); ?></div></td>
-                    <td class="border_thin_bottom" id="dist_pct"></td>
-                    <td class="border_thin_bottom" id="dist_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="dist_pct"></td>
+                    <td class="border_thin_bottom pricing_value" id="dist_amt"></td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Enviro-finish:<div class="cab_specifications_desc"><?php echo displayVINOpts('green_gard'); ?></div></td>
-                    <td class="border_thin_bottom" id="ggard_pct"><?php echo $room['green_gard'] === 'G1' ? '5.00%' : null; ?></td>
-                    <td class="border_thin_bottom" id="ggard_amt"></td>
+                    <td class="border_thin_bottom pricing_value" id="ggard_pct"><?php echo $room['green_gard'] === 'G1' ? '5.00%' : null; ?></td>
+                    <td class="border_thin_bottom pricing_value" id="ggard_amt"></td>
                   </tr>
                 </table>
               </div>
@@ -511,7 +516,7 @@ if($pg_qry->num_rows > 0) {
               <th class="text-md-center">Height</th>
               <th class="text-md-center">Depth</th>
               <th class="text-md-center">Hinge</th>
-              <th class="text-md-center">Price</th>
+              <th class="text-md-center pricing_value">Price</th>
             </tr>
             </thead>
             <tbody>
@@ -538,7 +543,7 @@ if($pg_qry->num_rows > 0) {
                   <option value="N" selected>None</option>
                 </select>
               </td>
-              <td class="text-md-right cab-price"></td>
+              <td class="text-md-right cab-price pricing_value"></td>
             </tr>
             </tbody>
             <tfoot>
@@ -552,7 +557,7 @@ if($pg_qry->num_rows > 0) {
         </div>
       </div>
 
-      <div class="row">
+      <div class="row pricing_value">
         <div class="col-sm-4 col-sm-offset-8 summary_of_charges">
           <div class="left_header"><h5>Summary of Charges:</h5></div>
 
@@ -932,10 +937,7 @@ if($pg_qry->num_rows > 0) {
   echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
 
   $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip'];
-
-  echo "console.log('Ship Zone: ". $shipZone . "');";
   $ship_zone_info = calcShipZone($shipZone);
-
   $shipInfo = json_encode($ship_zone_info, true);
 
   echo "var calcShipZip = '{$info['ship_zip']}';";
@@ -1035,7 +1037,11 @@ if($pg_qry->num_rows > 0) {
         // Index #3 => Nomenclature (SKU) - generated by node.title
 
         // Index #4 => Description
-        $tdList.eq(4).text(node.data.name);
+        if(node.data.customNote === 1) {
+          $tdList.eq(4).html('<input type="text" class="form-control custom-line-item" placeholder="Custom Description..." value="' + node.data.name + '" data-id="' + node.key + '" >');
+        } else {
+          $tdList.eq(4).text(node.data.name);
+        }
 
         // Index #4 => Width
         // $tdList.eq(5).text(node.data.width);
@@ -1100,6 +1106,10 @@ if($pg_qry->num_rows > 0) {
         setTimeout(function() {
           cabinetList.floatThead({ top: 151 });
         }, 500);
+
+        if(getUrlParams('hidePrice') === 'true') {
+          $(".pricing_value").hide();
+        }
       }
     }).on("nodeCommand", function(event, data) {
       // Custom event handler that is triggered by keydown-handler and
@@ -1713,8 +1723,6 @@ if($pg_qry->num_rows > 0) {
         window.print();
         window.close();
       }, 250);
-
-
     }
   });
 </script>

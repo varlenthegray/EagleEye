@@ -402,7 +402,8 @@ $("body")
       name: 'Error',
       sqft: 0,
       singlePrice: 0.00,
-      cabinet: 0
+      cabinet: 0,
+      customNote: 1
     });
 
     let $tdList = $(node.tr).find(">td");
@@ -425,7 +426,8 @@ $("body")
       singlePrice: 0.00,
       cabinet: 1,
       customPrice: 1,
-      itemID: 1321
+      itemID: 1321,
+      customNote: 1
     });
 
     console.log(node);
@@ -738,8 +740,6 @@ $("body")
   })
   .on("click", "#modalGlobalsUpdate", function() {
     let globalInfo = $("#modalGlobalData").serialize();
-
-    console.log(globalInfo);
 
     $.post("/html/pricing/ajax/global_actions.php?action=updateGlobals&roomID=" + active_room_id, {globalInfo: globalInfo}, function(data) {
       $("body").append(data);

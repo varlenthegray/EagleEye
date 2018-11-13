@@ -28,11 +28,11 @@ if(!empty($itemID)) {
 }
 
 $parent_qry = $dbconn->prepare('SELECT
-  pc.id AS catID, pn.id AS itemID, name, parent, sort_order, pn.category_id, pn.sku, detail.image_path, detail.title, pn.addl_info, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.percent
+  pc.id AS catID, pn.id AS itemID, name, parent, pc.sort_order, pn.category_id, pn.sku, detail.image_path, detail.title, pn.addl_info, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.percent
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
-WHERE parent = ? AND pc.id BETWEEN 15000 AND 16000 ORDER BY parent, sort_order, catID, pn.sku ASC');
+WHERE parent = ? AND pc.id BETWEEN 15000 AND 16000 ORDER BY parent, pc.sort_order, catID, pn.sku ASC');
 
 function makeTree($parent_id) {
   global $parent_qry;

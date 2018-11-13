@@ -272,6 +272,7 @@ switch($_REQUEST['action']) {
     $shipping_cost = sanitizeInput($cabinet_specifications['shipping_cost']); // wtf is this?
     $shipping_cubes = sanitizeInput($cabinet_specifications['shipping_cubes']);
     $payment_method = sanitizeInput($cabinet_specifications['payment_method']);
+    $leadtime = sanitizeInput($cabinet_specifications['days_to_ship']);
     //</editor-fold>
 
     //<editor-fold desc="What's Changed">
@@ -426,7 +427,8 @@ HEREDOC;
         custom_vin_info = '$custom_vals',
         payment_deposit = $deposit_received, 
         payment_final = $final_payment, 
-        payment_del_ptl = $ptl_del 
+        payment_del_ptl = $ptl_del,
+        days_to_ship = '$leadtime'
       WHERE id = '$room_id'")) {
       echo displayToast('success', 'Room updated successfully.', 'Room Updated');
     } else {
@@ -466,8 +468,6 @@ HEREDOC;
 
     // run functions for heredoc output
     $product_type = displayVINOpts('product_type', null, 'dropdown_p_type');
-    $order_status = displayVINOpts('order_status');
-    $days_to_ship = displayVINOpts('days_to_ship');
     $room_type = displayVINOpts('room_type');
     // end of function run for heredoc
 
@@ -525,29 +525,8 @@ HEREDOC;
                     <td><input type="text" class="form-control" id="iteration" name="iteration" placeholder="Iteration" value="{$room['iteration']}" readonly></td>
                   </tr>
                   <tr>
-                    <td>Product Type:</td>
-                    <td>$product_type</td>
-                  </tr>
-                  <tr>
-                    <td>Order Status:</td>
-                    <td>$order_status</td>
-                  </tr>
-                  <tr>
-                    <td>Days to Ship:</td>
-                    <td>$days_to_ship</td>
-                  </tr>
-                  <tr>
-                    <td>Room Type:</td>
+                    <td>Billing Type:</td>
                     <td>$room_type</td>
-                  </tr>
-                  <tr>
-                    <td>Delivery Date:</td>
-                    <td>
-                      <div class="input-group">
-                        <input type="text" class="form-control delivery_date $dd_class" name="delivery_date" placeholder="Delivery Date" value="$dd_value">
-                        <span class="input-group-addon bg-custom b-0"><i class="icon-calender"></i></span>
-                      </div>
-                    </td>
                   </tr>
                 </table>
                 
