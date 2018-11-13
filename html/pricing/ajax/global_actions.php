@@ -262,7 +262,9 @@ switch($_REQUEST['action']) {
     //</editor-fold>
 
     //<editor-fold desc="Capture Global Info">
+    $room_name = sanitizeInput($cabinet_specifications['room_name']);
     $product_type = sanitizeInput($cabinet_specifications['product_type']);
+    $dealer_po = sanitizeInput($cabinet_specifications['dealer_po']);
     $ship_via = sanitizeInput($cabinet_specifications['ship_via']);
     $ship_to_name = sanitizeInput($cabinet_specifications['ship_to_name']);
     $ship_to_address = sanitizeInput($cabinet_specifications['ship_to_address']);
@@ -273,7 +275,16 @@ switch($_REQUEST['action']) {
     $shipping_cubes = sanitizeInput($cabinet_specifications['shipping_cubes']);
     $payment_method = sanitizeInput($cabinet_specifications['payment_method']);
     $leadtime = sanitizeInput($cabinet_specifications['days_to_ship']);
+    $order_status = sanitizeInput($cabinet_specifications['order_status']);
+    $seen_approved = sanitizeInput($cabinet_specifications['seen_approved']);
+    $unseen_approved = sanitizeInput($cabinet_specifications['unseen_approved']);
+    $requested_sample = sanitizeInput($cabinet_specifications['requested_sample']);
+    $sample_reference = sanitizeInput($cabinet_specifications['sample_reference']);
     //</editor-fold>
+
+    $seen_approved = empty($seen_approved) ? 0 : 1;
+    $unseen_approved = empty($unseen_approved) ? 0 : 1;
+    $requested_sample = empty($requested_sample) ? 0 : 1;
 
     //<editor-fold desc="What's Changed">
     $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
@@ -297,6 +308,13 @@ switch($_REQUEST['action']) {
     $changed[] = whatChanged($drawer_box_mount, $room_info['drawer_box_mount'], 'Drawer Box Mount');
     $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
     $changed[] = whatChanged($drawer_guide, $room_info['drawer_guide'], 'Drawer Guide');
+    $changed[] = whatChanged($dealer_po, $room_info['dealer_po'], 'Dealer PO');
+    $changed[] = whatChanged($room_name, $room_info['room_name'], 'Room Name');
+    $changed[] = whatChanged($order_status, $room_info['order_status'], 'Order Status');
+    $changed[] = whatChanged($seen_approved, $room_info['seen_approved'], 'Sample seen/approved');
+    $changed[] = whatChanged($unseen_approved, $room_info['unseen_approved'], 'Sample unseen/approved');
+    $changed[] = whatChanged($requested_sample, $room_info['requested_sample'], 'Sample Requested');
+    $changed[] = whatChanged($sample_reference, $room_info['sample_reference'], 'Sample Reference');
     //</editor-fold>
 
     //<editor-fold desc="DB: Notes">
@@ -428,7 +446,14 @@ HEREDOC;
         payment_deposit = $deposit_received, 
         payment_final = $final_payment, 
         payment_del_ptl = $ptl_del,
-        days_to_ship = '$leadtime'
+        days_to_ship = '$leadtime',
+        dealer_po = '$dealer_po',
+        room_name = '$room_name',
+        order_status = '$order_status',
+        sample_seen_approved = $seen_approved,
+        sample_unseen_approved = $unseen_approved,
+        sample_requested = $requested_sample,
+        sample_reference = '$sample_reference'
       WHERE id = '$room_id'")) {
       echo displayToast('success', 'Room updated successfully.', 'Room Updated');
     } else {

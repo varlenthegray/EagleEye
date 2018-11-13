@@ -1026,7 +1026,7 @@ if($qry->num_rows > 0) {
 
                   switch ($room['order_status']) {
                     case '$':
-                      $order_status = '<strong>Job</strong>';
+                      $order_status = '<strong>Production</strong>';
                       break;
                     case '#':
                       $order_status = '<strong>Quote</strong>';
@@ -1036,12 +1036,6 @@ if($qry->num_rows > 0) {
                       break;
                     case '-':
                       $order_status = '<strong>Lost</strong>';
-                      break;
-                    case 'A':
-                      $order_status = '<strong>Add-on</strong>';
-                      break;
-                    case 'W':
-                      $order_status = '<strong>Warranty</strong>';
                       break;
                     case 'H':
                       $order_status = '<strong>Hold</strong>';
@@ -1088,7 +1082,7 @@ if($qry->num_rows > 0) {
 
                   echo "</tr>";
 
-                  echo ($bouncer->validate('edit_room')) ? "<tr class='tr_room_actions' id='{$room['id']}' style='display:none;'><td colspan='12'><div style='display:none;'></div></td></tr>" : null;
+                  echo $bouncer->validate('edit_room') ? "<tr class='tr_room_actions' id='{$room['id']}' style='display:none;'><td colspan='12'><div style='display:none;'></div></td></tr>" : null;
 
                   //<editor-fold desc="Attachments">
                   /** BEGIN DISPLAY OF ATTACHMENTS */

@@ -103,15 +103,15 @@ if($pg_qry->num_rows > 0) {
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
       <!--<button class="btn waves-effect btn-success-outline" title="Submit Quote" id="submit_for_quote" <?php /*echo $submit_disabled; */?>> <i class="fa fa-paper-plane-o fa-2x"></i> </button>-->
-      <button class="btn waves-effect btn-secondary" title="Edit Global Information" id="global_info"> <i class="fa fa-globe fa-2x"></i> </button>
+      <!--<button class="btn waves-effect btn-secondary" title="Edit Global Information" id="global_info"> <i class="fa fa-globe fa-2x"></i> </button>-->
       <div class="btn-group">
         <button type="button" title="Print" class="btn btn-secondary dropdown-toggle waves-effect" data-toggle="dropdown" aria-expanded="false"> <i class="fa fa-print fa-2x"></i> </button>
         <div class="dropdown-menu" x-placement="bottom-start" style="position:absolute;transform:translate3d(0,38px,0);top:0;left:0;will-change:transform;">
           <a class="dropdown-item" href="/main.php?page=pricing/index?room_id=<?php echo $room_id; ?>&print=true" target="_blank" title="Print this page specifically">Print Item List</a>
           <?php
           echo $bouncer->validate('print_sample') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=sample_req' target='_blank' class='dropdown-item'>Print Sample Request</a>" : null;
-          echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Coversheet</a>" : null;
-          echo $bouncer->validate('print_shop_coversheet') ? "<a href='/main.php?page=pricing/index?room_id=$room_id&print=true&hidePrice=true' target='_blank' class='dropdown-item'>Print Shop Coversheet</a>" : null;
+//          echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Coversheet</a>" : null;
+          echo $bouncer->validate('print_shop_coversheet') ? "<a href='/main.php?page=pricing/index?room_id=$room_id&print=true&hidePrice=true' target='_blank' class='dropdown-item'>Print Shop Item List</a>" : null;
           echo $bouncer->validate('print_sample_label') ? "<a href='/print/sample_label.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Sample Label</a>" : null;
           ?>
         </div>
@@ -146,53 +146,57 @@ if($pg_qry->num_rows > 0) {
     </div>
 
     <div class="col-md-8 pricing_table_format">
-      <div class="row">
-        <div class="col-sm-4">
-          <table width="100%">
-            <tr>
-              <td colspan="2"><h3><?php echo translateVIN('order_status', $room['order_status']); ?></h3></td>
-            </tr>
-            <tr>
-              <td colspan="2"><h5><?php echo $result['project_name'] . ' - ' . $room['room_name']; ?></h5></td>
-            </tr>
-            <tr>
-              <td width="15%">Dealer:</td>
-              <td class="text-bold"><?php echo "{$dealer_info['dealer_id']}_{$dealer_info['dealer_name']} - {$dealer_info['contact']}"; ?></td>
-            </tr>
-            <tr>
-              <td>SO:</td>
-              <td class="text-bold"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></td>
-            </tr>
-          </table>
-        </div>
+      <form id="cabinet_specifications" method="post" action="#">
+        <div class="row">
+          <div class="col-sm-4">
+            <table width="100%">
+              <tr>
+                <td colspan="2"><h3><?php echo translateVIN('order_status', $room['order_status']); ?></h3></td>
+              </tr>
+              <tr>
+                <td colspan="2"><h5><?php echo $result['project_name'] . ' - ' . $room['room_name']; ?></h5></td>
+              </tr>
+              <tr>
+                <td width="15%">Dealer:</td>
+                <td class="text-bold"><?php echo "{$dealer_info['dealer_id']}_{$dealer_info['dealer_name']} - {$dealer_info['contact']}"; ?></td>
+              </tr>
+              <tr>
+                <td width="15%">Dealer PO:</td>
+                <td class="text-bold"><input type="text" name="dealer_po" class="form-control border_thin_bottom" value="<?php echo $room['dealer_po'] ?>" placeholder="Enter PO Here" /></td>
+              </tr>
+              <tr>
+                <td>SO:</td>
+                <td class="text-bold"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></td>
+              </tr>
+            </table>
+          </div>
 
-        <div class="col-sm-4 center_header">
-          <div id="logo"><img src="/assets/images/smc_logo.png" width="140px" /></div>
+          <div class="col-sm-4 center_header">
+            <div id="logo"><img src="/assets/images/smc_logo.png" width="140px" /></div>
 
-          <div id="company_info">
-            Stone Mountain Cabinetry, Inc.<br />
-            206 Vista Blvd<br/>
-            Arden, NC 28704<br />
-            828.966.9000<br/>
-            orders@smcm.us
+            <div id="company_info">
+              Stone Mountain Cabinetry, Inc.<br />
+              206 Vista Blvd<br/>
+              Arden, NC 28704<br />
+              828.966.9000<br/>
+              orders@smcm.us
+            </div>
+          </div>
+
+          <div class="col-sm-2 col-sm-offset-2">
+            <table>
+              <tr>
+                <td width="80px"># of Pages:</td>
+                <td class="text-bold" id="num_of_pgs">1</td>
+              </tr>
+              <tr>
+                <td>Printed:</td>
+                <td class="text-bold"><?php echo date(DATE_DEFAULT); ?></td>
+              </tr>
+            </table>
           </div>
         </div>
 
-        <div class="col-sm-2 col-sm-offset-2">
-          <table>
-            <tr>
-              <td width="80px"># of Pages:</td>
-              <td class="text-bold" id="num_of_pgs">1</td>
-            </tr>
-            <tr>
-              <td>Printed:</td>
-              <td class="text-bold"><?php echo date(DATE_DEFAULT); ?></td>
-            </tr>
-          </table>
-        </div>
-      </div>
-
-      <form id="cabinet_specifications" method="post" action="#">
         <div class="row">
             <div class="col-sm-4 gray_bg" style="border-radius:.25rem;border:1px solid #000;padding-bottom:25px;">
               <h5><u>Global: Room Details (Net Price)</u></h5>
@@ -206,18 +210,14 @@ if($pg_qry->num_rows > 0) {
                 <tr>
                   <th colspan="3">&nbsp;</th>
                 </tr>
-                <!--<tr>
+                <tr>
                   <td>Room Name:</td>
-                  <td colspan="2"><input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name" value="<?php /*echo $room['room_name']; */?>"></td>
+                  <td colspan="2"><input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
                 </tr>
                 <tr>
-                  <td>Order Status:</td>
-                  <td colspan="2"><?php /*echo displayVINOpts('order_status'); */?></td>
+                  <td>Billing Type:</td>
+                  <td colspan="2"><strong><?php echo false !== stripos($info['dealer_code'], 'A01') ? 'Retail' : 'Distribution'; ?></strong></td>
                 </tr>
-                <tr>
-                  <td>Room Type:</td>
-                  <td colspan="2"><?php /*echo displayVINOpts('room_type'); */?></td>
-                </tr>-->
                 <tr>
                   <td>Order Type:</td>
                   <td><?php echo displayVINOpts('product_type'); ?></td>
@@ -275,6 +275,24 @@ if($pg_qry->num_rows > 0) {
                   <td>Payment Method:</td>
                   <td><?php echo displayVINOpts('payment_method'); ?></td>
                   <td></td>
+                </tr>
+                <tr>
+                  <td colspan="3" style="height:5px;"></td>
+                </tr>
+                <tr>
+                  <td colspan="3">Finish/Sample:</td>
+                </tr>
+                <tr>
+                  <td colspan="3"><input type="checkbox" value="1" name="seen_approved" class="sample_checkbox" id="seen_approved" <?php echo $room['sample_seen_approved'] ? 'checked' : null; ?>> <label for="seen_approved">I have seen the door style with finish and it is approved.</label></td>
+                </tr>
+                <tr>
+                  <td colspan="3"><input type="checkbox" value="1" name="unseen_approved" class="sample_checkbox" id="unseen_approved" <?php echo $room['sample_unseen_approved'] ? 'checked' : null; ?>> <label for="unseen_approved">I approve the finish and door style without seeing a sample.</label></td>
+                </tr>
+                <tr>
+                  <td colspan="3"><input type="checkbox" value="1" name="requested_sample" class="sample_checkbox" id="requested_sample" <?php echo $room['sample_requested'] ? 'checked' : null; ?>> <label for="requested_sample">I have requested a sample for approval, reference:</label></td>
+                </tr>
+                <tr>
+                  <td colspan="3"><input type="text" name="sample_reference" class="form-control border_thin_bottom" placeholder="Sample Reference" value="<?php echo $room['sample_reference']; ?>" /></td>
                 </tr>
                 <tr>
                   <td colspan="3" style="height:5px;"></td>
@@ -954,7 +972,22 @@ if($pg_qry->num_rows > 0) {
     catalog = $("#catalog_categories"),
     itemModifications = $("#item_modifications");
 
+  $('.sample_checkbox').on('change', function() {
+    $('.sample_checkbox').not(this).prop('checked', false);
+  });
+
   $(function() {
+    setTimeout(function() {
+      tx_delnotes = $("textarea[name='delivery_notes']");
+      tx_delnotes.height(tx_delnotes.prop('scrollHeight'));
+
+      tx_design = $("textarea[name='room_note_design']");
+      tx_design.height(tx_design.prop('scrollHeight'));
+
+      tx_fin_sample = $("textarea[name='fin_sample_notes']");
+      tx_fin_sample.height(tx_fin_sample.prop('scrollHeight'));
+    }, 50);
+
     /******************************************************************************
      *  Cabinet List
      ******************************************************************************/
