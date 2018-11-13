@@ -15,7 +15,7 @@ $parent_qry = $dbconn->prepare('SELECT
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
-WHERE parent = ? AND pc.catalog_id = 1 ORDER BY pc.catalog_id, parent, pc.sort_order, pn.sku, nomenclature_sort, catID ASC;');
+WHERE parent = ? AND pc.catalog_id = 1 ORDER BY pc.catalog_id, parent, pc.sort_order, nomenclature_sort, pn.sku, catID ASC;');
 
 function makeTree($parent_id) {
   global $disable_btns;
