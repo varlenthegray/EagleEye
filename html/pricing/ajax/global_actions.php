@@ -397,8 +397,6 @@ switch($_REQUEST['action']) {
         $msg_notes = str_replace('  ', '&nbsp;&nbsp;', $msg_notes);
 
         $message = <<<HEREDOC
-A new inquiry has been sent in for this room and requires your feedback.<br />
-<br />
 <h5>Followup Time: $followup_time</h5>
 
 <h3>Inquiry:</h3>

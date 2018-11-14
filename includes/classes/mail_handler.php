@@ -53,7 +53,7 @@ HEADER;
     <div class="header">
         <table class="header-table">
             <tr>
-                <td class="header-text">EagleEye Systems</td>
+                <td class="header-text">EagleEye ERP</td>
                 <td class="logo"><img src="https://3erp.us/assets/images/logo_150.png" /></td>
             </tr>
         </table>
@@ -69,8 +69,6 @@ HEADER;
         </div>
 
         <div class="signature">
-            Sincerely,<br />
-            <br />
             EagleEye
         </div>
     </div>

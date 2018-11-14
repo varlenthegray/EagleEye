@@ -102,7 +102,7 @@ if($pg_qry->num_rows > 0) {
   <div class="row sticky no-print" style="background-color:#FFF;z-index:2;top:84px;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
-      <!--<button class="btn waves-effect btn-success-outline" title="Submit Quote" id="submit_for_quote" <?php /*echo $submit_disabled; */?>> <i class="fa fa-paper-plane-o fa-2x"></i> </button>-->
+      <button class="btn waves-effect btn-success-outline" title="Submit Quote" id="submit_for_quote_BROKEN" <?php echo $submit_disabled; ?>> <i class="fa fa-paper-plane-o fa-2x"></i> </button>
       <!--<button class="btn waves-effect btn-secondary" title="Edit Global Information" id="global_info"> <i class="fa fa-globe fa-2x"></i> </button>-->
       <div class="btn-group">
         <button type="button" title="Print" class="btn btn-secondary dropdown-toggle waves-effect" data-toggle="dropdown" aria-expanded="false"> <i class="fa fa-print fa-2x"></i> </button>
@@ -117,7 +117,7 @@ if($pg_qry->num_rows > 0) {
         </div>
       </div>
       <button class="btn waves-effect btn-secondary" title="Room Attachments" id="add_attachment"> <i class="fa fa-paperclip fa-2x"></i> </button>
-<!--      <button class="btn waves-effect btn-secondary" title="Copy Room" id="copy_room"> <i class="fa fa-copy fa-2x"></i> </button>-->
+      <button class="btn waves-effect btn-secondary" title="Copy Room" id="copy_room"> <i class="fa fa-copy fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Bracket Management" id="bracket_management"> <i class="fa fa-code-fork fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Door Sizing" onclick="window.open('/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>','_blank')"> <i class="fa fa-arrows-alt fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Appliance Worksheets" id='appliance_ws' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-cubes fa-2x"></i> </button>
@@ -138,9 +138,8 @@ if($pg_qry->num_rows > 0) {
           <input type="text" class="form-control fc-simple ignoreSaveAlert" id="treeFilter" placeholder="Find" width="100%" >
         </div>
 
-        <label for="below" id="category_collapse">Categories</label>
+        <label for="below" id="category_collapse">Catalog</label>
       </div>
-
 
       <div id="catalog_categories"></div>
     </div>
@@ -502,7 +501,7 @@ if($pg_qry->num_rows > 0) {
         </div>
       </form>
 
-      <div class="row">
+      <div class="row" style="border-top: 1px solid #000;">
         <div class="col-md-12" style="margin-top:5px;">
           <div class="item_list_header sticky">
             <h5><u>Item List</u></h5>
@@ -985,14 +984,28 @@ if($pg_qry->num_rows > 0) {
 
   $(function() {
     setTimeout(function() {
-      tx_delnotes = $("textarea[name='delivery_notes']");
-      tx_delnotes.height(tx_delnotes.prop('scrollHeight'));
+      let tx_delnotes = $("textarea[name='delivery_notes']");
+      let tx_design = $("textarea[name='room_note_design']");
+      let tx_fin_sample = $("textarea[name='fin_sample_notes']");
 
-      tx_design = $("textarea[name='room_note_design']");
-      tx_design.height(tx_design.prop('scrollHeight'));
+      let delheight = 0;
+      let designheight = 0;
+      let finsampleheight = 0;
 
-      tx_fin_sample = $("textarea[name='fin_sample_notes']");
-      tx_fin_sample.height(tx_fin_sample.prop('scrollHeight'));
+
+      if(getUrlParams('print') === 'true') {
+        delheight = tx_delnotes.prop('scrollHeight') - 48;
+        designheight = tx_design.prop('scrollHeight') - 48;
+        finsampleheight = tx_fin_sample.prop('scrollHeight') - 48;
+      } else {
+        delheight = tx_delnotes.prop('scrollHeight');
+        designheight = tx_design.prop('scrollHeight');
+        finsampleheight = tx_fin_sample.prop('scrollHeight');
+      }
+
+      tx_delnotes.height(delheight);
+      tx_design.height(designheight);
+      tx_fin_sample.height(finsampleheight);
     }, 50);
 
     /******************************************************************************
