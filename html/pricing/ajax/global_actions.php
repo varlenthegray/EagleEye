@@ -241,6 +241,7 @@ switch($_REQUEST['action']) {
     //<editor-fold desc="Capture VIN Info">
     $species_grade = sanitizeInput($cabinet_specifications['species_grade']);
     $construction_method = sanitizeInput($cabinet_specifications['construction_method']);
+    $carcass_material = sanitizeInput($cabinet_specifications['carcass_material']);
     $door_design = sanitizeInput($cabinet_specifications['door_design']);
     $panel_raise_door = sanitizeInput($cabinet_specifications['panel_raise_door']);
     $panel_raise_sd = sanitizeInput($cabinet_specifications['panel_raise_sd']);
@@ -289,6 +290,7 @@ switch($_REQUEST['action']) {
     //<editor-fold desc="What's Changed">
     $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
     $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
+    $changed[] = whatChanged($carcass_material, $room_info['carcass_material'], 'Carcass Material');
     $changed[] = whatChanged($door_design, $room_info['door_design'], 'Door Design');
     $changed[] = whatChanged($panel_raise_door, $room_info['panel_raise_door'], 'Panel Raise (Door)');
     $changed[] = whatChanged($panel_raise_sd, $room_info['panel_raise_sd'], 'Panel Raise Shoot Drawer');
@@ -404,7 +406,12 @@ A new inquiry has been sent in for this room and requires your feedback.<br />
 $msg_notes -- {$_SESSION['userInfo']['name']}
 HEREDOC;
 
-        $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], "New Inquiry: {$cabinet_specifications['sonum']}{$cabinet_specifications['room']}{$iteration}", $message, true);
+        $subject = "New Inquiry: {$room_info['so_parent']}{$room_info['room']}-{$room_info['iteration']}";
+
+        $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], $subject, $message, true);
+
+        $dbconn->query("INSERT INTO tasks (description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved)
+    VALUES ('$subject - $message', UNIX_TIMESTAMP(), null, '3 - End of Week', $followup_individual, null, {$_SESSION['userInfo']['id']}, FALSE);");
       }
     } elseif((empty($followup_date) && !empty($followup_individual)) || (!empty($followup_date) && empty($followup_individual))) {
       echo displayToast('warning', 'Unable to set a followup as there is a missing individual or date.', 'No Followup Set');
@@ -424,6 +431,7 @@ HEREDOC;
         payment_method = '$payment_method',
         species_grade = '$species_grade', 
         construction_method = '$construction_method', 
+        carcass_material = '$carcass_material', 
         door_design = '$door_design', 
         panel_raise_door = '$panel_raise_door', 
         panel_raise_sd = '$panel_raise_sd', 

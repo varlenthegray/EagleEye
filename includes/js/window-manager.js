@@ -165,6 +165,12 @@ var winMgr = {
         'windowTitle': 'Feedback/Tasks',
         'attachObj': null,
         'ajaxURL': '/html/tasks.php'
+      },
+      'dealers': {
+        // position skipped
+        'windowTitle': 'Dealer Management',
+        'attachObj': null,
+        'ajaxURL': '/html/windows/dealers.php'
       }
     };
 

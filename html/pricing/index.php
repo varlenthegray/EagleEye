@@ -212,7 +212,7 @@ if($pg_qry->num_rows > 0) {
                 </tr>
                 <tr>
                   <td>Room Name:</td>
-                  <td colspan="2"><input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
+                  <td colspan="2"><input type="text" class="form-control border_thin_bottom" id="room_name" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
                 </tr>
                 <tr>
                   <td>Billing Type:</td>
@@ -354,14 +354,19 @@ if($pg_qry->num_rows > 0) {
                     <th>Cost</th>
                   </tr>
                   <tr class="border_top">
+                    <td class="border_thin_bottom">Construction Method:<div class="cab_specifications_desc"><?php echo displayVINOpts('construction_method'); ?></div></td>
+                    <td class="border_thin_bottom pricing_value" id="const_pct">0.00%</td>
+                    <td class="border_thin_bottom pricing_value" id="const_amt">$0.00</td>
+                  </tr>
+                  <tr>
                     <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc"><?php echo displayVINOpts('species_grade', null, 'pricingSpeciesGrade'); ?></div></td>
                     <td class="border_thin_bottom"></td>
                     <td class="border_thin_bottom"></td>
                   </tr>
                   <tr>
-                    <td class="border_thin_bottom">Box Construction:<div class="cab_specifications_desc"><?php echo displayVINOpts('construction_method'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="const_pct">0.00%</td>
-                    <td class="border_thin_bottom pricing_value" id="const_amt">$0.00</td>
+                    <td class="border_thin_bottom">Carcass Material:<div class="cab_specifications_desc"><?php echo displayVINOpts('carcass_material'); ?></div></td>
+                    <td class="border_thin_bottom pricing_value" id="box_const_pct">0.00%</td>
+                    <td class="border_thin_bottom pricing_value" id="box_const_amt">$0.00</td>
                   </tr>
                   <tr>
                     <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo displayVINOpts('door_design', null, 'pricingDoorDesign'); ?></div></td>
@@ -970,7 +975,9 @@ if($pg_qry->num_rows > 0) {
     editCatalog = $("#editCatalogLock"),
     cabinetList = $("#cabinet_list"),
     catalog = $("#catalog_categories"),
-    itemModifications = $("#item_modifications");
+    itemModifications = $("#item_modifications"),
+    nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';
+
 
   $('.sample_checkbox').on('change', function() {
     $('.sample_checkbox').not(this).prop('checked', false);

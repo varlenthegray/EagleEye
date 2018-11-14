@@ -54,5 +54,7 @@ require '../../includes/header_start.php';
     winMgr.getWins().attachEvent("onMaximize", function(win) {
       crmCompany.reInitEditor();
     });
+
+    crmMain.dealerInit(); // initialize dealer listening
   });
 </script>

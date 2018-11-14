@@ -1,6 +1,7 @@
 var crmMain = {
   body: null, // the main body to insert ALL CRM data into
 
+  // datatable skeleton setup
   dtSkeleton: function(ajaxURL, customDefs) {
     if(customDefs !== '' || customDefs !== null || customDefs !== undefined) {
       return {
@@ -62,5 +63,26 @@ var crmMain = {
     } );
 
     return (prop && prop in params) ? params[prop] : params;
+  },
+  dealerInit: function() {
+    var current_value = null;
+
+    $("body")
+      .on("focus", ".dealer_input", function() {
+        current_value = $(this).val();
+      })
+      .on("blur", ".dealer_input", function() {
+        let dealer_id = $(this).attr('data-id');
+        let column = $(this).attr('data-col');
+        let value = $(this).val();
+
+        if(value !== current_value) {
+          console.log("Going to update id " + dealer_id + " on column " + column + " with " + value);
+
+          $.post("/html/assets/update_dealers.php", {id: dealer_id, col: column, val: value}, function(data) {
+            $("body").append(data);
+          });
+        }
+      });
   }
 };
