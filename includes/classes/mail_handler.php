@@ -14,15 +14,14 @@ require SITE_ROOT . '/vendor/autoload.php';
 
 
 class mail_handler {
-
   public function sendMessage($to, $from, $subject, $message, $null) {
     $mail = new PHPMailer(true);
 
     global $dbconn;
 
-    $message_out = '<!DOCTYPE html><html lang="en">';
+    $message = str_replace(array("\r\n","\r","\n","\\r","\\n","\\r\\n"), '<br/> ', $message);
 
-    $message_out .= <<<HEADER
+    $message_out = <<<HEADER
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,7 +53,7 @@ HEADER;
         <table class="header-table">
             <tr>
                 <td class="header-text">EagleEye ERP</td>
-                <td class="logo"><img src="https://3erp.us/assets/images/logo_150.png" /></td>
+                <td class="logo"><img src="https://3erp.us/assets/images/mini_logo.png" /></td>
             </tr>
         </table>
 
@@ -85,7 +84,17 @@ BODY;
     $sms_qry = $dbconn->query("SELECT * FROM user WHERE email = '$to'");
     $sms = $sms_qry->fetch_assoc();
 
-    sendText($sms['phone'], "$subject: $message");
+    $origin_qry = $dbconn->query("SELECT * FROM user WHERE email = '$from'");
+    $origin = $origin_qry->fetch_assoc();
+
+    $smsMsg = strip_tags($message);
+    $smsSubject = strip_tags($subject);
+
+    sendText($sms['phone'], "$smsSubject
+    
+    $smsMsg 
+     
+Reply To {$origin['phone']}");
 
     try {
       //Server settings

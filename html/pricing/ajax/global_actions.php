@@ -397,14 +397,16 @@ switch($_REQUEST['action']) {
         $msg_notes = str_replace('  ', '&nbsp;&nbsp;', $msg_notes);
 
         $message = <<<HEREDOC
+        
+        
 <h5>Followup Time: $followup_time</h5>
 
-<h3>Inquiry:</h3>
+<h3>Notes:</h3>
 
 $msg_notes -- {$_SESSION['userInfo']['name']}
 HEREDOC;
 
-        $subject = "New Inquiry: {$room_info['so_parent']}{$room_info['room']}-{$room_info['iteration']}";
+        $subject = "{$room_info['so_parent']}{$room_info['room']}-{$room_info['iteration']}";
 
         $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], $subject, $message, true);
 
@@ -489,122 +491,6 @@ HEREDOC;
     $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
     $cat->saveCatalog($room_id, $cab_list);
     //</editor-fold>
-
-    break;
-  case 'modalGlobals':
-    $room_id = sanitizeInput($_REQUEST['roomID']);
-
-    $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
-    $room = $room_qry->fetch_assoc();
-
-    // run functions for heredoc output
-    $product_type = displayVINOpts('product_type', null, 'dropdown_p_type');
-    $room_type = displayVINOpts('room_type');
-    // end of function run for heredoc
-
-    // days to ship calculation info
-    switch($room['days_to_ship']) {
-      case 'G':
-        $dd_class = 'job-color-green';
-        break;
-
-      case 'Y':
-        $dd_class = 'job-color-yellow';
-        break;
-
-      case 'N':
-        $dd_class = 'job-color-orange';
-        break;
-
-      case 'R':
-        $dd_class = 'job-color-red';
-        break;
-
-      default:
-        $dd_class = 'job-color-gray';
-        break;
-    }
-
-    $dd_value = !empty($room['delivery_date']) ? date('m/d/Y', $room['delivery_date']) : '';
-    // end days to ship calculation info
-
-    echo <<<HEREDOC
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-          <h4 class="modal-title">Global: Room Details</h4>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12">
-              <form id="modalGlobalData" action="#">
-                <table style="width:50%;margin:0 auto;">
-                  <colgroup>
-                    <col width="30%">
-                    <col width="70%">
-                  </colgroup>
-                  <tr>
-                    <td>Room:</td>
-                    <td>
-                      <input type="text" class="form-control" id="room_letter" name="room_letter" placeholder="Room" value="{$room['room']}" style="float:left;width:15%;" readonly>
-                      <input type="text" class="form-control" id="room_name" name="room_name" placeholder="Room Name" value="{$room['room_name']}" style="float:left;width:80%;margin-left:5px;">
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Iteration:</td>
-                    <td><input type="text" class="form-control" id="iteration" name="iteration" placeholder="Iteration" value="{$room['iteration']}" readonly></td>
-                  </tr>
-                  <tr>
-                    <td>Billing Type:</td>
-                    <td>$room_type</td>
-                  </tr>
-                </table>
-                
-                <input type="hidden" id="roomID" name="roomID" value="$room_id" />
-              </form>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary waves-effect waves-light" id="modalGlobalsUpdate">Update</button>
-        </div>
-      </div>
-    </div>
-
-    <script>$(".delivery_date").datepicker();</script>
-HEREDOC;
-
-
-    break;
-  case 'updateGlobals':
-    parse_str($_REQUEST['globalInfo'], $globalInfo);
-
-    $room_id = sanitizeInput($globalInfo['roomID']);
-    $room_letter = sanitizeInput($globalInfo['room_letter']);
-    $room_name = sanitizeInput($globalInfo['room_name']);
-    $iteration = (double)sanitizeInput($globalInfo['iteration']);
-    $product_type = sanitizeInput($globalInfo['product_type']);
-    $order_status = sanitizeInput($globalInfo['order_status']);
-    $days_to_ship = sanitizeInput($globalInfo['days_to_ship']);
-    $delivery_date = $globalInfo['delivery_date'];
-
-    if(empty($delivery_date)) { // this entire thing is stupid but it resolves the del date being blank
-      $del_date_unix = 'null'; // this was stupid, i had to set this to a null string and remove quotes from SQL statement
-    } else {
-      $del_date_unix = strtotime($delivery_date); // this was stupid, i had to configure this to string
-    }
-
-    if(!empty($room_id)) {
-      if($dbconn->query("UPDATE rooms SET room = '$room_letter', room_name = '$room_name', iteration = '$iteration', product_type = '$product_type', order_status = '$order_status', days_to_ship = '$days_to_ship', delivery_date = $del_date_unix WHERE id = $room_id;")) {
-        echo displayToast('success', "Successfully updated the global information for room $room_name.", 'Room Updated');
-      } else {
-        dbLogSQLErr($dbconn);
-      }
-    } else {
-      echo displayToast('error', 'Unable to update the information. Please reload the page and try again.', 'Unable to Update');
-    }
 
     break;
   case 'modalApplianceWS':
@@ -1020,6 +906,60 @@ HEREDOC;
     }
 
     echo $price_group;
+
+    break;
+  case 'modalOverrideShipping':
+    $room_id = sanitizeInput($_REQUEST['roomID']);
+
+    echo <<<HEREDOC
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Override Shipping Date</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <form id="modalShippingOverrideData" action="#">
+                <table style="width:50%;margin:0 auto;">
+                  <colgroup>
+                    <col width="30%">
+                    <col width="70%">
+                  </colgroup>
+                  <tr>
+                    <td>New Date:</td>
+                    <td><input type="text" class="form-control" name="new_date" placeholder="Date (Any Format)"></td>
+                  </tr>
+                </table>
+                
+                <input type="hidden" id="roomID" name="roomID" value="$room_id" />
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary waves-effect waves-light" id="modalShippingUpdate">Update</button>
+        </div>
+      </div>
+    </div>
+HEREDOC;
+
+    break;
+  case 'overrideShipping':
+    $room_id = sanitizeInput($_REQUEST['roomID']);
+    parse_str($_REQUEST['info'], $info);
+
+    $newShip = strtotime($info['new_date']);
+    $newDel = strtotime(date(DATE_DEFAULT, $newShip) . ' + 1 weekday');
+
+    $dbconn->query("UPDATE rooms SET ship_date = $newShip, delivery_date = $newDel WHERE id = $room_id");
+
+    $return['ship_date'] = date(DATE_DEFAULT, $newShip);
+    $return['del_date'] = date(DATE_DEFAULT, $newDel);
+
+    echo json_encode($return);
 
     break;
 }

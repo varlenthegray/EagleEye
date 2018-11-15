@@ -198,9 +198,9 @@ if($qry->num_rows > 0) {
       }
 
       echo "    <td>{$result['so_num']}</td>";
+      echo "    <td>{$result['dealer_code']}: {$dealer['first_name']} {$dealer['last_name']}</td>";
       echo "    <td>{$result['project_name']}</td>";
       echo "    <td>{$dealer['contact']}</td>";
-      echo "    <td>{$result['dealer_code']}: {$dealer['first_name']} {$dealer['last_name']}</td>";
       echo '  </tr>';
 
       //<editor-fold desc="Edit SO">

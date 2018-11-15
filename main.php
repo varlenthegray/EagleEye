@@ -173,9 +173,9 @@ require 'includes/header_start.php';
                   <thead>
                   <tr>
                     <th colspan="2">SO#</th>
-                    <th>PROJECT/CUSTOMER PO</th>
-                    <th>PROJECT MANAGER</th>
                     <th>DEALER/CONTRACTOR</th>
+                    <th>CUSTOMER PO/PROJECT NAME</th>
+                    <th>PROJECT MANAGER</th>
                   </tr>
                   </thead>
                   <tbody id="search_results_table">

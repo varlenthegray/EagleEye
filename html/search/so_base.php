@@ -21,9 +21,9 @@ $find = sanitizeInput($_REQUEST['find']);
         <tr>
           <th width="15px"></th>
           <th>SO #</th>
-          <th>PO</th>
-          <th>Project Manager</th>
           <th>Dealer/Contractor</th>
+          <th>Customer PO/Project Name</th>
+          <th>Project Manager</th>
         </tr>
         </thead>
       </table>

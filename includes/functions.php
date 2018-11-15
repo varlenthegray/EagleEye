@@ -61,23 +61,18 @@ function calcDelDate($days_to_ship) {
   switch($days_to_ship) {
     case 'G':
       $target_date = strtotime('+26 weekdays');
-
       break;
     case 'Y':
       $target_date = strtotime('+19 weekdays');
-
       break;
     case 'N':
       $target_date = strtotime('+13 weekdays');
-
       break;
     case 'R':
       $target_date = strtotime('+6 weekdays');
-
       break;
     default:
       $target_date = strtotime('+26 weekdays');
-
       break;
   }
 

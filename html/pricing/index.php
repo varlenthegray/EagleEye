@@ -150,18 +150,19 @@ if($pg_qry->num_rows > 0) {
           <div class="col-sm-4">
             <table width="100%">
               <tr>
-                <td colspan="2"><h3><?php echo translateVIN('order_status', $room['order_status']); ?></h3></td>
+                <td colspan="2"><h3><u>Item List</u></h3></td>
               </tr>
               <tr>
-                <td colspan="2"><h5><?php echo $result['project_name'] . ' - ' . $room['room_name']; ?></h5></td>
-              </tr>
-              <tr>
-                <td width="15%">Dealer:</td>
+                <td width="20%">Dealer:</td>
                 <td class="text-bold"><?php echo "{$dealer_info['dealer_id']}_{$dealer_info['dealer_name']} - {$dealer_info['contact']}"; ?></td>
               </tr>
               <tr>
-                <td width="15%">Dealer PO:</td>
-                <td class="text-bold"><input type="text" name="dealer_po" class="form-control border_thin_bottom" value="<?php echo $room['dealer_po'] ?>" placeholder="Enter PO Here" /></td>
+                <td>Project Name:</td>
+                <td class="text-bold"><strong><?php echo $result['project_name']; ?></strong></td>
+              </tr>
+              <tr>
+                <td>Dealer PO:</td>
+                <td class="text-bold"><strong><?php echo $room['room_name']; ?></strong></td>
               </tr>
               <tr>
                 <td>SO:</td>
@@ -172,14 +173,6 @@ if($pg_qry->num_rows > 0) {
 
           <div class="col-sm-4 center_header">
             <div id="logo"><img src="/assets/images/smc_logo.png" width="140px" /></div>
-
-            <div id="company_info">
-              Stone Mountain Cabinetry, Inc.<br />
-              206 Vista Blvd<br/>
-              Arden, NC 28704<br />
-              828.966.9000<br/>
-              orders@smcm.us
-            </div>
           </div>
 
           <div class="col-sm-2 col-sm-offset-2">
@@ -210,7 +203,7 @@ if($pg_qry->num_rows > 0) {
                   <th colspan="3">&nbsp;</th>
                 </tr>
                 <tr>
-                  <td>Room Name:</td>
+                  <td>Dealer PO:</td>
                   <td colspan="2"><input type="text" class="form-control border_thin_bottom" id="room_name" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
                 </tr>
                 <tr>
@@ -223,7 +216,7 @@ if($pg_qry->num_rows > 0) {
                   <td id="product_type_cost" class="pricing_value">$0.00</td>
                 </tr>
                 <tr>
-                  <td>Lead Time:</td>
+                  <td><span id="leadTimeDef"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?>Lead Time:</span></td>
                   <td><?php echo displayVINOpts('days_to_ship'); ?></td>
                   <td class="pricing_value">$0.00</td>
                 </tr>
@@ -235,7 +228,7 @@ if($pg_qry->num_rows > 0) {
                 <tr>
                   <td>Ship Date (*):</td>
                   <td><strong id="calcd_ship_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : 'TBD'; ?></strong></td>
-                  <td></td>
+                  <td><i style="font-size:1.25em;" class="fa fa-pencil-square no-print cursor-hand" id="overrideShipDate" title="Edit/Override Ship Date"></i></td>
                 </tr>
                 <tr>
                   <td>Delivery Date (*):</td>
@@ -251,8 +244,8 @@ if($pg_qry->num_rows > 0) {
                   <td style="vertical-align:top !important;">Ship To:</td>
                   <td colspan="2">
                     <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Name" name="ship_to_name" value="<?php echo $info['ship_name']; ?>"><br />
-                    <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $info['ship_address']; ?>"><br />
-                    <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $info['ship_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['ship_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $info['ship_zip']; ?>">
+                    <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $info['project_addr']; ?>"><br />
+                    <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
                   </td>
                 </tr>
                 <tr>
@@ -291,7 +284,7 @@ if($pg_qry->num_rows > 0) {
                   <td colspan="3"><input type="checkbox" value="1" name="requested_sample" class="sample_checkbox" id="requested_sample" <?php echo $room['sample_requested'] ? 'checked' : null; ?>> <label for="requested_sample">I have requested a sample for approval, reference:</label></td>
                 </tr>
                 <tr>
-                  <td colspan="3"><input type="text" name="sample_reference" class="form-control border_thin_bottom" placeholder="Sample Reference" value="<?php echo $room['sample_reference']; ?>" /></td>
+                  <td colspan="3"><input type="text" name="sample_reference" class="form-control border_thin_bottom sample_reference" placeholder="Sample Reference" value="<?php echo $room['sample_reference']; ?>" /></td>
                 </tr>
                 <tr>
                   <td colspan="3" style="height:5px;"></td>

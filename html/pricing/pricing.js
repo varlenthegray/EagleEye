@@ -515,16 +515,16 @@ $("body")
 
       if(followup_on !== '') {
         followup = '(Followup by ' + followup_by +' on ' + followup_on + ')';
+
+        let feedback_to = $("#room_inquiry_requested_of").val();
+        let priority = '3 - End of Week';
+
+        $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: note, assignee: feedback_to, priority: priority}, function(data) {
+          $("body").append(data);
+          $("#feedback-page").modal('hide');
+          $("#feedback-text").val("");
+        });
       }
-
-
-
-      $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: note, assignee: feedback_to, priority: priority}, function(data) {
-        $("body").append(data);
-        $("#feedback-page").modal('hide');
-        unsaved = false;
-        $("#feedback-text").val("");
-      });
 
       let output = '<tr><td width="26px" style="padding-right:5px;"><button class="btn waves-effect btn-primary pull-right reply_to_inquiry" id="10381"> ' +
         '<i class="zmdi zmdi-mail-reply"></i> </button></td>  ' +
@@ -787,18 +787,26 @@ $("body")
       node.setExpanded(false);
     });
   })
-  .on("click", "#global_info", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=modalGlobals&roomID=" + active_room_id, function(data) {
+  .on("click", "#overrideShipDate", function() {
+    $.post("/html/pricing/ajax/global_actions.php?action=modalOverrideShipping&roomID=" + active_room_id, function(data) {
       $("#modalGeneral").html(data).modal("show");
     });
   })
-  .on("click", "#modalGlobalsUpdate", function() {
-    let globalInfo = $("#modalGlobalData").serialize();
+  .on("click", "#modalShippingUpdate", function() {
+    let shippingInfo = $("#modalShippingOverrideData").serialize();
 
-    $.post("/html/pricing/ajax/global_actions.php?action=updateGlobals&roomID=" + active_room_id, {globalInfo: globalInfo}, function(data) {
-      $("body").append(data);
+    $.post("/html/pricing/ajax/global_actions.php?action=overrideShipping&roomID=" + active_room_id, {info: shippingInfo}, function(data) {
+      let ship_results = JSON.parse(data);
+
+      $("#calcd_ship_date").text(ship_results.ship_date);
+      $("#calcd_del_date").text(ship_results.del_date);
+
+      displayToast("success", "Successfully updated ship and delivery date.", "Ship/Delivery Updated");
+
       $("#modalGeneral").html("").modal('hide');
     });
+
+    unsaved = false;
   })
   .on("click", "#appliance_ws", function() {
     $.post("/html/pricing/ajax/global_actions.php?action=modalApplianceWS&roomID=" + active_room_id, function(data) {
@@ -850,8 +858,6 @@ $("body")
         ship_info.hide();
         ship_info.next("tr").hide();
         ship_info.next("tr").next("tr").hide();
-
-
       } else {
         ship_info.show();
         ship_info.next("tr").show();
@@ -875,17 +881,27 @@ $("body")
           construction_method.attr("value", "C").parent().find(".selected").html("Closet - Cam");
         }
       }
+    } else if(dropdown_list.attr("data-for") === 'order_status') {
+      if($(this).attr("data-value") === '#') {
+        $("#leadTimeDef").text('Est. Lead Time');
+      } else {
+        $("#leadTimeDef").text('Lead Time');
+      }
     }
   })
   .on("click", "#ship_date_recalc", function() {
     let dts = $("#days_to_ship").val();
 
-    $.post("/html/pricing/ajax/global_actions.php?action=calcShipDate", {days_to_ship: dts, room_id: active_room_id}, function(data) {
-      let result = JSON.parse(data);
+    if($("#order_status").val() === '#') {
+      $.post("/html/pricing/ajax/global_actions.php?action=calcShipDate", {days_to_ship: dts, room_id: active_room_id}, function(data) {
+        let result = JSON.parse(data);
 
-      $("#calcd_ship_date").html(result['ship_date']);
-      $("#calcd_del_date").html(result['del_date']);
-    });
+        $("#calcd_ship_date").html(result['ship_date']);
+        $("#calcd_del_date").html(result['del_date']);
+      });
+    } else {
+      displayToast('error', 'Unable to recalculate ship date, this room is not in quote anymore.', 'Unable to Recalculate.');
+    }
   })
   .on("click", "#terms_confirm", function() {
     let signature = $(".esig").val();
