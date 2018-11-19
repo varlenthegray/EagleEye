@@ -287,6 +287,7 @@ switch($_REQUEST['action']) {
     $seen_approved = empty($seen_approved) ? 0 : 1;
     $unseen_approved = empty($unseen_approved) ? 0 : 1;
     $requested_sample = empty($requested_sample) ? 0 : 1;
+    $multi_room_ship = empty($multi_room_ship) ? 0 : 1;
 
     //<editor-fold desc="What's Changed">
     $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
@@ -963,6 +964,202 @@ HEREDOC;
     $return['del_date'] = date(DATE_DEFAULT, $newDel);
 
     echo json_encode($return);
+
+    break;
+  case 'modalCopyRoom':
+    $room_id = sanitizeInput($_REQUEST['roomID']);
+
+    $cur_room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
+    $cur_room = $cur_room_qry->fetch_assoc();
+
+    $other_rooms_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = {$cur_room['so_parent']} ORDER BY room, iteration ASC");
+
+    $select = '<select name="new_room">';
+
+    while($other_rooms = $other_rooms_qry->fetch_assoc()) {
+      if($other_rooms['id'] !== $room_id) {
+        $select .= "<option value='{$other_rooms['id']}'>{$other_rooms['room']}-{$other_rooms['iteration']}</option>";
+      }
+    }
+
+    $select .= '</select>';
+
+    echo <<<HEREDOC
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Copy Room Data</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <form id="modalCopyRoomData" action="#">
+                <table style="width:50%;margin:0 auto;">
+                  <colgroup>
+                    <col width="30%">
+                    <col width="70%">
+                  </colgroup>
+                  <tr>
+                    <td>Copy To Room:</td>
+                    <td>$select</td>
+                  </tr>
+                </table>
+                
+                <input type="hidden" id="roomID" name="roomID" value="$room_id" />
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary waves-effect waves-light" id="modalCopyRoom">Copy</button>
+        </div>
+      </div>
+    </div>
+HEREDOC;
+
+    break;
+  case 'copyRoomInfo':
+    parse_str($_REQUEST['formInfo'], $info);
+
+    $initial_room = sanitizeInput($info['roomID']);
+    $copy_to_room = sanitizeInput($info['new_room']);
+
+    $from_room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $initial_room");
+    $from_room = $from_room_qry->fetch_assoc();
+
+    $from_room_list_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $initial_room");
+    $from_room_list = $from_room_list_qry->fetch_assoc();
+
+    $copy_to_list_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $copy_to_room");
+
+    $ship_date = (int)$from_room['ship_date'];
+    $delivery_date = (int)$from_room['delivery_date'];
+    $multi_room_ship = (int)$from_room['multi_room_ship'];
+    $ext_carcass_same = (int)$from_room['ext_carcass_same'];
+    $int_carcass_same = (int)$from_room['int_carcass_same'];
+    $sample_block_ordered = (int)$from_room['sample_block_ordered'];
+    $door_only_ordered = (int)$from_room['door_only_ordered'];
+    $door_drawer_ordered = (int)$from_room['door_drawer_ordered'];
+    $inset_square_ordered = (int)$from_room['inset_square_ordered'];
+    $inset_beaded_ordered = (int)$from_room['inset_beaded_ordered'];
+    $sample_ordered_date = (int)$from_room['sample_ordered_date'];
+    $dealer_created = (int)$from_room['dealer_created'];
+    $quote_submission = (int)$from_room['quote_submission'];
+    $const_method_iteration = (int)$from_room['const_method_iteration'];
+    $rework_iteration = (int)$from_room['rework_iteration'];
+    $add_on_iteration = (int)$from_room['add_on_iteration'];
+    $warranty_iteration = (int)$from_room['warranty_iteration'];
+    $payment_deposit = (int)$from_room['payment_deposit'];
+    $payment_final = (int)$from_room['payment_final'];
+    $payment_del_ptl = (int)$from_room['payment_del_ptl'];
+
+    if($dbconn->query("UPDATE rooms SET 
+      `product_type` = '{$from_room['product_type']}',
+      `room_type` = '{$from_room['room_type']}',
+      `individual_bracket_buildout` = '{$from_room['individual_bracket_buildout']}',
+      `order_status` = '{$from_room['order_status']}',
+      `dealer_status` = '{$from_room['dealer_status']}',
+      `days_to_ship` = '{$from_room['days_to_ship']}',
+      `ship_via` = '{$from_room['ship_via']}',
+      `ship_to` = '{$from_room['ship_to']}',
+      `payee` = '{$from_room['payee']}',
+      `payment_method` = '{$from_room['payment_method']}',
+      `installation` = '{$from_room['installation']}',
+      `ship_date` = $ship_date,
+      `delivery_date` = $delivery_date,
+      `multi_room_ship` = $multi_room_ship,
+      `species_grade` = '{$from_room['species_grade']}',
+      `construction_method` = '{$from_room['construction_method']}',
+      `carcass_material` = '{$from_room['carcass_material']}',
+      `door_design` = '{$from_room['door_design']}',
+      `panel_raise_door` = '{$from_room['panel_raise_door']}',
+      `panel_raise_sd` = '{$from_room['panel_raise_sd']}',
+      `panel_raise_td` = '{$from_room['panel_raise_td']}',
+      `edge_profile` = '{$from_room['edge_profile']}',
+      `framing_bead` = '{$from_room['framing_bead']}',
+      `framing_options` = '{$from_room['framing_options']}',
+      `style_rail_width` = '{$from_room['style_rail_width']}',
+      `finish_code` = '{$from_room['finish_code']}',
+      `sheen` = '{$from_room['sheen']}',
+      `glaze` = '{$from_room['glaze']}',
+      `glaze_technique` = '{$from_room['glaze_technique']}',
+      `antiquing` = '{$from_room['antiquing']}',
+      `worn_edges` = '{$from_room['worn_edges']}',
+      `distress_level` = '{$from_room['distress_level']}',
+      `green_gard` = '{$from_room['green_gard']}',
+      `ext_carcass_same` = $ext_carcass_same,
+      `carcass_exterior_species` = '{$from_room['carcass_exterior_species']}',
+      `carcass_exterior_finish_code` = '{$from_room['carcass_exterior_finish_code']}',
+      `carcass_exterior_glaze_color` = '{$from_room['carcass_exterior_glaze_color']}',
+      `carcass_exterior_glaze_technique` = '{$from_room['carcass_exterior_glaze_technique']}',
+      `int_carcass_same` = $int_carcass_same,
+      `carcass_interior_species` = '{$from_room['carcass_interior_species']}',
+      `carcass_interior_finish_code` = '{$from_room['carcass_interior_finish_code']}',
+      `carcass_interior_glaze_color` = '{$from_room['carcass_interior_glaze_color']}',
+      `carcass_interior_glaze_technique` = '{$from_room['carcass_interior_glaze_technique']}',
+      `drawer_boxes` = '{$from_room['drawer_boxes']}',
+      `drawer_box_mount` = '{$from_room['drawer_box_mount']}',
+      `drawer_guide` = '{$from_room['drawer_guide']}',
+      `vin_code` = '{$from_room['vin_code']}',
+      `sample_block_ordered` = $sample_block_ordered,
+      `door_only_ordered` = $door_only_ordered,
+      `door_drawer_ordered` = $door_drawer_ordered,
+      `inset_square_ordered` = $inset_square_ordered,
+      `inset_beaded_ordered` = $inset_beaded_ordered,
+      `sample_ordered_date` = $sample_ordered_date,
+      `vin_ship_via` = '{$from_room['vin_ship_via']}',
+      `ship_site` = '{$from_room['ship_site']}',
+      `delivery_note` = '{$from_room['delivery_note']}',
+      `global_note` = '{$from_room['global_note']}',
+      `fin_sample_note` = '{$from_room['fin_sample_note']}',
+      `const_method_iteration` = $const_method_iteration,
+      `rework_iteration` = $rework_iteration,
+      `add_on_iteration` = $add_on_iteration,
+      `warranty_iteration` = $warranty_iteration,
+      `payment_deposit` = $payment_deposit,
+      `payment_final` = $payment_final,
+      `payment_del_ptl` = $payment_del_ptl,
+      `dealer_pw` = '{$from_room['dealer_pw']}',
+      `dealer_created` = $dealer_created,
+      `quote_submission` = $quote_submission,
+      `custom_vin_info` = '{$from_room['custom_vin_info']}',
+      `ship_address` = '{$from_room['ship_address']}',
+      `ship_city` = '{$from_room['ship_city']}',
+      `ship_cubes` = {$from_room['ship_cubes']},
+      `ship_name` = '{$from_room['ship_name']}',
+      `ship_state` = '{$from_room['ship_state']}',
+      `ship_zip` = '{$from_room['ship_zip']}'
+    WHERE id = $copy_to_room")) {
+      echo displayToast('success', 'Successfully copied the room information.', 'Room Info Copied');
+    } else {
+      dbLogSQLErr($dbconn);
+    }
+
+    if($copy_to_list_qry->num_rows === 1) {
+      $copy_to_list = $copy_to_list_qry->fetch_assoc();
+
+      $stmt = $dbconn->prepare('UPDATE pricing_cabinet_list SET cabinet_list = ? WHERE id = ?');
+      $stmt->bind_param('si', $from_room_list['cabinet_list'], $copy_to_list['id']);
+
+//      if($dbconn->query("UPDATE pricing_cabinet_list SET cabinet_list = '$fromList' WHERE id = {$copy_to_list['id']}")) {
+      if($stmt->execute()) {
+        echo displayToast('success', 'Successfully updated the cabinet list.', 'Cabinet List Updated');
+      } else {
+        dbLogSQLErr($dbconn);
+      }
+    } else {
+//      if($dbconn->query("INSERT INTO pricing_cabinet_list (room_id, user_id, catalog_id, cabinet_list) VALUES ({$copy_to_room}, {$_SESSION['userInfo']['id']}, 1, '$fromList')")) {
+      $stmt = $dbconn->prepare('INSERT INTO pricing_cabinet_list (room_id, user_id, catalog_id, cabinet_list) VALUES (?, ?, 1, ?)');
+      $stmt->bind_param('iis', $copy_to_room, $_SESSION['userInfo']['id'], $from_room_list['cabinet_list']);
+
+      if($stmt->execute()) {
+        echo displayToast('success', 'Successfully created the cabinet list.', 'Cabinet List Created');
+      } else {
+        dbLogSQLErr($dbconn);
+      }
+    }
 
     break;
 }

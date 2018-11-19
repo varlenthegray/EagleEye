@@ -1120,4 +1120,30 @@ $("body")
 
     unsaved = false;
   })
+  .on("click", "#copy_room", function() {
+    $.post("/html/pricing/ajax/global_actions.php?action=modalCopyRoom&roomID=" + active_room_id, function(data) {
+      $("#modalGeneral").html(data).modal("show");
+    });
+  })
+  .on("click", "#modalCopyRoom", function() {
+    let replaceRoom = $("#modalCopyRoomData select[name='new_room'] :selected").text();
+
+    $.confirm({
+      title: "Are you sure you want to overwrite this rooms information?",
+      content: "You are about to completely overwrite room information for " + replaceRoom + ". Are you sure?",
+      type: 'red',
+      buttons: {
+        yes: function() {
+          let info = $("#modalCopyRoomData").serialize();
+
+          $.post("/html/pricing/ajax/global_actions.php?action=copyRoomInfo", {formInfo: info}, function(data) {
+            $('body').append(data);
+          });
+        },
+        no: function() {}
+      }
+    });
+
+
+  })
 ;
