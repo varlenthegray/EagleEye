@@ -55,17 +55,22 @@ function recalcSummary() {
     let lineTotal = 0.00;
 
     // now update the last column (total) with the final price for that line item
-    if(line.data.customPrice === 1) {
-      let cPrice = parseFloat(price.toString().replace('$', ''));
-
-      lineTotal = cPrice;
-
-      $tdList.eq(9).find("input").val(cPrice.formatMoney());
+    if($("#product_type").val() === 'W') {
+      $tdList.eq(9).text('$0.00');
     } else {
-      // set the line total equal to the quantity * price
-      lineTotal = qty * price;
+      if(line.data.customPrice === 1) {
 
-      $tdList.eq(9).text(lineTotal.formatMoney());
+        let cPrice = parseFloat(price.toString().replace('$', ''));
+
+        lineTotal = cPrice;
+
+        $tdList.eq(9).find("input").val(cPrice.formatMoney());
+      } else {
+        // set the line total equal to the quantity * price
+        lineTotal = qty * price;
+
+        $tdList.eq(9).text(lineTotal.formatMoney());
+      }
     }
 
     // if the line item is a cabinet only (excludes tops, accessories, fillers, moldings) then we're adding that to a cabinet only price (inset specific pricing)
@@ -327,9 +332,10 @@ function fullRecalc() {
         let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
         let node = tree.getNodeByKey(key);
 
-        console.log(itemInfo);
+        if(node.data.cabinet === 1) {
+          node.setTitle(itemInfo.sku);
+        }
 
-        node.setTitle(itemInfo.sku);
         node.data.price = fixedPrice;
         node.icon = itemInfo.icon;
         node.data.name = itemInfo.title;
@@ -342,6 +348,8 @@ function fullRecalc() {
       recalcSummary();
     });
   });
+
+  displayToast("success", "Successfully recalculated the pricing.", "Pricing Recalculated");
 }
 
 function fetchDebug() {

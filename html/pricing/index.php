@@ -208,7 +208,7 @@ if($pg_qry->num_rows > 0) {
                 </tr>
                 <tr>
                   <td>Billing Type:</td>
-                  <td colspan="2"><strong><?php echo false !== stripos($info['dealer_code'], 'A01') ? 'Retail' : 'Distribution'; ?></strong></td>
+                  <td colspan="2"><strong><?php echo $dealer_info['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
                 </tr>
                 <tr>
                   <td>Order Type:</td>
@@ -249,10 +249,20 @@ if($pg_qry->num_rows > 0) {
                   </td>
                 </tr>
                 <tr>
+                  <td>&nbsp;</td>
+                  <td colspan="2"><input type="checkbox" value="1" name="multi_room_ship" id="multi_room_ship" <?php echo $room['multi_room_ship'] ? 'checked' : null; ?>> <label for="multi_room_ship">Multi-room shipping</label></td>
+                </tr>
+                <tr>
+                  <?php
+                  $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip'];
+                  $ship_zone_info = calcShipZone($shipZone);
+
+                  $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $ship_zone_info['cost'];
+                  ?>
+
                   <td>Shipping Zone:</td>
-                  <?php $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip']; $ship_zone_info = calcShipZone($shipZone); ?>
                   <td><strong><?php echo $ship_zone_info['zone']; ?></strong></td>
-                  <td id="shipping_cost" class="pricing_value" data-cost="<?php echo $ship_zone_info['cost']; ?>">$<?php echo "{$ship_zone_info['cost']}.00"; ?></td>
+                  <td id="shipping_cost" class="pricing_value" data-cost="<?php echo $ship_cost; ?>">$<?php echo "{$ship_cost}.00"; ?></td>
                 </tr>
                 <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" />
                 <!--<tr>

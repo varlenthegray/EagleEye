@@ -281,6 +281,7 @@ switch($_REQUEST['action']) {
     $unseen_approved = sanitizeInput($cabinet_specifications['unseen_approved']);
     $requested_sample = sanitizeInput($cabinet_specifications['requested_sample']);
     $sample_reference = sanitizeInput($cabinet_specifications['sample_reference']);
+    $multi_room_ship = sanitizeInput($cabinet_specifications['multi_room_ship']);
     //</editor-fold>
 
     $seen_approved = empty($seen_approved) ? 0 : 1;
@@ -317,6 +318,7 @@ switch($_REQUEST['action']) {
     $changed[] = whatChanged($unseen_approved, $room_info['unseen_approved'], 'Sample unseen/approved');
     $changed[] = whatChanged($requested_sample, $room_info['requested_sample'], 'Sample Requested');
     $changed[] = whatChanged($sample_reference, $room_info['sample_reference'], 'Sample Reference');
+    $changed[] = whatChanged($multi_room_ship, $room_info['multi_room_ship'], 'Multi-room Shipping');
     //</editor-fold>
 
     //<editor-fold desc="DB: Notes">
@@ -461,7 +463,8 @@ HEREDOC;
         sample_seen_approved = $seen_approved,
         sample_unseen_approved = $unseen_approved,
         sample_requested = $requested_sample,
-        sample_reference = '$sample_reference'
+        sample_reference = '$sample_reference',
+        multi_room_ship = $multi_room_ship
       WHERE id = '$room_id'")) {
       echo displayToast('success', 'Room updated successfully.', 'Room Updated');
     } else {
