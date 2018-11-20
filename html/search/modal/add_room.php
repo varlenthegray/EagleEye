@@ -28,7 +28,6 @@ $result = $result_qry->fetch_assoc();
 $product_type = displayVINOpts('product_type');
 $order_status = displayVINOpts('order_status', null, 'modalAddRoomOrderStatus');
 $days_to_ship = displayVINOpts('days_to_ship', null, 'modalAddRoomDTS');
-$room_type = displayVINOpts('room_type');
 // end of function run for heredoc
 
 $dd_value = !empty($room['delivery_date']) ? date('m/d/Y', $room['delivery_date']) : '';
@@ -103,10 +102,6 @@ echo <<<HEREDOC
                   <tr>
                     <td><label for="days_to_ship">Days to Ship</label></td>
                     <td>$days_to_ship</td>
-                  </tr>
-                  <tr>
-                    <td>Room Type</td>
-                    <td>$room_type</td>
                   </tr>
                 </table>
                 

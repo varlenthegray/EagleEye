@@ -17,6 +17,8 @@ $("body")
       $("body").append(data);
     });
 
-    $("#modalAddRoom").modal("hide")
+    $("#modalAddRoom").modal("hide");
+
+    unsaved = false;
   })
 ;

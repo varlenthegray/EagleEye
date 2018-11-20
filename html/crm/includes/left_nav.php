@@ -5,7 +5,7 @@
         <i class="fa fa-bars fa-2x cursor-hand pull-left" id="display_widgets"></i> <h3 class="pull-left request_header">CRM</h3>
       </div>
 
-      <div class="col-md-12 m-b-10" id="widget_box" style="display:none;">
+      <div class="col-md-12 m-b-10 widget-box" id="widget_box" style="display:none;">
         <div class="col-md-3 cursor-hand widget-item widget-active" data-window="crm"><i class="fa fa-book fa-3x"></i><h5>CRM</h5></div>
         <div class="col-md-3 cursor-hand widget-item widget-active" data-window="quotes"><i class="fa fa-pencil-square-o fa-3x"></i><h5>Quotes</h5></div>
         <div class="col-md-3 cursor-hand widget-item widget-active" data-window="production"><i class="fa fa-sitemap fa-3x"></i><h5>Production</h5></div>
@@ -18,6 +18,7 @@
         <div class="col-md-3 cursor-hand widget-item" data-window="feedback"><i class="fa fa-envelope-square fa-3x"></i><h5>Feedback</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="opl"><i class="fa fa-list fa-3x"></i><h5>OPL</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="dealers"><i class="fa fa-share-alt fa-3x"></i><h5>Dealers</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="database"><i class="fa fa-server fa-3x"></i><h5>Database</h5></div>
 <!--        <div class="col-md-3 cursor-hand widget-item" data-window="documents"><i class="fa fa-file-pdf-o fa-3x"></i><h5>Documents</h5></div>-->
       </div>
     </div>

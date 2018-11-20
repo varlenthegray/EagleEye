@@ -171,6 +171,12 @@ var winMgr = {
         'windowTitle': 'Dealer Management',
         'attachObj': null,
         'ajaxURL': '/html/windows/dealers.php'
+      },
+      'database': {
+        // position skipped
+        'windowTitle': 'Database Management',
+        'attachObj': null,
+        'ajaxURL': '/html/windows/database_mgmt.php'
       }
     };
 
