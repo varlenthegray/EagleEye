@@ -133,6 +133,15 @@ if($pg_qry->num_rows > 0) {
     <div class="col-md-2 pricing_left_nav no-print sticky" style="top:122px;">
       <div class="sticky nav_filter">
         <div class="form-group">
+          <label for="left_menu_options">Action:</label>
+          <select id="left_menu_options" class="pricing_dropdown ignoreSaveAlert" style="margin:5px 0;">
+            <option value="catalog">Catalog</option>
+            <option value="globals">Globals</option>
+            <option value="samples">Samples</option>
+          </select>
+        </div>
+
+        <div class="form-group action_search">
           <label for="treeFilter">Search Catalog</label>
           <?php echo $bouncer->validate('pricing_change_catalog') ? '<span class="pull-right"><i id="editCatalogLock" class="fa fa-fw fa-lock cursor-hand" title="Lock/Unlock Catalog for Changes"></i></span>' : null ?>
           <input type="text" class="form-control fc-simple ignoreSaveAlert" id="treeFilter" placeholder="Find" width="100%" >
@@ -141,7 +150,7 @@ if($pg_qry->num_rows > 0) {
         <label for="below" id="category_collapse">Catalog</label>
       </div>
 
-      <div id="catalog_categories"></div>
+      <div id="action_container"></div>
     </div>
 
     <div class="col-md-8 pricing_table_format">
@@ -612,11 +621,6 @@ if($pg_qry->num_rows > 0) {
                 <td class="total_text">&nbsp;</td>
                 <td class="text-md-right total_text" id="itemListNET">$0.00</td>
               </tr>
-              <!--<tr class="border_thin_bottom">
-                <td class="total_text">Shipping:</td>
-                <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text">$0.00</td>
-              </tr>-->
               <tr class="border_thin_bottom">
                 <td class="total_text">Global: Room Details/Shipping:</td>
                 <td class="total_text">&nbsp;</td>
@@ -976,14 +980,9 @@ if($pg_qry->num_rows > 0) {
 
     editCatalog = $("#editCatalogLock"),
     cabinetList = $("#cabinet_list"),
-    catalog = $("#catalog_categories"),
+    catalog = $("#action_container"),
     itemModifications = $("#item_modifications"),
     nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';
-
-
-  $('.sample_checkbox').on('change', function() {
-    $('.sample_checkbox').not(this).prop('checked', false);
-  });
 
   $(function() {
     setTimeout(function() {
@@ -1705,18 +1704,6 @@ if($pg_qry->num_rows > 0) {
         }
       }
     });
-
-    if($("#ext_carcass_same").is(":checked")) {
-      $(".ext_finish_block").hide();
-    } else {
-      $(".ext_finish_block").show();
-    }
-
-    if($("#int_carcass_same").is(":checked")) {
-      $(".int_finish_block").hide();
-    } else {
-      $(".int_finish_block").show();
-    }
 
     if($("#submit_for_quote").prop("disabled")) {
       $.confirm({

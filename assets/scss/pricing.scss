@@ -387,3 +387,22 @@ h5 {
   background-color: #000 !important;
   color: #FFF;
 }
+
+.pricing_dropdown {
+  background-color: transparent;
+  border: dotted #000;
+  border-width: 0 0 1px 0;
+  font-weight: bold;
+  width: 100%;
+  outline: none;
+
+  optgroup {
+    background-color: #000;
+    color: #FFF;
+  }
+
+  option {
+    background-color: #FFF;
+    color: #000;
+  }
+}

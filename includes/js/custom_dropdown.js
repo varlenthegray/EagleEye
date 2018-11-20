@@ -153,4 +153,9 @@ $("body")
   .on("change", "#show_image_popups", function() {
     adjustImgPopups();
   })
+  .keydown(function(e) {
+    if(e.key === 'Escape') {
+      $(".custom_dropdown").find('.dropdown_options').hide();
+    }
+  })
 ;

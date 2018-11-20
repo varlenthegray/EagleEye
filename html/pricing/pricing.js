@@ -1146,4 +1146,49 @@ $("body")
 
 
   })
+  .on("change", "#left_menu_options", function() {
+    let result = $(this).val();
+    let asearch = $(".action_search");
+    let newSourceOption = null;
+
+    switch(result) {
+      case 'catalog':
+        asearch.show();
+
+        newSourceOption = {
+          url: '/html/pricing/ajax/nav_menu.php',
+          type: 'POST',
+          dataType: 'json'
+        };
+
+        catalog.fancytree("getTree").reload(newSourceOption);
+        break;
+      case 'samples':
+        asearch.hide();
+
+        newSourceOption = {
+          url: '/html/pricing/ajax/samples_menu.php',
+          type: 'POST',
+          dataType: 'json'
+        };
+
+        catalog.fancytree("getTree").reload(newSourceOption);
+        break;
+      case 'globals':
+        asearch.hide();
+
+        newSourceOption = {
+          url: '/html/pricing/ajax/globals_menu.php',
+          type: 'POST',
+          dataType: 'json'
+        };
+
+        catalog.fancytree("getTree").reload(newSourceOption);
+
+        break;
+    }
+  })
+  .on("change", ".sample_checkbox", function() {
+    $('.sample_checkbox').not(this).prop('checked', false);
+  })
 ;
