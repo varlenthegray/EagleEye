@@ -136,7 +136,6 @@ if($pg_qry->num_rows > 0) {
           <label for="left_menu_options">Action:</label>
           <select id="left_menu_options" class="pricing_dropdown ignoreSaveAlert" style="margin:5px 0;">
             <option value="catalog">Catalog</option>
-            <option value="globals">Globals</option>
             <option value="samples">Samples</option>
           </select>
         </div>
@@ -159,7 +158,7 @@ if($pg_qry->num_rows > 0) {
           <div class="col-sm-4">
             <table width="100%">
               <tr>
-                <td colspan="2"><h3><u>Item List</u></h3></td>
+                <td colspan="2"><h3><u id="pageTitle"> Item List</u></h3></td>
               </tr>
               <tr>
                 <td width="20%">Dealer:</td>
@@ -181,7 +180,7 @@ if($pg_qry->num_rows > 0) {
           </div>
 
           <div class="col-sm-4 center_header">
-            <div id="logo"><img src="/assets/images/smc_logo.png" width="140px" /></div>
+            <div id="logo"><img src="/assets/images/smc_logo.png" width="140px" style="margin-bottom:10px;" /></div>
           </div>
 
           <div class="col-sm-2 col-sm-offset-2">
@@ -225,7 +224,7 @@ if($pg_qry->num_rows > 0) {
                   <td id="product_type_cost" class="pricing_value">$0.00</td>
                 </tr>
                 <tr>
-                  <td><span id="leadTimeDef"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?>Lead Time:</span></td>
+                  <td>Lead Time:</td>
                   <td><?php echo displayVINOpts('days_to_ship'); ?></td>
                   <td class="pricing_value">$0.00</td>
                 </tr>
@@ -235,12 +234,12 @@ if($pg_qry->num_rows > 0) {
                   <td></td>
                 </tr>
                 <tr>
-                  <td>Ship Date (*):</td>
+                  <td><span class="estimated"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?></span>Ship Date (*):</td>
                   <td><strong id="calcd_ship_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : 'TBD'; ?></strong></td>
                   <td><i style="font-size:1.25em;" class="fa fa-pencil-square no-print cursor-hand" id="overrideShipDate" title="Edit/Override Ship Date"></i></td>
                 </tr>
                 <tr>
-                  <td>Delivery Date (*):</td>
+                  <td><span class="estimated"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?></span>Delivery Date (*):</td>
                   <td><strong id="calcd_del_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['delivery_date']) : 'TBD'; ?></strong></td>
                   <td></td>
                 </tr>
@@ -985,6 +984,10 @@ if($pg_qry->num_rows > 0) {
     nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';
 
   $(function() {
+    if(getUrlParams('hidePrice') === 'true') {
+      $("#pageTitle").prepend('Shop ');
+    }
+
     setTimeout(function() {
       let tx_delnotes = $("textarea[name='delivery_notes']");
       let tx_design = $("textarea[name='room_note_design']");

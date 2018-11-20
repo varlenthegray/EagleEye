@@ -22,7 +22,7 @@ while($op = $op_qry->fetch_assoc()) {
 
 if($room_qry = $dbconn->query("SELECT id, room, iteration, product_type, order_status, days_to_ship, room_name, sales_bracket, sample_bracket, preproduction_bracket,
 doordrawer_bracket, main_bracket, custom_bracket, shipping_bracket, install_bracket, pick_materials_bracket, edgebanding_bracket
- FROM rooms WHERE so_id = '$soID'")) {
+ FROM rooms WHERE so_parent = '$soID'")) {
   while($room = $room_qry->fetch_assoc()) {
     $output[$i]['id'] = $room['id'];
     $output[$i]['room'] = $room['room'];

@@ -362,6 +362,17 @@ function genKey() {
   return new Date().getTime() * Math.random(999);
 }
 
+function updateShipDate() {
+  let dts = $("#days_to_ship").val();
+
+  $.post("/html/pricing/ajax/global_actions.php?action=calcShipDate", {days_to_ship: dts, room_id: active_room_id}, function(data) {
+    let result = JSON.parse(data);
+
+    $("#calcd_ship_date").html(result['ship_date']);
+    $("#calcd_del_date").html(result['del_date']);
+  });
+}
+
 var mouseX, mouseY;
 
 $(document).mousemove(function(e) {
@@ -891,22 +902,30 @@ $("body")
       }
     } else if(dropdown_list.attr("data-for") === 'order_status') {
       if($(this).attr("data-value") === '#') {
-        $("#leadTimeDef").text('Est. Lead Time');
+        $(".estimated").text('Est. ');
       } else {
-        $("#leadTimeDef").text('Lead Time');
+        $(".estimated").text('');
+      }
+
+      // if we're switching to production, we need to prompt and see if we should recalculate the ship date
+      if($(this).attr("data-value") === '$') {
+        $.confirm({
+          title: "Update ship date?",
+          content: "Do you wish to update the ship date now?",
+          type: 'red',
+          buttons: {
+            yes: function() {
+              updateShipDate();
+            },
+            no: function() {}
+          }
+        });
       }
     }
   })
   .on("click", "#ship_date_recalc", function() {
-    let dts = $("#days_to_ship").val();
-
     if($("#order_status").val() === '#') {
-      $.post("/html/pricing/ajax/global_actions.php?action=calcShipDate", {days_to_ship: dts, room_id: active_room_id}, function(data) {
-        let result = JSON.parse(data);
-
-        $("#calcd_ship_date").html(result['ship_date']);
-        $("#calcd_del_date").html(result['del_date']);
-      });
+      updateShipDate();
     } else {
       displayToast('error', 'Unable to recalculate ship date, this room is not in quote anymore.', 'Unable to Recalculate.');
     }
@@ -1143,8 +1162,6 @@ $("body")
         no: function() {}
       }
     });
-
-
   })
   .on("change", "#left_menu_options", function() {
     let result = $(this).val();
@@ -1173,18 +1190,6 @@ $("body")
         };
 
         catalog.fancytree("getTree").reload(newSourceOption);
-        break;
-      case 'globals':
-        asearch.hide();
-
-        newSourceOption = {
-          url: '/html/pricing/ajax/globals_menu.php',
-          type: 'POST',
-          dataType: 'json'
-        };
-
-        catalog.fancytree("getTree").reload(newSourceOption);
-
         break;
     }
   })

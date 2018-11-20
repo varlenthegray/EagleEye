@@ -8,7 +8,7 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Cache-Control: post-check=0, pre-check=0', false);
 header('Pragma: no-cache');
 
-$start = new DateTime('2017-01-01');
+$start = new DateTime('2018-01-01');
 $end = new DateTime('now');
 
 $interval = DateInterval::createFromDateString('1 day');

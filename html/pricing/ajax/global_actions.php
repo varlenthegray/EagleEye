@@ -405,7 +405,6 @@ switch($_REQUEST['action']) {
 <h5>Followup Time: $followup_time</h5>
 
 <h3>Notes:</h3>
-
 $msg_notes -- {$_SESSION['userInfo']['name']}
 HEREDOC;
 

@@ -5,7 +5,7 @@
         <i class="fa fa-bars fa-2x cursor-hand pull-left" id="display_widgets"></i> <h3 class="pull-left request_header">CRM</h3>
       </div>
 
-      <div class="col-md-12 m-b-10 widget-box" id="widget_box" style="display:none;">
+      <div class="col-md-12 m-b-10 widget_box" id="widget_box" style="display:none;">
         <div class="col-md-3 cursor-hand widget-item widget-active" data-window="crm"><i class="fa fa-book fa-3x"></i><h5>CRM</h5></div>
         <div class="col-md-3 cursor-hand widget-item widget-active" data-window="quotes"><i class="fa fa-pencil-square-o fa-3x"></i><h5>Quotes</h5></div>
         <div class="col-md-3 cursor-hand widget-item widget-active" data-window="production"><i class="fa fa-sitemap fa-3x"></i><h5>Production</h5></div>
