@@ -271,6 +271,16 @@ function updateBreakButton() {
   });
 }
 
+function checkDropdown() {
+  $.each($("select"), function() {
+    if($(this).find(":selected").val().toLowerCase().indexOf("x") >= 0) {
+      $(this).parent().find(".addl_select_html").show();
+    } else {
+      $(this).parent().find(".addl_select_html").hide();
+    }
+  });
+}
+
 Number.prototype.formatMoney = function(c, d, t){
   var n = this,
     c = isNaN(c = Math.abs(c)) ? 2 : c,

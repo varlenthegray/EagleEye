@@ -529,7 +529,7 @@ $("body")
     var accounting_notes = $("#accounting_notes").serialize();
     var cab_list = JSON.stringify(getMiniTree(cabinetList));
 
-    $("input[type='hidden']").each(function() {
+    $("select").each(function() {
       var ele = $(this);
       var field = $(this).attr('id');
       var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
@@ -537,7 +537,7 @@ $("body")
       if($.inArray(ele.val(), custom_fields) >= 0) {
         val_array[field] = {};
 
-        ele.parent().find('.selected').find('input').each(function() {
+        ele.parent().find('input').each(function() {
           val_array[field][$(this).attr('name')] = $(this).val();
         });
       }
@@ -851,7 +851,7 @@ $("body")
 
     unsaved = false;
   })
-  .on("click", ".option", function() {
+  .on("click", ".option", function(e) {
     let dropdown_list = $(this).parent().parent();
 
     if(dropdown_list.attr("data-for") === 'ship_via') {
@@ -1203,5 +1203,14 @@ $("body")
     });
 
     unsaved = false;
+  })
+  .on("change", "select", function() {
+    checkDropdown();
+  })
+  .on("click", "#production_lock", function() {
+    $("select").prop("disabled", false);
+    $(this).hide();
+
+    $.get("/html/pricing/ajax/global_actions.php?action=overrideProductionLock&roomID=" + active_room_id);
   })
 ;

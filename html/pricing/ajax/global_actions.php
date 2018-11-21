@@ -1250,4 +1250,10 @@ HEREDOC;
     }
 
     break;
+  case 'overrideProductionLock':
+    $room_id = sanitizeInput($_REQUEST['roomID']);
+
+    updateAuditLog('Over-rode production lock.', $room_id);
+
+    break;
 }

@@ -1,25 +1,15 @@
 <?php
 require '../includes/header_start.php';
 
-outputPHPErrs();
+//outputPHPErrs();
 
-$subitems = [];
+$vin_qry = $dbconn->query("SELECT * FROM vin_schema 
+ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
+ FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC,
+ FIELD(`key`, 'B78') DESC");
 
-$item_qry = $dbconn->query('SELECT * FROM pricing_nomenclature WHERE id = 60931');
-$item = $item_qry->fetch_assoc();
-
-if(!empty($item['kit_id'])) {
-  if($kit_qry = $dbconn->query("SELECT * FROM pricing_kit WHERE kit_id = {$item['kit_id']}")) {
-    while($kit = $kit_qry->fetch_assoc()) {
-      if($si_qry = $dbconn->query("SELECT * FROM pricing_nomenclature WHERE id = {$kit['nomenclature_id']}")) {
-        while($subitem = $si_qry->fetch_assoc()) {
-          $subitems[] = $subitem;
-        }
-      }
-    }
-  }
+while($vin = $vin_qry->fetch_assoc()) {
+  $vin_schema[$vin['segment']][] = $vin;
 }
 
-$subitems[] = $item;
-
-echo json_encode($subitems, true);
+print_r($vin_schema);
