@@ -50,6 +50,19 @@ require_once '../../includes/header_start.php';
       autofocusInput: false,
       handleCursorKeys: true
     },
+    createNode: function(event, data) {
+      var node = data.node,
+        $tdList = $(node.tr).find(">td");
+
+      // Span the remaining columns if it's a folder.
+      // We can do this in createNode instead of renderColumns, because
+      // the `isFolder` status is unlikely to change later
+      if( node.isFolder() ) {
+        $tdList.eq(1)
+          .prop("colspan", 3)
+          .nextAll().remove();
+      }
+    },
     renderColumns: function(event, data) {
       // this section handles the column data itself
       var node = data.node, $tdList = $(node.tr).find(">td");

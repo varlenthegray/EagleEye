@@ -1,4 +1,4 @@
-<?php require ("../includes/header_start.php"); ?>
+<?php require '../includes/header_start.php'; ?>
 
 <div class="row">
   <div class="col-md-6">

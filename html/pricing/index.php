@@ -246,7 +246,7 @@ if($pg_qry->num_rows > 0) {
                 <tr>
                   <td>Ship VIA:</td>
                   <td><?php echo displayVINOpts('ship_via'); ?></td>
-                  <td class="pricing_value">$0.00</td>
+                  <td></td>
                 </tr>
                 <tr rowspan="3">
                   <td style="vertical-align:top !important;">Ship To:</td>
@@ -265,11 +265,15 @@ if($pg_qry->num_rows > 0) {
                   $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip'];
                   $ship_zone_info = calcShipZone($shipZone);
 
-                  $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $ship_zone_info['cost'];
+                  if($info['ship_cost'] === null) {
+                    $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $ship_zone_info['cost'];
+                  } else {
+                    $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $info['ship_cost'];
+                  }
                   ?>
 
                   <td>Shipping Zone:</td>
-                  <td><strong><?php echo $ship_zone_info['zone']; ?></strong></td>
+                  <td><strong><?php echo $ship_zone_info['zone']; ?></strong><i style="font-size:1.25em;float:right;" class="fa fa-pencil-square no-print cursor-hand" id="overrideShipCost" title="Override Ship Cost"></td>
                   <td id="shipping_cost" class="pricing_value" data-cost="<?php echo $ship_cost; ?>">$<?php echo "{$ship_cost}.00"; ?></td>
                 </tr>
                 <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" />

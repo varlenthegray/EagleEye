@@ -400,11 +400,9 @@ switch($_REQUEST['action']) {
         $msg_notes = str_replace('  ', '&nbsp;&nbsp;', $msg_notes);
 
         $message = <<<HEREDOC
-        
-        
-<h5>Followup Time: $followup_time</h5>
+<strong>Followup Time: $followup_time</strong>
 
-<h3>Notes:</h3>
+<h5 style="margin:2px 0;padding:0;">Notes:</h5>
 $msg_notes -- {$_SESSION['userInfo']['name']}
 HEREDOC;
 
@@ -413,7 +411,7 @@ HEREDOC;
         $mail->sendMessage($usr['email'], $_SESSION['userInfo']['email'], $subject, $message, true);
 
         $dbconn->query("INSERT INTO tasks (description, created, last_updated, priority, assigned_to, due_date, submitted_by, resolved)
-    VALUES ('$subject - $message', UNIX_TIMESTAMP(), null, '3 - End of Week', $followup_individual, null, {$_SESSION['userInfo']['id']}, FALSE);");
+        VALUES ('$subject - $message', UNIX_TIMESTAMP(), null, '3 - End of Week', $followup_individual, null, {$_SESSION['userInfo']['id']}, FALSE);");
       }
     } elseif((empty($followup_date) && !empty($followup_individual)) || (!empty($followup_date) && empty($followup_individual))) {
       echo displayToast('warning', 'Unable to set a followup as there is a missing individual or date.', 'No Followup Set');
@@ -1158,6 +1156,60 @@ HEREDOC;
       } else {
         dbLogSQLErr($dbconn);
       }
+    }
+
+    break;
+  case 'modalOverrideShipCost':
+    $room_id = sanitizeInput($_REQUEST['roomID']);
+
+    echo <<<HEREDOC
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h4 class="modal-title">Override Shipping Cost</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <form id="modalShippingOverrideCost" action="#">
+                <table style="width:50%;margin:0 auto;">
+                  <colgroup>
+                    <col width="30%">
+                    <col width="70%">
+                  </colgroup>
+                  <tr>
+                    <td>New Cost:</td>
+                    <td><input type="text" class="form-control" name="new_cost" placeholder="Cost"></td>
+                  </tr>
+                </table>
+                
+                <input type="hidden" id="roomID" name="roomID" value="$room_id" />
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary waves-effect waves-light" id="modalShippingCostOverride">Override</button>
+        </div>
+      </div>
+    </div>
+HEREDOC;
+
+    break;
+  case 'shipCostOverride':
+    $room_id = sanitizeInput($_REQUEST['roomID']);
+    parse_str($_REQUEST['info'], $info);
+
+    $cost = preg_replace('/[^0-9.]/', '', $info['new_cost']);
+
+    if($dbconn->query("UPDATE rooms SET ship_cost = $cost WHERE id = $room_id;")) {
+      http_response_code(200);
+      echo $cost;
+    } else {
+      http_response_code(400);
+      dbLogSQLErr($dbconn);
     }
 
     break;

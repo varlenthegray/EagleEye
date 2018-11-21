@@ -805,7 +805,7 @@ if($qry->num_rows > 0) {
                       <td colspan="3"><div style="width:100%;height:3px;border:2px solid #BBB;margin:5px 0;border-radius:5px;"></div></td>
                     </tr>
                     <tr>
-                      <td colspan="3"><h5>Contacts</h5></td>
+                      <td colspan="3"><h5>Associations</h5></td>
                     </tr>
                     <?php
                     $contact_dropdown = null;
@@ -813,7 +813,7 @@ if($qry->num_rows > 0) {
                     $contact_qry = $dbconn->query('SELECT c.id, c.first_name, c.last_name, c.company_name, c2.description FROM contact c LEFT JOIN contact_types c2 ON c.type = c2.id LEFT JOIN user u ON c.created_by = u.id LEFT JOIN dealers d ON u.dealer_id = d.id ORDER BY c2.description, c.first_name, c.last_name ASC');
 
                     if($contact_qry->num_rows > 0) {
-                      $contact_dropdown = "<select class='form-control pull-left add_contact_id ignoreSaveAlert' name='add_contact' style='width:50%;'>";
+                      $contact_dropdown = "<select class='form-control pull-left add_contact_id ignoreSaveAlert' name='add_contact' style='width:50%;'><option value=''>Select</option>";
 
                       $last_group = null;
 
@@ -831,7 +831,7 @@ if($qry->num_rows > 0) {
                       $contact_dropdown .= '</optgroup></select>';
                     }
 
-                    echo "<tr><td colspan='3'><div class='form-group'><label for='add_contact' class='pull-left' style='line-height:28px;padding-right:10px;'>Add Contact</label> $contact_dropdown <button type='button' class='btn waves-effect waves-light btn-primary assign_contact_so' style='margin:2px 0 0 10px;'> <i class='zmdi zmdi-plus-circle-o'></i> </button></div></td></tr>";
+                    echo "<tr><td colspan='3'><div class='form-group'><label for='add_contact' class='pull-left' style='line-height:28px;padding-right:10px;'>Add Association</label> $contact_dropdown <button type='button' class='btn waves-effect waves-light btn-primary assign_contact_so' style='margin:2px 0 0 10px;'> <i class='zmdi zmdi-plus-circle'></i> </button></div></td></tr>";
 
                     // displaying existing contact relationships
                     $so_contacts_qry = $dbconn->query("SELECT c.*, c2.description FROM sales_order_contacts soc LEFT JOIN contact c ON soc.contact_id = c.id LEFT JOIN contact_types c2 ON c.type = c2.id WHERE so_id = '{$result['id']}' ORDER BY c.first_name, c.last_name ASC");
@@ -840,10 +840,10 @@ if($qry->num_rows > 0) {
                       while($so_contacts = $so_contacts_qry->fetch_assoc()) {
                         $name = !empty($so_contacts['first_name']) ? "{$so_contacts['first_name']} {$so_contacts['last_name']}" : $so_contacts['company_name'];
 
-                        echo "<tr><td colspan='3'><button type='button' class='btn waves-effect waves-light btn-danger remove_assigned_contact_so' style='margin:2px 0;' data-id='{$so_contacts['id']}'> <i class='zmdi zmdi-minus-circle-outline'></i> </button> <a href='#' class='get_customer_info' data-view-id='{$so_contacts['id']}''>$name ({$so_contacts['description']})</a></td></tr>";
+                        echo "<tr><td colspan='3'><button type='button' class='btn waves-effect waves-light btn-danger remove_assigned_contact_so' style='margin:2px 0;' data-id='{$so_contacts['id']}'> <i class='zmdi zmdi-minus-circle'></i> </button> <a href='#' class='get_customer_info' data-view-id='{$so_contacts['id']}''>$name ({$so_contacts['description']})</a></td></tr>";
                       }
                     } else {
-                      echo "<tr><td colspan='3'><strong>No Contacts Assigned</strong></td></tr>";
+                      echo "<tr><td colspan='3'><strong>No Associations</strong></td></tr>";
                     }
                     ?>
                   <?php } ?>

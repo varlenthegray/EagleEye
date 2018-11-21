@@ -535,14 +535,14 @@ $("body")
       if(followup_on !== '') {
         followup = '(Followup by ' + followup_by +' on ' + followup_on + ')';
 
-        let feedback_to = $("#room_inquiry_requested_of").val();
+        /*let feedback_to = $("#room_inquiry_requested_of").val();
         let priority = '3 - End of Week';
 
         $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: note, assignee: feedback_to, priority: priority}, function(data) {
           $("body").append(data);
           $("#feedback-page").modal('hide');
           $("#feedback-text").val("");
-        });
+        });*/
       }
 
       let output = '<tr><td width="26px" style="padding-right:5px;"><button class="btn waves-effect btn-primary pull-right reply_to_inquiry" id="10381"> ' +
@@ -766,20 +766,6 @@ $("body")
     cablist.setExpanded();
 
     $("#modalAddModification").modal("hide");
-  })
-  .on("change", "#ext_carcass_same", function() {
-    if($(this).is(":checked")) {
-      $(".ext_finish_block").hide();
-    } else {
-      $(".ext_finish_block").show();
-    }
-  })
-  .on("change", "#int_carcass_same", function() {
-    if($(this).is(":checked")) {
-      $(".int_finish_block").hide();
-    } else {
-      $(".int_finish_block").show();
-    }
   })
   .on("click", "#submit_for_quote", function() {
     let button = $(this);
@@ -1195,5 +1181,29 @@ $("body")
   })
   .on("change", ".sample_checkbox", function() {
     $('.sample_checkbox').not(this).prop('checked', false);
+  })
+  .on("click", "#overrideShipCost", function() {
+    $.post("/html/pricing/ajax/global_actions.php?action=modalOverrideShipCost&roomID=" + active_room_id, function(data) {
+      $("#modalGeneral").html(data).modal("show");
+    });
+  })
+  .on("click", "#modalShippingCostOverride", function() {
+    let shippingInfo = $("#modalShippingOverrideCost").serialize();
+
+    $.post("/html/pricing/ajax/global_actions.php?action=shipCostOverride&roomID=" + active_room_id, {info: shippingInfo}, function(data, response) {
+      if(response === 'success') {
+        $("#shipping_cost").attr('data-cost', data).text('$' + data);
+
+        displayToast("success", "Successfully overrode ship cost.", "Ship Cost Overriden");
+
+        $("#modalGeneral").html("").modal('hide');
+
+        recalcSummary();
+      } else {
+        displayToast("error", "Unable to update ship cost. Please contact IT.", "Ship Cost Override Error");
+      }
+    });
+
+    unsaved = false;
   })
 ;
