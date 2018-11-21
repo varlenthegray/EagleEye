@@ -195,38 +195,6 @@ $("body")
     $(this).parent().remove();
   })
 
-
-
-  /** Deprecated
-   .on("click", ".add_room_save", function() {
-        var save_info = $("#room_add_" + active_so_num).serialize();
-
-        $.post("/ondemand/room_actions.php?action=insert_new_room&" + save_info, function(data) {
-            $("body").append(data);
-        });
-
-        unsaved = false;
-    })
-   .on("change", ".dealer_code", function() {
-        $.post("/ondemand/play_fetch.php?action=get_dealer_info&dealer_code=" + $(this).val(), function(data) {
-            if(data !== '') {
-                var dealer = JSON.parse(data);
-
-                $("#add_room_account_type_" + active_so_num).val(dealer.account_type);
-                $("#add_room_dealer_" + active_so_num).val(dealer.dealer_name);
-                $("#add_room_contact_" + active_so_num).val(dealer.contact);
-                $("#add_room_phone_num_" + active_so_num).val(dealer.phone);
-                $("#add_room_email_" + active_so_num).val(dealer.email);
-                $("#add_room_salesperson_" + active_so_num).val(dealer.contact);
-                $("#add_room_shipping_addr_" + active_so_num).val(dealer.shipping_address);
-                $("#add_room_shipping_city_" + active_so_num).val(dealer.shipping_city);
-                $("#add_room_shipping_state_" + active_so_num).val(dealer.shipping_state);
-                $("#add_room_shipping_zip_" + active_so_num).val(dealer.shipping_zip);
-            }
-        });
-    })
-   End Deprecated **/
-
   .on("click", ".edit_room_save", function(e) {
     e.stopPropagation();
 
@@ -339,6 +307,63 @@ $("body")
     $.post('/ondemand/so_actions.php?action=save_so&' + so_info + '&so_num=' + active_so_num, function(data) {
       $("body").append(data);
     });
+
+    let note = $("#inquiry").val();
+
+    if(note !== '') {
+      let d = new Date();
+      let month = d.getMonth() + 1;
+      let date = month + '/' + d.getDate() + '/' + d.getFullYear();
+
+      let hours = d.getHours();
+      let mins = d.getMinutes();
+      let secs = d.getSeconds();
+      let am_pm = null;
+
+      if (hours < 12) {
+        am_pm = 'AM';
+      } else {
+        am_pm = 'PM';
+      }
+      if (hours === 0) {
+        hours = 12;
+      }
+      if (hours > 12) {
+        hours = hours - 12;
+      }
+
+      mins = mins + '';
+      if (mins.length === 1) {
+        mins = "0" + mins;
+      }
+
+      secs = secs + '';
+      if (secs.length === 1) {
+        secs = "0" + secs;
+      }
+
+      let time = hours + ':' + mins + ':' + secs + ' ' + am_pm;
+
+      let followup_on = $("#inquiry_followup_date").val();
+      let followup_by = $("#inquiry_requested_of :selected").text();
+      let followup = '';
+
+      if (followup_on !== '') {
+        followup = '(Followup by ' + followup_by + ' on ' + followup_on + ')';
+      }
+
+      let output = '<tr><td width="26px" style="padding-right:5px;"><button class="btn waves-effect btn-primary pull-right reply_to_inquiry" id="10381"> ' +
+        '<i class="zmdi zmdi-mail-reply"></i> </button></td>  ' +
+        '<td>' + note + ' -- <small><em>' + nameOfUser + ' on ' + date + ' ' + time + ' ' + followup + ' </em></small></td></tr>' +
+        '<tr style="height:2px;"><td colspan="2" style="background-color:#000;"></td></tr>' +
+        '<tr style="height:5px;"><td colspan="2"></td></tr>';
+
+      $(".so_note_box table tr:eq(2)").before(output);
+
+      $("#inquiry").val('');
+      $("#inquiry_followup_date").val('');
+      $("#inquiry_requested_of").val('null');
+    }
 
     unsaved = false;
   })

@@ -1092,3 +1092,13 @@ h5 {
   padding: 4px;
   z-index: 10;
 }
+
+.so_note_box {
+  border: 1px solid #AAA;
+  margin-top: 5px;
+  background-color: #d8d8d8;
+  padding: 4px;
+  border-radius: .25rem;
+  height: 39vh;
+  overflow-y: auto;
+}

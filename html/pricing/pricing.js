@@ -373,6 +373,61 @@ function updateShipDate() {
   });
 }
 
+function checkNote(noteBox, noteField, followupDateField, followupOfField) {
+  let note = $(noteField).val();
+
+  if(note !== '') {
+    console.log('Field Value:' + note);
+
+    let d = new Date();
+    let month = d.getMonth() + 1;
+    let date = month + '/' + d.getDate() + '/' + d.getFullYear();
+
+    let hours = d.getHours();
+    let mins = d.getMinutes();
+    let secs = d.getSeconds();
+    let am_pm = null;
+
+    if(hours < 12) { am_pm = 'AM'; } else { am_pm = 'PM';}
+    if(hours === 0) { hours = 12; }
+    if(hours > 12) { hours = hours - 12; }
+
+    mins = mins + '';
+    if(mins.length === 1) { mins = "0" + mins; }
+
+    secs = secs + '';
+    if(secs.length === 1) { secs = "0" + secs; }
+
+    let time = hours + ':' + mins + ':' + secs + ' ' + am_pm;
+
+    let followup_on = $(followupDateField).val();
+    let followup_by = $(followupOfField).find(":selected").text();
+    let followup = '';
+
+    if(followup_on !== '') {
+      followup = '(Followup by ' + followup_by +' on ' + followup_on + ')';
+    }
+
+    let output = '<tr><td width="26px" style="padding-right:5px;"><button class="btn waves-effect btn-primary pull-right reply_to_inquiry" id="10381"> ' +
+      '<i class="zmdi zmdi-mail-reply"></i> </button></td>  ' +
+      '<td>' + note + ' -- <small><em>' + nameOfUser + ' on ' + date + ' ' + time + ' ' + followup + ' </em></small></td></tr>' +
+      '<tr style="height:2px;"><td colspan="2" style="background-color:#000;"></td></tr>' +
+      '<tr style="height:5px;"><td colspan="2"></td></tr>';
+
+    let row = 3;
+
+    if(noteBox === '.so_note_box') {
+      row = 2;
+    }
+
+    $(noteBox).find("table tr:eq(" + row + ")").before(output);
+
+    $(noteField).val('');
+    $(followupDateField).val('');
+    $(followupOfField).val('null');
+  }
+}
+
 var mouseX, mouseY;
 
 $(document).mousemove(function(e) {
@@ -467,15 +522,6 @@ $("body")
     recalcSummary();
   })
   .on("click", "#save", function() {
-    /*//<editor-fold desc="Cabinet List">
-    var cab_list = JSON.stringify(getMiniTree(cabinetList));
-    var cat_id = $("#catalog").find(":selected").attr("id");
-
-    $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=" + active_room_id, {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
-      $("body").append(data);
-    });
-    //</editor-fold>*/
-
     //<editor-fold desc="Room Data">
     var val_array = {};
     var cabinet_specifications = $("#cabinet_specifications").serialize();
@@ -504,59 +550,11 @@ $("body")
     });
     //</editor-fold>
 
-    let note = $("#room_notes").val();
+    // live notes for Room notes box
+    checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
 
-    if(note !== '') {
-      let d = new Date();
-      let month = d.getMonth() + 1;
-      let date = month + '/' + d.getDate() + '/' + d.getFullYear();
-
-      let hours = d.getHours();
-      let mins = d.getMinutes();
-      let secs = d.getSeconds();
-      let am_pm = null;
-
-      if(hours < 12) { am_pm = 'AM'; } else { am_pm = 'PM';}
-      if(hours === 0) { hours = 12; }
-      if(hours > 12) { hours = hours - 12; }
-
-      mins = mins + '';
-      if(mins.length === 1) { mins = "0" + mins; }
-
-      secs = secs + '';
-      if(secs.length === 1) { secs = "0" + secs; }
-
-      let time = hours + ':' + mins + ':' + secs + ' ' + am_pm;
-
-      let followup_on = $("#room_inquiry_followup_date").val();
-      let followup_by = $("#room_inquiry_requested_of :selected").text();
-      let followup = '';
-
-      if(followup_on !== '') {
-        followup = '(Followup by ' + followup_by +' on ' + followup_on + ')';
-
-        /*let feedback_to = $("#room_inquiry_requested_of").val();
-        let priority = '3 - End of Week';
-
-        $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: note, assignee: feedback_to, priority: priority}, function(data) {
-          $("body").append(data);
-          $("#feedback-page").modal('hide');
-          $("#feedback-text").val("");
-        });*/
-      }
-
-      let output = '<tr><td width="26px" style="padding-right:5px;"><button class="btn waves-effect btn-primary pull-right reply_to_inquiry" id="10381"> ' +
-        '<i class="zmdi zmdi-mail-reply"></i> </button></td>  ' +
-        '<td>' + note + ' -- <small><em>' + nameOfUser + ' on ' + date + ' ' + time + ' ' + followup + ' </em></small></td></tr>' +
-        '<tr style="height:2px;"><td colspan="2" style="background-color:#000;"></td></tr>' +
-        '<tr style="height:5px;"><td colspan="2"></td></tr>';
-
-      $(".room_note_box table tr:eq(3)").before(output);
-
-      $("#room_notes").val('');
-      $("#room_inquiry_followup_date").val('');
-      $("#room_inquiry_requested_of").val('null');
-    }
+    // live notes for SO notes box
+    checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
 
     unsaved = false;
   })

@@ -207,6 +207,17 @@ function createOpQueue($bracket_pub, $bracket, $operation, $roomid) {
   }
 }
 
+function updateAuditLog($note, $room_id) {
+  global $dbconn;
+
+  $user = $_SESSION['userInfo']['id'];
+
+  $stmt = $dbconn->prepare("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES (?, 'room_note_log', UNIX_TIMESTAMP(), ?, ?);");
+  $stmt->bind_param('sii', $note, $user, $room_id);
+  $stmt->execute();
+  $stmt->close();
+}
+
 switch($_REQUEST['action']) {
   case 'roomSave':
     //<editor-fold desc="Initial Setup, variable capture">
@@ -323,6 +334,7 @@ switch($_REQUEST['action']) {
     //</editor-fold>
 
     //<editor-fold desc="DB: Notes">
+    //<editor-fold desc="Room Notes">
     $room_note_design = sanitizeInput($cabinet_specifications['room_note_design']);
     $room_note_design_id = sanitizeInput($cabinet_specifications['design_notes_id']);
 
@@ -383,6 +395,26 @@ switch($_REQUEST['action']) {
         echo displayToast('warning', 'Finishing/Sample Note already exists. Please refresh your page and try again.', 'Finishing/Sample Note Exists');
       }
     }
+    //</editor-fold>
+
+    //<editor-fold desc="SO Notes">
+    $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = {$room_info['so_parent']}");
+    $so = $so_qry->fetch_assoc();
+
+    $followup_date = sanitizeInput($accounting_notes['inquiry_followup_date']);
+    $followup_individual = sanitizeInput($accounting_notes['inquiry_requested_of']);
+
+    if(!empty($accounting_notes['inquiry'])) {
+      $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('{$accounting_notes['inquiry']}', 'so_inquiry', UNIX_TIMESTAMP(), '{$_SESSION['userInfo']['id']}', '{$so['id']}')");
+      $inquiry_id = $dbconn->insert_id;
+    }
+
+    if(!empty($followup_date)) {
+      $followup = strtotime($followup_date);
+
+      $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('so_inquiry', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'SO# {$room_info['so_parent']}, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $inquiry_id)");
+    }
+    //</editor-fold>
     //</editor-fold>
 
     //<editor-fold desc="DB: Followup & Inquiry">
@@ -960,6 +992,8 @@ HEREDOC;
     $return['ship_date'] = date(DATE_DEFAULT, $newShip);
     $return['del_date'] = date(DATE_DEFAULT, $newDel);
 
+    updateAuditLog("Manually set shipping date to $newShip", $room_id);
+
     echo json_encode($return);
 
     break;
@@ -1206,6 +1240,9 @@ HEREDOC;
 
     if($dbconn->query("UPDATE rooms SET ship_cost = $cost WHERE id = $room_id;")) {
       http_response_code(200);
+
+      updateAuditLog("Overrode shipping cost to $cost", $room_id);
+
       echo $cost;
     } else {
       http_response_code(400);

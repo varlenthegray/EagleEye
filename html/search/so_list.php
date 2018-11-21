@@ -850,81 +850,15 @@ if($qry->num_rows > 0) {
                 </table>
               </div>
 
-              <div class="col-md-3">
-                <div class="row">
-                  <div class="col-md-12" style="height:304px;overflow-y:auto;">
-                    <p style="font-weight:bold;">Inquiries/Notes:</p>
+              <script>nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';</script>
 
-                    <table class="table table-custom-nb table-v-top" width="100%">
-                      <?php
-                      if((bool)$_SESSION['userInfo']['dealer']) {
-                        $dealer = strtolower($_SESSION['userInfo']['dealer_code']);
-                        $where = "AND user.username LIKE '$dealer%'";
-                      } else {
-                        $where = null;
-                      }
-
-                      $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$result['id']}' $where ORDER BY notes.timestamp DESC;");
-
-                      while ($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
-                        $inquiry_replies = null;
-
-                        $time = date(DATE_TIME_ABBRV, $so_inquiry['NTimestamp']);
-
-                        if (!empty($so_inquiry['followup_time'])) {
-                          $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$so_inquiry['user_to']}");
-                          $followup_usr = $followup_usr_qry->fetch_assoc();
-
-                          $followup_time = date(DATE_TIME_ABBRV, $so_inquiry['followup_time']);
-
-                          $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
-                        } else {
-                          $followup = null;
-                        }
-
-                        $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$so_inquiry['nID']}' ORDER BY timestamp DESC");
-
-                        if ($inquiry_reply_qry->num_rows > 0) {
-                          while ($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
-                            $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
-
-                            $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
-                          }
-                        } else {
-                          $inquiry_replies = null;
-                        }
-
-                        $notes = str_replace('  ', '&nbsp;&nbsp;', $so_inquiry['note']);
-
-                        echo '<tr>';
-                        echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$so_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
-                        echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
-                        echo '</tr>';
-
-                        echo "<tr id='inquiry_reply_line_{$so_inquiry['nID']}' style='display:none;'>";
-                        echo "  <td colspan='2'>
-                                        <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$so_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
-                                        <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$so_inquiry['nID']}'>Reply</button>
-                                    </td>";
-                        echo '</tr>';
-
-                        echo $inquiry_replies;
-
-                        echo "<tr style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
-                      }
-                      ?>
-                    </table>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-3">
+              <div class="col-md-2 no-print">
                 <div class="row">
                   <div class="col-md-12">
                     <textarea class="form-control" name="inquiry" id="inquiry" placeholder="New Inquiry/Note" style="width:100%;height:215px;"></textarea>
                     <input type="text" name="inquiry_followup_date" id="inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
                     <label for="inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
-                    <select name="inquiry_requested_of" id="inquiry_requested_of" class="form-control" style="width:50%;float:left;">
+                    <select name="inquiry_requested_of" id="inquiry_requested_of" class="form-control" style="width:45%;float:left;">
                       <option value="null" selected disabled></option>
                       <?php
                       $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
@@ -934,6 +868,76 @@ if($qry->num_rows > 0) {
                       }
                       ?>
                     </select>
+                  </div>
+                </div>
+
+                <div class="row" style="margin-top:5px;">
+                  <div class="col-md-12">
+                    <div class="so_note_box">
+                      <table class="table table-custom-nb table-v-top" width="100%">
+                        <tr>
+                          <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">SO Notes</h5></td>
+                        </tr>
+                        <tr style="height:5px;"><td colspan="2"></td></tr>
+                        <?php
+                        if((bool)$_SESSION['userInfo']['dealer']) {
+                          $dealer = strtolower($_SESSION['userInfo']['dealer_code']);
+                          $where = "AND user.username LIKE '$dealer%'";
+                        } else {
+                          $where = null;
+                        }
+
+                        $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$result['id']}' $where ORDER BY notes.timestamp DESC;");
+
+                        while ($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
+                          $inquiry_replies = null;
+
+                          $time = date(DATE_TIME_ABBRV, $so_inquiry['NTimestamp']);
+
+                          if (!empty($so_inquiry['followup_time'])) {
+                            $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$so_inquiry['user_to']}");
+                            $followup_usr = $followup_usr_qry->fetch_assoc();
+
+                            $followup_time = date(DATE_TIME_ABBRV, $so_inquiry['followup_time']);
+
+                            $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
+                          } else {
+                            $followup = null;
+                          }
+
+                          $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$so_inquiry['nID']}' ORDER BY timestamp DESC");
+
+                          if ($inquiry_reply_qry->num_rows > 0) {
+                            while ($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
+                              $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
+
+                              $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+                            }
+                          } else {
+                            $inquiry_replies = null;
+                          }
+
+                          $notes = str_replace('  ', '&nbsp;&nbsp;', $so_inquiry['note']);
+
+                          echo '<tr>';
+                          echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$so_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
+                          echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
+                          echo '</tr>';
+
+                          echo "<tr id='inquiry_reply_line_{$so_inquiry['nID']}' style='display:none;'>";
+                          echo "  <td colspan='2'>
+                                      <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$so_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
+                                      <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$so_inquiry['nID']}'>Reply</button>
+                                  </td>";
+                          echo '</tr>';
+
+                          echo $inquiry_replies;
+
+                          echo "<tr style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
+                        }
+                        ?>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
