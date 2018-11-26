@@ -522,12 +522,24 @@ $("body")
     recalcSummary();
   })
   .on("click", "#save", function() {
+    //<editor-fold desc="Disabled Field Serialize function">
+    function disabledSerialize(field) {
+      let disabled = field.find(":input:disabled").removeAttr("disabled");
+      let info = field.serialize();
+      disabled.attr('disabled', 'disabled');
+
+      return info;
+    }
+    //</editor-fold>
+
     //<editor-fold desc="Room Data">
     var val_array = {};
-    var cabinet_specifications = $("#cabinet_specifications").serialize();
     var customVals = null;
-    var accounting_notes = $("#accounting_notes").serialize();
     var cab_list = JSON.stringify(getMiniTree(cabinetList));
+
+    // SUPER IMPORTANT to enable and then re-disable select fields during serialization
+    var cabinet_specifications = disabledSerialize($("#cabinet_specifications"));
+    var accounting_notes = disabledSerialize($("#accounting_notes"));
 
     $("select").each(function() {
       var ele = $(this);
