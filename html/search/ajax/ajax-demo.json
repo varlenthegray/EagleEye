@@ -1,0 +1,2318 @@
+[
+  {
+    "id": "1077",
+    "room": "A",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "LL TV Cabinet",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "83",
+      "op_id": "SM05",
+      "bracket": "Sample",
+      "job_title": "Sample Door Request",
+      "responsible_dept": "Project Manager",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "19",
+      "op_id": "PR05",
+      "bracket": "Pre-Production",
+      "job_title": "Engineering - Final Docs",
+      "responsible_dept": "Engineering",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "38",
+      "op_id": "DD05",
+      "bracket": "Drawer & Doors",
+      "job_title": "Door Quote",
+      "responsible_dept": "Production Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "50",
+      "op_id": "MA05",
+      "bracket": "Main",
+      "job_title": "Pick List for Box",
+      "responsible_dept": "Box",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "163",
+      "op_id": "CU05",
+      "bracket": "Custom",
+      "job_title": "Sandblasting",
+      "responsible_dept": "Custom",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "62",
+      "op_id": "SH05",
+      "bracket": "Shipping",
+      "job_title": "Assembly 1",
+      "responsible_dept": "Assembly",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "15",
+      "op_id": "IN05",
+      "bracket": "Installation",
+      "job_title": "Manage Install",
+      "responsible_dept": "Shipping",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "job_title": "Unassigned"
+    },
+    "edgebanding_bracket": {
+      "job_title": "Unassigned"
+    }
+  },
+  {
+    "id": "1108",
+    "room": "B",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Family Room Wet Bar",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1109",
+    "room": "C",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Office",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1110",
+    "room": "D",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Master Bath",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1170",
+    "room": "E",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Master Bedroom Built In",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1171",
+    "room": "F",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Kitchen - Perimeter",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1172",
+    "room": "G",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Kitchen - Island",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1175",
+    "room": "H",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Living Room Built Ins",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1178",
+    "room": "J",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Laundry\/Mudroom",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1179",
+    "room": "K",
+    "iteration": "1.01",
+    "product_type": "B",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Powder Bath - Barnwood",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1180",
+    "room": "L",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Bath 2",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1181",
+    "room": "M",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "LL Laundry",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1194",
+    "room": "N",
+    "iteration": "1.01",
+    "product_type": "P",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "His Closet",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1195",
+    "room": "P",
+    "iteration": "1.01",
+    "product_type": "P",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Bath 2 Closet",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1196",
+    "room": "Q",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Pantry",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1201",
+    "room": "R",
+    "iteration": "1.01",
+    "product_type": "B",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Bath 3 (Barnwood)",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1202",
+    "room": "S",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Bath 4",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1207",
+    "room": "T",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Hall Closet",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1208",
+    "room": "U",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Garage",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1223",
+    "room": "V",
+    "iteration": "1.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Upstairs Closet by Bath",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "122",
+      "op_id": "SM99",
+      "bracket": "Sample",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "125",
+      "op_id": "PR99",
+      "bracket": "Pre-Production",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "128",
+      "op_id": "DD99",
+      "bracket": "Drawer & Doors",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "97",
+      "op_id": "MA98",
+      "bracket": "Main",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "124",
+      "op_id": "CU99",
+      "bracket": "Custom",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "127",
+      "op_id": "SH99",
+      "bracket": "Shipping",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "126",
+      "op_id": "IN99",
+      "bracket": "Installation",
+      "job_title": "N\/A or Distribution",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "id": "184",
+      "op_id": "PK99",
+      "bracket": "Pick & Materials",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "edgebanding_bracket": {
+      "id": "199",
+      "op_id": "EB99",
+      "bracket": "Edge Banding",
+      "job_title": "N\/A",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    }
+  },
+  {
+    "id": "1224",
+    "room": "V",
+    "iteration": "2.01",
+    "product_type": "P",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Upstairs Closet by Stairs",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "94",
+      "op_id": "SM98",
+      "bracket": "Sample",
+      "job_title": "Sample Approved",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "95",
+      "op_id": "PR98",
+      "bracket": "Pre-Production",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "96",
+      "op_id": "DD98",
+      "bracket": "Drawer & Doors",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "50",
+      "op_id": "MA05",
+      "bracket": "Main",
+      "job_title": "Pick List for Box",
+      "responsible_dept": "Box",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "98",
+      "op_id": "CU98",
+      "bracket": "Custom",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "100",
+      "op_id": "SH98",
+      "bracket": "Shipping",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "99",
+      "op_id": "IN98",
+      "bracket": "Installation",
+      "job_title": "Installation Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "job_title": "Unassigned"
+    },
+    "edgebanding_bracket": {
+      "job_title": "Unassigned"
+    }
+  },
+  {
+    "id": "1225",
+    "room": "V",
+    "iteration": "3.01",
+    "product_type": "P",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Bunkroom Closet",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "94",
+      "op_id": "SM98",
+      "bracket": "Sample",
+      "job_title": "Sample Approved",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "95",
+      "op_id": "PR98",
+      "bracket": "Pre-Production",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "96",
+      "op_id": "DD98",
+      "bracket": "Drawer & Doors",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "50",
+      "op_id": "MA05",
+      "bracket": "Main",
+      "job_title": "Pick List for Box",
+      "responsible_dept": "Box",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "98",
+      "op_id": "CU98",
+      "bracket": "Custom",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "100",
+      "op_id": "SH98",
+      "bracket": "Shipping",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "99",
+      "op_id": "IN98",
+      "bracket": "Installation",
+      "job_title": "Installation Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "job_title": "Unassigned"
+    },
+    "edgebanding_bracket": {
+      "job_title": "Unassigned"
+    }
+  },
+  {
+    "id": "1226",
+    "room": "V",
+    "iteration": "4.01",
+    "product_type": "C",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Bedroom 3 Closet LL",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "94",
+      "op_id": "SM98",
+      "bracket": "Sample",
+      "job_title": "Sample Approved",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "95",
+      "op_id": "PR98",
+      "bracket": "Pre-Production",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "96",
+      "op_id": "DD98",
+      "bracket": "Drawer & Doors",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "50",
+      "op_id": "MA05",
+      "bracket": "Main",
+      "job_title": "Pick List for Box",
+      "responsible_dept": "Box",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "98",
+      "op_id": "CU98",
+      "bracket": "Custom",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "100",
+      "op_id": "SH98",
+      "bracket": "Shipping",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "99",
+      "op_id": "IN98",
+      "bracket": "Installation",
+      "job_title": "Installation Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "job_title": "Unassigned"
+    },
+    "edgebanding_bracket": {
+      "job_title": "Unassigned"
+    }
+  },
+  {
+    "id": "1236",
+    "room": "N",
+    "iteration": "2.01",
+    "product_type": "P",
+    "order_status": "#",
+    "days_to_ship": "G",
+    "room_name": "Her Closet",
+    "sales_bracket": {
+      "id": "175",
+      "op_id": "QT30",
+      "bracket": "Sales",
+      "job_title": "Quote Review - Distribution",
+      "responsible_dept": "Sales Administrator",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "sample_bracket": {
+      "id": "94",
+      "op_id": "SM98",
+      "bracket": "Sample",
+      "job_title": "Sample Approved",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "preproduction_bracket": {
+      "id": "95",
+      "op_id": "PR98",
+      "bracket": "Pre-Production",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "doordrawer_bracket": {
+      "id": "96",
+      "op_id": "DD98",
+      "bracket": "Drawer & Doors",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "main_bracket": {
+      "id": "50",
+      "op_id": "MA05",
+      "bracket": "Main",
+      "job_title": "Pick List for Box",
+      "responsible_dept": "Box",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "custom_bracket": {
+      "id": "98",
+      "op_id": "CU98",
+      "bracket": "Custom",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "shipping_bracket": {
+      "id": "100",
+      "op_id": "SH98",
+      "bracket": "Shipping",
+      "job_title": "Bracket Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "install_bracket": {
+      "id": "99",
+      "op_id": "IN98",
+      "bracket": "Installation",
+      "job_title": "Installation Completed",
+      "responsible_dept": "N\/A",
+      "sub_tasks": null,
+      "always_visible": "0"
+    },
+    "pick_materials_bracket": {
+      "job_title": "Unassigned"
+    },
+    "edgebanding_bracket": {
+      "job_title": "Unassigned"
+    }
+  }
+]

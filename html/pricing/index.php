@@ -138,7 +138,7 @@ function getSelect($segment, $dbName = null) {
   <?php echo $submit_disabled !== null ? 'var already_submitted = true;' : 'var already_submitted = false;'; ?>
 </script>
 
-<div class="card-box">
+<div style="width:99%;">
   <div class="row sticky no-print" style="background-color:#FFF;z-index:2;top:84px;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
@@ -150,7 +150,7 @@ function getSelect($segment, $dbName = null) {
           <a class="dropdown-item" href="/main.php?page=pricing/index?room_id=<?php echo $room_id; ?>&print=true" target="_blank" title="Print this page specifically">Print Item List</a>
           <?php
           echo $bouncer->validate('print_sample') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=sample_req' target='_blank' class='dropdown-item'>Print Sample Request</a>" : null;
-//          echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Coversheet</a>" : null;
+          //          echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Coversheet</a>" : null;
           echo $bouncer->validate('print_shop_coversheet') ? "<a href='/main.php?page=pricing/index?room_id=$room_id&print=true&hidePrice=true' target='_blank' class='dropdown-item'>Print Shop Item List</a>" : null;
           echo $bouncer->validate('print_sample_label') ? "<a href='/print/sample_label.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Sample Label</a>" : null;
           ?>
@@ -245,324 +245,324 @@ function getSelect($segment, $dbName = null) {
         </div>
 
         <div class="row">
-            <div class="col-sm-4 gray_bg" style="border-radius:.25rem;border:1px solid #000;padding-bottom:25px;">
-              <!--<editor-fold desc="Global Details (Left Side)">-->
-              <h5><u>Global: Room Details (Net Price)</u></h5>
+          <div class="col-sm-4 gray_bg" style="border-radius:.25rem;border:1px solid #000;padding-bottom:25px;">
+            <!--<editor-fold desc="Global Details (Left Side)">-->
+            <h5><u>Global: Room Details (Net Price)</u></h5>
 
-              <table width="100%">
-                <colgroup>
-                  <col width="30%">
-                  <col width="60%">
-                  <col width="10%">
-                </colgroup>
-                <tr>
-                  <th colspan="3">&nbsp;</th>
-                </tr>
-                <tr>
-                  <td>Dealer PO:</td>
-                  <td colspan="2"><input type="text" class="form-control border_thin_bottom" id="room_name" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
-                </tr>
-                <tr>
-                  <td>Billing Type:</td>
-                  <td colspan="2"><strong><?php echo $dealer_info['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
-                </tr>
-                <tr>
-                  <td>Order Type:</td>
-<!--                  <td>--><?php //echo displayVINOpts('product_type'); ?><!--</td>-->
-                  <td><?php echo getSelect('product_type'); ?></td>
-                  <td id="product_type_cost" class="pricing_value">$0.00</td>
-                </tr>
-                <tr>
-                  <td><span id="leadTimeDef"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?>Lead Time:</span></td>
-<!--                  <td>--><?php //echo displayVINOpts('days_to_ship'); ?><!--</td>-->
-                  <td><?php echo getSelect('days_to_ship'); ?></td>
-                  <td class="pricing_value">$0.00</td>
-                </tr>
-                <tr>
-                  <td>Order Status:</td>
-<!--                  <td>--><?php //echo displayVINOpts('order_status'); ?><!--</td>-->
-                  <td><?php echo getSelect('order_status'); ?></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td><span class="estimated"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?></span>Ship Date (*):</td>
-                  <td><strong id="calcd_ship_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : 'TBD'; ?></strong></td>
-                  <td><i style="font-size:1.25em;" class="fa fa-pencil-square no-print cursor-hand" id="overrideShipDate" title="Edit/Override Ship Date"></i></td>
-                </tr>
-                <tr>
-                  <td><span class="estimated"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?></span>Delivery Date (*):</td>
-                  <td><strong id="calcd_del_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['delivery_date']) : 'TBD'; ?></strong></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td>Ship VIA:</td>
-<!--                  <td>--><?php //echo displayVINOpts('ship_via'); ?><!--</td>-->
-                  <td><?php echo getSelect('ship_via'); ?></td>
-                  <td class="pricing_value">$0.00</td>
-                </tr>
-                <tr rowspan="3">
-                  <td style="vertical-align:top !important;">Ship To:</td>
-                  <td colspan="2">
-                    <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Name" name="ship_to_name" value="<?php echo $info['ship_name']; ?>"><br />
-                    <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $info['project_addr']; ?>"><br />
-                    <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
-                  </td>
-                </tr>
-                <tr>
-                  <td>&nbsp;</td>
-                  <td colspan="2"><input type="checkbox" value="1" name="multi_room_ship" id="multi_room_ship" <?php echo $room['multi_room_ship'] ? 'checked' : null; ?>> <label for="multi_room_ship">Multi-room shipping</label></td>
-                </tr>
-                <tr>
+            <table width="100%">
+              <colgroup>
+                <col width="30%">
+                <col width="60%">
+                <col width="10%">
+              </colgroup>
+              <tr>
+                <th colspan="3">&nbsp;</th>
+              </tr>
+              <tr>
+                <td>Dealer PO:</td>
+                <td colspan="2"><input type="text" class="form-control border_thin_bottom" id="room_name" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
+              </tr>
+              <tr>
+                <td>Billing Type:</td>
+                <td colspan="2"><strong><?php echo $dealer_info['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
+              </tr>
+              <tr>
+                <td>Order Type:</td>
+                <!--                  <td>--><?php //echo displayVINOpts('product_type'); ?><!--</td>-->
+                <td><?php echo getSelect('product_type'); ?></td>
+                <td id="product_type_cost" class="pricing_value">$0.00</td>
+              </tr>
+              <tr>
+                <td><span id="leadTimeDef"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?>Lead Time:</span></td>
+                <!--                  <td>--><?php //echo displayVINOpts('days_to_ship'); ?><!--</td>-->
+                <td><?php echo getSelect('days_to_ship'); ?></td>
+                <td class="pricing_value">$0.00</td>
+              </tr>
+              <tr>
+                <td>Order Status:</td>
+                <!--                  <td>--><?php //echo displayVINOpts('order_status'); ?><!--</td>-->
+                <td><?php echo getSelect('order_status'); ?></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><span class="estimated"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?></span>Ship Date (*):</td>
+                <td><strong id="calcd_ship_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : 'TBD'; ?></strong></td>
+                <td><i style="font-size:1.25em;" class="fa fa-pencil-square no-print cursor-hand" id="overrideShipDate" title="Edit/Override Ship Date"></i></td>
+              </tr>
+              <tr>
+                <td><span class="estimated"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?></span>Delivery Date (*):</td>
+                <td><strong id="calcd_del_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['delivery_date']) : 'TBD'; ?></strong></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>Ship VIA:</td>
+                <!--                  <td>--><?php //echo displayVINOpts('ship_via'); ?><!--</td>-->
+                <td><?php echo getSelect('ship_via'); ?></td>
+                <td class="pricing_value">$0.00</td>
+              </tr>
+              <tr rowspan="3">
+                <td style="vertical-align:top !important;">Ship To:</td>
+                <td colspan="2">
+                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Name" name="ship_to_name" value="<?php echo $info['ship_name']; ?>"><br />
+                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $info['project_addr']; ?>"><br />
+                  <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+                </td>
+              </tr>
+              <tr>
+                <td>&nbsp;</td>
+                <td colspan="2"><input type="checkbox" value="1" name="multi_room_ship" id="multi_room_ship" <?php echo $room['multi_room_ship'] ? 'checked' : null; ?>> <label for="multi_room_ship">Multi-room shipping</label></td>
+              </tr>
+              <tr>
+                <?php
+                $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip'];
+                $ship_zone_info = calcShipZone($shipZone);
+
+                if($info['ship_cost'] === null) {
+                  $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $ship_zone_info['cost'];
+                } else {
+                  $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $info['ship_cost'];
+                }
+
+                setlocale(LC_MONETARY, 'en_US');
+
+                $ship_cost_formatted = number_format($ship_cost, 2);
+                ?>
+
+                <td>Shipping Zone:</td>
+                <td><strong><?php echo $ship_zone_info['zone']; ?></strong><i style="font-size:1.25em;float:right;" class="fa fa-pencil-square no-print cursor-hand" id="overrideShipCost" title="Override Ship Cost"></td>
+                <td id="shipping_cost" class="pricing_value" data-cost="<?php echo $ship_cost; ?>">$<?php echo $ship_cost_formatted; ?></td>
+              </tr>
+              <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" />
+              <!--<tr>
+                <td>Shipping Cubes:<br /><em>(Min of 6)</em></td>
+                <td><strong id="ship_cube_count">0</strong> <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" /></td>
+                <td id="ship_cube_cost">$0.00</td>
+              </tr>-->
+              <tr>
+                <td colspan="3" style="height:2px;"></td>
+              </tr>
+              <tr>
+                <td>Payment Method:</td>
+                <!--                  <td>--><?php //echo displayVINOpts('payment_method'); ?><!--</td>-->
+                <td><?php echo getSelect('payment_method'); ?></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td colspan="3" style="height:5px;"></td>
+              </tr>
+              <tr>
+                <td colspan="3">Finish/Sample:</td>
+              </tr>
+              <tr>
+                <td colspan="3"><input type="checkbox" value="1" name="seen_approved" class="sample_checkbox" id="seen_approved" <?php echo $room['sample_seen_approved'] ? 'checked' : null; ?>> <label for="seen_approved">I have seen the door style with finish and it is approved.</label></td>
+              </tr>
+              <tr>
+                <td colspan="3"><input type="checkbox" value="1" name="unseen_approved" class="sample_checkbox" id="unseen_approved" <?php echo $room['sample_unseen_approved'] ? 'checked' : null; ?>> <label for="unseen_approved">I approve the finish and door style without seeing a sample.</label></td>
+              </tr>
+              <tr>
+                <td colspan="3"><input type="checkbox" value="1" name="requested_sample" class="sample_checkbox" id="requested_sample" <?php echo $room['sample_requested'] ? 'checked' : null; ?>> <label for="requested_sample">I have requested a sample for approval, reference:</label></td>
+              </tr>
+              <tr>
+                <td colspan="3"><input type="text" name="sample_reference" class="form-control border_thin_bottom sample_reference" placeholder="Sample Reference" value="<?php echo $room['sample_reference']; ?>" /></td>
+              </tr>
+              <tr>
+                <td colspan="3" style="height:5px;"></td>
+              </tr>
+              <tr>
+                <td colspan="3" style="vertical-align:top !important;">Signature:</td>
+              </tr>
+              <tr>
+                <td colspan="3"><input type="text" class="esig" name="signature" placeholder="(Digital signature affirms the following:)" style="width:100%;border:1px dashed #000;padding:3px;" value="<?php echo $room['esig']; ?>" <?php echo !empty($room['esig']) ? "disabled" : null;  ?> /></td>
+              </tr>
+              <tr>
+                <td colspan="3" class="esig_id">
                   <?php
-                  $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip'];
-                  $ship_zone_info = calcShipZone($shipZone);
-
-                  if($info['ship_cost'] === null) {
-                    $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $ship_zone_info['cost'];
+                  if(!empty($room['esig'])) {
+                    $ip = $room['esig_ip'];
+                    $time = date(DATE_TIME_ABBRV, $room['esig_time']);
                   } else {
-                    $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $info['ship_cost'];
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                    $time = date(DATE_TIME_ABBRV);
                   }
 
-                  setlocale(LC_MONETARY, 'en_US');
+                  $output = "$ip ($time)";
 
-                  $ship_cost_formatted = number_format($ship_cost, 2);
+                  echo $output;
                   ?>
-
-                  <td>Shipping Zone:</td>
-                  <td><strong><?php echo $ship_zone_info['zone']; ?></strong><i style="font-size:1.25em;float:right;" class="fa fa-pencil-square no-print cursor-hand" id="overrideShipCost" title="Override Ship Cost"></td>
-                  <td id="shipping_cost" class="pricing_value" data-cost="<?php echo $ship_cost; ?>">$<?php echo $ship_cost_formatted; ?></td>
-                </tr>
-                <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" />
-                <!--<tr>
-                  <td>Shipping Cubes:<br /><em>(Min of 6)</em></td>
-                  <td><strong id="ship_cube_count">0</strong> <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" /></td>
-                  <td id="ship_cube_cost">$0.00</td>
-                </tr>-->
-                <tr>
-                  <td colspan="3" style="height:2px;"></td>
-                </tr>
-                <tr>
-                  <td>Payment Method:</td>
-<!--                  <td>--><?php //echo displayVINOpts('payment_method'); ?><!--</td>-->
-                  <td><?php echo getSelect('payment_method'); ?></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td colspan="3" style="height:5px;"></td>
-                </tr>
-                <tr>
-                  <td colspan="3">Finish/Sample:</td>
-                </tr>
-                <tr>
-                  <td colspan="3"><input type="checkbox" value="1" name="seen_approved" class="sample_checkbox" id="seen_approved" <?php echo $room['sample_seen_approved'] ? 'checked' : null; ?>> <label for="seen_approved">I have seen the door style with finish and it is approved.</label></td>
-                </tr>
-                <tr>
-                  <td colspan="3"><input type="checkbox" value="1" name="unseen_approved" class="sample_checkbox" id="unseen_approved" <?php echo $room['sample_unseen_approved'] ? 'checked' : null; ?>> <label for="unseen_approved">I approve the finish and door style without seeing a sample.</label></td>
-                </tr>
-                <tr>
-                  <td colspan="3"><input type="checkbox" value="1" name="requested_sample" class="sample_checkbox" id="requested_sample" <?php echo $room['sample_requested'] ? 'checked' : null; ?>> <label for="requested_sample">I have requested a sample for approval, reference:</label></td>
-                </tr>
-                <tr>
-                  <td colspan="3"><input type="text" name="sample_reference" class="form-control border_thin_bottom sample_reference" placeholder="Sample Reference" value="<?php echo $room['sample_reference']; ?>" /></td>
-                </tr>
-                <tr>
-                  <td colspan="3" style="height:5px;"></td>
-                </tr>
-                <tr>
-                  <td colspan="3" style="vertical-align:top !important;">Signature:</td>
-                </tr>
-                <tr>
-                  <td colspan="3"><input type="text" class="esig" name="signature" placeholder="(Digital signature affirms the following:)" style="width:100%;border:1px dashed #000;padding:3px;" value="<?php echo $room['esig']; ?>" <?php echo !empty($room['esig']) ? "disabled" : null;  ?> /></td>
-                </tr>
-                <tr>
-                  <td colspan="3" class="esig_id">
-                    <?php
-                     if(!empty($room['esig'])) {
-                       $ip = $room['esig_ip'];
-                       $time = date(DATE_TIME_ABBRV, $room['esig_time']);
-                     } else {
-                       $ip = $_SERVER['REMOTE_ADDR'];
-                       $time = date(DATE_TIME_ABBRV);
-                     }
-
-                     $output = "$ip ($time)";
-
-                     echo $output;
-                    ?>
-                    <input type="hidden" name="esig_ip" value="<?php echo $output; ?>" id="esig_ip" />
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="3" style="height:5px;"></td>
-                </tr>
-                <tr>
-                  <td colspan="3" style="padding-left:2px;">
-                    <ul>
-                      <li>A 50% deposit will be drafted within 24 hours.</li>
-                      <li>(*) Shipping/delivery date confirmed upon deposit.</li>
-                      <li>Final payment is due prior to delivery.</li>
-                    </ul>
-                  </td>
-                </tr>
-                <?php if(empty($room['esig'])) { ?>
+                  <input type="hidden" name="esig_ip" value="<?php echo $output; ?>" id="esig_ip" />
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3" style="height:5px;"></td>
+              </tr>
+              <tr>
+                <td colspan="3" style="padding-left:2px;">
+                  <ul>
+                    <li>A 50% deposit will be drafted within 24 hours.</li>
+                    <li>(*) Shipping/delivery date confirmed upon deposit.</li>
+                    <li>Final payment is due prior to delivery.</li>
+                  </ul>
+                </td>
+              </tr>
+              <?php if(empty($room['esig'])) { ?>
                 <tr>
                   <td colspan="3"><input type="button" class="btn btn-warning waves-effect waves-light no-print pull-right" id="terms_confirm" value="Sign & Agree" disabled></td>
                 </tr>
-                <?php } ?>
+              <?php } ?>
+            </table>
+            <!--</editor-fold>-->
+          </div>
+
+          <div class="col-sm-8">
+            <div class="col-md-12">
+              <div class="global_cab_header"><h5><u>Global: Cabinet Details</u></h5></div>
+            </div>
+
+            <!--<editor-fold desc="Second Column: Cabinet Details">-->
+            <div class="col-sm-6">
+              <table width="100%">
+                <tr>
+                  <th style="padding-left:5px;" width="70%">Design<label class="c-input c-checkbox pull-right no-print" style="color:#FFF;margin-top:2px;padding-right:13px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th>
+                  <th>Pct</th>
+                  <th>Cost</th>
+                </tr>
+                <tr class="border_top">
+                  <!--                    <td class="border_thin_bottom">Construction Method:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('construction_method'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Construction Method:<div class="cab_specifications_desc"><?php echo getSelect('construction_method'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="const_pct">0.00%</td>
+                  <td class="border_thin_bottom pricing_value" id="const_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('species_grade', null, 'pricingSpeciesGrade'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc"><?php echo getSelect('species_grade'); ?></div></td>
+                  <td class="border_thin_bottom"></td>
+                  <td class="border_thin_bottom"></td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Carcass Material:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('carcass_material'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Carcass Material:<div class="cab_specifications_desc"><?php echo getSelect('carcass_material'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="box_const_pct">0.00%</td>
+                  <td class="border_thin_bottom pricing_value" id="box_const_amt">$0.00</td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('door_design', null, 'pricingDoorDesign'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo getSelect('door_design'); ?></div></td>
+                  <td class="border_thin_bottom text-md-center" id="const_pg" colspan="2">Price Group <span id="cab_spec_pg"><?php echo $price_group; ?></span></td>
+                </tr>
+                <tr>
+                  <!--                    <td style="padding-left:20px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('panel_raise', 'panel_raise_door'); ?><!--</div></td>-->
+                  <td style="padding-left:20px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_door'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value"></td>
+                  <td class="border_thin_bottom pricing_value"></td>
+                </tr>
+                <tr>
+                  <!--                    <td style="padding-left:20px;">Short Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('panel_raise', 'panel_raise_sd'); ?><!--</div></td>-->
+                  <td style="padding-left:20px;">Short Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_sd'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="sdr_pct"></td>
+                  <td class="border_thin_bottom pricing_value" id="sdr_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td style="padding-left:20px;">Tall Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('panel_raise', 'panel_raise_td'); ?><!--</div></td>-->
+                  <td style="padding-left:20px;">Tall Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_td'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="tdr_pct"></td>
+                  <td class="border_thin_bottom pricing_value" id="tdr_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td style="padding-left:20px;">Style/Rail Width:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('style_rail_width'); ?><!--</div></td>-->
+                  <td style="padding-left:20px;">Style/Rail Width:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('style_rail_width'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="srw_pct"></td>
+                  <td class="border_thin_bottom pricing_value" id="srw_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td style="padding-left:20px;">Edge Profile:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('edge_profile'); ?><!--</div></td>-->
+                  <td style="padding-left:20px;">Edge Profile:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('edge_profile'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value"></td>
+                  <td class="border_thin_bottom pricing_value"></td>
+                </tr>
+                <tr>
+                  <!--                    <td style="padding-left:20px;">Framing Bead:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('framing_bead'); ?><!--</div></td>-->
+                  <td style="padding-left:20px;">Framing Bead:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('framing_bead'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value"></td>
+                  <td class="border_thin_bottom pricing_value"></td>
+                </tr>
+                <tr>
+                  <!--                    <td style="padding-left:20px;">Frame Option:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('framing_options'); ?><!--</div></td>-->
+                  <td style="padding-left:20px;">Frame Option:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('framing_options'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="fo_pct"></td>
+                  <td class="border_thin_bottom pricing_value" id="fo_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('drawer_boxes'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc"><?php echo getSelect('drawer_boxes'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="drwr_pct"></td>
+                  <td class="border_thin_bottom pricing_value" id="drwr_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Drawer Guide:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('drawer_guide'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Drawer Guide:<div class="cab_specifications_desc"><?php echo getSelect('drawer_guide'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="drwguide_pct"></td>
+                  <td class="border_thin_bottom pricing_value" id="drwguide_amt"></td>
+                </tr>
               </table>
-              <!--</editor-fold>-->
             </div>
+            <!--</editor-fold>-->
 
-            <div class="col-sm-8">
-              <div class="col-md-12">
-                <div class="global_cab_header"><h5><u>Global: Cabinet Details</u></h5></div>
-              </div>
-
-              <!--<editor-fold desc="Second Column: Cabinet Details">-->
-              <div class="col-sm-6">
-                <table width="100%">
-                  <tr>
-                    <th style="padding-left:5px;" width="70%">Design<label class="c-input c-checkbox pull-right no-print" style="color:#FFF;margin-top:2px;padding-right:13px;">Show Image Popups <input type='checkbox' id='show_image_popups' class='ignoreSaveAlert'><span class="c-indicator"></span></label></th>
-                    <th>Pct</th>
-                    <th>Cost</th>
-                  </tr>
-                  <tr class="border_top">
-<!--                    <td class="border_thin_bottom">Construction Method:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('construction_method'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Construction Method:<div class="cab_specifications_desc"><?php echo getSelect('construction_method'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="const_pct">0.00%</td>
-                    <td class="border_thin_bottom pricing_value" id="const_amt">$0.00</td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('species_grade', null, 'pricingSpeciesGrade'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc"><?php echo getSelect('species_grade'); ?></div></td>
-                    <td class="border_thin_bottom"></td>
-                    <td class="border_thin_bottom"></td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Carcass Material:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('carcass_material'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Carcass Material:<div class="cab_specifications_desc"><?php echo getSelect('carcass_material'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="box_const_pct">0.00%</td>
-                    <td class="border_thin_bottom pricing_value" id="box_const_amt">$0.00</td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('door_design', null, 'pricingDoorDesign'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo getSelect('door_design'); ?></div></td>
-                    <td class="border_thin_bottom text-md-center" id="const_pg" colspan="2">Price Group <span id="cab_spec_pg"><?php echo $price_group; ?></span></td>
-                  </tr>
-                  <tr>
-<!--                    <td style="padding-left:20px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('panel_raise', 'panel_raise_door'); ?><!--</div></td>-->
-                    <td style="padding-left:20px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_door'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value"></td>
-                    <td class="border_thin_bottom pricing_value"></td>
-                  </tr>
-                  <tr>
-<!--                    <td style="padding-left:20px;">Short Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('panel_raise', 'panel_raise_sd'); ?><!--</div></td>-->
-                    <td style="padding-left:20px;">Short Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_sd'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="sdr_pct"></td>
-                    <td class="border_thin_bottom pricing_value" id="sdr_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td style="padding-left:20px;">Tall Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('panel_raise', 'panel_raise_td'); ?><!--</div></td>-->
-                    <td style="padding-left:20px;">Tall Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_td'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="tdr_pct"></td>
-                    <td class="border_thin_bottom pricing_value" id="tdr_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td style="padding-left:20px;">Style/Rail Width:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('style_rail_width'); ?><!--</div></td>-->
-                    <td style="padding-left:20px;">Style/Rail Width:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('style_rail_width'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="srw_pct"></td>
-                    <td class="border_thin_bottom pricing_value" id="srw_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td style="padding-left:20px;">Edge Profile:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('edge_profile'); ?><!--</div></td>-->
-                    <td style="padding-left:20px;">Edge Profile:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('edge_profile'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value"></td>
-                    <td class="border_thin_bottom pricing_value"></td>
-                  </tr>
-                  <tr>
-<!--                    <td style="padding-left:20px;">Framing Bead:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('framing_bead'); ?><!--</div></td>-->
-                    <td style="padding-left:20px;">Framing Bead:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('framing_bead'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value"></td>
-                    <td class="border_thin_bottom pricing_value"></td>
-                  </tr>
-                  <tr>
-<!--                    <td style="padding-left:20px;">Frame Option:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('framing_options'); ?><!--</div></td>-->
-                    <td style="padding-left:20px;">Frame Option:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('framing_options'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="fo_pct"></td>
-                    <td class="border_thin_bottom pricing_value" id="fo_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('drawer_boxes'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc"><?php echo getSelect('drawer_boxes'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="drwr_pct"></td>
-                    <td class="border_thin_bottom pricing_value" id="drwr_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Drawer Guide:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('drawer_guide'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Drawer Guide:<div class="cab_specifications_desc"><?php echo getSelect('drawer_guide'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="drwguide_pct"></td>
-                    <td class="border_thin_bottom pricing_value" id="drwguide_amt"></td>
-                  </tr>
-                </table>
-              </div>
-              <!--</editor-fold>-->
-
-              <!--<editor-fold desc="Third column: Cabinet Finish">-->
-              <div class="col-sm-6" style="padding-left:0;">
-                <table width="100%">
-                  <tr><th colspan="3" style="padding-left:5px;" class="th_17">Finish</th></tr>
-                  <tr class="border_top">
-<!--                    <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc">--><?php //displayFinishOpts("finish_code", "finish_code"); ?><!--</div></td>-->
-                    <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc"><?php echo getSelect('finish_code'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="fc_pct"><?php if($room['product_type'] === 'P' && (false !== stripos($room['finish_code'], 'p') || $room['finish_code'] === '1cXXXX')) { echo '10.00%'; } ?></td>
-                    <td class="border_thin_bottom pricing_value" id="fc_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('sheen'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc"><?php echo getSelect('sheen'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="sheen_pct"><?php if($room['sheen'] === 'a' || $room['sheen'] === 'X' || $room['sheen'] === 'h' ) { echo '5.00%'; } ?></td>
-                    <td class="border_thin_bottom pricing_value" id="sheen_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('glaze'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc"><?php echo getSelect('glaze'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="gc_pct"></td>
-                    <td class="border_thin_bottom pricing_value" id="gc_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('glaze_technique'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc"><?php echo getSelect('glaze_technique'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="gt_pct"><?php echo $room['glaze_technique'] === 'G2' ? '10.00%' : null; ?></td>
-                    <td class="border_thin_bottom pricing_value" id="gt_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('antiquing'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc"><?php echo getSelect('antiquing'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="ant_pct"></td>
-                    <td class="border_thin_bottom pricing_value" id="ant_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('worn_edges'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc"><?php echo getSelect('worn_edges'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="we_pct"></td>
-                    <td class="border_thin_bottom pricing_value" id="we_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('distress_level'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc"><?php echo getSelect('distress_level'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="dist_pct"></td>
-                    <td class="border_thin_bottom pricing_value" id="dist_amt"></td>
-                  </tr>
-                  <tr>
-<!--                    <td class="border_thin_bottom">Enviro-finish:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('green_gard'); ?><!--</div></td>-->
-                    <td class="border_thin_bottom">Enviro-finish:<div class="cab_specifications_desc"><?php echo getSelect('green_gard'); ?></div></td>
-                    <td class="border_thin_bottom pricing_value" id="ggard_pct"><?php echo $room['green_gard'] === 'G1' ? '5.00%' : null; ?></td>
-                    <td class="border_thin_bottom pricing_value" id="ggard_amt"></td>
-                  </tr>
-                </table>
-              </div>
-              <!--</editor-fold>-->
+            <!--<editor-fold desc="Third column: Cabinet Finish">-->
+            <div class="col-sm-6" style="padding-left:0;">
+              <table width="100%">
+                <tr><th colspan="3" style="padding-left:5px;" class="th_17">Finish</th></tr>
+                <tr class="border_top">
+                  <!--                    <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc">--><?php //displayFinishOpts("finish_code", "finish_code"); ?><!--</div></td>-->
+                  <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc"><?php echo getSelect('finish_code'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="fc_pct"><?php if($room['product_type'] === 'P' && (false !== stripos($room['finish_code'], 'p') || $room['finish_code'] === '1cXXXX')) { echo '10.00%'; } ?></td>
+                  <td class="border_thin_bottom pricing_value" id="fc_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('sheen'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc"><?php echo getSelect('sheen'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="sheen_pct"><?php if($room['sheen'] === 'a' || $room['sheen'] === 'X' || $room['sheen'] === 'h' ) { echo '5.00%'; } ?></td>
+                  <td class="border_thin_bottom pricing_value" id="sheen_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('glaze'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc"><?php echo getSelect('glaze'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="gc_pct"></td>
+                  <td class="border_thin_bottom pricing_value" id="gc_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('glaze_technique'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc"><?php echo getSelect('glaze_technique'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="gt_pct"><?php echo $room['glaze_technique'] === 'G2' ? '10.00%' : null; ?></td>
+                  <td class="border_thin_bottom pricing_value" id="gt_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('antiquing'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc"><?php echo getSelect('antiquing'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="ant_pct"></td>
+                  <td class="border_thin_bottom pricing_value" id="ant_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('worn_edges'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc"><?php echo getSelect('worn_edges'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="we_pct"></td>
+                  <td class="border_thin_bottom pricing_value" id="we_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('distress_level'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc"><?php echo getSelect('distress_level'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="dist_pct"></td>
+                  <td class="border_thin_bottom pricing_value" id="dist_amt"></td>
+                </tr>
+                <tr>
+                  <!--                    <td class="border_thin_bottom">Enviro-finish:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('green_gard'); ?><!--</div></td>-->
+                  <td class="border_thin_bottom">Enviro-finish:<div class="cab_specifications_desc"><?php echo getSelect('green_gard'); ?></div></td>
+                  <td class="border_thin_bottom pricing_value" id="ggard_pct"><?php echo $room['green_gard'] === 'G1' ? '5.00%' : null; ?></td>
+                  <td class="border_thin_bottom pricing_value" id="ggard_amt"></td>
+                </tr>
+              </table>
             </div>
+            <!--</editor-fold>-->
+          </div>
         </div>
 
         <div class="row" id="notes_section" style="margin-top:5px;">
@@ -683,59 +683,59 @@ function getSelect($segment, $dbName = null) {
         <div class="col-sm-4 col-sm-offset-8 summary_of_charges">
           <div class="left_header"><h5>Summary of Charges:</h5></div>
 
-            <table align="right" width="100%">
-              <tr class="border_thin_bottom">
-                <td width="65%" class="total_text">Item List:</td>
-                <td width="80px">&nbsp;</td>
-                <td class="text-md-right gray_bg total_text" id="itemListTotal">$0.00</td>
-              </tr>
-              <tr class="border_thin_bottom">
-                <td class="total_text">Global: Cabinet Details:</td>
-                <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text" id="itemListGlobalCabDetails">$0.00</td>
-              </tr>
-              <tr class="border_thin_bottom">
-                <td class="total_text">Total:</td>
-                <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text" id="itemListSubTotal1">$0.00</td>
-              </tr>
-              <tr class="border_thin_bottom">
-                <td class="total_text">Multiplier:</td>
-                <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text" id="itemListMultiplier"><?php echo $dealer['multiplier']; ?></td>
-              </tr>
-              <tr class="border_thin_bottom">
-                <td class="total_text">NET:</td>
-                <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text" id="itemListNET">$0.00</td>
-              </tr>
-              <tr class="border_thin_bottom">
-                <td class="total_text">Global: Room Details/Shipping:</td>
-                <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text" id="itemListGlobalRoomDetails">$0.00</td>
-              </tr>
-              <tr class="border_thin_bottom">
-                <td class="total_text">Credit Card:</td>
-                <td class="total_text">3.5%</td>
-                <td class="text-md-right total_text">$0.00</td>
-              </tr>
-              <tr class="em_box">
-                <td class="total_text">Sub Total:</td>
-                <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text" id="finalSubTotal">$0.00</td>
-              </tr>
-              <tr class="header em_box">
-                <td class="total_text">Total Amount</td>
-                <td class="total_text">&nbsp;</td>
-                <td class="text-md-right total_text" id="finalTotal">$0.00</td>
-              </tr>
-              <tr id="deposit_line">
-                <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
-                <td class="text-md-right em_box" id="finalDeposit">$0.00</td>
-              </tr>
-            </table>
+          <table align="right" width="100%">
+            <tr class="border_thin_bottom">
+              <td width="65%" class="total_text">Item List:</td>
+              <td width="80px">&nbsp;</td>
+              <td class="text-md-right gray_bg total_text" id="itemListTotal">$0.00</td>
+            </tr>
+            <tr class="border_thin_bottom">
+              <td class="total_text">Global: Cabinet Details:</td>
+              <td class="total_text">&nbsp;</td>
+              <td class="text-md-right total_text" id="itemListGlobalCabDetails">$0.00</td>
+            </tr>
+            <tr class="border_thin_bottom">
+              <td class="total_text">Total:</td>
+              <td class="total_text">&nbsp;</td>
+              <td class="text-md-right total_text" id="itemListSubTotal1">$0.00</td>
+            </tr>
+            <tr class="border_thin_bottom">
+              <td class="total_text">Multiplier:</td>
+              <td class="total_text">&nbsp;</td>
+              <td class="text-md-right total_text" id="itemListMultiplier"><?php echo $dealer['multiplier']; ?></td>
+            </tr>
+            <tr class="border_thin_bottom">
+              <td class="total_text">NET:</td>
+              <td class="total_text">&nbsp;</td>
+              <td class="text-md-right total_text" id="itemListNET">$0.00</td>
+            </tr>
+            <tr class="border_thin_bottom">
+              <td class="total_text">Global: Room Details/Shipping:</td>
+              <td class="total_text">&nbsp;</td>
+              <td class="text-md-right total_text" id="itemListGlobalRoomDetails">$0.00</td>
+            </tr>
+            <tr class="border_thin_bottom">
+              <td class="total_text">Credit Card:</td>
+              <td class="total_text">3.5%</td>
+              <td class="text-md-right total_text">$0.00</td>
+            </tr>
+            <tr class="em_box">
+              <td class="total_text">Sub Total:</td>
+              <td class="total_text">&nbsp;</td>
+              <td class="text-md-right total_text" id="finalSubTotal">$0.00</td>
+            </tr>
+            <tr class="header em_box">
+              <td class="total_text">Total Amount</td>
+              <td class="total_text">&nbsp;</td>
+              <td class="text-md-right total_text" id="finalTotal">$0.00</td>
+            </tr>
+            <tr id="deposit_line">
+              <td colspan="2" class="em_box" style="padding-left:20px;">50% Deposit due to start production</td>
+              <td class="text-md-right em_box" id="finalDeposit">$0.00</td>
+            </tr>
+          </table>
 
-            <div class="clearfix"></div>
+          <div class="clearfix"></div>
         </div>
       </div>
 
@@ -748,16 +748,16 @@ function getSelect($segment, $dbName = null) {
         <div class="row">
           <div class="col-md-12">
             <?php if($bouncer->validate('view_accounting')) { ?>
-            <tr>
-              <td colspan="2">
-                <label class="c-input c-checkbox">Deposit Received <input type="checkbox" name="deposit_received" value="1" <?php echo ((bool)$room['payment_deposit']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
-                <label class="c-input c-checkbox">Prior to Loading: Distribution - Final Payment<br/><span style="margin-left:110px;">Retail - On Delivery/Payment</span> <input type="checkbox" name="ptl_del" value="1" <?php echo ((bool)$room['payment_del_ptl']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
-                <label class="c-input c-checkbox">Retail - Final Payment <input type="checkbox" name="final_payment" value="1" <?php echo ((bool)$room['payment_final']) ? 'checked' :null; ?>><span class="c-indicator"></span></label>
-              </td>
-            </tr>
-            <tr style="height:10px;">
-              <td colspan="2"></td>
-            </tr>
+              <tr>
+                <td colspan="2">
+                  <label class="c-input c-checkbox">Deposit Received <input type="checkbox" name="deposit_received" value="1" <?php echo ((bool)$room['payment_deposit']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
+                  <label class="c-input c-checkbox">Prior to Loading: Distribution - Final Payment<br/><span style="margin-left:110px;">Retail - On Delivery/Payment</span> <input type="checkbox" name="ptl_del" value="1" <?php echo ((bool)$room['payment_del_ptl']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
+                  <label class="c-input c-checkbox">Retail - Final Payment <input type="checkbox" name="final_payment" value="1" <?php echo ((bool)$room['payment_final']) ? 'checked' :null; ?>><span class="c-indicator"></span></label>
+                </td>
+              </tr>
+              <tr style="height:10px;">
+                <td colspan="2"></td>
+              </tr>
             <?php } ?>
 
             <ul class="nav nav-tabs m-b-10 m-t-10" id="roomNotes" role="tablist">
@@ -847,9 +847,9 @@ function getSelect($segment, $dbName = null) {
 
                       echo "<tr id='inquiry_reply_line_{$room_inquiry['nID']}' style='display:none;'>";
                       echo "<td colspan='2'>
-                            <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
-                            <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='r_{$room_inquiry['nID']}_submit'>Reply</button>
-                        </td>";
+                          <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
+                          <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='r_{$room_inquiry['nID']}_submit'>Reply</button>
+                      </td>";
                       echo '</tr>';
 
                       echo $inquiry_replies;
@@ -937,9 +937,9 @@ function getSelect($segment, $dbName = null) {
 
                           echo "<tr id='inquiry_reply_line_{$so_inquiry['nID']}' style='display:none;'>";
                           echo "  <td colspan='2'>
-                                      <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$so_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
-                                      <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$so_inquiry['nID']}'>Reply</button>
-                                  </td>";
+                                    <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$so_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
+                                    <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$so_inquiry['nID']}'>Reply</button>
+                                </td>";
                           echo '</tr>';
 
                           echo $inquiry_replies;
@@ -961,6 +961,7 @@ function getSelect($segment, $dbName = null) {
     <!--</editor-fold>-->
   </div>
 </div>
+
 
 <div class='info-popup'></div>
 

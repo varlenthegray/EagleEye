@@ -132,25 +132,44 @@ $("body")
     });
   })
   .on("click", ".edit_room", function(e) {
-    thisClick = this;
+    active_room_id = $(this).attr("id");
+
+    var tr = $(this).closest('tr');
+    var row = searchTable.row( tr );
+
+    if ( row.child.isShown() ) {
+      // This row is already open - close it
+      row.child('').hide();
+      tr.removeClass('shown');
+    } else {
+      // Open this row
+      // $.get("/html/pricing/index.php", {room_id: active_room_id}, function(data) {
+      $.get("/html/search/ajax/edit_room.php", {room_id: active_room_id}, function(data) {
+        row.child(data).show();
+        tr.addClass('shown');
+      });
+    }
+
+    /*thisClick = this;
 
     e.stopPropagation();
-
-    active_room_id = $(thisClick).attr("id");
-    active_so_num = $(thisClick).data("sonum");
 
     checkTransition(function() {
       active_room_id = $(thisClick).attr("id");
       active_so_num = $(thisClick).data("sonum");
 
-      toggleDisplay();
+      // toggleDisplay();
 
-      $.post("/html/pricing/index.php?room_id=" + active_room_id, function(data) {
-        $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
+      // $.post("/html/pricing/index.php?room_id=" + active_room_id, function(data) {
+      //   $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
+      // });
+      //
+      // scrollLocation("#" + active_room_id + ".tr_room_actions");
+
+      $.get("/html/pricing/index.php", {room_id: active_room_id}, function(data) {
+        $("#searchModal .modal-body").html(data).modal('show');
       });
-
-      scrollLocation("#" + active_room_id + ".tr_room_actions");
-    });
+    });*/
   })
   .on("click", ".activate_op", function() {
     var opid = $(this).data("opid");
