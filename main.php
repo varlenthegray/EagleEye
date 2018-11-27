@@ -162,42 +162,10 @@ require 'includes/header_start.php';
         </div>
       </div>
 
-      <div class="row" id="search_display" style="display: none;">
-        <div class="col-md-12">
-          <div class="card-box">
-            <div class="row">
-              <div class="col-md-12">
-                <button class="btn btn-primary waves-effect waves-light" id="btn_search_to_main"><i class="zmdi zmdi-arrow-left m-r-5"></i> <span>GO BACK</span></button><br /><br />
-
-                <table class="table table-bordered tablesorter" id="search_results_global_table">
-                  <thead>
-                  <tr>
-                    <th colspan="2">SO#</th>
-                    <th>DEALER/CONTRACTOR</th>
-                    <th>CUSTOMER PO/PROJECT NAME</th>
-                    <th>PROJECT MANAGER</th>
-                  </tr>
-                  </thead>
-                  <tbody id="search_results_table">
-                  <tr>
-                    <td colspan="7" class="text-md-center"><span id="global_search_status"><i class="fa fa-3x fa-spin fa-spinner" style="width: auto;margin-right: 10px;"></i></span></td>
-                  </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div id="search_display" style="display: none;"></div>
 
       <!-- Add Customer modal -->
       <div id="modalAddContact" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddContactLabel" aria-hidden="true">
-        <!-- Inserted via AJAX -->
-      </div>
-      <!-- /.modal -->
-
-      <!-- Add Room modal -->
-      <div id="modalAddRoom" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddRoomLabel" aria-hidden="true">
         <!-- Inserted via AJAX -->
       </div>
       <!-- /.modal -->
@@ -1415,9 +1383,6 @@ require 'includes/header_start.php';
 
   <!-- Pricing program -->
   <script src="/html/pricing/pricing.min.js?v=<?php echo VERSION; ?>"></script>
-
-  <!-- Adding Room -->
-  <script src="/html/search/add_room.min.js?v=<?php echo VERSION; ?>"></script>
 
   <!-- Fancytree -->
   <script src="/assets/plugins/fancytree/jquery.fancytree.js"></script>

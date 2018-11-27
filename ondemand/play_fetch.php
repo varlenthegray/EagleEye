@@ -14,7 +14,7 @@ switch($_REQUEST['action']) {
         }
 
         break;
-    case 'get_next_iteration':
+    /*case 'get_next_iteration':
         $room_id = sanitizeInput($_REQUEST['roomid']);
 
         $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
@@ -29,11 +29,11 @@ switch($_REQUEST['action']) {
 
                 $next_seq = (double)$seq_iteration + 1.00;
 
-                $sequence = explode(".", $next_seq);
+                $sequence = explode('.', $next_seq);
 
-                echo $sequence[0] . ".01";
+                echo $sequence[0] . '.01';
             } else {
-                $cur_seq = explode(".", $room['iteration']);
+                $cur_seq = explode('.', $room['iteration']);
 
                 $highest_it_qry = $dbconn->query("SELECT MAX(iteration) as iteration FROM rooms WHERE so_parent = '{$room['so_parent']}' AND room = '{$room['room']}' AND iteration LIKE '{$cur_seq[0]}%'");
                 $highest_it = $highest_it_qry->fetch_assoc();
@@ -44,7 +44,7 @@ switch($_REQUEST['action']) {
             }
         }
 
-        break;
+        break;*/
     case 'get_note':
         $room_id = sanitizeInput($_REQUEST['room_id']);
         $note_type = sanitizeInput($_REQUEST['note_type']);

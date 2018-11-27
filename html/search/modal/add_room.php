@@ -9,35 +9,32 @@ require '../../../includes/header_start.php';
 
 //outputPHPErrs();
 
+$so_num = sanitizeInput($_REQUEST['so_num']);
+$add_type = sanitizeInput($_REQUEST['addType']);
+$room_id = sanitizeInput($_REQUEST['room_id']);
+
+//<editor-fold desc="VIN Schema loading">
 $vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
  FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC");
 
 while($vin = $vin_qry->fetch_assoc()) {
   $vin_schema[$vin['segment']][] = $vin;
 }
+//</editor-fold>
 
-$so_num = sanitizeInput($_REQUEST['so_num']);
+//<editor-fold desc="Functions for Heredoc Output">
+$product_type = getSelect('product_type');
+$order_status = getSelect('order_status', null, 'modalAddRoomOrderStatus');
+$days_to_ship = getSelect('days_to_ship', null, 'modalAddRoomDTS');
+//</editor-fold>
 
-$room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' ORDER BY room, iteration ASC LIMIT 0, 1;");
-$room = $room_qry->fetch_assoc();
-
-$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
-$result = $result_qry->fetch_assoc();
-
-// run functions for heredoc output
-$product_type = displayVINOpts('product_type');
-$order_status = displayVINOpts('order_status', null, 'modalAddRoomOrderStatus');
-$days_to_ship = displayVINOpts('days_to_ship', null, 'modalAddRoomDTS');
-// end of function run for heredoc
-
-$dd_value = !empty($room['delivery_date']) ? date('m/d/Y', $room['delivery_date']) : '';
-// end days to ship calculation info
-
+//<editor-fold desc="Room Lettering">
 $letter = 'A';
 $blacklist = ['I','O'];
 $letter_series = [];
 $letter_out = '';
 
+//<editor-fold desc="Blacklist Room Letters">
 $blacklist_qry = $dbconn->query("SELECT DISTINCT(room) FROM rooms WHERE so_parent = '$so_num' ORDER BY room");
 
 if($blacklist_qry->num_rows > 0) {
@@ -47,7 +44,9 @@ if($blacklist_qry->num_rows > 0) {
     }
   }
 }
+//</editor-fold>
 
+//<editor-fold desc="Building the Letter Series">
 for($i = 1; $i <= 26; $i++) {
   $next_letter = $letter++;
 
@@ -55,13 +54,62 @@ for($i = 1; $i <= 26; $i++) {
     $letter_series[] = $next_letter;
   }
 }
+//</editor-fold>
+//</editor-fold>
 
-$first_selected = 'selected="selected"';
+//<editor-fold desc="Determining iteration">
+$next_iteration = 1.01;
+$room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
 
-foreach($letter_series as $letter) {
-  $letter_out .= "<option value='$letter' $first_selected>$letter</option>";
+if($room_qry->num_rows > 0) {
+  $room = $room_qry->fetch_assoc();
 
-  $first_selected = null;
+  if($add_type === 'sequence') {
+    $highest_seq_qry = $dbconn->query("SELECT MAX(iteration) as iteration FROM rooms WHERE so_parent = '{$room['so_parent']}' AND room = '{$room['room']}'");
+    $highest_seq = $highest_seq_qry->fetch_assoc();
+    $seq_iteration = $highest_seq['iteration'];
+
+    $next_seq = (double)$seq_iteration + 1.00;
+
+    $sequence = explode('.', $next_seq);
+
+    $next_iteration = $sequence[0] . '.01';
+  } elseif($add_type === 'iteration') {
+    $cur_seq = explode('.', $room['iteration']);
+
+    $highest_it_qry = $dbconn->query("SELECT MAX(iteration) as iteration FROM rooms WHERE so_parent = '{$room['so_parent']}' AND room = '{$room['room']}' AND iteration LIKE '{$cur_seq[0]}%'");
+    $highest_it = $highest_it_qry->fetch_assoc();
+
+    $iteration = $highest_it['iteration'];
+
+    $next_iteration = (double)$iteration + 0.01;
+  }
+}
+//</editor-fold>
+
+//<editor-fold desc="Dropdown Setup">
+if($add_type === 'room') {
+  foreach($letter_series as $letter) {
+    $letter_out .= "<option value='$letter'>$letter</option>";
+  }
+} else {
+  $letter_out = "<option value='{$room['room']}'>{$room['room']}</option>";
+}
+//</editor-fold>
+
+switch($add_type) {
+  case 'room':
+    $title = "Add New Room - $so_num";
+    break;
+  case 'sequence':
+    $title = "Add New Sequence - $next_iteration";
+    break;
+  case 'iteration':
+    $title = "Add New Iteration - $next_iteration";
+    break;
+  case 'default':
+    $title = 'Error determining what is being added';
+    break;
 }
 
 echo <<<HEREDOC
@@ -69,7 +117,7 @@ echo <<<HEREDOC
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-          <h4 class="modal-title">Add New Room - $so_num</h4>
+          <h4 class="modal-title">$title</h4>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -89,7 +137,7 @@ echo <<<HEREDOC
                   </tr>
                   <tr>
                     <td><label for="iteration">Iteration</label></td>
-                    <td><input type="text" class="form-control" id="iteration" name="iteration" placeholder="Iteration" value="1.01" readonly></td>
+                    <td><input type="text" class="form-control" id="iteration" name="iteration" placeholder="Iteration" value="$next_iteration" readonly></td>
                   </tr>
                   <tr>
                     <td><label for="product_type">Product Type</label></td>
@@ -118,8 +166,9 @@ echo <<<HEREDOC
     </div>
 
     <script>
-      $(".delivery_date").datepicker();
-      $("#modalAddRoomOrderStatus").find(".selected").html("Quote").parent().find("#order_status").val("#");  // sets the default order status to quote
+      $("#order_status").val('#'); // sets the default order status to quote
+      $("#product_type").val('C'); // sets the default product type
+      $("#days_to_ship").val('G'); // sets the default days to ship to green
     </script>
 HEREDOC;
 

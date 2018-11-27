@@ -32,16 +32,13 @@ $("body")
     checkTransition(function() {
       clearIntervals();
 
-      var searchDisplay = $("#search_display");
-      var mainDisplay = $("#main_display");
-      var input = $("#global_search");
-      var searchTable = $("#search_results_table");
-      var loadingResults = '<tr><td colspan="7" class="text-md-center"><span id="global_search_status"><i class="fa fa-3x fa-spin fa-spinner" style="width: auto;margin-right: 10px;"></i></span></td></tr>';
-      var searchEmpty = '<tr><td colspan="7">No results found.</td></tr>';
+      let searchDisplay = $("#search_display");
+      let input = $("#global_search");
+      let mainDisplay = $("#main_display");
+      let loading_spinner = '<div class="text-md-center" style="color:#FFF;"><span id="global_search_status"><i class="fa fa-3x fa-spin fa-spinner" style="width: auto;margin-right: 10px;"></i></span></div>';
 
       mainDisplay.attr("data-search", "true");
-
-      searchTable.html(loadingResults);
+      searchDisplay.html(loading_spinner);
 
       if(input.val().length >= 3) {
         scrollPosition = $(window).scrollTop();
@@ -53,21 +50,8 @@ $("body")
 
         timer = setTimeout(function () {
           if (input.val().length >= 1) {
-            $.post("/html/search/so_list.php", {find: input.val()}, function (data) {
-              searchTable.html(data);
-              $("#search_results_global_table").trigger("update");
-
-              if (data !== '') {
-                $('[data-toggle="tooltip"]').tooltip(); // enable tooltips
-
-                // setup date picker
-                $(".delivery_date").datepicker({
-                  autoclose: true,
-                  todayHighlight: true
-                });
-              } else {
-                searchTable.html(searchEmpty);
-              }
+            $.post("/html/search/search_results.php", {find: input.val()}, function (data) {
+              searchDisplay.html(data);
             });
           } else {
             mainDisplay.show();
@@ -103,21 +87,24 @@ $("body")
     $("#global_search").val($(this).attr("id")).trigger("keyup");
   })
 
-  .on("click", "[id^=edit_so_]", function(e) {
-    thisClick = this;
+  .on("click", "#edit_so", function(e) {
+    active_so_num = $(this).attr('data-sonum');
+
+    let container = $(this).parents().eq(3).find('.edit_so');
 
     e.stopPropagation();
 
     checkTransition(function() {
-      active_so_num = $(thisClick).attr("id").replace('edit_so_', '');
+      if(container.is(":visible")) {
+        container.html('').hide();
+      } else {
+        $(".edit_so").html('').hide();
 
-      toggleDisplay();
-
-      $("#tr_edit_so_" + active_so_num).show();
-      $("#div_edit_so_" + active_so_num).slideDown(250);
+        $.get('/html/search/ajax/edit_so.php', {so_num: active_so_num}, function(data) {
+          container.html(data).show();
+        });
+      }
     });
-
-    scrollLocation("#show_room_" + active_so_num);
   })
   .on("click", "[id^=show_room_]", function() {
     thisClick = this;
@@ -133,22 +120,38 @@ $("body")
   })
   .on("click", ".edit_room", function(e) {
     active_room_id = $(this).attr("id");
+    active_so_num = $(this).attr("data-sonum");
 
-    var tr = $(this).closest('tr');
-    var row = searchTable.row( tr );
+    let roomSearchTable = searchTable[active_so_num];
 
-    if ( row.child.isShown() ) {
-      // This row is already open - close it
-      row.child('').hide();
-      tr.removeClass('shown');
-    } else {
-      // Open this row
-      // $.get("/html/pricing/index.php", {room_id: active_room_id}, function(data) {
-      $.get("/html/search/ajax/edit_room.php", {room_id: active_room_id}, function(data) {
-        row.child(data).show();
-        tr.addClass('shown');
-      });
-    }
+    let tr = $(this).closest('tr');
+    let row = roomSearchTable.row(tr);
+
+    e.stopPropagation();
+
+    checkTransition(function() {
+      if(row.child.isShown()) {
+        // This row is already open - close it
+        row.child('').hide();
+        tr.removeClass('shown');
+      } else {
+        // collapses all rows
+        roomSearchTable.rows().every(function() {
+          // If row has details expanded
+          if(this.child.isShown()) {
+            // Collapse row details
+            this.child('').hide();
+            $(this.node()).removeClass('shown');
+          }
+        });
+
+        // Open this row
+        $.get("/html/pricing/index.php", {room_id: active_room_id}, function(data) {
+          row.child(data, 'no-row-hover').show();
+          tr.addClass('shown');
+        });
+      }
+    });
 
     /*thisClick = this;
 
@@ -214,7 +217,7 @@ $("body")
     $(this).parent().remove();
   })
 
-  .on("click", ".edit_room_save", function(e) {
+  /* .on("click", ".edit_room_save", function(e) {
     e.stopPropagation();
 
     var thisClick = this;
@@ -251,74 +254,7 @@ $("body")
     });
 
     unsaved = false;
-  })
-  .on("click", ".add_iteration", function(e) {
-    thisClick = this;
-    var next_iteration;
-
-    e.stopPropagation();
-
-    checkTransition(function() {
-      active_room_id = $(thisClick).data('roomid');
-      active_so_num = $(thisClick).data('sonum');
-
-      var seqAjax;
-      var iterationAjax;
-      var header;
-
-      if($(thisClick).data('addto') === 'sequence') {
-        seqAjax = $.post("/ondemand/play_fetch.php?action=get_next_iteration&output=sequence&roomid=" + active_room_id, function(data) {
-          next_iteration = data;
-        });
-
-        header = "Adding Sequence";
-      } else {
-        iterationAjax = $.post("/ondemand/play_fetch.php?action=get_next_iteration&output=iteration&roomid=" + active_room_id, function(data) {
-          next_iteration = data;
-        });
-
-        header = "Adding Iteration";
-      }
-
-      $.when(seqAjax, iterationAjax).done(function() {
-        toggleDisplay();
-
-        $.post("/html/search/room_add_section.php?room_id=" + active_room_id, function(data) {
-          $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
-
-          $("#add_iteration_header_" + active_room_id).html(header);
-          $("#edit_iteration_" + active_room_id).attr('value', next_iteration);
-          $("#vin_iteration_" + active_room_id).val(next_iteration);
-        });
-      });
-    });
-
-    scrollLocation("#" + active_room_id + ".tr_room_actions");
-  })
-  .on("click", ".iteration_save", function(e) {
-    e.stopPropagation();
-
-    if($("input[name='room_name']").val() === '') {
-      $.confirm({
-        title: "Unable to Save",
-        content: "Cannot save with no room name!",
-        buttons: {
-          ok: function() {}
-        }
-      });
-    } else {
-      var edit_info = $("#add_iteration").serialize();
-      var active_ops = $(".active_ops").map(function() { return $(this).data("opid"); }).get();
-
-      active_ops = JSON.stringify(active_ops);
-
-      $.post("/ondemand/room_actions.php?action=create_room", {active_ops: active_ops, editInfo: edit_info}, function(data) {
-        $('body').append(data);
-      });
-
-      unsaved = false;
-    }
-  })
+  })*/
 
   .on("click", ".save_so", function() {
     var so_info = $("#form_so_" + active_so_num).serialize();
@@ -407,7 +343,7 @@ $("body")
     unsaved = false;
   })
 
-  .on("click", "[id^=show_vin_]", function(e) {
+  /*.on("click", "[id^=show_vin_]", function(e) {
     thisClick = this;
 
     e.stopPropagation();
@@ -420,7 +356,7 @@ $("body")
       $("#tr_vin_" + active_so_num).show();
       $("#div_vin_" + active_so_num).slideDown(250);
     });
-  })
+  })*/
   .on("click", "[id^=show_attachments_room_]", function(e) {
     thisClick = this;
 
@@ -440,7 +376,7 @@ $("body")
     });
   })
 
-  .on("click", "[id^=print_]", function(e) {
+  /*.on("click", "[id^=print_]", function(e) {
     thisClick = this;
 
     e.stopPropagation();
@@ -457,7 +393,7 @@ $("body")
         $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -100});
       }, 300);
     });
-  })
+  })*/
   .on("click", "#add_attachment", function() {
     $("#modalAddAttachment").modal("show");
   })
@@ -509,7 +445,7 @@ $("body")
     unsaved = false;
   })
 
-  .on("click", "#copy_vin", function() {
+  /*.on("click", "#copy_vin", function() {
     var copy_to_title = $("#copy_vin_target").find(":selected").text();
     var thisClick = $(this);
 
@@ -532,7 +468,7 @@ $("body")
     });
 
 
-  })
+  })*/
 
   .on("change", "input[name='note_type']", function() {
     var room_notes = $("#room_notes");
@@ -621,77 +557,6 @@ $("body")
     }
   })
 
-  .on("click", "#appliance_worksheets", function(e) {
-    thisClick = this;
-
-    checkTransition(function() {
-      active_room_id = $(thisClick).data("roomid");
-
-      toggleDisplay();
-
-      setTimeout(function() {
-        $.post("/html/search/appliance_ws.php?room_id=" + active_room_id + "&id=1", function(data) {
-          $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
-        });
-
-        scrollLocation("#" + active_room_id + ".tr_room_actions");
-      }, 350);
-    });
-  })
-  .on("change", "#sheet_type", function() {
-    $.post("/html/search/appliance_ws_info.php?room_id=" + active_room_id + "&id=" + $(this).val(), function(data) {
-      $(".sheet_data").html(data);
-
-      $(":input", "#appliance_info").not(':button, :submit, :reset, :hidden, select').val('');
-    });
-  })
-  .on("click", ".appliance_ws_save", function(e) {
-    e.stopPropagation();
-
-    var formInfo = $("#appliance_info").serialize();
-
-    $.post("/ondemand/room_actions.php?action=save_app_worksheet&room=" + active_room_id + "&" + formInfo, function(data) {
-      if(data !== 'false') {
-        $(".print_app_ws").attr("id", data);
-        displayToast("success", "Successfully saved worksheet information.", "Worksheet Saved");
-      } else {
-        displayToast("error", "Unable to save worksheet. Please refresh your page.", "Unable to Save");
-      }
-    });
-
-    unsaved = false;
-  })
-  .on("click", ".load_app_worksheet", function(e) {
-    e.stopPropagation();
-
-    var id = $(this).attr("id");
-
-    $.post("/ondemand/room_actions.php?action=load_app_worksheet&id=" + id, function(data) {
-      var result = JSON.parse(data);
-      var values = JSON.parse(result.values);
-
-      $("#sheet_type").val(result.spec).trigger("change");
-      $(".print_app_ws").attr("id", result.id);
-
-      setTimeout(function() {
-        $.each(values, function(key, value) {
-          $("#" + key).val(value);
-        });
-
-        $("#notes").val(result.notes);
-      }, 150);
-    });
-  })
-  .on("click", ".print_app_ws", function(e) {
-    e.stopPropagation();
-
-    var ws_id = $(this).attr("id");
-
-    $(".appliance_ws_save").trigger("click");
-
-    window.open("/print/appliance_spec.php?ws_id=" + ws_id, "_blank");
-  })
-
   .on("click", "#generate_code", function(e) {
     var so = $(this).data("so");
 
@@ -715,17 +580,66 @@ $("body")
     });
   })
 
-  .on("click", "#submit_quote", function(e) {
+  .on("click", ".add_room_trigger", function(e) {
     e.stopPropagation();
 
-    $(".edit_room_save").trigger("click");
+    active_so_num = $(this).attr('data-sonum');
 
-    if($("#vin_code_" + active_room_id).val().indexOf("?") > -1) {
-      displayToast("error", "Unable to submit while there are still TBD VIN items.", "Unable to Submit");
-    } else {
-      $.post("/ondemand/room_actions.php?action=submit_quote", {roomid: active_room_id}, function(data) {
-        $("body").append(data);
+    $.post("/html/search/modal/add_room.php", {addType: 'room', so_num: active_so_num}, function(data) {
+      $("#modalAddRoom").html(data).modal("show");
+    });
+  })
+  .on("click", "#modalAddRoomCreate", function() {
+    let room_data = $("#modalAddRoomData").serialize();
+
+    $.post("/html/search/ajax/room_actions.php?action=add_new_room", {data: room_data}, function(data) {
+      $("body").append(data);
+    });
+
+    $("#modalAddRoom").modal("hide");
+
+    unsaved = false;
+  })
+
+  .on("click", ".add_iteration", function(e) {
+    thisClick = this;
+
+    e.stopPropagation();
+
+    checkTransition(function() {
+      active_room_id = $(thisClick).attr('data-roomid');
+      active_so_num = $(thisClick).attr('data-sonum');
+      let addTo = $(thisClick).attr('data-addto');
+
+      console.log(active_so_num);
+
+      $.post("/html/search/modal/add_room.php", {so_num: active_so_num, addType: addTo, room_id: active_room_id}, function(data) {
+        $("#modalAddRoom").html(data).modal("show");
       });
+    });
+  })
+  .on("click", ".iteration_save", function(e) {
+    e.stopPropagation();
+
+    if($("input[name='room_name']").val() === '') {
+      $.confirm({
+        title: "Unable to Save",
+        content: "Cannot save with no room name!",
+        buttons: {
+          ok: function() {}
+        }
+      });
+    } else {
+      var edit_info = $("#add_iteration").serialize();
+      var active_ops = $(".active_ops").map(function() { return $(this).data("opid"); }).get();
+
+      active_ops = JSON.stringify(active_ops);
+
+      $.post("/ondemand/room_actions.php?action=create_room", {active_ops: active_ops, editInfo: edit_info}, function(data) {
+        $('body').append(data);
+      });
+
+      unsaved = false;
     }
   })
 ;

@@ -89,46 +89,6 @@ if($pg_qry->num_rows > 0) {
 } else {
   $price_group = '0';
 }
-
-function getSelect($segment, $dbName = null) {
-  global $vin_schema;
-  global $room;
-
-  $room_val = !empty($dbName) ? $dbName : $segment;
-
-  $nsy = empty($room[$room_val]) ? 'selected' : null;
-
-  $option = "<optgroup label='Empty'><option value='' $nsy disabled>Not Selected Yet</option>";
-  $prev_group = null;
-  $addl_html = null;
-
-  foreach($vin_schema[$segment] AS $element) {
-    if((bool)$element['visible']) {
-      if($prev_group !== $element['group']) {
-        $option .= "</optgroup><optgroup label='{$element['group']}'>";
-        $prev_group = $element['group'];
-      }
-
-      $selected = $room[$room_val] === $element['key'] ? 'selected' : null;
-
-      $val = strip_tags($element['value']);
-
-      $option .= "<option value='{$element['key']}' $selected>$val</option>";
-
-      $addl_html[$element['key']] = $element['addl_html'];
-    }
-  }
-
-  $html_addl_out = null;
-
-  foreach($addl_html AS $key => $html) {
-    if(!empty($html)) {
-      $html_addl_out .= "<div class='addl_select_html'>$html</div>";
-    }
-  }
-
-  return "<select name='$room_val' id='$room_val' class='pricing_dropdown'>$option</select> $html_addl_out";
-}
 ?>
 
 <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
@@ -138,8 +98,8 @@ function getSelect($segment, $dbName = null) {
   <?php echo $submit_disabled !== null ? 'var already_submitted = true;' : 'var already_submitted = false;'; ?>
 </script>
 
-<div style="width:99%;">
-  <div class="row sticky no-print" style="background-color:#FFF;z-index:2;top:84px;padding:4px;">
+<div class="container-fluid pricing-container" style="width:100%;">
+  <div class="row sticky no-print" style="background-color:#FFF;z-index:2;top:0;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
       <button class="btn waves-effect btn-success-outline" title="Submit Quote" id="submit_for_quote_BROKEN" <?php echo $submit_disabled; ?>> <i class="fa fa-paper-plane-o fa-2x"></i> </button>
@@ -161,7 +121,6 @@ function getSelect($segment, $dbName = null) {
       <button class="btn waves-effect btn-secondary" title="Bracket Management" id="bracket_management"> <i class="fa fa-code-fork fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Door Sizing" onclick="window.open('/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>','_blank')"> <i class="fa fa-arrows-alt fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Appliance Worksheets" id='appliance_ws' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-cubes fa-2x"></i> </button>
-      <button class="btn waves-effect btn-secondary" title="Recalculate Ship Date" id='ship_date_recalc' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-truck fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Recalculate Pricing" id="catalog_recalculate"> <i class="fa fa-retweet fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Download ORD File" id="dl_ord_file"><i class="fa fa-file-text-o fa-2x"></i></button>
       <button class="btn waves-effect btn-secondary" style="display:none;" title="Override Production Lock" id="production_lock"><i class="fa fa-lock fa-2x"></i></button>
@@ -171,11 +130,11 @@ function getSelect($segment, $dbName = null) {
   </div>
 
   <div class="row">
-    <div class="col-md-2 pricing_left_nav no-print sticky" style="top:122px;">
+    <div class="col-md-2 pricing_left_nav no-print sticky" style="top:38px;">
       <div class="sticky nav_filter">
         <div class="form-group">
           <label for="left_menu_options">Action:</label>
-          <select id="left_menu_options" class="pricing_dropdown ignoreSaveAlert" style="margin:5px 0;">
+          <select id="left_menu_options" class="c_dropdown ignoreSaveAlert" style="margin:5px 0;">
             <option value="catalog">Catalog</option>
             <option value="samples">Samples</option>
           </select>
@@ -203,7 +162,7 @@ function getSelect($segment, $dbName = null) {
                 <td colspan="2"><h3><u id="pageTitle"> Item List</u></h3></td>
               </tr>
               <tr>
-                <td width="20%">Dealer:</td>
+                <td width="25%">Dealer:</td>
                 <td class="text-bold"><?php echo "{$dealer_info['dealer_id']}_{$dealer_info['dealer_name']} - {$dealer_info['contact']}"; ?></td>
               </tr>
               <tr>
@@ -273,7 +232,7 @@ function getSelect($segment, $dbName = null) {
                 <td id="product_type_cost" class="pricing_value">$0.00</td>
               </tr>
               <tr>
-                <td><span id="leadTimeDef"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?>Lead Time:</span></td>
+                <td><span id="leadTimeDef">Lead Time:</span></td>
                 <!--                  <td>--><?php //echo displayVINOpts('days_to_ship'); ?><!--</td>-->
                 <td><?php echo getSelect('days_to_ship'); ?></td>
                 <td class="pricing_value">$0.00</td>
@@ -287,7 +246,7 @@ function getSelect($segment, $dbName = null) {
               <tr>
                 <td><span class="estimated"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?></span>Ship Date (*):</td>
                 <td><strong id="calcd_ship_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : 'TBD'; ?></strong></td>
-                <td><i style="font-size:1.25em;" class="fa fa-pencil-square no-print cursor-hand" id="overrideShipDate" title="Edit/Override Ship Date"></i></td>
+                <td style="font-size:1.25em;white-space:nowrap;"><i class="fa fa-truck cursor-hand no-print" title="Calculate Ship Date" id='ship_date_recalc' data-roomid='<?php echo $room['id']; ?>'></i> &nbsp;<i class="fa fa-pencil-square no-print cursor-hand" id="overrideShipDate" title="Edit/Override Ship Date"></i></td>
               </tr>
               <tr>
                 <td><span class="estimated"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?></span>Delivery Date (*):</td>
@@ -565,6 +524,7 @@ function getSelect($segment, $dbName = null) {
           </div>
         </div>
 
+        <!--<editor-fold desc="Delivery/Design/Finishing Notes">-->
         <div class="row" id="notes_section" style="margin-top:5px;">
           <div class="col-sm-4">
             <table width="100%">
@@ -597,27 +557,28 @@ function getSelect($segment, $dbName = null) {
             <input type="hidden" name="fin_sample_notes_id" value="<?php echo $note_arr['room_note_fin_sample']['id']; ?>" />
           </div>
         </div>
+        <!--</editor-fold>-->
       </form>
 
       <!--<editor-fold desc="Item List">-->
       <div class="row" style="border-top: 1px solid #000;">
-        <div class="col-md-12" style="margin-top:5px;">
+        <div class="col-md-12 itemListWrapper" style="margin-top:5px;">
           <div class="item_list_header sticky">
             <h5><u>Item List</u></h5>
 
             <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" />
             <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="item_note"><span class="btn-label"><i class="fa fa-commenting-o"></i> </span>Custom Note</button>
-            <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="item_custom_line"><span class="btn-label"><i class="fa fa-plus"></i> </span>Custom Line</button>
+            <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="item_custom_line"><span class="btn-label"><i class="fa fa-plus"></i> </span>Custom Item</button>
             <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="detailed_item_summary"><span class="btn-label"><i class="fa fa-list"></i> </span>Detailed Report</button>
 
             <div class="clearfix"></div>
           </div>
 
-          <table id="cabinet_list" style="width:100%;">
+          <table class="sticky" style="width:100%;top:67px;">
             <colgroup>
-              <col width="30px">
-              <col width="30px">
               <col width="40px">
+              <col width="35px">
+              <col width="50px">
               <col width="150px">
               <col width="350px">
               <col width="50px">
@@ -640,6 +601,22 @@ function getSelect($segment, $dbName = null) {
               <th class="text-md-center pricing_value">Price</th>
             </tr>
             </thead>
+          </table>
+
+          <table id="cabinet_list" style="width:100%;">
+            <colgroup>
+              <col width="40px">
+              <col width="40px">
+              <col width="50px">
+              <col width="150px">
+              <col width="350px">
+              <col width="50px">
+              <col width="50px">
+              <col width="50px">
+              <col width="50px">
+              <col width="50px">
+            </colgroup>
+
             <tbody>
             <!-- Define a row template for all invariant markup: -->
             <tr>
@@ -679,6 +656,7 @@ function getSelect($segment, $dbName = null) {
       </div>
       <!--</editor-fold>-->
 
+      <!--<editor-fold desc="Summary of Charges">-->
       <div class="row pricing_value">
         <div class="col-sm-4 col-sm-offset-8 summary_of_charges">
           <div class="left_header"><h5>Summary of Charges:</h5></div>
@@ -738,12 +716,13 @@ function getSelect($segment, $dbName = null) {
           <div class="clearfix"></div>
         </div>
       </div>
+      <!--</editor-fold>-->
 
       <div class="no-print" style="height:100px;">&nbsp;</div>
     </div>
 
     <!--<editor-fold desc="Notes/Accounting">-->
-    <div class="col-md-2 sticky no-print" style="top:122px;">
+    <div class="col-md-2 sticky no-print" style="top:38px;">
       <form id="accounting_notes" action="#">
         <div class="row">
           <div class="col-md-12">
@@ -771,7 +750,7 @@ function getSelect($segment, $dbName = null) {
             <div class="tab-content" id="roomNotesContent">
               <div role="tabpanel" class="tab-pane fade in active show" id="room" aria-labelledby="room-tab">
                 <!--<editor-fold desc="Room Notes">-->
-                <textarea class="form-control" name="room_notes" id="room_notes" placeholder="Notes" style="width:100%;height:277px;"></textarea>
+                <textarea class="form-control" name="room_notes" id="room_notes" placeholder="Notes" style="width:100%;height:15vh;"></textarea>
 
                 <?php if(!empty($_SESSION['userInfo'])) { ?>
                   <input type="text" name="room_inquiry_followup_date" id="room_inquiry_followup_date" class="form-control" placeholder="Followup On" style="width:30%;float:left;">
@@ -1362,7 +1341,7 @@ function getSelect($segment, $dbName = null) {
       },
       init: function() {
         setTimeout(function() {
-          cabinetList.floatThead({ top: 151 });
+          cabinetList.floatThead({ top: 67 });
         }, 500);
 
         if(getUrlParams('hidePrice') === 'true') {

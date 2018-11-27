@@ -5,7 +5,7 @@
   border: 1px solid #CCC;
   border-radius: 5px;
   @extend .no-select; // implements no text selection on the entire navigation menu
-  height: 82vh;
+  height: 66vh;
   overflow-y: auto;
   background-color: #F0F0F0;
 
@@ -120,6 +120,12 @@
 
   #company_info {
     display: none;
+  }
+
+  .pricing-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 70vh;
   }
 }
 
@@ -256,7 +262,7 @@
   background-color: #d8d8d8;
   padding: 4px;
   border-radius: .25rem;
-  height: 39vh;
+  height: 35.7vh;
   overflow-y: auto;
   width: 100%;
 }
@@ -303,7 +309,7 @@ h5 {
 .item_list_header {
   background-color: #FFF;
   width: calc(100% + 1px);
-  top: 122px;
+  top: 38px;
   margin-left: -1px;
   padding-bottom: 2px;
 
@@ -389,21 +395,3 @@ h5 {
   color: #FFF;
 }
 
-.pricing_dropdown {
-  background-color: transparent;
-  border: none;
-  font-weight: bold;
-  width: 100%;
-  outline: none;
-  margin-left: -4px;
-
-  optgroup {
-    background-color: #000;
-    color: #FFF;
-  }
-
-  option {
-    background-color: #FFF;
-    color: #000;
-  }
-}

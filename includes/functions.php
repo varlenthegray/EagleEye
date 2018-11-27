@@ -269,6 +269,47 @@ function displayFinishOpts($segment, $db_col = null, $id = null) {
   echo "</div><input type='hidden' value='$selected' id='$dblookup' name='$dblookup' /><div class='clearfix'></div></div>";*/
 }
 
+// replaces displayVINOpts and displayFinishOpts
+function getSelect($segment, $dbName = null) {
+  global $vin_schema;
+  global $room;
+
+  $room_val = !empty($dbName) ? $dbName : $segment;
+
+  $nsy = empty($room[$room_val]) ? 'selected' : null;
+
+  $option = "<optgroup label='Empty'><option value='' $nsy disabled>Not Selected Yet</option>";
+  $prev_group = null;
+  $addl_html = null;
+
+  foreach($vin_schema[$segment] AS $element) {
+    if((bool)$element['visible']) {
+      if($prev_group !== $element['group']) {
+        $option .= "</optgroup><optgroup label='{$element['group']}'>";
+        $prev_group = $element['group'];
+      }
+
+      $selected = $room[$room_val] === $element['key'] ? 'selected' : null;
+
+      $val = strip_tags($element['value']);
+
+      $option .= "<option value='{$element['key']}' $selected>$val</option>";
+
+      $addl_html[$element['key']] = $element['addl_html'];
+    }
+  }
+
+  $html_addl_out = null;
+
+  foreach($addl_html AS $key => $html) {
+    if(!empty($html)) {
+      $html_addl_out .= "<div class='addl_select_html'>$html</div>";
+    }
+  }
+
+  return "<select name='$room_val' id='$room_val' class='c_dropdown'>$option</select> $html_addl_out";
+}
+
 function translateVIN($segment, $key, $db_col = null) {
   global $dbconn;
   global $info;

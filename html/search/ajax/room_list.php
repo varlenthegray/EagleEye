@@ -35,7 +35,7 @@ while($op = $op_qry->fetch_assoc()) {
 $prev_room = null;
 $prev_sequence = null;
 
-if($room_qry = $dbconn->query("SELECT id, room, iteration, product_type, order_status, days_to_ship, room_name, sales_bracket, sales_published,
+if($room_qry = $dbconn->query("SELECT id, so_parent, room, iteration, product_type, order_status, days_to_ship, room_name, sales_bracket, sales_published,
       sample_bracket, preproduction_bracket, preproduction_published, doordrawer_bracket, doordrawer_published, main_bracket, main_published, custom_bracket, 
       custom_published, shipping_bracket, shipping_published, install_bracket_published, install_bracket, pick_materials_bracket, pick_materials_published, 
       edgebanding_bracket, edgebanding_published
@@ -44,12 +44,12 @@ if($room_qry = $dbconn->query("SELECT id, room, iteration, product_type, order_s
     $iteration = number_format($room['iteration'], 2);
 
     //<editor-fold desc="Button Definitions">
-    $edit_btn = "<button class=\"btn waves-effect btn-primary edit_room\" id=\"{$room['id']}\" data-sonum=\"{$so['so_num']}\"><i class=\"zmdi zmdi-edit\"></i></button>";
+    $edit_btn = "<button class=\"btn waves-effect btn-primary edit_room\" id=\"{$room['id']}\" data-sonum=\"{$room['so_parent']}\"><i class=\"zmdi zmdi-edit\"></i></button>";
     $attachment_btn = "<button class=\"btn waves-effect btn_secondary disabled\" id=\"show_attachments_room_{$room['id']}\"><i class=\"zmdi zmdi-attachment-alt\"></i></button>";
-    $sequence_btn = "<button class=\"btn btn-primary-outline waves-effect add_iteration\" data-roomid=\"{$room['id']}\" data-sonum=\"{$so['so_num']}\" data-addto=\"sequence\" data-iteration=\"{$room['iteration']}\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"\" data-original-title=\"Add additional sequence\" style=\"font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:visible;\"> S +1</button>";
-    $sequence_btn_hidden = "<button class=\"btn btn-primary-outline waves-effect add_iteration\" data-roomid=\"{$room['id']}\" data-sonum=\"{$so['so_num']}\" data-addto=\"sequence\" data-iteration=\"{$room['iteration']}\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"\" data-original-title=\"Add additional sequence\" style=\"font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:hidden;\"> S +1</button>";
-    $iteration_btn = "<button class=\"btn btn-primary-outline waves-effect add_iteration\" data-roomid=\"{$room['id']}\" data-sonum=\"{$so['so_num']}\" data-addto=\"iteration\" data-iteration=\"{$room['iteration']}\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"\" data-original-title=\"Add additional iteration\" style=\"font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:visible;\"> I +.01</button>";
-    $iteration_btn_hidden = "<button class=\"btn btn-primary-outline waves-effect add_iteration\" data-roomid=\"{$room['id']}\" data-sonum=\"{$so['so_num']}\" data-addto=\"iteration\" data-iteration=\"{$room['iteration']}\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"\" data-original-title=\"Add additional iteration\" style=\"font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:hidden;\"> I +.01</button>";
+    $sequence_btn = "<button class=\"btn btn-primary-outline waves-effect add_iteration\" data-roomid=\"{$room['id']}\" data-sonum=\"{$room['so_parent']}\" data-addto=\"sequence\" data-iteration=\"{$room['iteration']}\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"\" data-original-title=\"Add additional sequence\" style=\"font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:visible;\"> S +1</button>";
+    $sequence_btn_hidden = "<button class=\"btn btn-primary-outline waves-effect add_iteration\" data-roomid=\"{$room['id']}\" data-sonum=\"{$room['so_parent']}\" data-addto=\"sequence\" data-iteration=\"{$room['iteration']}\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"\" data-original-title=\"Add additional sequence\" style=\"font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:hidden;\"> S +1</button>";
+    $iteration_btn = "<button class=\"btn btn-primary-outline waves-effect add_iteration\" data-roomid=\"{$room['id']}\" data-sonum=\"{$room['so_parent']}\" data-addto=\"iteration\" data-iteration=\"{$room['iteration']}\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"\" data-original-title=\"Add additional iteration\" style=\"font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:visible;\"> I +.01</button>";
+    $iteration_btn_hidden = "<button class=\"btn btn-primary-outline waves-effect add_iteration\" data-roomid=\"{$room['id']}\" data-sonum=\"{$room['so_parent']}\" data-addto=\"iteration\" data-iteration=\"{$room['iteration']}\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"\" data-original-title=\"Add additional iteration\" style=\"font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:hidden;\"> I +.01</button>";
     //</editor-fold>
 
     //<editor-fold desc="Room details">

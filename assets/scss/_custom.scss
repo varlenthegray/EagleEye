@@ -1102,3 +1102,22 @@ h5 {
   height: 39vh;
   overflow-y: auto;
 }
+
+.c_dropdown {
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  width: 100%;
+  outline: none;
+  margin-left: -4px;
+
+  optgroup {
+    background-color: #000;
+    color: #FFF;
+  }
+
+  option {
+    background-color: #FFF;
+    color: #000;
+  }
+}
