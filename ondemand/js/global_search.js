@@ -88,6 +88,10 @@ $("body")
   })
 
   .on("click", "#edit_so", function(e) {
+    $(this).find('i').removeClass('zmdi zmdi-edit').addClass('fa fa-spin fa-spinner');
+
+    let thisClick = this;
+
     active_so_num = $(this).attr('data-sonum');
 
     let container = $(this).parents().eq(3).find('.edit_so');
@@ -97,11 +101,14 @@ $("body")
     checkTransition(function() {
       if(container.is(":visible")) {
         container.html('').hide();
+        $(thisClick).find('i').removeClass('fa fa-spin fa-spinner').addClass('zmdi zmdi-edit');
       } else {
         $(".edit_so").html('').hide();
 
         $.get('/html/search/ajax/edit_so.php', {so_num: active_so_num}, function(data) {
           container.html(data).show();
+        }).done(function() {
+          $(thisClick).find('i').removeClass('fa fa-spin fa-spinner').addClass('zmdi zmdi-edit');
         });
       }
     });
@@ -119,6 +126,10 @@ $("body")
     });
   })
   .on("click", ".edit_room", function(e) {
+    $(this).find('i').removeClass('zmdi zmdi-edit').addClass('fa fa-spin fa-spinner');
+
+    let thisClick = this;
+
     active_room_id = $(this).attr("id");
     active_so_num = $(this).attr("data-sonum");
 
@@ -134,6 +145,8 @@ $("body")
         // This row is already open - close it
         row.child('').hide();
         tr.removeClass('shown');
+
+        $(thisClick).find('i').removeClass('fa fa-spin fa-spinner').addClass('zmdi zmdi-edit');
       } else {
         // collapses all rows
         roomSearchTable.rows().every(function() {
@@ -149,6 +162,8 @@ $("body")
         $.get("/html/pricing/index.php", {room_id: active_room_id}, function(data) {
           row.child(data, 'no-row-hover').show();
           tr.addClass('shown');
+        }).done(function() {
+          $(thisClick).find('i').removeClass('fa fa-spin fa-spinner').addClass('zmdi zmdi-edit');
         });
       }
     });
