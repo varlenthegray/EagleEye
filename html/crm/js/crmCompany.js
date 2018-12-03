@@ -22,7 +22,7 @@ var crmCompany = {
           { "data": "created"}
         ],
         "pageLength": 25,
-        "createdRow": function(row,data,dataIndex) {
+        "createdRow": function(row,data) {
           $(row).addClass("cursor-hand get-company").attr("data-id", data.id);
         }
       });

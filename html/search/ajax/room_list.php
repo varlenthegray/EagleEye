@@ -11,14 +11,8 @@ $strip = (bool)$_REQUEST['strip']; // if we're trying to view in a browser with 
 
 //outputPHPErrs();
 
-$vin_schema = array();
-
 // obtain the VIN database table and commit to memory for this query (MAJOR reduction in DB query count)
-$vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY FIELD(`value`, 'Custom/Other', 'TBD', 'N/A', 'Completed', 'Job', 'Quote', 'Lost') DESC, segment, `key` ASC");
-
-while($vin = $vin_qry->fetch_assoc()) {
-  $vin_schema[$vin['segment']][$vin['key']] = $vin['value'];
-}
+$vin_schema = getVINSchema();
 
 $soID = sanitizeInput($_REQUEST['so_id']); // get the SO ID
 $output = []; // final output

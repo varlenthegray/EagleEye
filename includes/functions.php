@@ -307,7 +307,7 @@ function getSelect($segment, $dbName = null) {
     }
   }
 
-  return "<select name='$room_val' id='$room_val' class='c_dropdown'>$option</select> $html_addl_out";
+  return "<select name='$room_val' id='$room_val' class='c_input' style='border:none;margin-left:-4px;font-weight:bold;'>$option</select> $html_addl_out";
 }
 
 function translateVIN($segment, $key, $db_col = null) {
@@ -398,4 +398,82 @@ function calcShipZone($dealer_zip) {
   }
 
   return $out;
+}
+
+function getVINSchema() {
+  global $dbconn;
+
+  $vin_schema = [];
+
+  $vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
+  FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC, FIELD(`key`, 'B78') DESC");
+
+  while($vin = $vin_qry->fetch_assoc()) {
+    $vin_schema[$vin['segment']][] = $vin;
+  }
+
+  return $vin_schema;
+}
+
+function getStateOpts($selState) {
+  $state = array(
+    'AL' => '', 'AK' => '', 'AZ' => '', 'AR' => '', 'CA' => '', 'CO' => '', 'CT' => '', 'DE' => '', 'DC' => '', 'FL' => '', 'GA' => '', 'HI' => '', 'ID' => '', 
+    'IL' => '', 'IN' => '', 'IA' => '', 'KS' => '', 'KY' => '', 'LA' => '', 'ME' => '', 'MD' => '', 'MA' => '', 'MI' => '', 'MN' => '', 'MS' => '', 'MO' => '', 
+    'MT' => '', 'NE' => '', 'NV' => '', 'NH' => '', 'NJ' => '', 'NM' => '', 'NY' => '', 'NC' => '', 'ND' => '', 'OH' => '', 'OK' => '', 'OR' => '', 'PA' => '', 
+    'RI' => '', 'SC' => '', 'SD' => '', 'TN' => '', 'TX' => '', 'UT' => '', 'VT' => '', 'VA' => '', 'WA' => '', 'WV' => '', 'WI' => '', 'WY' => '');
+  
+  $state[$selState] = 'selected';
+
+  return "
+  <option value='AL' {$state['AL']}>Alabama</option>
+  <option value='AK' {$state['AK']}>Alaska</option>
+  <option value='AZ' {$state['AZ']}>Arizona</option>
+  <option value='AR' {$state['AR']}>Arkansas</option>
+  <option value='CA' {$state['CA']}>California</option>
+  <option value='CO' {$state['CO']}>Colorado</option>
+  <option value='CT' {$state['CT']}>Connecticut</option>
+  <option value='DE' {$state['DE']}>Delaware</option>
+  <option value='DC' {$state['DC']}>District Of Columbia</option>
+  <option value='FL' {$state['FL']}>Florida</option>
+  <option value='GA' {$state['GA']}>Georgia</option>
+  <option value='HI' {$state['HI']}>Hawaii</option>
+  <option value='ID' {$state['ID']}>Idaho</option>
+  <option value='IL' {$state['IL']}>Illinois</option>
+  <option value='IN' {$state['IN']}>Indiana</option>
+  <option value='IA' {$state['IA']}>Iowa</option>
+  <option value='KS' {$state['KS']}>Kansas</option>
+  <option value='KY' {$state['KY']}>Kentucky</option>
+  <option value='LA' {$state['LA']}>Louisiana</option>
+  <option value='ME' {$state['ME']}>Maine</option>
+  <option value='MD' {$state['MD']}>Maryland</option>
+  <option value='MA' {$state['MA']}>Massachusetts</option>
+  <option value='MI' {$state['MI']}>Michigan</option>
+  <option value='MN' {$state['MN']}>Minnesota</option>
+  <option value='MS' {$state['MS']}>Mississippi</option>
+  <option value='MO' {$state['MO']}>Missouri</option>
+  <option value='MT' {$state['MT']}>Montana</option>
+  <option value='NE' {$state['NE']}>Nebraska</option>
+  <option value='NV' {$state['NV']}>Nevada</option>
+  <option value='NH' {$state['NH']}>New Hampshire</option>
+  <option value='NJ' {$state['NJ']}>New Jersey</option>
+  <option value='NM' {$state['NM']}>New Mexico</option>
+  <option value='NY' {$state['NY']}>New York</option>
+  <option value='NC' {$state['NC']}>North Carolina</option>
+  <option value='ND' {$state['ND']}>North Dakota</option>
+  <option value='OH' {$state['OH']}>Ohio</option>
+  <option value='OK' {$state['OK']}>Oklahoma</option>
+  <option value='OR' {$state['OR']}>Oregon</option>
+  <option value='PA' {$state['PA']}>Pennsylvania</option>
+  <option value='RI' {$state['RI']}>Rhode Island</option>
+  <option value='SC' {$state['SC']}>South Carolina</option>
+  <option value='SD' {$state['SD']}>South Dakota</option>
+  <option value='TN' {$state['TN']}>Tennessee</option>
+  <option value='TX' {$state['TX']}>Texas</option>
+  <option value='UT' {$state['UT']}>Utah</option>
+  <option value='VT' {$state['VT']}>Vermont</option>
+  <option value='VA' {$state['VA']}>Virginia</option>
+  <option value='WA' {$state['WA']}>Washington</option>
+  <option value='WV' {$state['WV']}>West Virginia</option>
+  <option value='WI' {$state['WI']}>Wisconsin</option>
+  <option value='WY' {$state['WY']}>Wyoming</option>";
 }

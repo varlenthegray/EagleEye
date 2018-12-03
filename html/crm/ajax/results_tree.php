@@ -3,7 +3,9 @@ require '../../../includes/header_start.php';
 
 //outputPHPErrs();
 
-$qry = $dbconn->query('SELECT
+$find = sanitizeInput($_REQUEST['search']);
+
+$qry = $dbconn->query("SELECT
     so.id AS soID,
     r.id as rID,
     d.id as dID,
@@ -18,7 +20,10 @@ $qry = $dbconn->query('SELECT
   FROM sales_order so
     LEFT JOIN rooms r ON so.so_num = r.so_parent
     LEFT JOIN dealers d ON so.dealer_code = d.dealer_id
-  ORDER BY d.dealer_name, so.so_num, r.room, r.iteration ASC;');
+  WHERE (so.so_num LIKE '%$find%' OR LOWER(so.dealer_code) LIKE LOWER('%$find%') OR LOWER(so.project_name) LIKE LOWER('%$find%') 
+    OR LOWER(so.project_mgr) LIKE LOWER('%$find%') OR LOWER(so.name_1) LIKE LOWER('%$find%') OR LOWER(so.name_2) LIKE LOWER('%$find%') 
+    OR LOWER(d.dealer_name) LIKE LOWER('%$find%'))
+  ORDER BY d.dealer_name, so.so_num, r.room, r.iteration ASC;");
 
 $result = [];
 $output = [];
@@ -142,6 +147,6 @@ foreach($result AS $ans) {
 //echo json_encode($result);
 echo json_encode($output);
 
-$file = fopen('cached_result_tree.json', 'wb');
+/*$file = fopen('cached_result_tree.json', 'wb');
 fwrite($file, json_encode($output));
-fclose($file);
+fclose($file);*/

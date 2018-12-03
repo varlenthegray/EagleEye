@@ -5,23 +5,7 @@ require '../../includes/header_start.php';
 
 $room_id = sanitizeInput($_REQUEST['room_id']);
 
-$vin_qry = $dbconn->query("SELECT * FROM vin_schema 
-ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
- FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC,
- FIELD(`key`, 'B78') DESC");
-
-while($vin = $vin_qry->fetch_assoc()) {
-  $vin_schema[$vin['segment']][] = $vin;
-}
-
-$info_qry = $dbconn->query("SELECT rooms.*, sales_order.*, rooms.order_status AS rOrderStatus FROM rooms LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num WHERE rooms.id = '$room_id'");
-$info = $info_qry->fetch_assoc();
-
-$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$info['dealer_code']}'");
-$dealer_info = $dealer_qry->fetch_assoc();
-
-$sheen_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' AND `key` = '{$info['sheen']}'");
-$sheen = $sheen_qry->fetch_assoc();
+$vin_schema = getVINSchema();
 
 $note_arr = array();
 
@@ -43,10 +27,10 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id ORDER BY room, iteration ASC;");
 $room = $room_qry->fetch_assoc();
 
-$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
-$result = $result_qry->fetch_assoc();
+$so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
+$so = $so_qry->fetch_assoc();
 
-$dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$result['dealer_code']}'");
+$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$so['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();
 
 // This section refers to the submit buttons and disabling of them
@@ -98,7 +82,7 @@ if($pg_qry->num_rows > 0) {
   <?php echo $submit_disabled !== null ? 'var already_submitted = true;' : 'var already_submitted = false;'; ?>
 </script>
 
-<div class="container-fluid pricing-container" style="width:100%;">
+<div class="container-fluid" style="width:100%;">
   <div class="row sticky no-print" style="background-color:#FFF;z-index:2;top:0;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
@@ -126,7 +110,7 @@ if($pg_qry->num_rows > 0) {
       <button class="btn waves-effect btn-secondary" style="display:none;" title="Override Production Lock" id="production_lock"><i class="fa fa-lock fa-2x"></i></button>
     </div>
 
-    <div class="col-md-6 text-md-right"><h4 style="margin:0;padding:0;"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']} $submitted"; ?></h4></div>
+    <div class="col-md-6 text-md-right"><h4 style="margin:0;padding:0;"><?php echo "{$room['so_parent']}{$room['room']}-{$room['iteration']} $submitted"; ?></h4></div>
   </div>
 
   <div class="row">
@@ -134,7 +118,7 @@ if($pg_qry->num_rows > 0) {
       <div class="sticky nav_filter">
         <div class="form-group">
           <label for="left_menu_options">Action:</label>
-          <select id="left_menu_options" class="c_dropdown ignoreSaveAlert" style="margin:5px 0;">
+          <select id="left_menu_options" class="c_input ignoreSaveAlert" style="margin:5px 0;">
             <option value="catalog">Catalog</option>
             <option value="samples">Samples</option>
           </select>
@@ -163,11 +147,11 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <td width="25%">Dealer:</td>
-                <td class="text-bold"><?php echo "{$dealer_info['dealer_id']}_{$dealer_info['dealer_name']} - {$dealer_info['contact']}"; ?></td>
+                <td class="text-bold"><?php echo "{$dealer['dealer_id']}_{$dealer['dealer_name']} - {$dealer['contact']}"; ?></td>
               </tr>
               <tr>
                 <td>Project Name:</td>
-                <td class="text-bold"><strong><?php echo $result['project_name']; ?></strong></td>
+                <td class="text-bold"><strong><?php echo $so['project_name']; ?></strong></td>
               </tr>
               <tr>
                 <td>Dealer PO:</td>
@@ -175,7 +159,7 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <td>SO:</td>
-                <td class="text-bold"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></td>
+                <td class="text-bold"><?php echo "{$room['so_parent']}{$room['room']}-{$room['iteration']}"; ?></td>
               </tr>
             </table>
           </div>
@@ -223,7 +207,7 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <td>Billing Type:</td>
-                <td colspan="2"><strong><?php echo $dealer_info['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
+                <td colspan="2"><strong><?php echo $dealer['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
               </tr>
               <tr>
                 <td>Order Type:</td>
@@ -262,9 +246,9 @@ if($pg_qry->num_rows > 0) {
               <tr rowspan="3">
                 <td style="vertical-align:top !important;">Ship To:</td>
                 <td colspan="2">
-                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Name" name="ship_to_name" value="<?php echo $info['ship_name']; ?>"><br />
-                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $info['project_addr']; ?>"><br />
-                  <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Name" name="ship_to_name" value="<?php echo $room['ship_name']; ?>"><br />
+                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $room['project_addr']; ?>"><br />
+                  <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $room['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $room['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $room['project_zip']; ?>">
                 </td>
               </tr>
               <tr>
@@ -273,13 +257,13 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <?php
-                $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip'];
+                $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $dealer['shipping_zip'];
                 $ship_zone_info = calcShipZone($shipZone);
 
-                if($info['ship_cost'] === null) {
+                if($room['ship_cost'] === null) {
                   $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $ship_zone_info['cost'];
                 } else {
-                  $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $info['ship_cost'];
+                  $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $room['ship_cost'];
                 }
 
                 setlocale(LC_MONETARY, 'en_US');
@@ -877,7 +861,7 @@ if($pg_qry->num_rows > 0) {
                           $where = null;
                         }
 
-                        $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$result['id']}' $where ORDER BY notes.timestamp DESC;");
+                        $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$so['id']}' $where ORDER BY notes.timestamp DESC;");
 
                         while ($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
                           $inquiry_replies = null;
@@ -940,7 +924,6 @@ if($pg_qry->num_rows > 0) {
     <!--</editor-fold>-->
   </div>
 </div>
-
 
 <div class='info-popup'></div>
 
@@ -1076,7 +1059,7 @@ if($pg_qry->num_rows > 0) {
 
 <!-- modal -->
 <div id="modalGeneral" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGeneralLabel" aria-hidden="true">
-      <!-- AJAX Loaded based on button press -->
+  <!-- AJAX Loaded based on button press -->
 </div><!-- /.modal -->
 
 <form id="room_attachments">
@@ -1111,36 +1094,15 @@ if($pg_qry->num_rows > 0) {
 <iframe id="dlORDfile" src="" style="display:none;visibility:hidden;"></iframe>
 
 <script>
-  function getUrlParams(prop) {
-    var params = {};
-    var search = decodeURIComponent( window.location.href.slice( window.location.href.indexOf('?') + 1));
-    var definitions = search.split('&');
-
-    definitions.forEach(function(val, key) {
-      var parts = val.split('=', 2);
-      params[parts[0]] = parts[1];
-    } );
-
-    return (prop && prop in params) ? params[prop] : params;
-  }
-
-  function catalogCanEdit() {
-    if(editCatalog.hasClass("fa-unlock")) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   <?php
   echo "active_room_id = $room_id;";
   echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
 
-  $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip'];
+  $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $dealer['shipping_zip'];
   $ship_zone_info = calcShipZone($shipZone);
   $shipInfo = json_encode($ship_zone_info, true);
 
-  echo "var calcShipZip = '{$info['ship_zip']}';";
+  echo "var calcShipZip = '{$room['ship_zip']}';";
   echo "var calcDealerShipZip = '{$dealer['shipping_zip']}';";
   echo "var calcShipInfo = '$shipInfo';";
   ?>
@@ -1161,9 +1123,9 @@ if($pg_qry->num_rows > 0) {
       $("#production_lock").show();
     }
 
-    checkDropdown();
+    globalFunctions.checkDropdown();
 
-    if(getUrlParams('hidePrice') === 'true') {
+    if(globalFunctions.getURLParams('hidePrice') === 'true') {
       $("#pageTitle").prepend('Shop ');
     }
 
@@ -1177,7 +1139,7 @@ if($pg_qry->num_rows > 0) {
       let finsampleheight = 0;
 
 
-      if(getUrlParams('print') === 'true') {
+      if(globalFunctions.getURLParams('print') === 'true') {
         delheight = tx_delnotes.prop('scrollHeight') - 48;
         designheight = tx_design.prop('scrollHeight') - 48;
         finsampleheight = tx_fin_sample.prop('scrollHeight') - 48;
@@ -1337,14 +1299,14 @@ if($pg_qry->num_rows > 0) {
         $("#gt_amt").text()
       },
       modifyChild: function(event, data) {
-        recalcSummary();
+        pricingFunction.recalcSummary();
       },
       init: function() {
         setTimeout(function() {
           cabinetList.floatThead({ top: 67 });
         }, 500);
 
-        if(getUrlParams('hidePrice') === 'true') {
+        if(globalFunctions.getURLParams('hidePrice') === 'true') {
           $(".pricing_value").hide();
         }
       }
@@ -1533,7 +1495,7 @@ if($pg_qry->num_rows > 0) {
           /** This function MUST be defined to enable dragging for the tree.
            *  Return false to cancel dragging of node.
            */
-          return catalogCanEdit();
+          return pricingFunction.catalogCanEdit(editCatalog);
         },
         dragEnter: function(node, data) {
           /** data.otherNode may be null for non-fancytree droppables.
@@ -1823,7 +1785,7 @@ if($pg_qry->num_rows > 0) {
           }
         });
 
-        return catalogCanEdit();
+        return pricingFunction.catalogCanEdit(editCatalog);
       },
       select: function(event, ui) {
         var that = this;
@@ -1910,12 +1872,12 @@ if($pg_qry->num_rows > 0) {
 
       itemModifications.fancytree("getTree").reload(modificationTree);
     });
-    
+
     $(".room_note_log").hide();
 
     <?php echo !empty($room['custom_vin_info']) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}');": null; ?>
 
-    productTypeSwitch();
+    pricingFunction.productTypeSwitch();
 
     <?php if (!empty($room['custom_vin_info'])) { ?>
     $.each(customFieldInfo, function(mainID, value) {
@@ -1927,7 +1889,7 @@ if($pg_qry->num_rows > 0) {
 
     // Calculate totals and summary
     setTimeout(function() {
-      recalcSummary();
+      pricingFunction.recalcSummary();
 
       // automatically expand all sub-lines
       cabinetList.fancytree("getTree").visit(function(node){
@@ -1943,7 +1905,7 @@ if($pg_qry->num_rows > 0) {
       ship_info.next("tr").next("tr").hide();
     }
 
-    if(getUrlParams('print') === 'true') {
+    if(globalFunctions.getURLParams('print') === 'true') {
       setTimeout(function() {
         window.print();
         window.close();

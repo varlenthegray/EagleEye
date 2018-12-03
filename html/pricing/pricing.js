@@ -1,432 +1,527 @@
+/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*/
+
 jQuery.expr.filters.offscreen = function(el) {
   var rect = el.getBoundingClientRect();
-  return (
-    (rect.x + rect.width) < 0
-    || (rect.y + rect.height) < 0
-    || (rect.x > window.innerWidth || rect.y > window.innerHeight)
-  );
+  return ((rect.x + rect.width) < 0 || (rect.y + rect.height) < 0 || (rect.x > window.innerWidth || rect.y > window.innerHeight));
 };
 
-function delNoData() {
-  let getNegNode = cabinetList.fancytree("getTree").getNodeByKey('-1');
+var pricingFunction = {
+  productTypeSwitch: function() {
+    function setPcts(obj) {
+      let gPct = 2;
+      let yPct = 2;
+      let nPct = 2;
+      let rPct = 2;
 
-  if(getNegNode !== null) {
-    cabinetList.fancytree("getTree").getNodeByKey('-1').remove();
-  }
-}
-
-function recalcSummary() {
-  let global_room_charges = 0.00; // global room charges
-  let global_cab_charges = 0.00; // global cabinet charges total
-  let line_total = 0.00; // total of the item list
-  let cabinet_only_total = 0.00; // cabinet only total
-  let cabinet_only_skus = ''; // a list (for transparency report) of cabinets only
-  let non_cabinet_total = 0.00; // non-cabinet total (for transparency report)
-  let non_cabinet_skus = ''; // non-cabinet SKU's (for transparency report)
-  let shipVia = $("#ship_via").val(); // shipping method
-
-  //******************************************************************
-  // parse per line
-  cabinetList.fancytree("getTree").visit(function(line) {
-    let qty = parseInt(line.data.qty);
-    let price = parseFloat(line.data.price);
-    let $tdList = $(line.tr).find(">td");
-
-    // if there is an additional markup (% right now) defined in the system for this line
-    if(line.data.addlMarkup !== undefined && line.data.addlMarkup !== '' && line.data.addlMarkup !== null) {
-      let addlMarkup = JSON.parse(line.data.addlMarkup); // grab the information into JSON value
-
-      // for the species and markups available, grab each of them
-      $.each(addlMarkup, function(i, v) {
-        // this is going to be the main focus of what drives the markup, i.e. species_grade
-        let curVal = $("#" + i).val();
-
-        // for every definition such as Cherry, Hickory, Black Walnut, etc, get the key and percent
-        $.each(v, function(key, pct) {
-          // if the key is the current value that we're working with (species
-          if(key === curVal) {
-            // take the percent (in float, to ensure no NaN) and multiply it by the price (note, this is the price before quantity but after square foot)
-            price = parseFloat(pct) * price;
-          }
-        });
-      });
-    }
-
-    let lineTotal = 0.00;
-
-    // now update the last column (total) with the final price for that line item
-    if($("#product_type").val() === 'W') {
-      $tdList.eq(9).text('$0.00');
-    } else {
-      if(line.data.customPrice === 1) {
-
-        let cPrice = parseFloat(price.toString().replace('$', ''));
-
-        lineTotal = cPrice;
-
-        $tdList.eq(9).find("input").val(cPrice.formatMoney());
+      if(obj.green.unavailable !== true) {
+        $(".dts_pct_g").html("[" + obj.green.ship_days + " Days] (" + (obj.green.pct * 100) + "%)");
+        gPct = obj.green.pct;
       } else {
-        // set the line total equal to the quantity * price
-        lineTotal = qty * price;
+        $(".dts_pct_g").html("[Not Available]");
+      }
 
-        $tdList.eq(9).text(lineTotal.formatMoney());
+      if(obj.yellow.unavailable !== true) {
+        $(".dts_pct_y").html("[" + obj.yellow.ship_days + " Days] (" + (obj.yellow.pct * 100) + "%)");
+        yPct = obj.yellow.pct;
+      } else {
+        $(".dts_pct_y").html("[Not Available]");
+      }
+
+      if(obj.orange.unavailable !== true) {
+        $(".dts_pct_n").html("[" + obj.orange.ship_days + " Days] (" + (obj.orange.pct * 100) + "%)");
+        nPct = obj.orange.pct;
+      } else {
+        $(".dts_pct_n").html("[Not Available]");
+      }
+
+      if(obj.red.unavailable !== true) {
+        $(".dts_pct_r").html("[" + obj.red.ship_days + " Days] (" + (obj.red.pct * 100) + "%)");
+        rPct = obj.red.pct;
+      } else {
+        $(".dts_pct_r").html("[Not Available]");
+      }
+
+      let dts_id = $("#days_to_ship");
+
+      switch($("#product_type").val()) {
+        case 'G':
+          dts_id.attr("data-pct", gPct);
+          break;
+        case 'N':
+          dts_id.attr("data-pct", nPct);
+          break;
+        case 'Y':
+          dts_id.attr("data-pct", yPct);
+          break;
+        case 'R':
+          dts_id.attr("data-pct", rPct);
+          break;
       }
     }
 
-    // if the line item is a cabinet only (excludes tops, accessories, fillers, moldings) then we're adding that to a cabinet only price (inset specific pricing)
-    if(line.data.cabinet === '1') {
-      // our cabinet only total goes up
-      cabinet_only_total += parseFloat(lineTotal);
+    switch($("#product_type").val()) {
+      case 'C':
+        setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'ship_days': 19, 'pct': 0.25}, 'orange': {'ship_days': 13, 'pct': 0.5}, 'red': {'unavailable': true}});
+        break;
 
-      // add the SKU to the total cabinet only running list
-      cabinet_only_skus += line.title + ", ";
-    } else {
-      // our non-cabinet total goes up (transparency report)
-      non_cabinet_total += parseFloat(lineTotal);
+      case 'L':
+        setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'ship_days': 19, 'pct': 0.25}, 'orange': {'ship_days': 13, 'pct': 0.5}, 'red': {'ship_days': 6, 'pct': 0.5}});
+        break;
 
-      //add the SKU to the non-cabinet total running list
-      non_cabinet_skus += line.title + ", ";
+      case 'P':
+        setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'ship_days': 19, 'pct': 0.25}, 'orange': {'ship_days': 13, 'pct': 0.5}, 'red': {'ship_days': 6, 'pct': 0.5}});
+        break;
+
+      case 'S':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'ship_days': 6, 'pct': 0}});
+        break;
+
+      case 'D':
+        setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'unavailable': true}, 'orange': {'unavailable': true}, 'red': {'unavailable': true}});
+        break;
+
+      case 'A':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'ship_days': 19, 'pct': 0}, 'orange': {'ship_days': 13, 'pct': 0.25}, 'red': {'ship_days': 6, 'pct': 0.25}});
+        break;
+
+      case 'W':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'ship_days': 19, 'pct': 0}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'ship_days': 6, 'pct': 0}});
+        break;
+
+      case 'H':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'unavailable': true}});
+        break;
+
+      case 'N':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'unavailable': true}});
+        break;
+
+      case 'R':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'unavailable': true}, 'red': {'unavailable': true}});
+        break;
     }
+  },
+  delNoData: function() {
+    let getNegNode = cabinetList.fancytree("getTree").getNodeByKey('-1');
 
-    if(line.data.exclude_markup === '1') {
-
+    if(getNegNode !== null) {
+      cabinetList.fancytree("getTree").getNodeByKey('-1').remove();
     }
+  },
+  recalcSummary: function() {
+    let global_room_charges = 0.00; // global room charges
+    let global_cab_charges = 0.00; // global cabinet charges total
+    let line_total = 0.00; // total of the item list
+    let cabinet_only_total = 0.00; // cabinet only total
+    let cabinet_only_skus = ''; // a list (for transparency report) of cabinets only
+    let non_cabinet_total = 0.00; // non-cabinet total (for transparency report)
+    let non_cabinet_skus = ''; // non-cabinet SKU's (for transparency report)
+    let shipVia = $("#ship_via").val(); // shipping method
 
-    // this is the final running total for the system
-    line_total += parseFloat(lineTotal);
-  });
+    //******************************************************************
+    // parse per line
+    cabinetList.fancytree("getTree").visit(function(line) {
+      let qty = parseInt(line.data.qty);
+      let price = parseFloat(line.data.price);
+      let $tdList = $(line.tr).find(">td");
 
-  // remove the excess comma and space from the cabinet SKU list
-  cabinet_only_skus = cabinet_only_skus.slice(0, -2);
+      // if there is an additional markup (% right now) defined in the system for this line
+      if(line.data.addlMarkup !== undefined && line.data.addlMarkup !== '' && line.data.addlMarkup !== null) {
+        let addlMarkup = JSON.parse(line.data.addlMarkup); // grab the information into JSON value
 
-  // remove the excess comma and space from the non-cabinet SKU list
-  non_cabinet_skus = non_cabinet_skus.slice(0, -2);
+        // for the species and markups available, grab each of them
+        $.each(addlMarkup, function(i, v) {
+          // this is going to be the main focus of what drives the markup, i.e. species_grade
+          let curVal = $("#" + i).val();
 
-  // display the total
-  $("#itemListTotal").text(line_total.formatMoney());
-  //******************************************************************
+          // for every definition such as Cherry, Hickory, Black Walnut, etc, get the key and percent
+          $.each(v, function(key, pct) {
+            // if the key is the current value that we're working with (species
+            if(key === curVal) {
+              // take the percent (in float, to ensure no NaN) and multiply it by the price (note, this is the price before quantity but after square foot)
+              price = parseFloat(pct) * price;
+            }
+          });
+        });
+      }
 
-  //******************************************************************
-  // done parsing per line, moving into the global charges for the page
+      let lineTotal = 0.00;
 
-  //// Glaze Technique
-  let gt_pct = $("#gt_pct"), gt_amt = $("#gt_amt");
-  let ggard_pct = $("#ggard_pct"), ggard_amt = $("#ggard_amt");
-  let fcode_pct = $("#fc_pct"), fcode_amt = $("#fc_amt");
-  let sheen_pct = $("#sheen_pct"), sheen_amt = $("#sheen_amt");
-  let gt_markup = 0.00, ggard_markup = 0.00, fcode_markup = 0.00, sheen_markup = 0.00; // glaze technique markup
+      // now update the last column (total) with the final price for that line item
+      if($("#product_type").val() === 'W') {
+        $tdList.eq(9).text('$0.00');
+      } else {
+        if(line.data.customPrice === 1) {
 
-  // grab the glaze technique, determine what the amount to markup is
-  switch($("#glaze_technique").val()) {
-    case 'G2':
-      gt_markup = 0.10; // toss this into the function variable for markup
-      break;
-    case 'G0':
-      gt_amt.text("");
-      break;
-    default:
-      gt_amt.text("ERR");
-      break;
-  }
+          let cPrice = parseFloat(price.toString().replace('$', ''));
 
-  // grab the green gard, determine what the amount to markup is
-  switch($("#green_gard").val()) {
-    case 'G1':
-      ggard_markup = 0.05; // toss this into the function variable for markup
-      break;
-    case 'G0':
-      ggard_amt.text("");
-      break;
-    default:
-      ggard_amt.text("ERR");
-      break;
-  }
+          lineTotal = cPrice;
 
-  // grab the green gard, determine what the amount to markup is
-  switch($("#sheen").val()) {
-    case 'a':
-      sheen_markup = 0.05; // toss this into the function variable for markup
-      break;
-    case 'c':
-      sheen_pct.text("");
-      break;
-    case 'h':
-      sheen_markup = 0.05; // toss this into the function variable for markup
-      break;
-    case 'X':
-      sheen_markup = 0.05; // toss this into the function variable for markup
-      break;
-    default:
-      sheen_amt.text("ERR");
-      break;
-  }
+          $tdList.eq(9).find("input").val(cPrice.formatMoney());
+        } else {
+          // set the line total equal to the quantity * price
+          lineTotal = qty * price;
 
-  if(($("#finish_code").val().indexOf('p') >= 0 ||  $("#finish_code").val() === '1cXXXX') && $("#product_type").val() === 'P') {
-    fcode_markup = 0.10;
-  } else {
-    fcode_markup = 0;
-    fcode_amt.text("");
-  }
-
-  // calculate out the cost of the glaze technique
-  let gt_cost = line_total * gt_markup;
-  let ggard_cost = line_total * ggard_markup;
-  let fcode_cost = line_total * fcode_markup;
-  let sheen_cost = line_total * sheen_markup;
-
-  // Glaze Technique fields
-  gt_amt.text(gt_cost.formatMoney());
-  gt_pct.text((gt_markup * 100).toFixed(2) + "%");
-
-  // Green Gard fields
-  ggard_amt.text(ggard_cost.formatMoney());
-  ggard_pct.text((ggard_markup * 100).toFixed(2) + "%");
-
-  // Finish Code fields
-  fcode_amt.text(fcode_cost.formatMoney());
-  fcode_pct.text((fcode_markup * 100).toFixed(2) + "%");
-
-  // Sheen fields
-  sheen_amt.text(sheen_cost.formatMoney());
-  sheen_pct.text((sheen_markup * 100).toFixed(2) + "%");
-
-  // add the glaze technique to the total amount of global upcharges
-  global_cab_charges += gt_cost;
-  global_cab_charges += ggard_cost;
-  global_cab_charges += fcode_cost;
-  global_cab_charges += sheen_cost;
-
-  let shipPrice = 0;
-
-  // Grab the shipping price IF it's not pickup
-  if(shipVia !== '4') {
-    shipPrice = $("#shipping_cost").attr("data-cost");
-    global_room_charges += parseFloat(shipPrice);
-  }
-
-  //// Global Cabinet Details
-  $("#itemListGlobalCabDetails").text(global_cab_charges.formatMoney());
-
-  //// Subtotal 1
-  let subtotal1 = global_cab_charges + line_total;
-  $("#itemListSubTotal1").text(subtotal1.formatMoney());
-
-  //// Capture the multiplier for use
-  let multiplier = parseFloat($("#itemListMultiplier").text());
-
-  //// Calculate the net price
-  let netPrice = (line_total + global_cab_charges) * multiplier;
-  $("#itemListNET").text(netPrice.formatMoney());
-
-  // Grab the product type, has to be calculated in jquery because this is a flexible price based on the total of the job
-  // THIS PRICE IS NET, MARKUP DOES NOT IMPACT THIS PRICE
-  let productTypeOpt = $("#product_type").val();
-  let productTypeMarkup = 0.00;
-
-  if(productTypeOpt === 'B') { // markup for inset
-    productTypeMarkup = 0.10;
-  }
-
-  // IT IS IMPORTANT THAT WE USE THE CABINET ONLY PRICE HERE! THIS ALLOWS US TO SEGREGATE OUT WOOD TOPS AND FILLERS/PANELS!
-  let productTypeCost = cabinet_only_total * productTypeMarkup;
-  $("#product_type_cost").text(productTypeCost.formatMoney());
-
-  // add the product type cost to the global room charges
-  global_room_charges += productTypeCost;
-
-  //// Display the global room detail charges
-  $("#itemListGlobalRoomDetails").text(global_room_charges.formatMoney());
-
-  let subtotal = netPrice + global_room_charges;
-
-  // TODO: We're not adding credit card here right now, we need to add that in
-
-  //// Update the subtotal
-  $("#finalSubTotal").text(subtotal.formatMoney());
-
-  //// Update the total
-  $("#finalTotal").text(subtotal.formatMoney());
-
-  //// Update the required deposit
-  let deposit = subtotal * .5;
-  $("#finalDeposit").text(deposit.formatMoney());
-  //******************************************************************
-
-  //******************************************************************
-  // Transparency report
-  $("#calcProductType").text('Cabinet Only Total (' + cabinet_only_total + ') * Product Type Markup (' + productTypeMarkup + ')');
-  $("#calcProductTypeTotal").text((cabinet_only_total * productTypeMarkup).formatMoney());
-
-  $("#calcLeadTime").text('Lead Time (Green) * Total [Hardcoded]');
-  $("#calcLeadTimeTotal").text('$0.00 [Hardcoded]');
-
-  $("#calcShipVIA").text('Cycle Truck [Hardcoded]');
-  $("#calcShipVIATotal").text('$0.00 [Hardcoded]');
-
-  let shipMileInfo = JSON.parse(calcShipInfo);
-
-  if(shipVia !== '4') {
-    $("#calcShipZone").html('Mileage (' + shipMileInfo.miles + ') - ' + shipMileInfo.zone + '<br /><br />Calculated based on Shipping Zip entered into Ship To, if that is empty, use Dealer Zip.<br /><br />0-100 Ship Zone A, $0.00<br />100-200 Ship Zone B, $150.00<br />200-300 Ship Zone C, $300.00<br />300-400 Ship Zone D, $450.00<br />400-500 Ship Zone E, $600.00');
-    $("#calcShipZoneTotal").text(shipMileInfo.cost.formatMoney());
-  } else {
-    $("#calcShipZone").html('Customer Pickup');
-    $("#calcShipZoneTotal").text('$0.00');
-  }
-
-  $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') * Glaze Markup (' + gt_markup + ')');
-  $("#calcGlazeTechTotal").html(gt_cost.formatMoney());
-
-  $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') * Green Gard Markup (' + ggard_markup + ')');
-  $("#calcGreenGardTotal").html(ggard_cost.formatMoney());
-
-  $("#calcSheen").html('Total (' + line_total.toFixed(2) + ') * Sheen Markup (' + sheen_markup + ')');
-  $("#calcSheenTotal").html(sheen_cost.formatMoney());
-
-  $("#calcFinishCode").html('Total (' + line_total.toFixed(2) + ') * Finish Markup (' + fcode_markup + ')');
-  $("#calcFinishCodeTotal").html(fcode_cost.formatMoney());
-
-  $("#calcCabinetLines").html('Cabinets: ' + cabinet_only_skus);
-  $("#calcCabinetLinesTotal").html(cabinet_only_total.formatMoney());
-
-  $("#calcNonCabLines").html('Non-Cabinets: ' + non_cabinet_skus);
-  $("#calcNonCabLinesTotal").html(non_cabinet_total.formatMoney());
-  //******************************************************************
-}
-
-// @footCalc() - calculates by square foot or linear foot
-function footCalc(node) {
-  let $tdList = $(node.tr).find(">td");
-  let outprice = node.data.price;
-
-  // noinspection JSCheckFunctionSignatures
-  if(node.data.width > 0 && node.data.height > 0) {
-    if(parseInt(node.data.sqft) === 1) {
-      let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.height)) / 144;
-      let line_total = line_sqft * node.data.singlePrice;
-
-      $tdList.eq(8).text(line_total.formatMoney());
-
-      outprice = line_total;
-    } else if(parseInt(node.data.linft) === 1) {
-      let line_linft = (parseFloat(node.data.width) / 12) * node.data.singlePrice;
-
-      $tdList.eq(8).text(line_linft.formatMoney());
-
-      outprice = line_linft;
-    }
-  }
-
-  return outprice;
-}
-
-function fullRecalc() {
-  cabinetList.fancytree("getTree").visit(function(line) {
-    let itemID = line.data.itemID;
-    let key = line.key;
-
-    var tree = cabinetList.fancytree("getTree");
-
-    $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: itemID, room_id: active_room_id}, function(data) {
-      if(data !== '' && line.data.customPrice !== 1) {
-        let itemInfo = JSON.parse(data);
-        let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
-        let node = tree.getNodeByKey(key);
-
-        if(node.data.cabinet === 1) {
-          node.setTitle(itemInfo.sku);
+          $tdList.eq(9).text(lineTotal.formatMoney());
         }
-
-        node.data.price = fixedPrice;
-        node.icon = itemInfo.icon;
-        node.data.name = itemInfo.title;
-        node.data.sqft = itemInfo.sqft;
-        node.data.singlePrice = fixedPrice;
-        node.data.cabinet = itemInfo.cabinet;
-        node.data.addlMarkup = itemInfo.addl_markup;
       }
-    }).done(function() {
-      recalcSummary();
+
+      // if the line item is a cabinet only (excludes tops, accessories, fillers, moldings) then we're adding that to a cabinet only price (inset specific pricing)
+      if(line.data.cabinet === '1') {
+        // our cabinet only total goes up
+        cabinet_only_total += parseFloat(lineTotal);
+
+        // add the SKU to the total cabinet only running list
+        cabinet_only_skus += line.title + ", ";
+      } else {
+        // our non-cabinet total goes up (transparency report)
+        non_cabinet_total += parseFloat(lineTotal);
+
+        //add the SKU to the non-cabinet total running list
+        non_cabinet_skus += line.title + ", ";
+      }
+
+      if(line.data.exclude_markup === '1') {
+
+      }
+
+      // this is the final running total for the system
+      line_total += parseFloat(lineTotal);
     });
-  });
 
-  displayToast("success", "Successfully recalculated the pricing.", "Pricing Recalculated");
-}
+    // remove the excess comma and space from the cabinet SKU list
+    cabinet_only_skus = cabinet_only_skus.slice(0, -2);
 
-function fetchDebug() {
-  cabinetList.fancytree("getTree").visit(function(line) {
-    console.log(line);
-  });
-}
+    // remove the excess comma and space from the non-cabinet SKU list
+    non_cabinet_skus = non_cabinet_skus.slice(0, -2);
 
-function genKey() {
-  return new Date().getTime() * Math.random(999);
-}
+    // display the total
+    $("#itemListTotal").text(line_total.formatMoney());
+    //******************************************************************
 
-function updateShipDate() {
-  let dts = $("#days_to_ship").val();
+    //******************************************************************
+    // done parsing per line, moving into the global charges for the page
 
-  $.post("/html/pricing/ajax/global_actions.php?action=calcShipDate", {days_to_ship: dts, room_id: active_room_id}, function(data) {
-    let result = JSON.parse(data);
+    //// Glaze Technique
+    let gt_pct = $("#gt_pct"), gt_amt = $("#gt_amt");
+    let ggard_pct = $("#ggard_pct"), ggard_amt = $("#ggard_amt");
+    let fcode_pct = $("#fc_pct"), fcode_amt = $("#fc_amt");
+    let sheen_pct = $("#sheen_pct"), sheen_amt = $("#sheen_amt");
+    let gt_markup = 0.00, ggard_markup = 0.00, fcode_markup = 0.00, sheen_markup = 0.00; // glaze technique markup
 
-    $("#calcd_ship_date").html(result['ship_date']);
-    $("#calcd_del_date").html(result['del_date']);
-  });
-}
-
-function checkNote(noteBox, noteField, followupDateField, followupOfField) {
-  let note = $(noteField).val();
-
-  if(note !== '') {
-    console.log('Field Value:' + note);
-
-    let d = new Date();
-    let month = d.getMonth() + 1;
-    let date = month + '/' + d.getDate() + '/' + d.getFullYear();
-
-    let hours = d.getHours();
-    let mins = d.getMinutes();
-    let secs = d.getSeconds();
-    let am_pm = null;
-
-    if(hours < 12) { am_pm = 'AM'; } else { am_pm = 'PM';}
-    if(hours === 0) { hours = 12; }
-    if(hours > 12) { hours = hours - 12; }
-
-    mins = mins + '';
-    if(mins.length === 1) { mins = "0" + mins; }
-
-    secs = secs + '';
-    if(secs.length === 1) { secs = "0" + secs; }
-
-    let time = hours + ':' + mins + ':' + secs + ' ' + am_pm;
-
-    let followup_on = $(followupDateField).val();
-    let followup_by = $(followupOfField).find(":selected").text();
-    let followup = '';
-
-    if(followup_on !== '') {
-      followup = '(Followup by ' + followup_by +' on ' + followup_on + ')';
+    // grab the glaze technique, determine what the amount to markup is
+    switch($("#glaze_technique").val()) {
+      case 'G2':
+        gt_markup = 0.10; // toss this into the function variable for markup
+        break;
+      case 'G0':
+        gt_amt.text("");
+        break;
+      default:
+        gt_amt.text("ERR");
+        break;
     }
 
-    let output = '<tr><td width="26px" style="padding-right:5px;"><button class="btn waves-effect btn-primary pull-right reply_to_inquiry" id="10381"> ' +
-      '<i class="zmdi zmdi-mail-reply"></i> </button></td>  ' +
-      '<td>' + note + ' -- <small><em>' + nameOfUser + ' on ' + date + ' ' + time + ' ' + followup + ' </em></small></td></tr>' +
-      '<tr style="height:2px;"><td colspan="2" style="background-color:#000;"></td></tr>' +
-      '<tr style="height:5px;"><td colspan="2"></td></tr>';
-
-    let row = 3;
-
-    if(noteBox === '.so_note_box') {
-      row = 2;
+    // grab the green gard, determine what the amount to markup is
+    switch($("#green_gard").val()) {
+      case 'G1':
+        ggard_markup = 0.05; // toss this into the function variable for markup
+        break;
+      case 'G0':
+        ggard_amt.text("");
+        break;
+      default:
+        ggard_amt.text("ERR");
+        break;
     }
 
-    $(noteBox).find("table tr:eq(" + row + ")").before(output);
+    // grab the green gard, determine what the amount to markup is
+    switch($("#sheen").val()) {
+      case 'a':
+        sheen_markup = 0.05; // toss this into the function variable for markup
+        break;
+      case 'c':
+        sheen_pct.text("");
+        break;
+      case 'h':
+        sheen_markup = 0.05; // toss this into the function variable for markup
+        break;
+      case 'X':
+        sheen_markup = 0.05; // toss this into the function variable for markup
+        break;
+      default:
+        sheen_amt.text("ERR");
+        break;
+    }
 
-    $(noteField).val('');
-    $(followupDateField).val('');
-    $(followupOfField).val('null');
+    if(($("#finish_code").val().indexOf('p') >= 0 ||  $("#finish_code").val() === '1cXXXX') && $("#product_type").val() === 'P') {
+      fcode_markup = 0.10;
+    } else {
+      fcode_markup = 0;
+      fcode_amt.text("");
+    }
+
+    // calculate out the cost of the glaze technique
+    let gt_cost = line_total * gt_markup;
+    let ggard_cost = line_total * ggard_markup;
+    let fcode_cost = line_total * fcode_markup;
+    let sheen_cost = line_total * sheen_markup;
+
+    // Glaze Technique fields
+    gt_amt.text(gt_cost.formatMoney());
+    gt_pct.text((gt_markup * 100).toFixed(2) + "%");
+
+    // Green Gard fields
+    ggard_amt.text(ggard_cost.formatMoney());
+    ggard_pct.text((ggard_markup * 100).toFixed(2) + "%");
+
+    // Finish Code fields
+    fcode_amt.text(fcode_cost.formatMoney());
+    fcode_pct.text((fcode_markup * 100).toFixed(2) + "%");
+
+    // Sheen fields
+    sheen_amt.text(sheen_cost.formatMoney());
+    sheen_pct.text((sheen_markup * 100).toFixed(2) + "%");
+
+    // add the glaze technique to the total amount of global upcharges
+    global_cab_charges += gt_cost;
+    global_cab_charges += ggard_cost;
+    global_cab_charges += fcode_cost;
+    global_cab_charges += sheen_cost;
+
+    let shipPrice = 0;
+
+    // Grab the shipping price IF it's not pickup
+    if(shipVia !== '4') {
+      shipPrice = $("#shipping_cost").attr("data-cost");
+      global_room_charges += parseFloat(shipPrice);
+    }
+
+    //// Global Cabinet Details
+    $("#itemListGlobalCabDetails").text(global_cab_charges.formatMoney());
+
+    //// Subtotal 1
+    let subtotal1 = global_cab_charges + line_total;
+    $("#itemListSubTotal1").text(subtotal1.formatMoney());
+
+    //// Capture the multiplier for use
+    let multiplier = parseFloat($("#itemListMultiplier").text());
+
+    //// Calculate the net price
+    let netPrice = (line_total + global_cab_charges) * multiplier;
+    $("#itemListNET").text(netPrice.formatMoney());
+
+    // Grab the product type, has to be calculated in jquery because this is a flexible price based on the total of the job
+    // THIS PRICE IS NET, MARKUP DOES NOT IMPACT THIS PRICE
+    let productTypeOpt = $("#product_type").val();
+    let productTypeMarkup = 0.00;
+
+    if(productTypeOpt === 'B') { // markup for inset
+      productTypeMarkup = 0.10;
+    }
+
+    // IT IS IMPORTANT THAT WE USE THE CABINET ONLY PRICE HERE! THIS ALLOWS US TO SEGREGATE OUT WOOD TOPS AND FILLERS/PANELS!
+    let productTypeCost = cabinet_only_total * productTypeMarkup;
+    $("#product_type_cost").text(productTypeCost.formatMoney());
+
+    // add the product type cost to the global room charges
+    global_room_charges += productTypeCost;
+
+    //// Display the global room detail charges
+    $("#itemListGlobalRoomDetails").text(global_room_charges.formatMoney());
+
+    let subtotal = netPrice + global_room_charges;
+
+    // TODO: We're not adding credit card here right now, we need to add that in
+
+    //// Update the subtotal
+    $("#finalSubTotal").text(subtotal.formatMoney());
+
+    //// Update the total
+    $("#finalTotal").text(subtotal.formatMoney());
+
+    //// Update the required deposit
+    let deposit = subtotal * .5;
+    $("#finalDeposit").text(deposit.formatMoney());
+    //******************************************************************
+
+    //******************************************************************
+    // Transparency report
+    $("#calcProductType").text('Cabinet Only Total (' + cabinet_only_total + ') * Product Type Markup (' + productTypeMarkup + ')');
+    $("#calcProductTypeTotal").text((cabinet_only_total * productTypeMarkup).formatMoney());
+
+    $("#calcLeadTime").text('Lead Time (Green) * Total [Hardcoded]');
+    $("#calcLeadTimeTotal").text('$0.00 [Hardcoded]');
+
+    $("#calcShipVIA").text('Cycle Truck [Hardcoded]');
+    $("#calcShipVIATotal").text('$0.00 [Hardcoded]');
+
+    let shipMileInfo = JSON.parse(calcShipInfo);
+
+    if(shipVia !== '4') {
+      $("#calcShipZone").html('Mileage (' + shipMileInfo.miles + ') - ' + shipMileInfo.zone + '<br /><br />Calculated based on Shipping Zip entered into Ship To, if that is empty, use Dealer Zip.<br /><br />0-100 Ship Zone A, $0.00<br />100-200 Ship Zone B, $150.00<br />200-300 Ship Zone C, $300.00<br />300-400 Ship Zone D, $450.00<br />400-500 Ship Zone E, $600.00');
+      $("#calcShipZoneTotal").text(shipMileInfo.cost.formatMoney());
+    } else {
+      $("#calcShipZone").html('Customer Pickup');
+      $("#calcShipZoneTotal").text('$0.00');
+    }
+
+    $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') * Glaze Markup (' + gt_markup + ')');
+    $("#calcGlazeTechTotal").html(gt_cost.formatMoney());
+
+    $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') * Green Gard Markup (' + ggard_markup + ')');
+    $("#calcGreenGardTotal").html(ggard_cost.formatMoney());
+
+    $("#calcSheen").html('Total (' + line_total.toFixed(2) + ') * Sheen Markup (' + sheen_markup + ')');
+    $("#calcSheenTotal").html(sheen_cost.formatMoney());
+
+    $("#calcFinishCode").html('Total (' + line_total.toFixed(2) + ') * Finish Markup (' + fcode_markup + ')');
+    $("#calcFinishCodeTotal").html(fcode_cost.formatMoney());
+
+    $("#calcCabinetLines").html('Cabinets: ' + cabinet_only_skus);
+    $("#calcCabinetLinesTotal").html(cabinet_only_total.formatMoney());
+
+    $("#calcNonCabLines").html('Non-Cabinets: ' + non_cabinet_skus);
+    $("#calcNonCabLinesTotal").html(non_cabinet_total.formatMoney());
+    //******************************************************************
+  },
+  footCalc: function(node) {
+    // @footCalc() - calculates by square foot or linear foot
+    let $tdList = $(node.tr).find(">td");
+    let outprice = node.data.price;
+
+    // noinspection JSCheckFunctionSignatures
+    if(node.data.width > 0 && node.data.height > 0) {
+      if(parseInt(node.data.sqft) === 1) {
+        let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.height)) / 144;
+        let line_total = line_sqft * node.data.singlePrice;
+
+        $tdList.eq(8).text(line_total.formatMoney());
+
+        outprice = line_total;
+      } else if(parseInt(node.data.linft) === 1) {
+        let line_linft = (parseFloat(node.data.width) / 12) * node.data.singlePrice;
+
+        $tdList.eq(8).text(line_linft.formatMoney());
+
+        outprice = line_linft;
+      }
+    }
+
+    return outprice;
+  },
+  fullRecalc: function() {
+    cabinetList.fancytree("getTree").visit(function(line) {
+      let itemID = line.data.itemID;
+      let key = line.key;
+
+      var tree = cabinetList.fancytree("getTree");
+
+      $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: itemID, room_id: active_room_id}, function(data) {
+        if(data !== '' && line.data.customPrice !== 1) {
+          let itemInfo = JSON.parse(data);
+          let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
+          let node = tree.getNodeByKey(key);
+
+          if(node.data.cabinet === 1) {
+            node.setTitle(itemInfo.sku);
+          }
+
+          node.data.price = fixedPrice;
+          node.icon = itemInfo.icon;
+          node.data.name = itemInfo.title;
+          node.data.sqft = itemInfo.sqft;
+          node.data.singlePrice = fixedPrice;
+          node.data.cabinet = itemInfo.cabinet;
+          node.data.addlMarkup = itemInfo.addl_markup;
+        }
+      }).done(function() {
+        pricingFunction.recalcSummary();
+      });
+    });
+
+    displayToast("success", "Successfully recalculated the pricing.", "Pricing Recalculated");
+  },
+  fetchDebug: function() {
+    cabinetList.fancytree("getTree").visit(function(line) {
+      console.log(line);
+    });
+  },
+  genKey: function() {
+    return new Date().getTime() * Math.random(999);
+  },
+  updateShipDate: function() {
+    let dts = $("#days_to_ship").val();
+
+    $.post("/html/pricing/ajax/global_actions.php?action=calcShipDate", {days_to_ship: dts, room_id: active_room_id}, function(data) {
+      let result = JSON.parse(data);
+
+      $("#calcd_ship_date").html(result['ship_date']);
+      $("#calcd_del_date").html(result['del_date']);
+    });
+  },
+  checkNote: function(noteBox, noteField, followupDateField, followupOfField) {
+    let note = $(noteField).val();
+
+    if(note !== '') {
+      console.log('Field Value:' + note);
+
+      let d = new Date();
+      let month = d.getMonth() + 1;
+      let date = month + '/' + d.getDate() + '/' + d.getFullYear();
+
+      let hours = d.getHours();
+      let mins = d.getMinutes();
+      let secs = d.getSeconds();
+      let am_pm = null;
+
+      if(hours < 12) { am_pm = 'AM'; } else { am_pm = 'PM';}
+      if(hours === 0) { hours = 12; }
+      if(hours > 12) { hours = hours - 12; }
+
+      mins = mins + '';
+      if(mins.length === 1) { mins = "0" + mins; }
+
+      secs = secs + '';
+      if(secs.length === 1) { secs = "0" + secs; }
+
+      let time = hours + ':' + mins + ':' + secs + ' ' + am_pm;
+
+      let followup_on = $(followupDateField).val();
+      let followup_by = $(followupOfField).find(":selected").text();
+      let followup = '';
+
+      if(followup_on !== '') {
+        followup = '(Followup by ' + followup_by +' on ' + followup_on + ')';
+      }
+
+      let output = '<tr><td width="26px" style="padding-right:5px;"><button class="btn waves-effect btn-primary pull-right reply_to_inquiry" id="10381"> ' +
+        '<i class="zmdi zmdi-mail-reply"></i> </button></td>  ' +
+        '<td>' + note + ' -- <small><em>' + nameOfUser + ' on ' + date + ' ' + time + ' ' + followup + ' </em></small></td></tr>' +
+        '<tr style="height:2px;"><td colspan="2" style="background-color:#000;"></td></tr>' +
+        '<tr style="height:5px;"><td colspan="2"></td></tr>';
+
+      let row = 3;
+
+      if(noteBox === '.so_note_box') {
+        row = 2;
+      }
+
+      $(noteBox).find("table tr:eq(" + row + ")").before(output);
+
+      $(noteField).val('');
+      $(followupDateField).val('');
+      $(followupOfField).val('null');
+    }
+  },
+  catalogCanEdit: function(editCatalog) {
+    if(editCatalog.hasClass("fa-unlock")) {
+      return true;
+    } else {
+      return false;
+    }
   }
-}
+};
 
 var mouseX, mouseY;
 
@@ -434,11 +529,6 @@ $(document).mousemove(function(e) {
   mouseX = e.pageX;
   mouseY = e.pageY;
 });
-
-var CLIPBOARD = null;
-var cabinetList = $("#cabinet_list");
-var catalog = $("#catalog_categories");
-var itemModifications = $("#item_modifications");
 
 $("body")
   .on("keyup", "#treeFilter", function() { // filters per keystroke on search catalog
@@ -457,7 +547,7 @@ $("body")
   })
 
   .on("change", "select", function() {
-    checkDropdown();
+    globalFunctions.checkDropdown();
   })
 
   .on("click", "#save", function() {
@@ -475,6 +565,8 @@ $("body")
     var val_array = {};
     var customVals = null;
     var cab_list = JSON.stringify(getMiniTree(cabinetList));
+
+    var current_tab = $("#roomTabViewContent .tab-pane.active").attr("id");
 
     // SUPER IMPORTANT to enable and then re-disable select fields during serialization
     var cabinet_specifications = disabledSerialize($("#cabinet_specifications"));
@@ -496,16 +588,16 @@ $("body")
 
     customVals = JSON.stringify(val_array);
 
-    $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes}, function(data) {
+    $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes, tab: current_tab}, function(data) {
       $('body').append(data);
     });
     //</editor-fold>
 
     // live notes for Room notes box
-    checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
+    pricingFunction.checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
 
     // live notes for SO notes box
-    checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
+    pricingFunction.checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
 
     unsaved = false;
   })
@@ -617,7 +709,7 @@ $("body")
     });
   })
   .on("click", "#catalog_recalculate", function() {
-    fullRecalc();
+    pricingFunction.fullRecalc();
   })
   .on("click", "#production_lock", function() {
     $("select").prop("disabled", false);
@@ -686,7 +778,7 @@ $("body")
   })
 
   .on("click", "#item_note", function() { // the click of the "Add Item" button
-    // delNoData(); // wtc does this do?
+    pricingFunction.delNoData();
 
     var root = cabinetList.fancytree("getRootNode");
 
@@ -694,7 +786,7 @@ $("body")
       qty: 1,
       title: 'NOTE',
       price: 0.00,
-      key: genKey(),
+      key: pricingFunction.genKey(),
       icon: 'fa fa-commenting-o',
       name: 'Error',
       sqft: 0,
@@ -708,7 +800,7 @@ $("body")
     $tdList.eq(4).html('<input type="text" class="form-control custom-line-item" placeholder="Custom Description..." data-id="' + node.key + '" >');
   })
   .on("click", "#item_custom_line", function() { // the click of the "Add Item" button
-    // delNoData(); // wtc does this do?
+    pricingFunction.delNoData();
 
     var root = cabinetList.fancytree("getRootNode");
 
@@ -716,7 +808,7 @@ $("body")
       qty: 1,
       title: ' ',
       price: 0.00,
-      key: genKey(),
+      key: pricingFunction.genKey(),
       icon: 'fa fa-hand-o-right',
       name: 'Error',
       sqft: 0,
@@ -743,7 +835,7 @@ $("body")
     // re-render the tree deeply so that we can recalculate the line item numbers
     cabinetList.fancytree("getRootNode").render(true,true);
 
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
   .on("mouseenter", ".view_item_info", function() {
     // FIXME: Change this so the data isn't loaded on hover
@@ -789,11 +881,11 @@ $("body")
   .on("click", ".item_copy", function() {
     let activeNode = cabinetList.fancytree("getTree").getActiveNode().toDict(true);
 
-    activeNode.key = genKey();
+    activeNode.key = pricingFunction.genKey();
 
     if(activeNode.children !== null) {
       $.each(activeNode.children, function(key) {
-        activeNode.children[key].key = genKey();
+        activeNode.children[key].key = pricingFunction.genKey();
       });
     }
 
@@ -809,11 +901,11 @@ $("body")
     cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
   })
   .on("change", ".qty_input", function() {
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
 
   .on("click", ".add_item_cabinet_list", function() {
-    delNoData();
+    pricingFunction.delNoData();
 
     var root = cabinetList.fancytree("getRootNode");
     let $tdList = $(root.tr).find(">td");
@@ -831,7 +923,7 @@ $("body")
         depth: itemInfo.depth,
         itemID: itemInfo.id,
         price: fixedPrice,
-        key: genKey(),
+        key: pricingFunction.genKey(),
         icon: itemInfo.icon,
         name: itemInfo.title,
         sqft: itemInfo.sqft,
@@ -840,9 +932,7 @@ $("body")
         addlMarkup: itemInfo.addlMarkup
       });
 
-
-
-      recalcSummary();
+      pricingFunction.recalcSummary();
     });
   })
   .on("click", "#editCatalogLock", function() {
@@ -883,27 +973,27 @@ $("body")
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.width = $(this).val();
-    node.data.price = footCalc(node);
+    node.data.price = pricingFunction.footCalc(node);
 
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
   .on("keyup", ".itm_height", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.height = $(this).val();
-    node.data.price = footCalc(node);
+    node.data.price = pricingFunction.footCalc(node);
 
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
   .on("keyup", ".itm_depth", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.depth = $(this).val();
-    node.data.price = footCalc(node);
+    node.data.price = pricingFunction.footCalc(node);
 
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
 
   .on("keyup", "#modificationsFilter", function() { // filters per keystroke on search catalog
@@ -967,7 +1057,7 @@ $("body")
         title: v.title,
         itemID: v.data.itemID,
         price: outputPrice,
-        key: genKey(),
+        key: pricingFunction.genKey(),
         width: width,
         height: height,
         icon: v.icon,
@@ -1021,70 +1111,13 @@ $("body")
     unsaved = false;
   })
 
-  /*.on("click", ".option", function(e) {
-    let dropdown_list = $(this).parent().parent();
-
-    if(dropdown_list.attr("data-for") === 'ship_via') {
-      let ship_info = $("input[name='ship_to_name']").parent().parent();
-
-      if($(this).attr("data-value") === '4') {
-        ship_info.hide();
-        ship_info.next("tr").hide();
-        ship_info.next("tr").next("tr").hide();
-      } else {
-        ship_info.show();
-        ship_info.next("tr").show();
-        ship_info.next("tr").next("tr").show();
-      }
-    } else if(dropdown_list.attr("data-for") === 'product_type') {
-      let species_grade = $("#species_grade");
-      let door_design = $("#door_design");
-      let construction_method = $("#construction_method");
-
-      if($(this).attr("data-value") === 'L') {
-        if(species_grade.val() === '') {
-          species_grade.attr("value", "Me").parent().find(".selected").html("Melamine");
-        }
-
-        if(door_design.val() === '') {
-          door_design.attr("value", "ME0").parent().find(".selected").html("Melamine");
-        }
-
-        if(construction_method.val() === '') {
-          construction_method.attr("value", "C").parent().find(".selected").html("Closet - Cam");
-        }
-      }
-    } else if(dropdown_list.attr("data-for") === 'order_status') {
-      if($(this).attr("data-value") === '#') {
-        $(".estimated").text('Est. ');
-      } else {
-        $(".estimated").text('');
-      }
-
-      // if we're switching to production, we need to prompt and see if we should recalculate the ship date
-      if($(this).attr("data-value") === '$') {
-        $.confirm({
-          title: "Update ship date?",
-          content: "Do you wish to update the ship date now?",
-          type: 'red',
-          buttons: {
-            yes: function() {
-              updateShipDate();
-            },
-            no: function() {}
-          }
-        });
-      }
-    }
-  })*/
-
   .on("blur", ".custom_price", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.price = parseFloat($(this).val().replace(/[^0-9-.]/g, ''));
 
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
   .on("focus mouseup", ".custom_price", function() {
     $(this).select();
@@ -1108,7 +1141,7 @@ $("body")
       priceGroup = data;
     });
 
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
 
   .on("click", "#modalSaveCatItemSubmit", function() {
@@ -1227,7 +1260,7 @@ $("body")
 
   .on("click", "#ship_date_recalc", function() {
     if($("#order_status").val() === '#') {
-      updateShipDate();
+      pricingFunction.updateShipDate();
     } else {
       displayToast('error', 'Unable to recalculate ship date, this room is not in quote anymore.', 'Unable to Recalculate.');
     }
@@ -1248,7 +1281,7 @@ $("body")
 
         $("#modalGeneral").html("").modal('hide');
 
-        recalcSummary();
+        pricingFunction.recalcSummary();
       } else {
         displayToast("error", "Unable to update ship cost. Please contact IT.", "Ship Cost Override Error");
       }
@@ -1256,4 +1289,61 @@ $("body")
 
     unsaved = false;
   })
+
+  /*.on("click", ".option", function(e) {
+    let dropdown_list = $(this).parent().parent();
+
+    if(dropdown_list.attr("data-for") === 'ship_via') {
+      let ship_info = $("input[name='ship_to_name']").parent().parent();
+
+      if($(this).attr("data-value") === '4') {
+        ship_info.hide();
+        ship_info.next("tr").hide();
+        ship_info.next("tr").next("tr").hide();
+      } else {
+        ship_info.show();
+        ship_info.next("tr").show();
+        ship_info.next("tr").next("tr").show();
+      }
+    } else if(dropdown_list.attr("data-for") === 'product_type') {
+      let species_grade = $("#species_grade");
+      let door_design = $("#door_design");
+      let construction_method = $("#construction_method");
+
+      if($(this).attr("data-value") === 'L') {
+        if(species_grade.val() === '') {
+          species_grade.attr("value", "Me").parent().find(".selected").html("Melamine");
+        }
+
+        if(door_design.val() === '') {
+          door_design.attr("value", "ME0").parent().find(".selected").html("Melamine");
+        }
+
+        if(construction_method.val() === '') {
+          construction_method.attr("value", "C").parent().find(".selected").html("Closet - Cam");
+        }
+      }
+    } else if(dropdown_list.attr("data-for") === 'order_status') {
+      if($(this).attr("data-value") === '#') {
+        $(".estimated").text('Est. ');
+      } else {
+        $(".estimated").text('');
+      }
+
+      // if we're switching to production, we need to prompt and see if we should recalculate the ship date
+      if($(this).attr("data-value") === '$') {
+        $.confirm({
+          title: "Update ship date?",
+          content: "Do you wish to update the ship date now?",
+          type: 'red',
+          buttons: {
+            yes: function() {
+              pricingFunction.updateShipDate();
+            },
+            no: function() {}
+          }
+        });
+      }
+    }
+  })*/
 ;

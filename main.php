@@ -344,9 +344,8 @@ require 'includes/header_start.php';
     // if there's a queue update
     socket.on("catchQueueUpdate", function() {
       if(currentPage === 'dashboard' || currentPage === 'eng_report') {
-        updateOpQueue();
-
-        updateBreakButton();
+        globalFunctions.updateOpQueue();
+        globalFunctions.updateBreakButton();
       }
 
       if(currentPage === 'workcenter') {
@@ -409,9 +408,9 @@ require 'includes/header_start.php';
     $(function() {
       <?php
       if(empty($_REQUEST['page'])) {
-        echo "loadPage('{$usr['default_dashboard']}');";
+        echo "globalFunctions.loadPage('{$usr['default_dashboard']}');";
       } else {
-        echo "loadPage('{$_REQUEST['page']}');";
+        echo "globalFunctions.loadPage('{$_REQUEST['page']}');";
       }
 
       if($_SESSION['userInfo']['justLoggedIn']) {
@@ -441,15 +440,18 @@ require 'includes/header_start.php';
         "hideMethod": "fadeOut"
       };
 
-      $("#clock").html(getLocalTime);
+      // TODO: @globalFunctions.getLocalTime is not used anywhere else other than here - should this be cleaned up?
+      $("#clock").html(globalFunctions.getLocalTime);
 
       setInterval(function() {
-        $("#clock").html(getLocalTime);
+        $("#clock").html(globalFunctions.getLocalTime);
       }, 1000); // clock
 
       $(".modal").draggable({
         handle: ".modal-header"
       });
+
+      $.ui.fancytree.debugLevel = 0;
     });
 
     /** @var tree - the FancyTree to take in and convert into a minified version */
@@ -736,7 +738,7 @@ require 'includes/header_start.php';
       <?php if($bouncer->validate('view_operation')) { ?>
       // -- Dashboard --
       .on("change", "#viewing_queue", function() {
-        updateOpQueue();
+        globalFunctions.updateOpQueue();
       })
 
       .on("click", ".start-operation", function(e) {
@@ -923,7 +925,7 @@ require 'includes/header_start.php';
       .on("click", ".print-sample", function() {
         var room_id = $(this).attr("id");
 
-        calcVin(room_id);
+        globalFunctions.calcVin(room_id);
 
         var formInfo = $("#room_edit_" + room_id).serialize();
 
@@ -938,11 +940,11 @@ require 'includes/header_start.php';
         unsaved = false;
       })
       .on("change keydown", ".vin_code_calc", function() {
-        calcVin(active_room_id);
+        globalFunctions.calcVin(active_room_id);
       })
 
       .on("change", ".recalcVin", function() {
-        calcVin(active_room_id);
+        globalFunctions.calcVin(active_room_id);
       })
 
       .on("change", "#ext_carcass_same", function() {
@@ -1323,7 +1325,7 @@ require 'includes/header_start.php';
       $.post("/ondemand/session_continue.php");
     }, 600000);
 
-    updateBreakButton(); // get the break button initial state
+    globalFunctions.updateBreakButton(); // get the break button initial state
   </script>
 
   <?php if($bouncer->validate('search')) { ?>

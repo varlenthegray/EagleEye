@@ -15,12 +15,7 @@ use catalog\catalog as Catalog;
 
 $mail = new \MailHandler\mail_handler();
 
-$vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
- FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC");
-
-while($vin = $vin_qry->fetch_assoc()) {
-  $vin_schema[$vin['segment']][] = $vin;
-}
+$vin_schema = getVINSchema();
 
 function whatChanged($new, $old, $title, $date = false, $bool = false, $bracket_chng = false) {
   global $dbconn;
@@ -228,6 +223,7 @@ switch($_REQUEST['action']) {
 
     $custom_vals = $_REQUEST['customVals']; // custom fields in VIN sheet
 
+    $tab = sanitizeInput($_REQUEST['tab']);
     $room_id = sanitizeInput($_REQUEST['room_id']);
 
     $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");

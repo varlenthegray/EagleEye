@@ -1,26 +1,26 @@
-function adjustImgPopups() {
-  if($("#show_image_popups").is(":checked")) {
-    $(".option_grid").css("display", "flex");
-    $(".option_list").hide();
-    $(".custom_dropdown .selected img").show();
+/*global active_room_id*//*global globalFunctions*//*global document*/
 
-    $(".dropdown_options").css("width", "60vw");
-  } else {
-    $(".option_grid").hide();
-    $(".option_list").show();
-    $(".custom_dropdown .selected img").hide();
+var customDropdown = {
+  adjustImgPopups: function() {
+    if($("#show_image_popups").is(":checked")) {
+      $(".option_grid").css("display", "flex");
+      $(".option_list").hide();
+      $(".custom_dropdown .selected img").show();
 
-    $(".dropdown_options").css("width", "");
+      $(".dropdown_options").css("width", "60vw");
+    } else {
+      $(".option_grid").hide();
+      $(".option_list").show();
+      $(".custom_dropdown .selected img").hide();
+
+      $(".dropdown_options").css("width", "");
+    }
   }
-}
-
-function determineOpts() {
-
-}
+};
 
 $("body")
   .on("click", ".custom_dropdown", function(e) {
-    adjustImgPopups();
+    customDropdown.adjustImgPopups();
 
     if(e.target.nodeName !== 'INPUT') {
       $(".custom_dropdown").not(this).children('.dropdown_options').hide();
@@ -110,8 +110,6 @@ $("body")
     } else {
       $(".custom_dropdown").find('.dropdown_options').hide();
     }
-
-    determineOpts();
   })
   .on("click", ".option", function() {
     var field;
@@ -143,15 +141,11 @@ $("body")
     $("#" + field).val(value);
 
     if($("[id^='vin_code']").length > 0) {
-      calcVin(active_room_id);
+      globalFunctions.calcVin(active_room_id);
     }
-
-    determineOpts();
-
-    productTypeSwitch();
   })
   .on("change", "#show_image_popups", function() {
-    adjustImgPopups();
+    customDropdown.adjustImgPopups();
   })
   .keydown(function(e) {
     if(e.key === 'Escape') {
@@ -159,3 +153,7 @@ $("body")
     }
   })
 ;
+
+$(document).on("scroll", function() {
+  $(".dropdown_options").hide();
+});

@@ -726,6 +726,12 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 </div>
 
 <script>
+  function addCommas(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+  }
+
   var ship_charges_changed = false;
 
   /** Fixed Pricing */
@@ -893,21 +899,8 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
   var frame_opt_qty = $("input[name='frame_opt_qty']").val();
   /** End Qty Fields */
 
-  function getUrlParams(prop) {
-    var params = {};
-    var search = decodeURIComponent( window.location.href.slice( window.location.href.indexOf('?') + 1));
-    var definitions = search.split('&');
-
-    definitions.forEach(function(val, key) {
-      var parts = val.split('=', 2);
-      params[parts[0]] = parts[1];
-    } );
-
-    return (prop && prop in params) ? params[prop] : params;
-  }
-
   $(function() {
-    if(getUrlParams('action') === 'arh') {
+    if(globalFunctions.getURLParams('action') === 'arh') {
       $("#charge_summary_std").hide();
       $("#charge_summary_arh").show();
       $(".pct_value").hide();
@@ -916,7 +909,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 
       $(".arh_highlight").show().toggleClass('highlight_input');
       $("#executive_ref").html('<span style="margin-right:20px;">Exec. Reference</span>');
-    } else if(getUrlParams('action') === 'no_totals') {
+    } else if(globalFunctions.getURLParams('action') === 'no_totals') {
       $("#charge_summary_std").hide();
       $("#charge_summary_arh").hide();
       $(".pct_value").hide();
@@ -925,7 +918,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
       $("#terms_box").hide();
       $("#signature").hide();
       $("#closing_statement").hide();
-    } else if(getUrlParams('action') === 'sample_req') {
+    } else if(globalFunctions.getURLParams('action') === 'sample_req') {
       $("#charge_summary_std").hide();
       $("#charge_summary_arh").hide();
       $(".pct_value").hide();
@@ -943,7 +936,7 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
     }
 
     setTimeout(function() {
-      if(getUrlParams('noprint') !== 'true') {
+      if(globalFunctions.getURLParams('noprint') !== 'true') {
         window.print();
       }
     }, 150);
