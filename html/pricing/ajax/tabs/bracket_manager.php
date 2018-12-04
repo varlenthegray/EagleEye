@@ -70,7 +70,7 @@ $so = $so_qry->fetch_assoc();
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-4">
       <?php
       $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' ORDER BY room, iteration ASC");
 
@@ -80,6 +80,9 @@ $so = $so_qry->fetch_assoc();
 
         return $out;
       }
+
+      $prev_room = null;
+      $prev_sequence = null;
 
       while($room = $room_qry->fetch_assoc()) {
         $output['sales_bracket'] = !empty($operations[$room['sales_bracket']]) ? $operations[$room['sales_bracket']] : array('job_title' => 'Unassigned');
@@ -103,9 +106,27 @@ $so = $so_qry->fetch_assoc();
         $bstat_pick = getBracketStatus($room['pick_materials_published']);
         $bstat_eb = getBracketStatus($room['edgebanding_published']);
 
-        echo <<<HEREDOC
+        $seq_it = explode('.', $room['iteration']);
+
+        if($prev_room !== $room['room']) {
+          $prev_room = $room['room'];
+          $prev_sequence = $seq_it[0];
+
+          $room_header = "{$room['room']}{$room['iteration']}: {$room['room_name']}";
+        } else {
+          if($prev_sequence !== $seq_it[0]) {
+            $prev_sequence = $seq_it[0];
+
+            $room_header = "&nbsp;&nbsp;&nbsp;{$room['iteration']}: {$room['room_name']}";
+          } else {
+            $room_header = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.{$seq_it[1]}: {$room['room_name']}";
+          }
+        }
+
+        echo /** @lang HTML */
+        <<<HEREDOC
         <div class="room_bracket">
-          <div class="sticky bracket_header cursor-hand">{$room['room']}{$room['iteration']}: {$room['room_name']}</div>
+          <div class="sticky bracket_header cursor-hand">$room_header</div>
           
           <table class="bracket_details">
             <colgroup>

@@ -377,7 +377,7 @@ $so = $so_qry->fetch_assoc();
             $contact_qry = $dbconn->query('SELECT c.id, c.first_name, c.last_name, c.company_name, c2.description FROM contact c LEFT JOIN contact_types c2 ON c.type = c2.id LEFT JOIN user u ON c.created_by = u.id LEFT JOIN dealers d ON u.dealer_id = d.id ORDER BY c2.description, c.first_name, c.last_name ASC');
 
             if($contact_qry->num_rows > 0) {
-              $contact_dropdown = "<select class='form-control pull-left add_contact_id ignoreSaveAlert' name='add_contact' style='width:50%;'><option value=''>Select</option>";
+              $contact_dropdown = "<select class='c_input pull-left add_contact_id ignoreSaveAlert' name='add_contact' style='width:50%;margin-top:7px;'><option value=''>Select</option>";
 
               $last_group = null;
 

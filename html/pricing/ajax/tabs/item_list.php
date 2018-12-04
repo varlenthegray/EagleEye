@@ -23,7 +23,7 @@ $dealer = $dealer_qry->fetch_assoc();
           <tr>
             <td><label for="left_menu_options">Library:</label></td>
             <td>
-              <select id="left_menu_options" class="c_dropdown ignoreSaveAlert">
+              <select id="left_menu_options" class="c_input ignoreSaveAlert">
                 <option value="catalog">Catalog</option>
                 <option value="samples">Samples</option>
               </select>
