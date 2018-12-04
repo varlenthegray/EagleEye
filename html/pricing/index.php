@@ -1341,11 +1341,11 @@ if($pg_qry->num_rows > 0) {
       },
       init: function() {
         setTimeout(function() {
-          cabinetList.floatThead({ top: 67 });
+          // cabinetList.floatThead({ top: 67 });
         }, 500);
 
         if(getUrlParams('hidePrice') === 'true') {
-          $(".pricing_value").hide();
+          $(".pricing_value").css("visibility", "hidden");
         }
       }
     }).on("nodeCommand", function(event, data) {
