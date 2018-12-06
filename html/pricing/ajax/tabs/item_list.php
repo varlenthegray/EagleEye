@@ -13,6 +13,27 @@ $so = $so_qry->fetch_assoc();
 
 $dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$so['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();
+
+//<editor-fold desc="Determining the price group (for JavaScript)">
+$pg_qry = $dbconn->query("SELECT vs1.id AS species_grade_id, vs2.id AS door_design_id FROM rooms r
+  LEFT JOIN vin_schema vs1 ON r.species_grade = vs1.key
+  LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key
+WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'");
+
+if($pg_qry->num_rows > 0) {
+  $pg = $pg_qry->fetch_assoc();
+
+  if ($pg['door_design_id'] !== '1544' && $pg['species_grade_id'] !== '11') {
+    $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$pg['door_design_id']} AND species_id = {$pg['species_grade_id']}");
+    $price_group = $price_group_qry->fetch_assoc();
+    $price_group = $price_group['price_group_id'];
+  } else {
+    $price_group = '0';
+  }
+} else {
+  $price_group = '0';
+}
+//</editor-fold>
 ?>
 
 <div class="container-fluid pricing_table_format">
@@ -206,97 +227,35 @@ $dealer = $dealer_qry->fetch_assoc();
 
 <script>
   <?php
-  echo "active_room_id = $room_id;";
-  echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
-
   $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $dealer['shipping_zip'];
   $ship_zone_info = calcShipZone($shipZone);
   $shipInfo = json_encode($ship_zone_info, true);
 
+  echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
   echo "var calcShipZip = '{$room['ship_zip']}';";
   echo "var calcDealerShipZip = '{$dealer['shipping_zip']}';";
   echo "var calcShipInfo = '$shipInfo';";
   ?>
 
-  var numPages = 1,
-
-    CLIPBOARD = null,
+  var CLIPBOARD = null,
 
     editCatalog = $("#editCatalogLock"),
     cabinetList = $("#cabinet_list"),
     catalog = $("#action_container"),
-    itemModifications = $("#item_modifications"),
-    nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';
+    itemModifications = $("#item_modifications");
 
   $(function() {
-    if($("#order_status").val() === '$') {
-      $("select").prop("disabled", true);
-      $("#production_lock").show();
-    }
-
-    globalFunctions.checkDropdown();
-
-    if(globalFunctions.getURLParams('hidePrice') === 'true') {
-      $("#pageTitle").prepend('Shop ');
-    }
-
-    setTimeout(function() {
-      let tx_delnotes = $("textarea[name='delivery_notes']");
-      let tx_design = $("textarea[name='room_note_design']");
-      let tx_fin_sample = $("textarea[name='fin_sample_notes']");
-
-      let delheight = 0;
-      let designheight = 0;
-      let finsampleheight = 0;
-
-
-      if(globalFunctions.getURLParams('print') === 'true') {
-        delheight = tx_delnotes.prop('scrollHeight') - 48;
-        designheight = tx_design.prop('scrollHeight') - 48;
-        finsampleheight = tx_fin_sample.prop('scrollHeight') - 48;
-      } else {
-        delheight = tx_delnotes.prop('scrollHeight');
-        designheight = tx_design.prop('scrollHeight');
-        finsampleheight = tx_fin_sample.prop('scrollHeight');
-      }
-
-      tx_delnotes.height(delheight);
-      tx_design.height(designheight);
-      tx_fin_sample.height(finsampleheight);
-    }, 50);
-
-    /******************************************************************************
-     *  Cabinet List
-     ******************************************************************************/
+    //<editor-fold desc="Cabinet List">
     cabinetList.fancytree({
-      select: function(event, data) { // TODO: Determine if this is valuable
-        // Display list of selected nodes
-        var selNodes = data.tree.getSelectedNodes();
-        // convert to title/key array
-        var selKeys = $.map(selNodes, function(node){
-          return "[" + node.key + "]: '" + node.title + "'";
-        });
-
-        // console.log(selKeys.join(", "));
-
-        if(selKeys.length > 0) {
-          $("#catalog_remove_checked").show();
-        } else {
-          $("#catalog_remove_checked").hide();
-        }
-      },
       imagePath: "/assets/images/cabinet_icons/",
-      cookieId: "fancytree-cabList",
-      idPrefix: "fancytree-cabList-",
       titlesTabbable: true,     // Add all node titles to TAB chain
       quicksearch: true,        // Jump to nodes when pressing first character
       source: { url: "/html/pricing/ajax/item_actions.php?action=getCabinetList&room_id=" + active_room_id },
       extensions: ["dnd", "table", "gridnav", "persist"],
-      debugLevel: 0,
       dnd: { // drag and drop
         preventVoidMoves: true,
         preventRecursiveMoves: true,
-        autoExpandMS: 400,
+        autoExpandMS: 600,
         dragStart: function(node, data) {
           return true;
         },
@@ -308,19 +267,9 @@ $dealer = $dealer_qry->fetch_assoc();
           data.otherNode.moveTo(node, data.hitMode);
         }
       },
-      edit: {
-        triggerStart: ["clickActive", "f2", "shift+click", "mac+enter"],
-        close: function(event, data) {
-          if( data.save && data.isNew ){
-            // Quick-enter: add new nodes until we hit [enter] on an empty title
-            cabinetList.trigger("nodeCommand", {cmd: "addSibling"});
-          }
-        }
-      },
       table: {
         indentation: 20,
-        nodeColumnIdx: 3,
-        checkboxColumnIdx: 0
+        nodeColumnIdx: 3
       },
       gridnav: {
         autofocusInput: false,
@@ -413,11 +362,7 @@ $dealer = $dealer_qry->fetch_assoc();
         pricingFunction.recalcSummary();
       },
       init: function() {
-        setTimeout(function() {
-          cabinetList.floatThead({ top: 67 });
-        }, 500);
-
-        // pricingFunction.recalcSummary();
+        pricingFunction.recalcSummary();
 
         // automatically expand all sub-lines
         cabinetList.fancytree("getTree").visit(function(node){
@@ -429,11 +374,6 @@ $dealer = $dealer_qry->fetch_assoc();
             $tdList.eq(2).find('.add_item_mod, .item_copy').css('visibility', 'hidden'); // set the visibility of both item copy and item mod as hidden
           }
         });
-
-        // if we're supposed to hide the price
-        if(globalFunctions.getURLParams('hidePrice') === 'true') {
-          $(".pricing_value").hide(); // hide any pricing value class
-        }
       }
     }).on("nodeCommand", function(event, data) {
       // Custom event handler that is triggered by keydown-handler and
@@ -590,11 +530,9 @@ $dealer = $dealer_qry->fetch_assoc();
         }, 100);
       }
     });
+    //</editor-fold>
 
-    /******************************************************************************
-     *  Navigation menu
-     ******************************************************************************/
-
+    //<editor-fold desc="Navigation menu">
     // this is the navigation menu on the left side
     catalog.fancytree({
       extensions: ["dnd", "filter"],
@@ -725,7 +663,7 @@ $dealer = $dealer_qry->fetch_assoc();
             }
 
             $.get("/html/pricing/ajax/modify_item.php", {type: 'addItem', id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           case "cut":
@@ -770,12 +708,12 @@ $dealer = $dealer_qry->fetch_assoc();
             break;
           case "addSubFolder":
             $.get("/html/pricing/ajax/modify_item.php", {type: 'newSubFolder', id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           case "addFolder":
             $.get("/html/pricing/ajax/modify_item.php", {type: 'newSameFolder', id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           case "save":
@@ -791,7 +729,7 @@ $dealer = $dealer_qry->fetch_assoc();
             }
 
             $.get("/html/pricing/ajax/modify_item.php", {type: type, id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           default:
@@ -921,58 +859,9 @@ $dealer = $dealer_qry->fetch_assoc();
         }, 100);
       }
     });
+    //</editor-fold>
 
-    // this is the modifications modal popup
-    itemModifications.fancytree({
-      source: { url: "/html/pricing/ajax/modifications.php" },
-      extensions: ["filter", "table"],
-      debugLevel: 0,
-      keyboard: false,
-      table: {
-        indentation: 20,
-        nodeColumnIdx: 0
-      },
-      filter: {
-        autoApply: true,   // Re-apply last filter if lazy data is loaded
-        autoExpand: true, // Expand all branches that contain matches while filtered
-        counter: true,     // Show a badge with number of matching child nodes near parent icons
-        fuzzy: true,      // Match single characters in order, e.g. 'fb' will match 'FooBar'
-        hideExpandedCounter: true,  // Hide counter badge if parent is expanded
-        hideExpanders: false,       // Hide expanders if all child nodes are hidden by filter
-        highlight: true,   // Highlight matches by wrapping inside <mark> tags
-        leavesOnly: false, // Match end nodes only
-        nodata: true,      // Display a 'no data' status node if result is empty
-        mode: "hide"       // Grayout unmatched nodes (pass "hide" to remove unmatched node instead)
-      },
-      renderColumns: function(event, data) {
-        // this section handles the column data itself
-        var node = data.node, $tdList = $(node.tr).find(">td");
 
-        // Index #0 => Checkbox
-
-        // Index #1 => SKU/Description
-        let extraMod = '';
-
-        if(node.data.description !== undefined) {
-          extraMod += node.data.description;
-        }
-
-        if(node.data.info !== undefined) {
-          extraMod += node.data.info;
-        }
-
-        $tdList.eq(1).html(extraMod);
-
-        // Index #2 => Additional Info Box
-        // Addl Info is a JSON element encoded in a database, we need to parse each of them
-        if(node.data.addl_info !== undefined && node.data.addl_info !== null && node.data.addl_info !== '') {
-          let ai = JSON.parse(node.data.addl_info);
-          let addlInfoOut = "<input type='" + ai.type + "' class='modAddlInfo' id='" + node.key + "' name='addlInfo[]' placeholder='" + ai.placeholder + "' />";
-
-          $tdList.eq(2).html(addlInfoOut);
-        }
-      }
-    });
 
     if($("#submit_for_quote").prop("disabled")) {
       $.confirm({
@@ -983,48 +872,6 @@ $dealer = $dealer_qry->fetch_assoc();
           ok: function() {}
         }
       });
-    }
-
-    $("#modalAddModification").on("show.bs.modal", function() {
-      $("#modificationsFilter").val('');
-      itemModifications.fancytree("getTree").clearFilter();
-
-      let modificationTree = {
-        url: "/html/pricing/ajax/modifications.php?priceGroup=" + priceGroup + "&itemID=" + cabinetList.fancytree("getTree").getActiveNode().data.itemID,
-        type: "POST",
-        dataType: 'json'
-      };
-
-      itemModifications.fancytree("getTree").reload(modificationTree);
-    });
-
-    $(".room_note_log").hide();
-
-    <?php echo !empty($room['custom_vin_info']) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}');": null; ?>
-
-    pricingFunction.productTypeSwitch();
-
-    <?php if (!empty($room['custom_vin_info'])) { ?>
-    $.each(customFieldInfo, function(mainID, value) {
-      $.each(value, function(i, v) {
-        $("#" + mainID).parent().find("input[name='" + i + "']").val(v);
-      });
-    });
-    <?php } ?>
-
-    if($("#ship_via").val() === '4') {
-      let ship_info = $("input[name='ship_to_name']").parent().parent();
-
-      ship_info.hide();
-      ship_info.next("tr").hide();
-      ship_info.next("tr").next("tr").hide();
-    }
-
-    if(globalFunctions.getURLParams('print') === 'true') {
-      setTimeout(function() {
-        window.print();
-        window.close();
-      }, 250);
     }
   });
 </script>

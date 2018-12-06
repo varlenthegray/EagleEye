@@ -5,21 +5,34 @@ $room_id = sanitizeInput($_REQUEST['room_id']);
 
 $vin_schema = getVINSchema();
 
-$room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id ORDER BY room, iteration ASC;");
+$room_qry = $dbconn->query("SELECT r.*, so.dealer_code, so.project_addr, so.project_city, so.project_state, so.project_zip FROM rooms r LEFT JOIN sales_order so on r.so_parent = so.so_num WHERE r.id = $room_id ORDER BY room, iteration ASC;");
 $room = $room_qry->fetch_assoc();
 
-$so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
-$so = $so_qry->fetch_assoc();
-
-$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$so['dealer_code']}'");
+$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$room['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();
+
+$note_arr = array();
+
+// FIXME: This should really be a limit of 1 with a sort order attached to it
+$notes_qry = $dbconn->query("SELECT * FROM notes WHERE note_type = 'room_note_delivery' AND type_id = '$room_id'");
+
+if($notes_qry->num_rows > 0) {
+  while($note_result = $notes_qry->fetch_assoc()) {
+    $note_arr[$note_result['note_type']] = $note_result;
+  }
+}
+
+$ship_addr = empty(trim($room['ship_address'])) ? $room['project_addr'] : $room['ship_address'];
+$ship_city = empty(trim($room['ship_city'])) ? $room['project_city'] : $room['ship_city'];
+$ship_state = empty(trim($room['ship_state'])) ? $room['project_state'] : $room['ship_state'];
+$ship_zip = empty(trim($room['ship_zip'])) ? $room['project_zip'] : $room['ship_zip'];
 ?>
-<form id="cabinet_specifications" method="post" action="#">
-  <div class="container-fluid pricing_table_format">
+<form id="batch_details" method="post" action="#">
+  <div class="container-fluid pricing_table_format m-t-10">
     <div class="row">
       <div class="col-md-4 gray_bg" style="border-radius:.25rem;border:1px solid #000;padding-bottom:25px;">
         <!--<editor-fold desc="Global Details (Left Side)">-->
-        <h5><u>Global: Room Details (Net Price)</u></h5>
+        <h5><u>Global: Batch Details (Net Price)</u></h5>
 
         <table width="100%">
           <colgroup>
@@ -72,8 +85,8 @@ $dealer = $dealer_qry->fetch_assoc();
             <td style="vertical-align:top !important;">Ship To:</td>
             <td colspan="2">
               <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Name" name="ship_to_name" value="<?php echo $room['ship_name']; ?>"><br />
-              <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $room['project_addr']; ?>"><br />
-              <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $room['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $room['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $room['project_zip']; ?>">
+              <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $ship_addr; ?>"><br />
+              <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $ship_city; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $ship_state; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $ship_zip; ?>">
             </td>
           </tr>
           <tr>
@@ -81,31 +94,12 @@ $dealer = $dealer_qry->fetch_assoc();
             <td colspan="2"><input type="checkbox" value="1" name="multi_room_ship" id="multi_room_ship" <?php echo $room['multi_room_ship'] ? 'checked' : null; ?>> <label for="multi_room_ship">Multi-room shipping</label></td>
           </tr>
           <tr>
-            <?php
-            $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $dealer['shipping_zip'];
-            $ship_zone_info = calcShipZone($shipZone);
 
-            if($room['ship_cost'] === null) {
-              $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $ship_zone_info['cost'];
-            } else {
-              $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $room['ship_cost'];
-            }
-
-            setlocale(LC_MONETARY, 'en_US');
-
-            $ship_cost_formatted = number_format($ship_cost, 2);
-            ?>
 
             <td>Shipping Zone:</td>
             <td><strong><?php echo $ship_zone_info['zone']; ?></strong><i style="font-size:1.25em;float:right;" class="fa fa-pencil-square no-print cursor-hand" id="overrideShipCost" title="Override Ship Cost"></td>
             <td id="shipping_cost" class="pricing_value" data-cost="<?php echo $ship_cost; ?>"></td>
           </tr>
-          <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" />
-          <!--<tr>
-            <td>Shipping Cubes:<br /><em>(Min of 6)</em></td>
-            <td><strong id="ship_cube_count">0</strong> <input type="hidden" name="shipping_cubes" value="0" id="shipping_cubes" /></td>
-            <td id="ship_cube_cost">$0.00</td>
-          </tr>-->
           <tr>
             <td colspan="3" style="height:2px;"></td>
           </tr>
@@ -187,8 +181,43 @@ $dealer = $dealer_qry->fetch_assoc();
           <tr><td id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width pricing_textbox"><?php echo $note_arr['room_note_delivery']['note']; ?></textarea></td></tr>
         </table>
 
+        <?php if($bouncer->validate('view_accounting')) { ?>
+          <tr>
+            <td colspan="2">
+              <label class="c-input c-checkbox">Deposit Received <input type="checkbox" name="deposit_received" value="1" <?php echo ((bool)$room['payment_deposit']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
+              <label class="c-input c-checkbox">Prior to Loading: Distribution - Final Payment<br/><span style="margin-left:110px;">Retail - On Delivery/Payment</span> <input type="checkbox" name="ptl_del" value="1" <?php echo ((bool)$room['payment_del_ptl']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
+              <label class="c-input c-checkbox">Retail - Final Payment <input type="checkbox" name="final_payment" value="1" <?php echo ((bool)$room['payment_final']) ? 'checked' :null; ?>><span class="c-indicator"></span></label>
+            </td>
+          </tr>
+          <tr style="height:10px;">
+            <td colspan="2"></td>
+          </tr>
+        <?php } ?>
+
         <input type="hidden" name="delivery_notes_id" value="<?php echo $note_arr['room_note_delivery']['id']; ?>" />
       </div>
     </div>
   </div>
 </form>
+
+<script>
+$(function() {
+  if($("#ship_via").val() === '4') {
+    let ship_info = $("input[name='ship_to_name']").parent().parent();
+
+    ship_info.hide();
+    ship_info.next("tr").hide();
+    ship_info.next("tr").next("tr").hide();
+  }
+
+  //<editor-fold desc="Auto-delivery note height">
+  let tx_delnotes = $("textarea[name='delivery_notes']");
+  let delheight = (tx_delnotes.prop('scrollHeight') < 180) ? 180 : tx_delnotes.prop('scrollHeight');
+  tx_delnotes.height(delheight);
+  //</editor-fold>
+
+  <?php if($room['order_status'] === '$') { ?>
+    pricingFunction.disableInput();
+  <?php }?>
+});
+</script>

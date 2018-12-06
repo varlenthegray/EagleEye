@@ -17,8 +17,6 @@ var thisClick;
 $("body")
   .on("keyup", "#global_search", function() {
     checkTransition(function() {
-      globalFunctions.clearIntervals();
-
       let searchDisplay = $("#search_display");
       let input = $("#global_search");
       let mainDisplay = $("#main_display");
@@ -301,7 +299,9 @@ $("body")
   })
 
   .on("click", "#add_attachment", function() {
-    $("#modalAddAttachment").modal("show");
+    $.post("/html/modals/room_attachments.php", {room_id: active_room_id}, function(data) {
+      $("#modalGlobal").html(data).modal("show");
+    });
   })
   .on("click", "#submit_attachments", function(e) {
     e.stopPropagation();

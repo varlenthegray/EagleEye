@@ -20,7 +20,7 @@ ORDER BY so_num DESC");
 ?>
 
 <style>
-  .search .header {
+  .so_result > .header {
     width: 100%;
     font-size: 1.5em;
     font-weight: bold;

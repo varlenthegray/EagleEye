@@ -1,5 +1,5 @@
 <?php
-require_once("../../includes/header_start.php");
+require_once '../../includes/header_start.php';
 
 $room_id = sanitizeInput($_REQUEST['room_id']);
 

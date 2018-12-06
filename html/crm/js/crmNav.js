@@ -1,3 +1,5 @@
+/*global active_room_id:true*//*global active_so_num:true*/
+
 var crmNav = {
   tree: $("#searchResultTree"),
   getTree: null, // assigned in init
@@ -66,6 +68,13 @@ var crmNav = {
          *******************************************************/
         let activateType = node.data.keyType;
         let typeID = node.key;
+
+        if(activateType === 'rID') {
+          active_room_id = typeID;
+          active_so_num = node.getParent().key;
+        } else if(activateType === 'soID') {
+          active_so_num = typeID;
+        }
 
         $.post("/html/crm/templates/crm_view.php", {'type': activateType, 'id': typeID}, function(data) { // pull the data for the main tab of the CRM
           crmMain.body.html(data); // insert it into the body

@@ -1,4 +1,4 @@
-/*global toastr*/
+/*global toastr*//*global queue_table*//*global active_table*//*global active_so_num*//*global so_list*//*global scrollPosition*//*global Notification*/
 
 /**
  * Created by Ben on 3/18/2017.
@@ -37,8 +37,6 @@ var globalFunctions = {
     $(".js_loading").show();
 
     if(mainBody.length > 0) {
-      globalFunctions.clearIntervals();
-
       mainBody.load("/html/" + explodedPage[0] + ".php?" + explodedPage[1], function() {
         $(".js_loading").hide();
         $("#main_display").attr("data-showing", explodedPage[0]);
@@ -120,27 +118,6 @@ var globalFunctions = {
       $("html").scrollTop(scrollPosition);
     }, 200);
   },
-  clearIntervals: function() {
-    if(indv_dt_interval !== undefined) {
-      clearInterval(indv_dt_interval);
-    }
-
-    if(indv_auto_interval !== undefined) {
-      clearInterval(indv_auto_interval);
-    }
-
-    if(wc_auto_interval !== undefined) {
-      clearInterval(wc_auto_interval);
-    }
-
-    if(dash_auto_interval !== undefined) {
-      clearInterval(dash_auto_interval);
-    }
-
-    if(oplUpdater !== undefined) {
-      clearInterval(oplUpdater);
-    }
-  },
   notifyMe: function() {
     // Let's check if the browser supports notifications
     if (!("Notification" in window)) {
@@ -151,7 +128,7 @@ var globalFunctions = {
     else if (Notification.permission === "granted") {
       setTimeout(function () {
         // If it's okay let's create a notification
-        var notification = new Notification("Hi there!");
+        let notification = new Notification("Hi there!");
       }, 2000);
     }
 
@@ -160,7 +137,7 @@ var globalFunctions = {
       Notification.requestPermission(function (permission) {
         // If the user accepts, let's create a notification
         if (permission === "granted") {
-          var notification = new Notification("Hi there!");
+          let notification = new Notification("Hi there!");
         }
       });
     }
@@ -173,7 +150,7 @@ var globalFunctions = {
     var search = decodeURIComponent( window.location.href.slice( window.location.href.indexOf('?') + 1));
     var definitions = search.split('&');
 
-    definitions.forEach(function(val, key) {
+    definitions.forEach(function(val) {
       var parts = val.split('=', 2);
       params[parts[0]] = parts[1];
     } );

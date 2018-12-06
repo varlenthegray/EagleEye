@@ -7,6 +7,18 @@ $room_id = sanitizeInput($_REQUEST['room_id']);
 
 $vin_schema = getVINSchema();
 
+//<editor-fold desc="Get specific VIN info for pricing usage">
+$vin_qry = $dbconn->query("SELECT segment, `key`, markup, markup_calculator
+  FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
+  FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC, FIELD(`key`, 'B78') DESC");
+
+$json_vin = null;
+
+while($vin = $vin_qry->fetch_assoc()) {
+  $json_vin[$vin['segment']][$vin['key']] = array('markup' => $vin['markup'], 'markup_calculator' => $vin['markup_calculator']);
+}
+//</editor-fold>
+
 $note_arr = array();
 
 // FIXME: This should really be a limit of 1 with a sort order attached to it
@@ -926,128 +938,6 @@ if($pg_qry->num_rows > 0) {
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<!-- modal -->
-<div id="modalDetailedItemList" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalDetailedItemListLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Item List Breakdown</h4>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-12">
-            <table id="cost_audit" width="100%"  style="vertical-align:top;">
-              <colgroup>
-                <col width="20%">
-                <col width="70%">
-                <col width="10%">
-              </colgroup>
-              <thead>
-              <tr>
-                <th>Line</th>
-                <th>Calculation</th>
-                <th>Total</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>Product Type</td>
-                <td id="calcProductType"></td>
-                <td id="calcProductTypeTotal"></td>
-              </tr>
-              <tr>
-                <td>Lead Time</td>
-                <td id="calcLeadTime"></td>
-                <td id="calcLeadTimeTotal"></td>
-              </tr>
-              <tr>
-                <td>Ship VIA</td>
-                <td id="calcShipVIA"></td>
-                <td id="calcShipVIATotal"></td>
-              </tr>
-              <tr>
-                <td>Shipping Zone</td>
-                <td id="calcShipZone"></td>
-                <td id="calcShipZoneTotal"></td>
-              </tr>
-              <tr>
-                <td>Glaze Technique</td>
-                <td id="calcGlazeTech"></td>
-                <td id="calcGlazeTechTotal"></td>
-              </tr>
-              <tr>
-                <td>Sheen</td>
-                <td id="calcSheen"></td>
-                <td id="calcSheenTotal"></td>
-              </tr>
-              <tr>
-                <td>Green Gard</td>
-                <td id="calcGreenGard"></td>
-                <td id="calcGreenGardTotal"></td>
-              </tr>
-              <tr>
-                <td>Finish Cost</td>
-                <td id="calcFinishCode"></td>
-                <td id="calcFinishCodeTotal"></td>
-              </tr>
-              <tr>
-                <td>Cabinet Lines</td>
-                <td id="calcCabinetLines"></td>
-                <td id="calcCabinetLinesTotal"></td>
-              </tr>
-              <tr>
-                <td>Non-Cabinet Lines</td>
-                <td id="calcNonCabLines"></td>
-                <td id="calcNonCabLinesTotal"></td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary waves-effect waves-light" id="modificationAddSelected">Add Selected</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<!-- modal -->
-<div id="modalGeneral" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGeneralLabel" aria-hidden="true">
-  <!-- AJAX Loaded based on button press -->
-</div><!-- /.modal -->
-
-<form id="room_attachments">
-  <!-- Attachment modal -->
-  <div id="modalAddAttachment" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddAttachmentLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-          <h4 class="modal-title">Add Attachment to <?php echo "{$room['so_parent']}{$room['room']}-{$room['iteration']}"; ?></h4>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12">
-              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
-              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
-              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
-              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
-              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer" id="r_attachments_footer">
-          <button type="button" class="btn btn-primary waves-effect" id="submit_attachments">Submit</button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div>
-  <!-- /.modal -->
-</form>
-
 <iframe id="dlORDfile" src="" style="display:none;visibility:hidden;"></iframe>
 
 <script>
@@ -1063,6 +953,11 @@ if($pg_qry->num_rows > 0) {
   echo "var calcDealerShipZip = '{$dealer['shipping_zip']}';";
   echo "var calcShipInfo = '$shipInfo';";
   ?>
+
+  pricingVars.nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';
+  pricingVars.roomQry = JSON.parse('<?php $room['custom_vin_info'] = null; echo json_encode($room); ?>');
+  pricingVars.vinInfo = JSON.parse('<?php echo strip_tags(json_encode($json_vin)); ?>');
+  pricingVars.shipCost = <?php echo $ship_cost; ?>;
 
   var numPages = 1,
 
@@ -1259,6 +1154,17 @@ if($pg_qry->num_rows > 0) {
         setTimeout(function() {
           // cabinetList.floatThead({ top: 67 });
         }, 500);
+
+        // automatically expand all sub-lines
+        cabinetList.fancytree("getTree").visit(function(node){
+          let $tdList = $(node.tr).find(">td"); // get the columns of the item list
+
+          node.setExpanded(); // set the node as expanded
+
+          if(!node.isTopLevel()) { // if it's not a top level item
+            $tdList.eq(2).find('.add_item_mod, .item_copy').css('visibility', 'hidden'); // set the visibility of both item copy and item mod as hidden
+          }
+        });
 
         if(globalFunctions.getURLParams('hidePrice') === 'true') {
           $(".pricing_value").hide();
@@ -1554,7 +1460,7 @@ if($pg_qry->num_rows > 0) {
             }
 
             $.get("/html/pricing/ajax/modify_item.php", {type: 'addItem', id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           case "cut":
@@ -1599,12 +1505,12 @@ if($pg_qry->num_rows > 0) {
             break;
           case "addSubFolder":
             $.get("/html/pricing/ajax/modify_item.php", {type: 'newSubFolder', id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           case "addFolder":
             $.get("/html/pricing/ajax/modify_item.php", {type: 'newSameFolder', id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           case "save":
@@ -1620,7 +1526,7 @@ if($pg_qry->num_rows > 0) {
             }
 
             $.get("/html/pricing/ajax/modify_item.php", {type: type, id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           default:

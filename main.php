@@ -80,14 +80,6 @@ require 'includes/header_start.php';
 
   <!-- Navigation Bar-->
   <header id="topnav">
-    <!--<div class="custom-logo">
-      <div id="header_container">
-        <div id="header_main">EagleEye ERP <div id="header_min">www.3erp.us</div></div>
-      </div>
-
-      <div id="slogan">"The all seeing eye in the cloud"</div>
-    </div>-->
-
     <div id="clock"></div>
 
     <!-- fake fields are a workaround for chrome autofill getting the wrong fields (such as search) -->
@@ -124,8 +116,6 @@ require 'includes/header_start.php';
             <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/main.php?page=mail/cross_page" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi-email noti-icon"></i></a></li>
 
             <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="/main.php?page=calendar/index" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-calendar noti-icon"></i></a></li>
-
-<!--            <li class="nav-item notification-list"><a class="nav-link arrow-none waves-light waves-effect" href="#" role="button" aria-haspopup="false" aria-expanded="false"><i class="zmdi zmdi zmdi-comments noti-icon"></i></a></li>-->
 
             <li class="nav-item dropdown notification-list" id="notification_list">
               <!-- AJAX -->
@@ -164,43 +154,13 @@ require 'includes/header_start.php';
 
       <div id="search_display" style="display: none;"></div>
 
-      <!-- Add Customer modal -->
-      <div id="modalAddContact" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddContactLabel" aria-hidden="true">
+      <!-- Global modal -->
+      <div id="modalGlobal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGlobalLabel" aria-hidden="true">
         <!-- Inserted via AJAX -->
       </div>
       <!-- /.modal -->
 
-      <!-- modal -->
-      <div id="modalLogin" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalLoginLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-              <h4 class="modal-title" id="modalLoginName">Login As XYZ</h4>
-            </div>
-            <div class="modal-body">
-              <div class="row">
-                <div class="col-md-12 text-md-center">
-                  <h4>Enter PIN Code</h4>
-
-                  <input type="password" autocomplete="off" name="pin" placeholder="PIN" maxlength="4" id="loginPin" class="text-md-center ignoreSaveAlert">
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-primary waves-effect waves-light" id="clock_in">Clock In</button>
-            </div>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
-
-      <!-- View Notes modal -->
-      <div id="modalViewNotes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalViewNotesLabel" aria-hidden="true">
-        <!-- Inserted via AJAX -->
-      </div>
-      <!-- /.modal -->
-
+      <!-- TODO: Change this to global modal (above) -->
       <div id="feedback-page" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="feedbackPageLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -285,12 +245,7 @@ require 'includes/header_start.php';
     var currentPage = '<?php echo $usr['default_dashboard']; ?>';
     var scrollPosition = 0;
 
-    var indv_dt_interval; // used on functions.js
-    var indv_auto_interval; // used on functions.js
-    var wc_auto_interval; // used on functions.js
-    var dash_auto_interval; // used on functions.js
     var oplUpdater; // used on html/opl/index.php
-
     var oplFiltered = false;
 
     var userID;
@@ -449,6 +404,10 @@ require 'includes/header_start.php';
 
       $(".modal").draggable({
         handle: ".modal-header"
+      });
+
+      $("#modalGlobal").on("hidden.bs.modal", function() {
+        $("#modalGlobal").html('');
       });
 
       $.ui.fancytree.debugLevel = 0;
@@ -727,7 +686,7 @@ require 'includes/header_start.php';
       .on("click", ".view_so_info", function(e) {
         e.stopPropagation();
 
-        $("#modalAddContact").modal('hide');
+        $("#modalGlobal").modal('hide');
 
         var id = $(this).attr("id");
         $("#global_search").val(id).trigger("keyup");
@@ -762,7 +721,7 @@ require 'includes/header_start.php';
             socket.emit("updateQueue");
 
             $.post("/html/view_notes.php", {queueID: op_id}, function(data) {
-              $("#modalViewNotes").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
           });
         }
@@ -892,7 +851,7 @@ require 'includes/header_start.php';
         e.stopPropagation();
 
         $.post("/html/view_notes.php", {queueID: $(this).attr("id")}, function(data) {
-          $("#modalViewNotes").html(data).modal("show");
+          $("#modalGlobal").html(data).modal("show");
         });
       })
       // -- End Dashboard --
@@ -1125,7 +1084,7 @@ require 'includes/header_start.php';
       <?php if($bouncer->validate('add_so')) { ?>
       .on("click", "#nav_add_so", function() {
         $.post('/html/new_customer.php', function(data) {
-          $("#modalAddContact").html(data).modal('show');
+          $("#modalGlobal").html(data).modal('show');
         });
       })
       .on("change", "input[name='cu_type']", function() {
@@ -1158,7 +1117,7 @@ require 'includes/header_start.php';
         $.post("/ondemand/so_actions.php?action=add_customer", {so_num: $("#so_num").val(), cu_data: cuData}, function(data) {
           $("body").append(data);
 
-          $("#modalAddContact").modal('hide');
+          $("#modalGlobal").modal('hide');
         });
 
         unsaved = false;
@@ -1177,7 +1136,7 @@ require 'includes/header_start.php';
       <?php if($bouncer->validate('add_project')) { ?>
       .on("click", "#nav_add_project", function() {
         $.post('/html/add_project.php?display=dealer', function(data) {
-          $("#modalAddContact").html(data).modal('show');
+          $("#modalGlobal").html(data).modal('show');
         });
       })
       .on("change", "#contractor_chk", function() {
@@ -1191,7 +1150,7 @@ require 'includes/header_start.php';
         $.post("/ondemand/so_actions.php?action=add_customer", {so_num: $("#so_num").val(), cu_data: cuData}, function(data) {
           $("body").append(data);
 
-          $("#modalAddContact").modal('hide');
+          $("#modalGlobal").modal('hide');
         });
 
         unsaved = false;
@@ -1203,7 +1162,7 @@ require 'includes/header_start.php';
         var defaultType = $(this).attr('data-default');
 
         $.post('/html/add_contact.php?default=' + defaultType, function(data) {
-          $("#modalAddContact").html(data).modal('show');
+          $("#modalGlobal").html(data).modal('show');
         });
       })
       .on("click", "#submit_new_contact", function() {
@@ -1212,7 +1171,7 @@ require 'includes/header_start.php';
         $.post('/ondemand/contact_actions.php?action=save_contact&' + contactData, function(data) {
           $("body").append(data);
 
-          $("#modalAddContact").modal('hide');
+          $("#modalGlobal").modal('hide');
         });
 
         unsaved = false;
@@ -1230,7 +1189,7 @@ require 'includes/header_start.php';
         $.post('/ondemand/contact_actions.php?action=update_contact&' + contactData, function(data) {
           $("body").append(data);
 
-          $("#modalAddContact").modal('hide');
+          $("#modalGlobal").modal('hide');
         });
 
         unsaved = false;
@@ -1269,7 +1228,7 @@ require 'includes/header_start.php';
       })
       .on("click", ".get_customer_info", function(e) {
         $.post("/html/add_contact.php?action=edit", {id: $(this).attr('data-view-id')}, function(data) {
-          $("#modalAddContact").html(data).modal('show');
+          $("#modalGlobal").html(data).modal('show');
         });
 
         // stops it from posting to the URL in the browser
@@ -1357,9 +1316,6 @@ require 'includes/header_start.php';
   <!-- Alert Windows -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
 
-  <!-- Mask -->
-<!--  <script src="/assets/plugins/jquery.mask.min.js"></script> 9/21/18-->
-
   <!-- Counter Up  -->
   <script src="/assets/plugins/waypoints/lib/jquery.waypoints.js"></script>
   <script src="/assets/plugins/counterup/jquery.counterup.min.js"></script>
@@ -1370,12 +1326,6 @@ require 'includes/header_start.php';
 
   <!-- Tinysort -->
   <script type="text/javascript" src="/assets/plugins/tinysort/tinysort.min.js"></script>
-
-  <!-- Input Masking -->
-<!--  <script type="text/javascript" src="/assets/plugins/jquery.mask.min.js"></script> 9/21/18-->
-
-  <!-- Datepicker -->
-<!--  <script src="/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script> 9/21/18-->
 
   <!-- JScroll -->
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.0/jquery.scrollTo.min.js"></script>

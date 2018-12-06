@@ -5,22 +5,19 @@ $room_id = sanitizeInput($_REQUEST['room_id']);
 
 $vin_schema = getVINSchema();
 
-$room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id ORDER BY room, iteration ASC;");
+$room_qry = $dbconn->query("SELECT r.*, so.dealer_code FROM rooms r LEFT JOIN sales_order so on r.so_parent = so.so_num WHERE r.id = $room_id ORDER BY room, iteration ASC;");
 $room = $room_qry->fetch_assoc();
 
-$so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
-$so = $so_qry->fetch_assoc();
-
-$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$so['dealer_code']}'");
+$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$room['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();
 ?>
 
-<form id="cabinet_specifications" method="post" action="#">
-  <div class="container-fluid pricing_table_format">
+<form id="cabinet_details" method="post" action="#">
+  <div class="container-fluid pricing_table_format m-t-10">
     <div class="row">
       <div class="col-sm-6">
         <div class="col-md-12">
-          <div class="global_cab_header"><h5><u>Global: Cabinet Details</u></h5></div>
+          <div class="global_cab_header"><h5><u>Global: Product Details</u></h5></div>
         </div>
 
         <!--<editor-fold desc="Second Column: Cabinet Details">-->
@@ -152,5 +149,38 @@ $dealer = $dealer_qry->fetch_assoc();
 <script>
   $(function() {
     globalFunctions.checkDropdown();
+
+    <?php if($room['order_status'] === '$') { ?>
+      pricingFunction.disableInput();
+    <?php }?>
+
+    pricingFunction.productTypeSwitch();
+
+    //<editor-fold desc="Auto-note height">
+    let tx_design = $("textarea[name='room_note_design']");
+    let tx_fin_sample = $("textarea[name='fin_sample_notes']");
+    let designheight = (tx_design.prop('scrollHeight') < 180) ? 180 : tx_design.prop('scrollHeight');
+    let finsampleheight = (tx_fin_sample.prop('scrollHeight') < 180) ? 180 : tx_fin_sample.prop('scrollHeight');
+
+    tx_design.height(designheight);
+    tx_fin_sample.height(finsampleheight);
+    //</editor-fold>
+
+    //<editor-fold desc="Custom select field display">
+    <?php
+    echo !empty($room['custom_vin_info']) ? "let customFieldInfo = JSON.parse('{$room['custom_vin_info']}');": null;
+
+    if (!empty($room['custom_vin_info'])) {
+      echo /** @lang JavaScript */
+      <<<HEREDOC
+      $.each(customFieldInfo, function(mainID, value) {
+        $.each(value, function(i, v) {
+          $("#" + mainID).parent().find("input[name='" + i + "']").val(v);
+        });
+      });
+HEREDOC;
+    }
+    ?>
+    //</editor-fold>
   });
 </script>
