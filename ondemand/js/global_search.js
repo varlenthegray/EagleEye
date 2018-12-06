@@ -1,5 +1,5 @@
 /*jshint strict: false*/
-/*global productTypeSwitch*//*global calcVin*//*global displayToast*//*global checkTransition*//*global unsaved:true*//*global tinysort*//*global backFromSearch*//*global clearIntervals*//*global scrollPosition:true*/
+/*global displayToast*//*global checkTransition*//*global unsaved:true*//*global tinysort*//*global scrollPosition:true*//*global globalFunctions*//*global document*/
 
 // Goal: to ensure the loading of Global Search input field
 var timer;
@@ -7,31 +7,16 @@ var active_so_num;
 var active_room_id;
 var thisClick;
 
-function toggleDisplay(x) {
-  $(".room_line").removeClass("active_room_line");
-  $("#" + active_room_id).addClass("active_room_line");
-
-  $("[id^=tr_attachments_]").finish().hide(250);
-  $("[id^=div_attachments_]").finish().hide(100);
-  $("[id^=tr_edit_so_]").finish().hide(250);
-  $("[id^=div_edit_so_]").finish().hide(100);
-
-  $(".tr_room_actions").hide(300).find('div').slideUp(150).html('');
-  $(".add_room").hide(300).find('div').slideUp(150).html('');
-}
-
-function scrollLocation(container) {
+/*function scrollLocation(container) {
   setTimeout(function() {
     $(window).scrollTo($(container), 800, {offset: -125});
   }, 300);
-}
+}*/
 
 // TODO: Lock down separeate sections based on bouncer results
 $("body")
   .on("keyup", "#global_search", function() {
     checkTransition(function() {
-      clearIntervals();
-
       let searchDisplay = $("#search_display");
       let input = $("#global_search");
       let mainDisplay = $("#main_display");
@@ -79,7 +64,7 @@ $("body")
 
   .on("click", "#btn_search_to_main", function() {
     checkTransition(function() {
-      backFromSearch();
+      globalFunctions.backFromSearch();
     });
   })
 
@@ -118,8 +103,6 @@ $("body")
 
     checkTransition(function() {
       active_so_num = $(thisClick).attr("id").replace('show_room_', '');
-
-      toggleDisplay();
 
       $("#tr_room_" + active_so_num).show();
       $("#div_room_" + active_so_num).slideDown(250);
@@ -167,27 +150,6 @@ $("body")
         });
       }
     });
-
-    /*thisClick = this;
-
-    e.stopPropagation();
-
-    checkTransition(function() {
-      active_room_id = $(thisClick).attr("id");
-      active_so_num = $(thisClick).data("sonum");
-
-      // toggleDisplay();
-
-      // $.post("/html/pricing/index.php?room_id=" + active_room_id, function(data) {
-      //   $("#" + active_room_id + ".tr_room_actions").show().find('div').html(data).slideDown(150);
-      // });
-      //
-      // scrollLocation("#" + active_room_id + ".tr_room_actions");
-
-      $.get("/html/pricing/index.php", {room_id: active_room_id}, function(data) {
-        $("#searchModal .modal-body").html(data).modal('show');
-      });
-    });*/
   })
   .on("click", ".activate_op", function() {
     var opid = $(this).data("opid");
@@ -231,45 +193,6 @@ $("body")
 
     $(this).parent().remove();
   })
-
-  /* .on("click", ".edit_room_save", function(e) {
-    e.stopPropagation();
-
-    var thisClick = this;
-    var val_array = {};
-
-    $(thisClick).removeClass('edit_room_save');
-
-    var edit_info = $("#room_edit_" + active_room_id).serialize();
-    var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
-
-    active_ops = JSON.stringify(active_ops);
-
-    $("input[type='hidden']").each(function() {
-      var ele = $(this);
-      var field = $(this).attr('id');
-      var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
-
-      if($.inArray(ele.val(), custom_fields) >= 0) {
-        val_array[field] = {};
-
-        ele.parent().find('.selected').find('input').each(function() {
-          val_array[field][$(this).attr('name')] = $(this).val();
-        });
-      }
-    });
-
-    var customVals = JSON.stringify(val_array);
-
-    $.post("/ondemand/room_actions.php?action=update_room", {active_ops: active_ops, customVals: customVals, editInfo: edit_info}, function(data) {
-      $('body').append(data);
-    }).done(function() {
-      $(thisClick).addClass('edit_room_save');
-      $("#room_notes").val('');
-    });
-
-    unsaved = false;
-  })*/
 
   .on("click", ".save_so", function() {
     var so_info = $("#form_so_" + active_so_num).serialize();
@@ -358,20 +281,6 @@ $("body")
     unsaved = false;
   })
 
-  /*.on("click", "[id^=show_vin_]", function(e) {
-    thisClick = this;
-
-    e.stopPropagation();
-
-    checkTransition(function() {
-      active_so_num = $(thisClick).attr("id").replace('show_vin_room_', '');
-
-      toggleDisplay();
-
-      $("#tr_vin_" + active_so_num).show();
-      $("#div_vin_" + active_so_num).slideDown(250);
-    });
-  })*/
   .on("click", "[id^=show_attachments_room_]", function(e) {
     thisClick = this;
 
@@ -379,8 +288,6 @@ $("body")
 
     checkTransition(function() {
       active_room_id = $(thisClick).attr("id").replace('show_attachments_room_', '');
-
-      toggleDisplay();
 
       $("#tr_attachments_" + active_room_id).show();
       $("#div_attachments_" + active_room_id).slideDown(250);
@@ -391,26 +298,10 @@ $("body")
     });
   })
 
-  /*.on("click", "[id^=print_]", function(e) {
-    thisClick = this;
-
-    e.stopPropagation();
-
-    checkTransition(function() {
-      active_room_id = $(thisClick).attr("id").replace('print_', '');
-
-      toggleDisplay();
-
-      $("#tr_print_" + active_room_id).show();
-      $("#div_print_" + active_room_id).slideDown(250);
-
-      setTimeout(function() {
-        $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -100});
-      }, 300);
-    });
-  })*/
   .on("click", "#add_attachment", function() {
-    $("#modalAddAttachment").modal("show");
+    $.post("/html/modals/room_attachments.php", {room_id: active_room_id}, function(data) {
+      $("#modalGlobal").html(data).modal("show");
+    });
   })
   .on("click", "#submit_attachments", function(e) {
     e.stopPropagation();
@@ -459,31 +350,6 @@ $("body")
 
     unsaved = false;
   })
-
-  /*.on("click", "#copy_vin", function() {
-    var copy_to_title = $("#copy_vin_target").find(":selected").text();
-    var thisClick = $(this);
-
-    $.confirm({
-      title: "Are you sure you want to copy this VIN?",
-      content: "You are overwriting <strong>ALL</strong> VIN information located at " + copy_to_title + " - please confirm you wish to proceed.",
-      buttons: {
-        confirm: function() {
-          var copy_from = $(thisClick).data("roomid");
-          var copy_to = $("#copy_vin_target").find(":selected").val();
-
-          console.log("Copy From: " + copy_from + ", Copy To: " + copy_to);
-
-          $.post("/ondemand/room_actions.php?action=copy_vin", {copy_from: copy_from, copy_to: copy_to}, function(data) {
-            $('body').append(data);
-          });
-        },
-        cancel: function() {}
-      }
-    });
-
-
-  })*/
 
   .on("change", "input[name='note_type']", function() {
     var room_notes = $("#room_notes");
@@ -657,8 +523,99 @@ $("body")
       unsaved = false;
     }
   })
-;
 
-$(document).on("scroll", function() {
-  $(".dropdown_options").hide();
-});
+  /* .on("click", ".edit_room_save", function(e) {
+    e.stopPropagation();
+
+    var thisClick = this;
+    var val_array = {};
+
+    $(thisClick).removeClass('edit_room_save');
+
+    var edit_info = $("#room_edit_" + active_room_id).serialize();
+    var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
+
+    active_ops = JSON.stringify(active_ops);
+
+    $("input[type='hidden']").each(function() {
+      var ele = $(this);
+      var field = $(this).attr('id');
+      var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
+
+      if($.inArray(ele.val(), custom_fields) >= 0) {
+        val_array[field] = {};
+
+        ele.parent().find('.selected').find('input').each(function() {
+          val_array[field][$(this).attr('name')] = $(this).val();
+        });
+      }
+    });
+
+    var customVals = JSON.stringify(val_array);
+
+    $.post("/ondemand/room_actions.php?action=update_room", {active_ops: active_ops, customVals: customVals, editInfo: edit_info}, function(data) {
+      $('body').append(data);
+    }).done(function() {
+      $(thisClick).addClass('edit_room_save');
+      $("#room_notes").val('');
+    });
+
+    unsaved = false;
+  })*/
+  /*.on("click", "#copy_vin", function() {
+  var copy_to_title = $("#copy_vin_target").find(":selected").text();
+  var thisClick = $(this);
+
+  $.confirm({
+    title: "Are you sure you want to copy this VIN?",
+    content: "You are overwriting <strong>ALL</strong> VIN information located at " + copy_to_title + " - please confirm you wish to proceed.",
+    buttons: {
+      confirm: function() {
+        var copy_from = $(thisClick).data("roomid");
+        var copy_to = $("#copy_vin_target").find(":selected").val();
+
+        console.log("Copy From: " + copy_from + ", Copy To: " + copy_to);
+
+        $.post("/ondemand/room_actions.php?action=copy_vin", {copy_from: copy_from, copy_to: copy_to}, function(data) {
+          $('body').append(data);
+        });
+      },
+      cancel: function() {}
+    }
+  });
+
+
+})*/
+  /*.on("click", "[id^=print_]", function(e) {
+  thisClick = this;
+
+  e.stopPropagation();
+
+  checkTransition(function() {
+    active_room_id = $(thisClick).attr("id").replace('print_', '');
+
+    toggleDisplay();
+
+    $("#tr_print_" + active_room_id).show();
+    $("#div_print_" + active_room_id).slideDown(250);
+
+    setTimeout(function() {
+      $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -100});
+    }, 300);
+  });
+})*/
+  /*.on("click", "[id^=show_vin_]", function(e) {
+  thisClick = this;
+
+  e.stopPropagation();
+
+  checkTransition(function() {
+    active_so_num = $(thisClick).attr("id").replace('show_vin_room_', '');
+
+    toggleDisplay();
+
+    $("#tr_vin_" + active_so_num).show();
+    $("#div_vin_" + active_so_num).slideDown(250);
+  });
+})*/
+;

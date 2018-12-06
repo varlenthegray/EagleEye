@@ -5,23 +5,19 @@ require '../../includes/header_start.php';
 
 $room_id = sanitizeInput($_REQUEST['room_id']);
 
-$vin_qry = $dbconn->query("SELECT * FROM vin_schema 
-ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
- FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC,
- FIELD(`key`, 'B78') DESC");
+$vin_schema = getVINSchema();
+
+//<editor-fold desc="Get specific VIN info for pricing usage">
+$vin_qry = $dbconn->query("SELECT segment, `key`, markup, markup_calculator
+  FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
+  FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC, FIELD(`key`, 'B78') DESC");
+
+$json_vin = null;
 
 while($vin = $vin_qry->fetch_assoc()) {
-  $vin_schema[$vin['segment']][] = $vin;
+  $json_vin[$vin['segment']][$vin['key']] = array('markup' => $vin['markup'], 'markup_calculator' => $vin['markup_calculator']);
 }
-
-$info_qry = $dbconn->query("SELECT rooms.*, sales_order.*, rooms.order_status AS rOrderStatus FROM rooms LEFT JOIN sales_order ON rooms.so_parent = sales_order.so_num WHERE rooms.id = '$room_id'");
-$info = $info_qry->fetch_assoc();
-
-$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$info['dealer_code']}'");
-$dealer_info = $dealer_qry->fetch_assoc();
-
-$sheen_qry = $dbconn->query("SELECT * FROM vin_schema WHERE segment = 'sheen' AND `key` = '{$info['sheen']}'");
-$sheen = $sheen_qry->fetch_assoc();
+//</editor-fold>
 
 $note_arr = array();
 
@@ -43,10 +39,10 @@ if($_REQUEST['action'] === 'sample_req' || $_REQUEST['action'] === 'no_totals') 
 $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id ORDER BY room, iteration ASC;");
 $room = $room_qry->fetch_assoc();
 
-$result_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
-$result = $result_qry->fetch_assoc();
+$so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
+$so = $so_qry->fetch_assoc();
 
-$dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id = '{$result['dealer_code']}'");
+$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$so['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();
 
 // This section refers to the submit buttons and disabling of them
@@ -98,7 +94,7 @@ if($pg_qry->num_rows > 0) {
   <?php echo $submit_disabled !== null ? 'var already_submitted = true;' : 'var already_submitted = false;'; ?>
 </script>
 
-<div class="container-fluid pricing-container" style="width:100%;">
+<div class="container-fluid" style="width:100%;">
   <div class="row sticky no-print" style="background-color:#FFF;z-index:2;top:0;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
@@ -126,7 +122,7 @@ if($pg_qry->num_rows > 0) {
       <button class="btn waves-effect btn-secondary" style="display:none;" title="Override Production Lock" id="production_lock"><i class="fa fa-lock fa-2x"></i></button>
     </div>
 
-    <div class="col-md-6 text-md-right"><h4 style="margin:0;padding:0;"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']} $submitted"; ?></h4></div>
+    <div class="col-md-6 text-md-right"><h4 style="margin:0;padding:0;"><?php echo "{$room['so_parent']}{$room['room']}-{$room['iteration']} $submitted"; ?></h4></div>
   </div>
 
   <div class="row">
@@ -134,7 +130,7 @@ if($pg_qry->num_rows > 0) {
       <div class="sticky nav_filter">
         <div class="form-group">
           <label for="left_menu_options">Action:</label>
-          <select id="left_menu_options" class="c_dropdown ignoreSaveAlert" style="margin:5px 0;">
+          <select id="left_menu_options" class="c_input ignoreSaveAlert" style="margin:5px 0;">
             <option value="catalog">Catalog</option>
             <option value="samples">Samples</option>
           </select>
@@ -163,11 +159,11 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <td width="25%">Dealer:</td>
-                <td class="text-bold"><?php echo "{$dealer_info['dealer_id']}_{$dealer_info['dealer_name']} - {$dealer_info['contact']}"; ?></td>
+                <td class="text-bold"><?php echo "{$dealer['dealer_id']}_{$dealer['dealer_name']} - {$dealer['contact']}"; ?></td>
               </tr>
               <tr>
                 <td>Project Name:</td>
-                <td class="text-bold"><strong><?php echo $result['project_name']; ?></strong></td>
+                <td class="text-bold"><strong><?php echo $so['project_name']; ?></strong></td>
               </tr>
               <tr>
                 <td>Dealer PO:</td>
@@ -175,7 +171,7 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <td>SO:</td>
-                <td class="text-bold"><?php echo "{$info['so_parent']}{$info['room']}-{$info['iteration']}"; ?></td>
+                <td class="text-bold"><?php echo "{$room['so_parent']}{$room['room']}-{$room['iteration']}"; ?></td>
               </tr>
             </table>
           </div>
@@ -223,23 +219,20 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <td>Billing Type:</td>
-                <td colspan="2"><strong><?php echo $dealer_info['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
+                <td colspan="2"><strong><?php echo $dealer['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
               </tr>
               <tr>
                 <td>Order Type:</td>
-                <!--                  <td>--><?php //echo displayVINOpts('product_type'); ?><!--</td>-->
                 <td><?php echo getSelect('product_type'); ?></td>
                 <td id="product_type_cost" class="pricing_value">$0.00</td>
               </tr>
               <tr>
                 <td><span id="leadTimeDef">Lead Time:</span></td>
-                <!--                  <td>--><?php //echo displayVINOpts('days_to_ship'); ?><!--</td>-->
                 <td><?php echo getSelect('days_to_ship'); ?></td>
                 <td class="pricing_value">$0.00</td>
               </tr>
               <tr>
                 <td>Order Status:</td>
-                <!--                  <td>--><?php //echo displayVINOpts('order_status'); ?><!--</td>-->
                 <td><?php echo getSelect('order_status'); ?></td>
                 <td></td>
               </tr>
@@ -255,16 +248,15 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <td>Ship VIA:</td>
-                <!--                  <td>--><?php //echo displayVINOpts('ship_via'); ?><!--</td>-->
                 <td><?php echo getSelect('ship_via'); ?></td>
                 <td class="pricing_value">$0.00</td>
               </tr>
               <tr rowspan="3">
                 <td style="vertical-align:top !important;">Ship To:</td>
                 <td colspan="2">
-                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Name" name="ship_to_name" value="<?php echo $info['ship_name']; ?>"><br />
-                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $info['project_addr']; ?>"><br />
-                  <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $info['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $info['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $info['project_zip']; ?>">
+                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Name" name="ship_to_name" value="<?php echo $room['ship_name']; ?>"><br />
+                  <input type="text" style="width:75%;" class="static_width align_left border_thin_bottom" placeholder="Address" name="ship_to_address" value="<?php echo $room['project_addr']; ?>"><br />
+                  <input type="text" style="width:50%;" class="static_width align_left border_thin_bottom" placeholder="City" name="ship_to_city" value="<?php echo $room['project_city']; ?>"> <input type="text" style="width:15px;" class="static_width align_left border_thin_bottom" name="ship_to_state" value="<?php echo $room['project_state']; ?>"> <input type="text" style="width:51px;" class="static_width align_left border_thin_bottom" placeholder="ZIP" name="ship_to_zip" value="<?php echo $room['project_zip']; ?>">
                 </td>
               </tr>
               <tr>
@@ -273,13 +265,13 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <?php
-                $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip'];
+                $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $dealer['shipping_zip'];
                 $ship_zone_info = calcShipZone($shipZone);
 
-                if($info['ship_cost'] === null) {
+                if($room['ship_cost'] === null) {
                   $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $ship_zone_info['cost'];
                 } else {
-                  $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $info['ship_cost'];
+                  $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $room['ship_cost'];
                 }
 
                 setlocale(LC_MONETARY, 'en_US');
@@ -302,7 +294,6 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <td>Payment Method:</td>
-                <!--                  <td>--><?php //echo displayVINOpts('payment_method'); ?><!--</td>-->
                 <td><?php echo getSelect('payment_method'); ?></td>
                 <td></td>
               </tr>
@@ -386,78 +377,65 @@ if($pg_qry->num_rows > 0) {
                   <th>Cost</th>
                 </tr>
                 <tr class="border_top">
-                  <!--                    <td class="border_thin_bottom">Construction Method:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('construction_method'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Construction Method:<div class="cab_specifications_desc"><?php echo getSelect('construction_method'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="const_pct">0.00%</td>
                   <td class="border_thin_bottom pricing_value" id="const_amt">$0.00</td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('species_grade', null, 'pricingSpeciesGrade'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Species/Grade:<div class="cab_specifications_desc"><?php echo getSelect('species_grade'); ?></div></td>
                   <td class="border_thin_bottom"></td>
                   <td class="border_thin_bottom"></td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Carcass Material:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('carcass_material'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Carcass Material:<div class="cab_specifications_desc"><?php echo getSelect('carcass_material'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="box_const_pct">0.00%</td>
                   <td class="border_thin_bottom pricing_value" id="box_const_amt">$0.00</td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('door_design', null, 'pricingDoorDesign'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Door Design:<div class="cab_specifications_desc"><?php echo getSelect('door_design'); ?></div></td>
                   <td class="border_thin_bottom text-md-center" id="const_pg" colspan="2">Price Group <span id="cab_spec_pg"><?php echo $price_group; ?></span></td>
                 </tr>
                 <tr>
-                  <!--                    <td style="padding-left:20px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('panel_raise', 'panel_raise_door'); ?><!--</div></td>-->
                   <td style="padding-left:20px;">Door Panel Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_door'); ?></div></td>
                   <td class="border_thin_bottom pricing_value"></td>
                   <td class="border_thin_bottom pricing_value"></td>
                 </tr>
                 <tr>
-                  <!--                    <td style="padding-left:20px;">Short Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('panel_raise', 'panel_raise_sd'); ?><!--</div></td>-->
                   <td style="padding-left:20px;">Short Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_sd'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="sdr_pct"></td>
                   <td class="border_thin_bottom pricing_value" id="sdr_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td style="padding-left:20px;">Tall Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('panel_raise', 'panel_raise_td'); ?><!--</div></td>-->
                   <td style="padding-left:20px;">Tall Drawer Raise:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_td'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="tdr_pct"></td>
                   <td class="border_thin_bottom pricing_value" id="tdr_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td style="padding-left:20px;">Style/Rail Width:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('style_rail_width'); ?><!--</div></td>-->
                   <td style="padding-left:20px;">Style/Rail Width:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('style_rail_width'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="srw_pct"></td>
                   <td class="border_thin_bottom pricing_value" id="srw_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td style="padding-left:20px;">Edge Profile:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('edge_profile'); ?><!--</div></td>-->
                   <td style="padding-left:20px;">Edge Profile:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('edge_profile'); ?></div></td>
                   <td class="border_thin_bottom pricing_value"></td>
                   <td class="border_thin_bottom pricing_value"></td>
                 </tr>
                 <tr>
-                  <!--                    <td style="padding-left:20px;">Framing Bead:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('framing_bead'); ?><!--</div></td>-->
                   <td style="padding-left:20px;">Framing Bead:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('framing_bead'); ?></div></td>
                   <td class="border_thin_bottom pricing_value"></td>
                   <td class="border_thin_bottom pricing_value"></td>
                 </tr>
                 <tr>
-                  <!--                    <td style="padding-left:20px;">Frame Option:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;">--><?php //echo displayVINOpts('framing_options'); ?><!--</div></td>-->
                   <td style="padding-left:20px;">Frame Option:<div class="cab_specifications_desc border_thin_bottom" style="margin-bottom:-1px;"><?php echo getSelect('framing_options'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="fo_pct"></td>
                   <td class="border_thin_bottom pricing_value" id="fo_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('drawer_boxes'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Drawer Box:<div class="cab_specifications_desc"><?php echo getSelect('drawer_boxes'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="drwr_pct"></td>
                   <td class="border_thin_bottom pricing_value" id="drwr_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Drawer Guide:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('drawer_guide'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Drawer Guide:<div class="cab_specifications_desc"><?php echo getSelect('drawer_guide'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="drwguide_pct"></td>
                   <td class="border_thin_bottom pricing_value" id="drwguide_amt"></td>
@@ -471,49 +449,41 @@ if($pg_qry->num_rows > 0) {
               <table width="100%">
                 <tr><th colspan="3" style="padding-left:5px;" class="th_17">Finish</th></tr>
                 <tr class="border_top">
-                  <!--                    <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc">--><?php //displayFinishOpts("finish_code", "finish_code"); ?><!--</div></td>-->
                   <td class="border_thin_bottom" width="70%">Finish Code:<div class="cab_specifications_desc"><?php echo getSelect('finish_code'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="fc_pct"><?php if($room['product_type'] === 'P' && (false !== stripos($room['finish_code'], 'p') || $room['finish_code'] === '1cXXXX')) { echo '10.00%'; } ?></td>
                   <td class="border_thin_bottom pricing_value" id="fc_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('sheen'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Sheen:<div class="cab_specifications_desc"><?php echo getSelect('sheen'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="sheen_pct"><?php if($room['sheen'] === 'a' || $room['sheen'] === 'X' || $room['sheen'] === 'h' ) { echo '5.00%'; } ?></td>
                   <td class="border_thin_bottom pricing_value" id="sheen_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('glaze'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Glaze Color:<div class="cab_specifications_desc"><?php echo getSelect('glaze'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="gc_pct"></td>
                   <td class="border_thin_bottom pricing_value" id="gc_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('glaze_technique'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Glaze Technique:<div class="cab_specifications_desc"><?php echo getSelect('glaze_technique'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="gt_pct"><?php echo $room['glaze_technique'] === 'G2' ? '10.00%' : null; ?></td>
                   <td class="border_thin_bottom pricing_value" id="gt_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('antiquing'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Antiquing:<div class="cab_specifications_desc"><?php echo getSelect('antiquing'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="ant_pct"></td>
                   <td class="border_thin_bottom pricing_value" id="ant_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('worn_edges'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Worn Edges:<div class="cab_specifications_desc"><?php echo getSelect('worn_edges'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="we_pct"></td>
                   <td class="border_thin_bottom pricing_value" id="we_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('distress_level'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Distressing:<div class="cab_specifications_desc"><?php echo getSelect('distress_level'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="dist_pct"></td>
                   <td class="border_thin_bottom pricing_value" id="dist_amt"></td>
                 </tr>
                 <tr>
-                  <!--                    <td class="border_thin_bottom">Enviro-finish:<div class="cab_specifications_desc">--><?php //echo displayVINOpts('green_gard'); ?><!--</div></td>-->
                   <td class="border_thin_bottom">Enviro-finish:<div class="cab_specifications_desc"><?php echo getSelect('green_gard'); ?></div></td>
                   <td class="border_thin_bottom pricing_value" id="ggard_pct"><?php echo $room['green_gard'] === 'G1' ? '5.00%' : null; ?></td>
                   <td class="border_thin_bottom pricing_value" id="ggard_amt"></td>
@@ -563,10 +533,9 @@ if($pg_qry->num_rows > 0) {
       <!--<editor-fold desc="Item List">-->
       <div class="row" style="border-top: 1px solid #000;">
         <div class="col-md-12 itemListWrapper" style="margin-top:5px;">
-          <div class="item_list_header sticky">
+          <div class="item_list_header sticky" style="top:38px;">
             <h5><u>Item List</u></h5>
 
-            <input type="button" class="btn btn-danger waves-effect waves-light no-print" style="display:none;" id="catalog_remove_checked" value="Delete" />
             <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="item_note"><span class="btn-label"><i class="fa fa-commenting-o"></i> </span>Custom Note</button>
             <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="item_custom_line"><span class="btn-label"><i class="fa fa-plus"></i> </span>Custom Item</button>
             <button type="button" class="btn btn-secondary waves-effect waves-light no-print" id="detailed_item_summary"><span class="btn-label"><i class="fa fa-list"></i> </span>Detailed Report</button>
@@ -574,10 +543,10 @@ if($pg_qry->num_rows > 0) {
             <div class="clearfix"></div>
           </div>
 
-          <table class="sticky" style="width:100%;top:67px;">
+          <table id="cabinet_list" style="width:100%;">
             <colgroup>
               <col width="40px">
-              <col width="35px">
+              <col width="40px">
               <col width="50px">
               <col width="150px">
               <col width="350px">
@@ -601,22 +570,6 @@ if($pg_qry->num_rows > 0) {
               <th class="text-md-center pricing_value">Price</th>
             </tr>
             </thead>
-          </table>
-
-          <table id="cabinet_list" style="width:100%;">
-            <colgroup>
-              <col width="40px">
-              <col width="40px">
-              <col width="50px">
-              <col width="150px">
-              <col width="350px">
-              <col width="50px">
-              <col width="50px">
-              <col width="50px">
-              <col width="50px">
-              <col width="50px">
-            </colgroup>
-
             <tbody>
             <!-- Define a row template for all invariant markup: -->
             <tr>
@@ -877,7 +830,7 @@ if($pg_qry->num_rows > 0) {
                           $where = null;
                         }
 
-                        $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$result['id']}' $where ORDER BY notes.timestamp DESC;");
+                        $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$so['id']}' $where ORDER BY notes.timestamp DESC;");
 
                         while ($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
                           $inquiry_replies = null;
@@ -941,7 +894,6 @@ if($pg_qry->num_rows > 0) {
   </div>
 </div>
 
-
 <div class='info-popup'></div>
 
 <!-- modal -->
@@ -986,164 +938,26 @@ if($pg_qry->num_rows > 0) {
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<!-- modal -->
-<div id="modalDetailedItemList" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalDetailedItemListLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Item List Breakdown</h4>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-12">
-            <table id="cost_audit" width="100%"  style="vertical-align:top;">
-              <colgroup>
-                <col width="20%">
-                <col width="70%">
-                <col width="10%">
-              </colgroup>
-              <thead>
-              <tr>
-                <th>Line</th>
-                <th>Calculation</th>
-                <th>Total</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr>
-                <td>Product Type</td>
-                <td id="calcProductType"></td>
-                <td id="calcProductTypeTotal"></td>
-              </tr>
-              <tr>
-                <td>Lead Time</td>
-                <td id="calcLeadTime"></td>
-                <td id="calcLeadTimeTotal"></td>
-              </tr>
-              <tr>
-                <td>Ship VIA</td>
-                <td id="calcShipVIA"></td>
-                <td id="calcShipVIATotal"></td>
-              </tr>
-              <tr>
-                <td>Shipping Zone</td>
-                <td id="calcShipZone"></td>
-                <td id="calcShipZoneTotal"></td>
-              </tr>
-              <tr>
-                <td>Glaze Technique</td>
-                <td id="calcGlazeTech"></td>
-                <td id="calcGlazeTechTotal"></td>
-              </tr>
-              <tr>
-                <td>Sheen</td>
-                <td id="calcSheen"></td>
-                <td id="calcSheenTotal"></td>
-              </tr>
-              <tr>
-                <td>Green Gard</td>
-                <td id="calcGreenGard"></td>
-                <td id="calcGreenGardTotal"></td>
-              </tr>
-              <tr>
-                <td>Finish Cost</td>
-                <td id="calcFinishCode"></td>
-                <td id="calcFinishCodeTotal"></td>
-              </tr>
-              <tr>
-                <td>Cabinet Lines</td>
-                <td id="calcCabinetLines"></td>
-                <td id="calcCabinetLinesTotal"></td>
-              </tr>
-              <tr>
-                <td>Non-Cabinet Lines</td>
-                <td id="calcNonCabLines"></td>
-                <td id="calcNonCabLinesTotal"></td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary waves-effect waves-light" id="modificationAddSelected">Add Selected</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<!-- modal -->
-<div id="modalGeneral" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalGeneralLabel" aria-hidden="true">
-      <!-- AJAX Loaded based on button press -->
-</div><!-- /.modal -->
-
-<form id="room_attachments">
-  <!-- Attachment modal -->
-  <div id="modalAddAttachment" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddAttachmentLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-          <h4 class="modal-title">Add Attachment to <?php echo "{$room['so_parent']}{$room['room']}-{$room['iteration']}"; ?></h4>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12">
-              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
-              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
-              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
-              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple><br />
-              <input type="file" name="room_attachments[]" accept="<?php echo FILE_TYPES; ?>" multiple>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer" id="r_attachments_footer">
-          <button type="button" class="btn btn-primary waves-effect" id="submit_attachments">Submit</button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div>
-  <!-- /.modal -->
-</form>
-
 <iframe id="dlORDfile" src="" style="display:none;visibility:hidden;"></iframe>
 
 <script>
-  function getUrlParams(prop) {
-    var params = {};
-    var search = decodeURIComponent( window.location.href.slice( window.location.href.indexOf('?') + 1));
-    var definitions = search.split('&');
-
-    definitions.forEach(function(val, key) {
-      var parts = val.split('=', 2);
-      params[parts[0]] = parts[1];
-    } );
-
-    return (prop && prop in params) ? params[prop] : params;
-  }
-
-  function catalogCanEdit() {
-    if(editCatalog.hasClass("fa-unlock")) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   <?php
   echo "active_room_id = $room_id;";
   echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
 
-  $shipZone = !empty($info['ship_zip']) ? $info['ship_zip'] : $dealer['shipping_zip'];
+  $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $dealer['shipping_zip'];
   $ship_zone_info = calcShipZone($shipZone);
   $shipInfo = json_encode($ship_zone_info, true);
 
-  echo "var calcShipZip = '{$info['ship_zip']}';";
+  echo "var calcShipZip = '{$room['ship_zip']}';";
   echo "var calcDealerShipZip = '{$dealer['shipping_zip']}';";
   echo "var calcShipInfo = '$shipInfo';";
   ?>
+
+  pricingVars.nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';
+  pricingVars.roomQry = JSON.parse('<?php $room['custom_vin_info'] = null; echo json_encode($room); ?>');
+  pricingVars.vinInfo = JSON.parse('<?php echo strip_tags(json_encode($json_vin)); ?>');
+  pricingVars.shipCost = <?php echo $ship_cost; ?>;
 
   var numPages = 1,
 
@@ -1161,9 +975,9 @@ if($pg_qry->num_rows > 0) {
       $("#production_lock").show();
     }
 
-    checkDropdown();
+    globalFunctions.checkDropdown();
 
-    if(getUrlParams('hidePrice') === 'true') {
+    if(globalFunctions.getURLParams('hidePrice') === 'true') {
       $("#pageTitle").prepend('Shop ');
     }
 
@@ -1177,7 +991,7 @@ if($pg_qry->num_rows > 0) {
       let finsampleheight = 0;
 
 
-      if(getUrlParams('print') === 'true') {
+      if(globalFunctions.getURLParams('print') === 'true') {
         delheight = tx_delnotes.prop('scrollHeight') - 48;
         designheight = tx_design.prop('scrollHeight') - 48;
         finsampleheight = tx_fin_sample.prop('scrollHeight') - 48;
@@ -1281,15 +1095,12 @@ if($pg_qry->num_rows > 0) {
         }
 
         // Index #4 => Width
-        // $tdList.eq(5).text(node.data.width);
         $tdList.eq(5).find("input").attr("data-id", node.key).val(node.data.width);
 
         // Index #6 => Height
-        // $tdList.eq(6).text(node.data.height);
         $tdList.eq(6).find("input").attr("data-id", node.key).val(node.data.height);
 
         // Index #7 => Depth
-        // $tdList.eq(7).text(node.data.depth);
         $tdList.eq(7).find("input").attr("data-id", node.key).val(node.data.depth);
 
         // Index #8 => Hinge
@@ -1337,15 +1148,26 @@ if($pg_qry->num_rows > 0) {
         $("#gt_amt").text()
       },
       modifyChild: function(event, data) {
-        recalcSummary();
+        pricingFunction.recalcSummary();
       },
       init: function() {
         setTimeout(function() {
           // cabinetList.floatThead({ top: 67 });
         }, 500);
 
-        if(getUrlParams('hidePrice') === 'true') {
-          $(".pricing_value").css("visibility", "hidden");
+        // automatically expand all sub-lines
+        cabinetList.fancytree("getTree").visit(function(node){
+          let $tdList = $(node.tr).find(">td"); // get the columns of the item list
+
+          node.setExpanded(); // set the node as expanded
+
+          if(!node.isTopLevel()) { // if it's not a top level item
+            $tdList.eq(2).find('.add_item_mod, .item_copy').css('visibility', 'hidden'); // set the visibility of both item copy and item mod as hidden
+          }
+        });
+
+        if(globalFunctions.getURLParams('hidePrice') === 'true') {
+          $(".pricing_value").hide();
         }
       }
     }).on("nodeCommand", function(event, data) {
@@ -1533,7 +1355,7 @@ if($pg_qry->num_rows > 0) {
           /** This function MUST be defined to enable dragging for the tree.
            *  Return false to cancel dragging of node.
            */
-          return catalogCanEdit();
+          return pricingFunction.catalogCanEdit(editCatalog);
         },
         dragEnter: function(node, data) {
           /** data.otherNode may be null for non-fancytree droppables.
@@ -1638,7 +1460,7 @@ if($pg_qry->num_rows > 0) {
             }
 
             $.get("/html/pricing/ajax/modify_item.php", {type: 'addItem', id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           case "cut":
@@ -1683,12 +1505,12 @@ if($pg_qry->num_rows > 0) {
             break;
           case "addSubFolder":
             $.get("/html/pricing/ajax/modify_item.php", {type: 'newSubFolder', id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           case "addFolder":
             $.get("/html/pricing/ajax/modify_item.php", {type: 'newSameFolder', id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           case "save":
@@ -1704,7 +1526,7 @@ if($pg_qry->num_rows > 0) {
             }
 
             $.get("/html/pricing/ajax/modify_item.php", {type: type, id: node.key}, function(data) {
-              $("#modalGeneral").html(data).modal("show");
+              $("#modalGlobal").html(data).modal("show");
             });
             break;
           default:
@@ -1823,7 +1645,7 @@ if($pg_qry->num_rows > 0) {
           }
         });
 
-        return catalogCanEdit();
+        return pricingFunction.catalogCanEdit(editCatalog);
       },
       select: function(event, ui) {
         var that = this;
@@ -1910,12 +1732,12 @@ if($pg_qry->num_rows > 0) {
 
       itemModifications.fancytree("getTree").reload(modificationTree);
     });
-    
+
     $(".room_note_log").hide();
 
     <?php echo !empty($room['custom_vin_info']) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}');": null; ?>
 
-    productTypeSwitch();
+    pricingFunction.productTypeSwitch();
 
     <?php if (!empty($room['custom_vin_info'])) { ?>
     $.each(customFieldInfo, function(mainID, value) {
@@ -1927,7 +1749,7 @@ if($pg_qry->num_rows > 0) {
 
     // Calculate totals and summary
     setTimeout(function() {
-      recalcSummary();
+      pricingFunction.recalcSummary();
 
       // automatically expand all sub-lines
       cabinetList.fancytree("getTree").visit(function(node){
@@ -1943,7 +1765,7 @@ if($pg_qry->num_rows > 0) {
       ship_info.next("tr").next("tr").hide();
     }
 
-    if(getUrlParams('print') === 'true') {
+    if(globalFunctions.getURLParams('print') === 'true') {
       setTimeout(function() {
         window.print();
         window.close();

@@ -49,12 +49,6 @@ require 'includes/header_end.php';
 </div>
 <!-- /.modal -->
 
-<!-- Add Customer modal -->
-<div id="modalViewNotes" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalViewNotesLabel" aria-hidden="true">
-    <!-- Inserted via AJAX -->
-</div>
-<!-- /.modal -->
-
 <!-- Global Search loading, required for global search to work -->
 <script src="/ondemand/js/global_search.js?random=<?php echo rand(0,1500); ?>"></script>
 

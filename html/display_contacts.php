@@ -79,7 +79,7 @@
 
         if(!node.isFolder()) {
           $.post("/html/add_contact.php?action=edit", {id: node.key}, function(data) {
-            $("#modalAddContact").html(data).modal('show');
+            $("#modalGlobal").html(data).modal('show');
           });
         }
       },

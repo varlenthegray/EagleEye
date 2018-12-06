@@ -1,432 +1,489 @@
+/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*/
+
 jQuery.expr.filters.offscreen = function(el) {
   var rect = el.getBoundingClientRect();
-  return (
-    (rect.x + rect.width) < 0
-    || (rect.y + rect.height) < 0
-    || (rect.x > window.innerWidth || rect.y > window.innerHeight)
-  );
+  return ((rect.x + rect.width) < 0 || (rect.y + rect.height) < 0 || (rect.x > window.innerWidth || rect.y > window.innerHeight));
 };
 
-function delNoData() {
-  let getNegNode = cabinetList.fancytree("getTree").getNodeByKey('-1');
+var pricingVars = {
+  nameOfUser: null,
+  roomQry: null,
+  vinInfo: null,
+  shipCost: null
+};
 
-  if(getNegNode !== null) {
-    cabinetList.fancytree("getTree").getNodeByKey('-1').remove();
-  }
-}
+var pricingFunction = {
+  productTypeSwitch: function() {
+    function setPcts(obj) {
+      let gPct = 2;
+      let yPct = 2;
+      let nPct = 2;
+      let rPct = 2;
 
-function recalcSummary() {
-  let global_room_charges = 0.00; // global room charges
-  let global_cab_charges = 0.00; // global cabinet charges total
-  let line_total = 0.00; // total of the item list
-  let cabinet_only_total = 0.00; // cabinet only total
-  let cabinet_only_skus = ''; // a list (for transparency report) of cabinets only
-  let non_cabinet_total = 0.00; // non-cabinet total (for transparency report)
-  let non_cabinet_skus = ''; // non-cabinet SKU's (for transparency report)
-  let shipVia = $("#ship_via").val(); // shipping method
-
-  //******************************************************************
-  // parse per line
-  cabinetList.fancytree("getTree").visit(function(line) {
-    let qty = parseInt(line.data.qty);
-    let price = parseFloat(line.data.price);
-    let $tdList = $(line.tr).find(">td");
-
-    // if there is an additional markup (% right now) defined in the system for this line
-    if(line.data.addlMarkup !== undefined && line.data.addlMarkup !== '' && line.data.addlMarkup !== null) {
-      let addlMarkup = JSON.parse(line.data.addlMarkup); // grab the information into JSON value
-
-      // for the species and markups available, grab each of them
-      $.each(addlMarkup, function(i, v) {
-        // this is going to be the main focus of what drives the markup, i.e. species_grade
-        let curVal = $("#" + i).val();
-
-        // for every definition such as Cherry, Hickory, Black Walnut, etc, get the key and percent
-        $.each(v, function(key, pct) {
-          // if the key is the current value that we're working with (species
-          if(key === curVal) {
-            // take the percent (in float, to ensure no NaN) and multiply it by the price (note, this is the price before quantity but after square foot)
-            price = parseFloat(pct) * price;
-          }
-        });
-      });
-    }
-
-    let lineTotal = 0.00;
-
-    // now update the last column (total) with the final price for that line item
-    if($("#product_type").val() === 'W') {
-      $tdList.eq(9).text('$0.00');
-    } else {
-      if(line.data.customPrice === 1) {
-
-        let cPrice = parseFloat(price.toString().replace('$', ''));
-
-        lineTotal = cPrice;
-
-        $tdList.eq(9).find("input").val(cPrice.formatMoney());
+      if(obj.green.unavailable !== true) {
+        $(".dts_pct_g").html("[" + obj.green.ship_days + " Days] (" + (obj.green.pct * 100) + "%)");
+        gPct = obj.green.pct;
       } else {
-        // set the line total equal to the quantity * price
-        lineTotal = qty * price;
+        $(".dts_pct_g").html("[Not Available]");
+      }
 
-        $tdList.eq(9).text(lineTotal.formatMoney());
+      if(obj.yellow.unavailable !== true) {
+        $(".dts_pct_y").html("[" + obj.yellow.ship_days + " Days] (" + (obj.yellow.pct * 100) + "%)");
+        yPct = obj.yellow.pct;
+      } else {
+        $(".dts_pct_y").html("[Not Available]");
+      }
+
+      if(obj.orange.unavailable !== true) {
+        $(".dts_pct_n").html("[" + obj.orange.ship_days + " Days] (" + (obj.orange.pct * 100) + "%)");
+        nPct = obj.orange.pct;
+      } else {
+        $(".dts_pct_n").html("[Not Available]");
+      }
+
+      if(obj.red.unavailable !== true) {
+        $(".dts_pct_r").html("[" + obj.red.ship_days + " Days] (" + (obj.red.pct * 100) + "%)");
+        rPct = obj.red.pct;
+      } else {
+        $(".dts_pct_r").html("[Not Available]");
+      }
+
+      let dts_id = $("#days_to_ship");
+
+      switch($("#product_type").val()) {
+        case 'G':
+          dts_id.attr("data-pct", gPct);
+          break;
+        case 'N':
+          dts_id.attr("data-pct", nPct);
+          break;
+        case 'Y':
+          dts_id.attr("data-pct", yPct);
+          break;
+        case 'R':
+          dts_id.attr("data-pct", rPct);
+          break;
       }
     }
 
-    // if the line item is a cabinet only (excludes tops, accessories, fillers, moldings) then we're adding that to a cabinet only price (inset specific pricing)
-    if(line.data.cabinet === '1') {
-      // our cabinet only total goes up
-      cabinet_only_total += parseFloat(lineTotal);
+    switch($("#product_type").val()) {
+      case 'C':
+        setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'ship_days': 19, 'pct': 0.25}, 'orange': {'ship_days': 13, 'pct': 0.5}, 'red': {'unavailable': true}});
+        break;
 
-      // add the SKU to the total cabinet only running list
-      cabinet_only_skus += line.title + ", ";
-    } else {
-      // our non-cabinet total goes up (transparency report)
-      non_cabinet_total += parseFloat(lineTotal);
+      case 'L':
+        setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'ship_days': 19, 'pct': 0.25}, 'orange': {'ship_days': 13, 'pct': 0.5}, 'red': {'ship_days': 6, 'pct': 0.5}});
+        break;
 
-      //add the SKU to the non-cabinet total running list
-      non_cabinet_skus += line.title + ", ";
+      case 'P':
+        setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'ship_days': 19, 'pct': 0.25}, 'orange': {'ship_days': 13, 'pct': 0.5}, 'red': {'ship_days': 6, 'pct': 0.5}});
+        break;
+
+      case 'S':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'ship_days': 6, 'pct': 0}});
+        break;
+
+      case 'D':
+        setPcts({'green': {'ship_days': 26, 'pct': 0}, 'yellow': {'unavailable': true}, 'orange': {'unavailable': true}, 'red': {'unavailable': true}});
+        break;
+
+      case 'A':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'ship_days': 19, 'pct': 0}, 'orange': {'ship_days': 13, 'pct': 0.25}, 'red': {'ship_days': 6, 'pct': 0.25}});
+        break;
+
+      case 'W':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'ship_days': 19, 'pct': 0}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'ship_days': 6, 'pct': 0}});
+        break;
+
+      case 'H':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'unavailable': true}});
+        break;
+
+      case 'N':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'ship_days': 13, 'pct': 0}, 'red': {'unavailable': true}});
+        break;
+
+      case 'R':
+        setPcts({'green': {'unavailable': true}, 'yellow': {'unavailable': true}, 'orange': {'unavailable': true}, 'red': {'unavailable': true}});
+        break;
     }
+  },
+  delNoData: function() {
+    let getNegNode = cabinetList.fancytree("getTree").getNodeByKey('-1');
 
-    if(line.data.exclude_markup === '1') {
-
+    if(getNegNode !== null) {
+      cabinetList.fancytree("getTree").getNodeByKey('-1').remove();
     }
+  },
+  recalcSummary: function() {
+    let global_room_charges = 0.00, // global room charges
+      global_cab_charges = 0.00, // global cabinet charges total
+      line_total = 0.00, // total of the item list
+      cabinet_only_total = 0.00, // cabinet only total
+      cabinet_only_skus = '', // a list (for transparency report) of cabinets only
+      non_cabinet_total = 0.00, // non-cabinet total (for transparency report)
+      non_cabinet_skus = '', // non-cabinet SKU's (for transparency report)
+      shipVia = pricingVars.roomQry['ship_via']; // shipping method
 
-    // this is the final running total for the system
-    line_total += parseFloat(lineTotal);
-  });
+    //<editor-fold desc="Parse per line of cabinet list">
+    cabinetList.fancytree("getTree").visit(function(line) {
+      let qty = parseInt(line.data.qty),
+        price = parseFloat(line.data.price),
+        $tdList = $(line.tr).find(">td");
 
-  // remove the excess comma and space from the cabinet SKU list
-  cabinet_only_skus = cabinet_only_skus.slice(0, -2);
+      // if there is an additional markup (% markup based on species/grade inside of database for nomenclature) defined in the system for this line (wood tops right now)
+      if(line.data.addlMarkup !== undefined && line.data.addlMarkup !== '' && line.data.addlMarkup !== null) {
+        let addlMarkup = JSON.parse(line.data.addlMarkup); // grab the information into JSON value
 
-  // remove the excess comma and space from the non-cabinet SKU list
-  non_cabinet_skus = non_cabinet_skus.slice(0, -2);
+        // for the species and markups available, grab each of them
+        $.each(addlMarkup, function(i, v) {
+          // this is going to be the main focus of what drives the markup, i.e. species_grade
+          let curVal = pricingVars.roomQry[i];
 
-  // display the total
-  $("#itemListTotal").text(line_total.formatMoney());
-  //******************************************************************
+          // for every definition such as Cherry, Hickory, Black Walnut, etc, get the key and percent
+          $.each(v, function(key, pct) {
+            // if the key is the current value that we're working with (species
+            if(key === curVal) {
+              // take the percent (in float, to ensure no NaN) and multiply it by the price (note, this is the price before quantity but after square foot)
+              price = parseFloat(pct) * price;
+            }
+          });
+        });
+      }
 
-  //******************************************************************
-  // done parsing per line, moving into the global charges for the page
+      let lineTotal = 0.00;
 
-  //// Glaze Technique
-  let gt_pct = $("#gt_pct"), gt_amt = $("#gt_amt");
-  let ggard_pct = $("#ggard_pct"), ggard_amt = $("#ggard_amt");
-  let fcode_pct = $("#fc_pct"), fcode_amt = $("#fc_amt");
-  let sheen_pct = $("#sheen_pct"), sheen_amt = $("#sheen_amt");
-  let gt_markup = 0.00, ggard_markup = 0.00, fcode_markup = 0.00, sheen_markup = 0.00; // glaze technique markup
+      //<editor-fold desc="Calculate per line price">
+      if(pricingVars.roomQry['product_type'] === 'W') {
+        $tdList.eq(9).text('$0.00');
+      } else {
+        if(line.data.customPrice === 1) {
+          let cPrice = parseFloat(price.toString().replace('$', ''));
 
-  // grab the glaze technique, determine what the amount to markup is
-  switch($("#glaze_technique").val()) {
-    case 'G2':
-      gt_markup = 0.10; // toss this into the function variable for markup
-      break;
-    case 'G0':
-      gt_amt.text("");
-      break;
-    default:
-      gt_amt.text("ERR");
-      break;
-  }
+          lineTotal = cPrice;
 
-  // grab the green gard, determine what the amount to markup is
-  switch($("#green_gard").val()) {
-    case 'G1':
-      ggard_markup = 0.05; // toss this into the function variable for markup
-      break;
-    case 'G0':
-      ggard_amt.text("");
-      break;
-    default:
-      ggard_amt.text("ERR");
-      break;
-  }
+          $tdList.eq(9).find("input").val(cPrice.formatMoney());
+        } else {
+          // set the line total equal to the quantity * price
+          lineTotal = qty * price;
 
-  // grab the green gard, determine what the amount to markup is
-  switch($("#sheen").val()) {
-    case 'a':
-      sheen_markup = 0.05; // toss this into the function variable for markup
-      break;
-    case 'c':
-      sheen_pct.text("");
-      break;
-    case 'h':
-      sheen_markup = 0.05; // toss this into the function variable for markup
-      break;
-    case 'X':
-      sheen_markup = 0.05; // toss this into the function variable for markup
-      break;
-    default:
-      sheen_amt.text("ERR");
-      break;
-  }
-
-  if(($("#finish_code").val().indexOf('p') >= 0 ||  $("#finish_code").val() === '1cXXXX') && $("#product_type").val() === 'P') {
-    fcode_markup = 0.10;
-  } else {
-    fcode_markup = 0;
-    fcode_amt.text("");
-  }
-
-  // calculate out the cost of the glaze technique
-  let gt_cost = line_total * gt_markup;
-  let ggard_cost = line_total * ggard_markup;
-  let fcode_cost = line_total * fcode_markup;
-  let sheen_cost = line_total * sheen_markup;
-
-  // Glaze Technique fields
-  gt_amt.text(gt_cost.formatMoney());
-  gt_pct.text((gt_markup * 100).toFixed(2) + "%");
-
-  // Green Gard fields
-  ggard_amt.text(ggard_cost.formatMoney());
-  ggard_pct.text((ggard_markup * 100).toFixed(2) + "%");
-
-  // Finish Code fields
-  fcode_amt.text(fcode_cost.formatMoney());
-  fcode_pct.text((fcode_markup * 100).toFixed(2) + "%");
-
-  // Sheen fields
-  sheen_amt.text(sheen_cost.formatMoney());
-  sheen_pct.text((sheen_markup * 100).toFixed(2) + "%");
-
-  // add the glaze technique to the total amount of global upcharges
-  global_cab_charges += gt_cost;
-  global_cab_charges += ggard_cost;
-  global_cab_charges += fcode_cost;
-  global_cab_charges += sheen_cost;
-
-  let shipPrice = 0;
-
-  // Grab the shipping price IF it's not pickup
-  if(shipVia !== '4') {
-    shipPrice = $("#shipping_cost").attr("data-cost");
-    global_room_charges += parseFloat(shipPrice);
-  }
-
-  //// Global Cabinet Details
-  $("#itemListGlobalCabDetails").text(global_cab_charges.formatMoney());
-
-  //// Subtotal 1
-  let subtotal1 = global_cab_charges + line_total;
-  $("#itemListSubTotal1").text(subtotal1.formatMoney());
-
-  //// Capture the multiplier for use
-  let multiplier = parseFloat($("#itemListMultiplier").text());
-
-  //// Calculate the net price
-  let netPrice = (line_total + global_cab_charges) * multiplier;
-  $("#itemListNET").text(netPrice.formatMoney());
-
-  // Grab the product type, has to be calculated in jquery because this is a flexible price based on the total of the job
-  // THIS PRICE IS NET, MARKUP DOES NOT IMPACT THIS PRICE
-  let productTypeOpt = $("#product_type").val();
-  let productTypeMarkup = 0.00;
-
-  if(productTypeOpt === 'B') { // markup for inset
-    productTypeMarkup = 0.10;
-  }
-
-  // IT IS IMPORTANT THAT WE USE THE CABINET ONLY PRICE HERE! THIS ALLOWS US TO SEGREGATE OUT WOOD TOPS AND FILLERS/PANELS!
-  let productTypeCost = cabinet_only_total * productTypeMarkup;
-  $("#product_type_cost").text(productTypeCost.formatMoney());
-
-  // add the product type cost to the global room charges
-  global_room_charges += productTypeCost;
-
-  //// Display the global room detail charges
-  $("#itemListGlobalRoomDetails").text(global_room_charges.formatMoney());
-
-  let subtotal = netPrice + global_room_charges;
-
-  // TODO: We're not adding credit card here right now, we need to add that in
-
-  //// Update the subtotal
-  $("#finalSubTotal").text(subtotal.formatMoney());
-
-  //// Update the total
-  $("#finalTotal").text(subtotal.formatMoney());
-
-  //// Update the required deposit
-  let deposit = subtotal * .5;
-  $("#finalDeposit").text(deposit.formatMoney());
-  //******************************************************************
-
-  //******************************************************************
-  // Transparency report
-  $("#calcProductType").text('Cabinet Only Total (' + cabinet_only_total + ') * Product Type Markup (' + productTypeMarkup + ')');
-  $("#calcProductTypeTotal").text((cabinet_only_total * productTypeMarkup).formatMoney());
-
-  $("#calcLeadTime").text('Lead Time (Green) * Total [Hardcoded]');
-  $("#calcLeadTimeTotal").text('$0.00 [Hardcoded]');
-
-  $("#calcShipVIA").text('Cycle Truck [Hardcoded]');
-  $("#calcShipVIATotal").text('$0.00 [Hardcoded]');
-
-  let shipMileInfo = JSON.parse(calcShipInfo);
-
-  if(shipVia !== '4') {
-    $("#calcShipZone").html('Mileage (' + shipMileInfo.miles + ') - ' + shipMileInfo.zone + '<br /><br />Calculated based on Shipping Zip entered into Ship To, if that is empty, use Dealer Zip.<br /><br />0-100 Ship Zone A, $0.00<br />100-200 Ship Zone B, $150.00<br />200-300 Ship Zone C, $300.00<br />300-400 Ship Zone D, $450.00<br />400-500 Ship Zone E, $600.00');
-    $("#calcShipZoneTotal").text(shipMileInfo.cost.formatMoney());
-  } else {
-    $("#calcShipZone").html('Customer Pickup');
-    $("#calcShipZoneTotal").text('$0.00');
-  }
-
-  $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') * Glaze Markup (' + gt_markup + ')');
-  $("#calcGlazeTechTotal").html(gt_cost.formatMoney());
-
-  $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') * Green Gard Markup (' + ggard_markup + ')');
-  $("#calcGreenGardTotal").html(ggard_cost.formatMoney());
-
-  $("#calcSheen").html('Total (' + line_total.toFixed(2) + ') * Sheen Markup (' + sheen_markup + ')');
-  $("#calcSheenTotal").html(sheen_cost.formatMoney());
-
-  $("#calcFinishCode").html('Total (' + line_total.toFixed(2) + ') * Finish Markup (' + fcode_markup + ')');
-  $("#calcFinishCodeTotal").html(fcode_cost.formatMoney());
-
-  $("#calcCabinetLines").html('Cabinets: ' + cabinet_only_skus);
-  $("#calcCabinetLinesTotal").html(cabinet_only_total.formatMoney());
-
-  $("#calcNonCabLines").html('Non-Cabinets: ' + non_cabinet_skus);
-  $("#calcNonCabLinesTotal").html(non_cabinet_total.formatMoney());
-  //******************************************************************
-}
-
-// @footCalc() - calculates by square foot or linear foot
-function footCalc(node) {
-  let $tdList = $(node.tr).find(">td");
-  let outprice = node.data.price;
-
-  // noinspection JSCheckFunctionSignatures
-  if(node.data.width > 0 && node.data.height > 0) {
-    if(parseInt(node.data.sqft) === 1) {
-      let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.height)) / 144;
-      let line_total = line_sqft * node.data.singlePrice;
-
-      $tdList.eq(8).text(line_total.formatMoney());
-
-      outprice = line_total;
-    } else if(parseInt(node.data.linft) === 1) {
-      let line_linft = (parseFloat(node.data.width) / 12) * node.data.singlePrice;
-
-      $tdList.eq(8).text(line_linft.formatMoney());
-
-      outprice = line_linft;
-    }
-  }
-
-  return outprice;
-}
-
-function fullRecalc() {
-  cabinetList.fancytree("getTree").visit(function(line) {
-    let itemID = line.data.itemID;
-    let key = line.key;
-
-    var tree = cabinetList.fancytree("getTree");
-
-    $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: itemID, room_id: active_room_id}, function(data) {
-      if(data !== '' && line.data.customPrice !== 1) {
-        let itemInfo = JSON.parse(data);
-        let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
-        let node = tree.getNodeByKey(key);
-
-        if(node.data.cabinet === 1) {
-          node.setTitle(itemInfo.sku);
+          $tdList.eq(9).text(lineTotal.formatMoney());
         }
-
-        node.data.price = fixedPrice;
-        node.icon = itemInfo.icon;
-        node.data.name = itemInfo.title;
-        node.data.sqft = itemInfo.sqft;
-        node.data.singlePrice = fixedPrice;
-        node.data.cabinet = itemInfo.cabinet;
-        node.data.addlMarkup = itemInfo.addl_markup;
       }
-    }).done(function() {
-      recalcSummary();
+      //</editor-fold>
+
+      //<editor-fold desc="Determine what kind of total to add to and what the list of items are">
+      // if the line item is a cabinet only (excludes tops, accessories, fillers, moldings) then we're adding that to a cabinet only price (inset specific pricing)
+      if(line.data.cabinet === '1') {
+        // our cabinet only total goes up
+        cabinet_only_total += parseFloat(lineTotal);
+
+        // add the SKU to the total cabinet only running list
+        cabinet_only_skus += line.title + ", ";
+      } else {
+        // our non-cabinet total goes up (transparency report)
+        non_cabinet_total += parseFloat(lineTotal);
+
+        //add the SKU to the non-cabinet total running list
+        non_cabinet_skus += line.title + ", ";
+      }
+      //</editor-fold>
+
+      // this is the final running total for the system
+      line_total += parseFloat(lineTotal);
     });
-  });
 
-  displayToast("success", "Successfully recalculated the pricing.", "Pricing Recalculated");
-}
+    // remove the excess comma and space from the cabinet SKU list
+    cabinet_only_skus = cabinet_only_skus.slice(0, -2);
 
-function fetchDebug() {
-  cabinetList.fancytree("getTree").visit(function(line) {
-    console.log(line);
-  });
-}
+    // remove the excess comma and space from the non-cabinet SKU list
+    non_cabinet_skus = non_cabinet_skus.slice(0, -2);
 
-function genKey() {
-  return new Date().getTime() * Math.random(999);
-}
+    // display the total
+    $("#itemListTotal").text(line_total.formatMoney());
+    //</editor-fold>
 
-function updateShipDate() {
-  let dts = $("#days_to_ship").val();
+    //// Glaze Technique
+    let gt_pct = $("#gt_pct"), gt_amt = $("#gt_amt");
+    let ggard_pct = $("#ggard_pct"), ggard_amt = $("#ggard_amt");
+    let fcode_pct = $("#fc_pct"), fcode_amt = $("#fc_amt");
+    let sheen_pct = $("#sheen_pct"), sheen_amt = $("#sheen_amt");
 
-  $.post("/html/pricing/ajax/global_actions.php?action=calcShipDate", {days_to_ship: dts, room_id: active_room_id}, function(data) {
-    let result = JSON.parse(data);
+    // gets the markup of Glaze Technique based on the room glaze technique variable
+    let gt_markup = pricingVars.vinInfo['glaze_technique'][pricingVars.roomQry['glaze_technique']].markup;
+    let ggard_markup = pricingVars.vinInfo['green_gard'][pricingVars.roomQry['green_gard']].markup;
+    let fcode_markup = pricingVars.vinInfo['finish_code'][pricingVars.roomQry['finish_code']].markup;
+    let sheen_markup = pricingVars.vinInfo['sheen'][pricingVars.roomQry['sheen']].markup;
 
-    $("#calcd_ship_date").html(result['ship_date']);
-    $("#calcd_del_date").html(result['del_date']);
-  });
-}
+    // calculate out the cost of the glaze technique
+    let gt_cost = line_total * gt_markup;
+    let ggard_cost = line_total * ggard_markup;
+    let fcode_cost = line_total * fcode_markup;
+    let sheen_cost = line_total * sheen_markup;
 
-function checkNote(noteBox, noteField, followupDateField, followupOfField) {
-  let note = $(noteField).val();
+    // Glaze Technique fields
+    gt_amt.text(gt_cost.formatMoney());
+    gt_pct.text((gt_markup * 100).toFixed(2) + "%");
 
-  if(note !== '') {
-    console.log('Field Value:' + note);
+    // Green Gard fields
+    ggard_amt.text(ggard_cost.formatMoney());
+    ggard_pct.text((ggard_markup * 100).toFixed(2) + "%");
 
-    let d = new Date();
-    let month = d.getMonth() + 1;
-    let date = month + '/' + d.getDate() + '/' + d.getFullYear();
+    // Finish Code fields
+    fcode_amt.text(fcode_cost.formatMoney());
+    fcode_pct.text((fcode_markup * 100).toFixed(2) + "%");
 
-    let hours = d.getHours();
-    let mins = d.getMinutes();
-    let secs = d.getSeconds();
-    let am_pm = null;
+    // Sheen fields
+    sheen_amt.text(sheen_cost.formatMoney());
+    sheen_pct.text((sheen_markup * 100).toFixed(2) + "%");
 
-    if(hours < 12) { am_pm = 'AM'; } else { am_pm = 'PM';}
-    if(hours === 0) { hours = 12; }
-    if(hours > 12) { hours = hours - 12; }
+    // add the glaze technique to the total amount of global upcharges
+    global_cab_charges += gt_cost;
+    global_cab_charges += ggard_cost;
+    global_cab_charges += fcode_cost;
+    global_cab_charges += sheen_cost;
 
-    mins = mins + '';
-    if(mins.length === 1) { mins = "0" + mins; }
-
-    secs = secs + '';
-    if(secs.length === 1) { secs = "0" + secs; }
-
-    let time = hours + ':' + mins + ':' + secs + ' ' + am_pm;
-
-    let followup_on = $(followupDateField).val();
-    let followup_by = $(followupOfField).find(":selected").text();
-    let followup = '';
-
-    if(followup_on !== '') {
-      followup = '(Followup by ' + followup_by +' on ' + followup_on + ')';
+    // Grab the shipping price IF it's not pickup
+    if(shipVia !== '4') {
+      global_room_charges += parseFloat(pricingVars.shipCost);
     }
 
-    let output = '<tr><td width="26px" style="padding-right:5px;"><button class="btn waves-effect btn-primary pull-right reply_to_inquiry" id="10381"> ' +
-      '<i class="zmdi zmdi-mail-reply"></i> </button></td>  ' +
-      '<td>' + note + ' -- <small><em>' + nameOfUser + ' on ' + date + ' ' + time + ' ' + followup + ' </em></small></td></tr>' +
-      '<tr style="height:2px;"><td colspan="2" style="background-color:#000;"></td></tr>' +
-      '<tr style="height:5px;"><td colspan="2"></td></tr>';
+    //// Global Cabinet Details
+    $("#itemListGlobalCabDetails").text(global_cab_charges.formatMoney());
 
-    let row = 3;
+    //// Subtotal 1
+    let subtotal1 = global_cab_charges + line_total;
+    $("#itemListSubTotal1").text(subtotal1.formatMoney());
 
-    if(noteBox === '.so_note_box') {
-      row = 2;
+    //// Capture the multiplier for use
+    let multiplier = parseFloat($("#itemListMultiplier").text());
+
+    //// Calculate the net price
+    let netPrice = (line_total + global_cab_charges) * multiplier;
+    $("#itemListNET").text(netPrice.formatMoney());
+
+    // Grab the product type, has to be calculated in jquery because this is a flexible price based on the total of the job
+    // THIS PRICE IS NET, MARKUP DOES NOT IMPACT THIS PRICE
+    let productTypeOpt = $("#product_type").val();
+    let productTypeMarkup = 0.00;
+
+    if(productTypeOpt === 'B') { // markup for inset
+      productTypeMarkup = 0.10;
     }
 
-    $(noteBox).find("table tr:eq(" + row + ")").before(output);
+    // IT IS IMPORTANT THAT WE USE THE CABINET ONLY PRICE HERE! THIS ALLOWS US TO SEGREGATE OUT WOOD TOPS AND FILLERS/PANELS!
+    let productTypeCost = cabinet_only_total * productTypeMarkup;
+    $("#product_type_cost").text(productTypeCost.formatMoney());
 
-    $(noteField).val('');
-    $(followupDateField).val('');
-    $(followupOfField).val('null');
+    // add the product type cost to the global room charges
+    global_room_charges += productTypeCost;
+
+    //// Display the global room detail charges
+    $("#itemListGlobalRoomDetails").text(global_room_charges.formatMoney());
+
+    let subtotal = netPrice + global_room_charges;
+
+    // TODO: We're not adding credit card here right now, we need to add that in
+
+    //// Update the subtotal
+    $("#finalSubTotal").text(subtotal.formatMoney());
+
+    //// Update the total
+    $("#finalTotal").text(subtotal.formatMoney());
+
+    //// Update the required deposit
+    let deposit = subtotal * 0.5;
+    $("#finalDeposit").text(deposit.formatMoney());
+    //******************************************************************
+
+    //<editor-fold desc="Transparency report">
+    // Transparency report
+    $("#calcProductType").text('Cabinet Only Total (' + cabinet_only_total + ') * Product Type Markup (' + productTypeMarkup + ')');
+    $("#calcProductTypeTotal").text((cabinet_only_total * productTypeMarkup).formatMoney());
+
+    $("#calcLeadTime").text('Lead Time (Green) * Total [Hardcoded]');
+    $("#calcLeadTimeTotal").text('$0.00 [Hardcoded]');
+
+    $("#calcShipVIA").text('Cycle Truck [Hardcoded]');
+    $("#calcShipVIATotal").text('$0.00 [Hardcoded]');
+
+    let shipMileInfo = JSON.parse(calcShipInfo);
+
+    if(shipVia !== '4') {
+      $("#calcShipZone").html('Mileage (' + shipMileInfo.miles + ') - ' + shipMileInfo.zone + '<br /><br />Calculated based on Shipping Zip entered into Ship To, if that is empty, use Dealer Zip.<br /><br />0-100 Ship Zone A, $0.00<br />100-200 Ship Zone B, $150.00<br />200-300 Ship Zone C, $300.00<br />300-400 Ship Zone D, $450.00<br />400-500 Ship Zone E, $600.00');
+      $("#calcShipZoneTotal").text(shipMileInfo.cost.formatMoney());
+    } else {
+      $("#calcShipZone").html('Customer Pickup');
+      $("#calcShipZoneTotal").text('$0.00');
+    }
+
+    $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') * Glaze Markup (' + gt_markup + ')');
+    $("#calcGlazeTechTotal").html(gt_cost.formatMoney());
+
+    $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') * Green Gard Markup (' + ggard_markup + ')');
+    $("#calcGreenGardTotal").html(ggard_cost.formatMoney());
+
+    $("#calcSheen").html('Total (' + line_total.toFixed(2) + ') * Sheen Markup (' + sheen_markup + ')');
+    $("#calcSheenTotal").html(sheen_cost.formatMoney());
+
+    $("#calcFinishCode").html('Total (' + line_total.toFixed(2) + ') * Finish Markup (' + fcode_markup + ')');
+    $("#calcFinishCodeTotal").html(fcode_cost.formatMoney());
+
+    $("#calcCabinetLines").html('Cabinets: ' + cabinet_only_skus);
+    $("#calcCabinetLinesTotal").html(cabinet_only_total.formatMoney());
+
+    $("#calcNonCabLines").html('Non-Cabinets: ' + non_cabinet_skus);
+    $("#calcNonCabLinesTotal").html(non_cabinet_total.formatMoney());
+    //</editor-fold>
+  },
+  footCalc: function(node) {
+    // @footCalc() - calculates by square foot or linear foot
+    let $tdList = $(node.tr).find(">td");
+    let outprice = node.data.price;
+
+    // noinspection JSCheckFunctionSignatures
+    if(node.data.width > 0 && node.data.height > 0) {
+      if(parseInt(node.data.sqft) === 1) {
+        let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.height)) / 144;
+        let line_total = line_sqft * node.data.singlePrice;
+
+        $tdList.eq(8).text(line_total.formatMoney());
+
+        outprice = line_total;
+      } else if(parseInt(node.data.linft) === 1) {
+        let line_linft = (parseFloat(node.data.width) / 12) * node.data.singlePrice;
+
+        $tdList.eq(8).text(line_linft.formatMoney());
+
+        outprice = line_linft;
+      }
+    }
+
+    return outprice;
+  },
+  fullRecalc: function() {
+    cabinetList.fancytree("getTree").visit(function(line) {
+      let itemID = line.data.itemID;
+      let key = line.key;
+
+      var tree = cabinetList.fancytree("getTree");
+
+      $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: itemID, room_id: active_room_id}, function(data) {
+        if(data !== '' && line.data.customPrice !== 1) {
+          let itemInfo = JSON.parse(data);
+          let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
+          let node = tree.getNodeByKey(key);
+
+          if(node.data.cabinet === 1) {
+            node.setTitle(itemInfo.sku);
+          }
+
+          node.data.price = fixedPrice;
+          node.icon = itemInfo.icon;
+          node.data.name = itemInfo.title;
+          node.data.sqft = itemInfo.sqft;
+          node.data.singlePrice = fixedPrice;
+          node.data.cabinet = itemInfo.cabinet;
+          node.data.addlMarkup = itemInfo.addl_markup;
+        }
+      }).done(function() {
+        pricingFunction.recalcSummary();
+      });
+    });
+
+    displayToast("success", "Successfully recalculated the pricing.", "Pricing Recalculated");
+  },
+  fetchDebug: function() {
+    cabinetList.fancytree("getTree").visit(function(line) {
+      console.log(line);
+    });
+  },
+  genKey: function() {
+    return new Date().getTime() * Math.random(999);
+  },
+  updateShipDate: function() {
+    let dts = $("#days_to_ship").val();
+
+    $.post("/html/pricing/ajax/global_actions.php?action=calcShipDate", {days_to_ship: dts, room_id: active_room_id}, function(data) {
+      let result = JSON.parse(data);
+
+      $("#calcd_ship_date").html(result['ship_date']);
+      $("#calcd_del_date").html(result['del_date']);
+    });
+  },
+  checkNote: function(noteBox, noteField, followupDateField, followupOfField) {
+    let note = $(noteField).val();
+
+    if(note !== '') {
+      let d = new Date();
+      let month = d.getMonth() + 1;
+      let date = month + '/' + d.getDate() + '/' + d.getFullYear();
+
+      let hours = d.getHours();
+      let mins = d.getMinutes();
+      let secs = d.getSeconds();
+      let am_pm = null;
+
+      if(hours < 12) { am_pm = 'AM'; } else { am_pm = 'PM';}
+      if(hours === 0) { hours = 12; }
+      if(hours > 12) { hours = hours - 12; }
+
+      mins = mins + '';
+      if(mins.length === 1) { mins = "0" + mins; }
+
+      secs = secs + '';
+      if(secs.length === 1) { secs = "0" + secs; }
+
+      let time = hours + ':' + mins + ':' + secs + ' ' + am_pm;
+
+      let followup_on = $(followupDateField).val();
+      let followup_by = $(followupOfField).find(":selected").text();
+      let followup = '';
+
+      if(followup_on !== '') {
+        followup = '(Followup by ' + followup_by +' on ' + followup_on + ')';
+      }
+
+      let output = '<tr><td>' + note + ' -- <small><em>' + pricingVars.nameOfUser + ' on ' + date + ' ' + time + ' ' + followup + ' </em></small></td></tr>' +
+        '<tr style="height:2px;"><td colspan="2" style="background-color:#000;"></td></tr>' +
+        '<tr style="height:5px;"><td colspan="2"></td></tr>';
+
+      let row = 3;
+
+      if(noteBox === '.so_note_box') {
+        row = 2;
+      }
+
+      $(noteBox).find("table tr:eq(" + row + ")").before(output);
+
+      $(noteField).val('');
+      $(followupDateField).val('');
+      $(followupOfField).val('null');
+    }
+  },
+  catalogCanEdit: function(editCatalog) {
+    if(editCatalog.hasClass("fa-unlock")) {
+      return true;
+    } else {
+      return false;
+    }
+  },
+  disabledSerialize: function(field) {
+    let disabled = field.find(":input:disabled").removeAttr("disabled");
+    let info = field.serialize();
+    disabled.attr('disabled', 'disabled');
+
+    return info;
+  },
+  disableInput: function() {
+    let productionLock = $("#production_lock");
+
+    if(productionLock.attr("data-clicked") !== 'true') {
+      $("#crmBatch").find("input, select").prop("disabled", true);
+      productionLock.show();
+    }
   }
-}
+};
 
 var mouseX, mouseY;
 
@@ -434,11 +491,6 @@ $(document).mousemove(function(e) {
   mouseX = e.pageX;
   mouseY = e.pageY;
 });
-
-var CLIPBOARD = null;
-var cabinetList = $("#cabinet_list");
-var catalog = $("#catalog_categories");
-var itemModifications = $("#item_modifications");
 
 $("body")
   .on("keyup", "#treeFilter", function() { // filters per keystroke on search catalog
@@ -457,55 +509,117 @@ $("body")
   })
 
   .on("change", "select", function() {
-    checkDropdown();
+    globalFunctions.checkDropdown();
   })
 
   .on("click", "#save", function() {
-    //<editor-fold desc="Disabled Field Serialize function">
-    function disabledSerialize(field) {
-      let disabled = field.find(":input:disabled").removeAttr("disabled");
-      let info = field.serialize();
-      disabled.attr('disabled', 'disabled');
+    // find out what tab we're saving first
+    let curTab = $("#roomTabView .nav-item .active").attr("id");
 
-      return info;
-    }
-    //</editor-fold>
+    // variable for storing the form data
+    let formData = null;
+    let val_array = {};
+    let customVals = null;
+    let inputSelect = $("select");
 
-    //<editor-fold desc="Room Data">
-    var val_array = {};
-    var customVals = null;
-    var cab_list = JSON.stringify(getMiniTree(cabinetList));
+    // based on what we're saving, we're going to take an action
+    switch(curTab) {
+      case 'room-notes-tab': // saving notes
+        formData = $("#batch_notes").serialize();
 
-    // SUPER IMPORTANT to enable and then re-disable select fields during serialization
-    var cabinet_specifications = disabledSerialize($("#cabinet_specifications"));
-    var accounting_notes = disabledSerialize($("#accounting_notes"));
+        $.post("/html/pricing/ajax/global_actions.php?action=saveBatchNotes", {room_id: active_room_id, notes: formData}, function(data, response) {
+          if(response === 'success') {
+            $('body').append(data);
 
-    $("select").each(function() {
-      var ele = $(this);
-      var field = $(this).attr('id');
-      var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
-
-      if($.inArray(ele.val(), custom_fields) >= 0) {
-        val_array[field] = {};
-
-        ele.parent().find('input').each(function() {
-          val_array[field][$(this).attr('name')] = $(this).val();
+            pricingFunction.checkNote('.so_note_box', '#project_note_input', '#project_followup_date', '#project_followup_requested_of');
+            pricingFunction.checkNote('.room_note_box', '#batch_note_input', '#batch_inquiry_followup_date', '#batch_inquiry_requested_of');
+          } else {
+            displayToast('error', 'Something went wrong with notes. Please try again.', 'Note Error');
+          }
         });
-      }
-    });
 
-    customVals = JSON.stringify(val_array);
+        break;
+      case 'room-details-tab': // saving room details
+        formData = pricingFunction.disabledSerialize($("#batch_details"));
 
-    $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes}, function(data) {
-      $('body').append(data);
-    });
-    //</editor-fold>
+        $.post("/html/pricing/ajax/global_actions.php?action=saveBatchDetails", {room_id: active_room_id, formData: formData}, function(data, response) {
+          if(response === 'success') {
+            $('body').append(data);
+          } else {
+            displayToast('error', 'Something went wrong saving Batch Details. Please try again.', 'Batch Details Error');
+          }
+        });
 
-    // live notes for Room notes box
-    checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
+        break;
+      case 'room-cabinet-details-tab':
+        val_array = {};
 
-    // live notes for SO notes box
-    checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
+        formData = pricingFunction.disabledSerialize($("#cabinet_details"));
+
+        inputSelect.each(function() {
+          var ele = $(this);
+          var field = $(this).attr('id');
+          var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
+
+          if($.inArray(ele.val(), custom_fields) >= 0) {
+            val_array[field] = {};
+
+            ele.parent().find('input').each(function() {
+              val_array[field][$(this).attr('name')] = $(this).val();
+            });
+          }
+        });
+
+        customVals = JSON.stringify(val_array);
+
+        $.post("/html/pricing/ajax/global_actions.php?action=saveCabinetDetails", {room_id: active_room_id, formData: formData, customVals: customVals}, function(data, response) {
+          if(response === 'success') {
+            $('body').append(data);
+          } else {
+            displayToast('error', 'Something went wrong saving Batch Details. Please try again.', 'Batch Details Error');
+          }
+        });
+
+        break;
+      default: // no tabs selected at all, we must be in the old interface, run the old save code
+        //<editor-fold desc="Room Data">
+        var cab_list = JSON.stringify(getMiniTree(cabinetList));
+
+        var current_tab = $("#roomTabViewContent .tab-pane.active").attr("id");
+
+        // SUPER IMPORTANT to enable and then re-disable select fields during serialization
+        var cabinet_specifications = pricingFunction.disabledSerialize($("#cabinet_specifications"));
+        var accounting_notes = pricingFunction.disabledSerialize($("#accounting_notes"));
+
+        inputSelect.each(function() {
+          var ele = $(this);
+          var field = $(this).attr('id');
+          var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
+
+          if($.inArray(ele.val(), custom_fields) >= 0) {
+            val_array[field] = {};
+
+            ele.parent().find('input').each(function() {
+              val_array[field][$(this).attr('name')] = $(this).val();
+            });
+          }
+        });
+
+        customVals = JSON.stringify(val_array);
+
+        $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes, tab: current_tab}, function(data) {
+          $('body').append(data);
+        });
+        //</editor-fold>
+
+        // live notes for Room notes box
+        pricingFunction.checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
+
+        // live notes for SO notes box
+        pricingFunction.checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
+
+        break;
+    }
 
     unsaved = false;
   })
@@ -554,7 +668,7 @@ $("body")
       $('body').append(data);
     });
 
-    $("#modalGeneral").html("").modal("hide");
+    $("#modalGlobal").modal("hide");
 
     unsaved = false;
   })
@@ -584,17 +698,17 @@ $("body")
   })
   .on("click", "#copy_room", function() {
     $.post("/html/pricing/ajax/global_actions.php?action=modalCopyRoom&roomID=" + active_room_id, function(data) {
-      $("#modalGeneral").html(data).modal("show");
+      $("#modalGlobal").html(data).modal("show");
     });
   })
   .on("click", "#bracket_management", function() {
     $.post("/html/pricing/ajax/global_actions.php?action=modalBracketMgmt&roomID=" + active_room_id, function(data) {
-      $("#modalGeneral").html(data).modal("show");
+      $("#modalGlobal").html(data).modal("show");
     });
   })
   .on("click", "#appliance_ws", function() {
     $.post("/html/pricing/ajax/global_actions.php?action=modalApplianceWS&roomID=" + active_room_id, function(data) {
-      $("#modalGeneral").html(data).modal("show");
+      $("#modalGlobal").html(data).modal("show");
     });
   })
   .on("click", "#modalCopyRoom", function() {
@@ -617,11 +731,11 @@ $("body")
     });
   })
   .on("click", "#catalog_recalculate", function() {
-    fullRecalc();
+    pricingFunction.fullRecalc();
   })
   .on("click", "#production_lock", function() {
-    $("select").prop("disabled", false);
-    $(this).hide();
+    $("#crmBatch").find("input, select").prop("disabled", false);
+    $(this).attr("data-clicked", "true").hide();
 
     $.get("/html/pricing/ajax/global_actions.php?action=overrideProductionLock&roomID=" + active_room_id);
   })
@@ -645,7 +759,7 @@ $("body")
       }
     });
 
-    $("#modalGeneral").html("").modal("hide");
+    $("#modalGlobal").modal("hide");
 
     unsaved = false;
   })
@@ -686,7 +800,7 @@ $("body")
   })
 
   .on("click", "#item_note", function() { // the click of the "Add Item" button
-    // delNoData(); // wtc does this do?
+    pricingFunction.delNoData();
 
     var root = cabinetList.fancytree("getRootNode");
 
@@ -694,7 +808,7 @@ $("body")
       qty: 1,
       title: 'NOTE',
       price: 0.00,
-      key: genKey(),
+      key: pricingFunction.genKey(),
       icon: 'fa fa-commenting-o',
       name: 'Error',
       sqft: 0,
@@ -708,7 +822,7 @@ $("body")
     $tdList.eq(4).html('<input type="text" class="form-control custom-line-item" placeholder="Custom Description..." data-id="' + node.key + '" >');
   })
   .on("click", "#item_custom_line", function() { // the click of the "Add Item" button
-    // delNoData(); // wtc does this do?
+    pricingFunction.delNoData();
 
     var root = cabinetList.fancytree("getRootNode");
 
@@ -716,7 +830,7 @@ $("body")
       qty: 1,
       title: ' ',
       price: 0.00,
-      key: genKey(),
+      key: pricingFunction.genKey(),
       icon: 'fa fa-hand-o-right',
       name: 'Error',
       sqft: 0,
@@ -743,7 +857,7 @@ $("body")
     // re-render the tree deeply so that we can recalculate the line item numbers
     cabinetList.fancytree("getRootNode").render(true,true);
 
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
   .on("mouseenter", ".view_item_info", function() {
     // FIXME: Change this so the data isn't loaded on hover
@@ -784,16 +898,18 @@ $("body")
     $(".info-popup").fadeOut(250);
   })
   .on("click", ".add_item_mod", function() {
-    $("#modalAddModification").modal('show');
+    $.post("/html/modals/item_list_add_modification.php", function(data) {
+      $("#modalGlobal").html(data).modal('show');
+    });
   })
   .on("click", ".item_copy", function() {
     let activeNode = cabinetList.fancytree("getTree").getActiveNode().toDict(true);
 
-    activeNode.key = genKey();
+    activeNode.key = pricingFunction.genKey();
 
     if(activeNode.children !== null) {
       $.each(activeNode.children, function(key) {
-        activeNode.children[key].key = genKey();
+        activeNode.children[key].key = pricingFunction.genKey();
       });
     }
 
@@ -809,21 +925,20 @@ $("body")
     cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
   })
   .on("change", ".qty_input", function() {
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
 
   .on("click", ".add_item_cabinet_list", function() {
-    delNoData();
+    pricingFunction.delNoData();
 
     var root = cabinetList.fancytree("getRootNode");
-    let $tdList = $(root.tr).find(">td");
 
     $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: $(this).attr('data-id'), room_id: active_room_id}, function(data) {
       let itemInfo = JSON.parse(data);
 
       let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
 
-      let insertedNode = root.addChildren({
+      root.addChildren({
         qty: 1,
         title: itemInfo.sku,
         width: itemInfo.width,
@@ -831,7 +946,7 @@ $("body")
         depth: itemInfo.depth,
         itemID: itemInfo.id,
         price: fixedPrice,
-        key: genKey(),
+        key: pricingFunction.genKey(),
         icon: itemInfo.icon,
         name: itemInfo.title,
         sqft: itemInfo.sqft,
@@ -840,9 +955,7 @@ $("body")
         addlMarkup: itemInfo.addlMarkup
       });
 
-
-
-      recalcSummary();
+      pricingFunction.recalcSummary();
     });
   })
   .on("click", "#editCatalogLock", function() {
@@ -854,7 +967,7 @@ $("body")
   })
   .on("click", "#catalog_add_item", function() {
     $.get("/html/pricing/ajax/modify_item.php", function(data) {
-      $("#modalGeneral").html(data).modal("show");
+      $("#modalGlobal").html(data).modal("show");
     });
   })
 
@@ -883,27 +996,27 @@ $("body")
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.width = $(this).val();
-    node.data.price = footCalc(node);
+    node.data.price = pricingFunction.footCalc(node);
 
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
   .on("keyup", ".itm_height", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.height = $(this).val();
-    node.data.price = footCalc(node);
+    node.data.price = pricingFunction.footCalc(node);
 
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
   .on("keyup", ".itm_depth", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.depth = $(this).val();
-    node.data.price = footCalc(node);
+    node.data.price = pricingFunction.footCalc(node);
 
-    recalcSummary();
+    pricingFunction.recalcSummary();
   })
 
   .on("keyup", "#modificationsFilter", function() { // filters per keystroke on search catalog
@@ -967,7 +1080,7 @@ $("body")
         title: v.title,
         itemID: v.data.itemID,
         price: outputPrice,
-        key: genKey(),
+        key: pricingFunction.genKey(),
         width: width,
         height: height,
         icon: v.icon,
@@ -984,14 +1097,13 @@ $("body")
 
     cablist.setExpanded();
 
-    $("#modalAddModification").modal("hide");
+    $("#modalGlobal").modal("hide");
   })
   .on("keyup", ".modAddlInfo", function() {
     let id = $(this).attr("id");
 
     itemModifications.fancytree("getTree").getNodeByKey(id).data.addlInfo = $(this).val();
   })
-
 
   .on("click", "#category_collapse", function() {
     catalog.fancytree("getTree").visit(function(node){
@@ -1001,7 +1113,7 @@ $("body")
 
   .on("click", "#overrideShipDate", function() {
     $.post("/html/pricing/ajax/global_actions.php?action=modalOverrideShipping&roomID=" + active_room_id, function(data) {
-      $("#modalGeneral").html(data).modal("show");
+      $("#modalGlobal").html(data).modal("show");
     });
   })
   .on("click", "#modalShippingUpdate", function() {
@@ -1015,7 +1127,192 @@ $("body")
 
       displayToast("success", "Successfully updated ship and delivery date.", "Ship/Delivery Updated");
 
-      $("#modalGeneral").html("").modal('hide');
+      $("#modalGlobal").modal('hide');
+    });
+
+    unsaved = false;
+  })
+
+  .on("blur", ".custom_price", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+
+    node.data.price = parseFloat($(this).val().replace(/[^0-9-.]/g, ''));
+
+    pricingFunction.recalcSummary();
+  })
+  .on("focus mouseup", ".custom_price", function() {
+    $(this).select();
+  })
+  .on("keyup", ".custom-line-item", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+
+    node.data.name = $(this).val();
+  })
+  .on("click", "#detailed_item_summary", function() {
+    $.post("/html/modals/detailed_report_item_list.php", {room_id: active_room_id}, function(data) {
+      $("#modalGlobal").html(data);
+    }).done(function() {
+      pricingFunction.recalcSummary();
+
+      $("#modalGlobal").modal("show");
+    });
+  })
+
+  .on("click", "#pricingSpeciesGrade, #pricingDoorDesign", function() {
+    let speciesGrade = $("#species_grade").val();
+    let doorDesign = $("#door_design").val();
+
+    $.post("/html/pricing/ajax/global_actions.php?action=getPriceGroup&speciesGrade=" + speciesGrade + "&doorDesign=" + doorDesign, function(data) {
+      $("#cab_spec_pg").text(data);
+      priceGroup = data;
+    });
+
+    pricingFunction.recalcSummary();
+  })
+
+  .on("click", "#modalSaveCatItemSubmit", function() {
+    let node = catalog.fancytree("getTree").getActiveNode();
+    let fields = $("#catalogAddEditItem").serialize();
+
+    let sku = $("#catalogAddEditItem input[name='title']").val();
+
+    $.post("/html/pricing/ajax/item_actions.php?action=updateItem", {key: node.key, folder: node.folder, update: fields}, function(data, status) {
+      $("body").append(data);
+
+      if(status === 'success') {
+        let title = sku +
+          '<span class="actions">' +
+            '<div class="info_container"><i class="fa fa-info-circle primary-color view_item_info" data-id="' + node.key + '"></i></div>' +
+            '<i class="fa fa-plus-circle success-color add_item_cabinet_list" data-id="' + node.key + '" title="Add To Cabinet List"></i>' +
+          '</span>';
+
+        node.setTitle(title);
+        $("#modalGlobal").html(data).modal("hide");
+      }
+    });
+
+    unsaved = false;
+  })
+  .on("click", "#modalAddCatItemSubmit", function() {
+    let node = catalog.fancytree("getTree").getActiveNode();
+    let fields = $("#catalogAddEditItem").serialize();
+    let catID = node.key;
+    let createFolder = false;
+    let folderType = null;
+
+    let sku = $("#catalogAddEditItem input[name='title']").val();
+
+    if($(this).attr("data-type") === 'newSameFolder') {
+      createFolder = true;
+      folderType = 'alongside';
+    } else if($(this).attr('data-type') === 'newSubFolder') {
+      createFolder = true;
+      folderType = 'child';
+    }
+
+    if(!node.isFolder()) {
+      catID = node.parent.key;
+    }
+
+    $.post("/html/pricing/ajax/item_actions.php?action=createItem", {key: catID, folder: createFolder, folderType: folderType, update: fields}, function(data, status) {
+      if(status === 'success') {
+        let insertID = data;
+
+        if(createFolder) {
+          if(folderType === 'alongside') {
+            catalog.fancytree("getTree").getNodeByKey(catID).parent.addChildren({'key': insertID, 'title': sku, 'folder': true});
+          } else {
+            catalog.fancytree("getTree").getNodeByKey(catID).addChildren({'key': insertID, 'title': sku, 'folder': true});
+          }
+
+          displayToast('success', 'Successfully created category', 'Category Created');
+
+          $("#modalGlobal").html(data).modal("hide");
+        } else {
+          let title = sku +
+            '<span class="actions">' +
+            '<div class="info_container"><i class="fa fa-info-circle primary-color view_item_info" data-id="' + insertID + '"></i></div>' +
+            '<i class="fa fa-plus-circle success-color add_item_cabinet_list" data-id="' + insertID + '" title="Add To Cabinet List"></i>' +
+            '</span>';
+
+          catalog.fancytree("getTree").getNodeByKey(catID).addChildren({'key': insertID, 'icon': 'fa fa-magic', 'title': title, 'is_item': true, 'qty': 1});
+
+          displayToast('success', 'Successfully created item.', 'Item Created');
+
+          $("#modalGlobal").html(data).modal("hide");
+        }
+      } else {
+        displayToast('error', 'Unable to create the requested item/category.', 'Error');
+      }
+    });
+
+    unsaved = false;
+  })
+
+  .on("change", "#left_menu_options", function() {
+    let result = $(this).val();
+    let asearch = $(".action_search");
+    let newSourceOption = null;
+
+    switch(result) {
+      case 'catalog':
+        asearch.show();
+
+        newSourceOption = {
+          url: '/html/pricing/ajax/nav_menu.php',
+          type: 'POST',
+          dataType: 'json'
+        };
+
+        catalog.fancytree("getTree").reload(newSourceOption);
+        break;
+      case 'samples':
+        asearch.hide();
+
+        newSourceOption = {
+          url: '/html/pricing/ajax/samples_menu.php',
+          type: 'POST',
+          dataType: 'json'
+        };
+
+        catalog.fancytree("getTree").reload(newSourceOption);
+        break;
+    }
+  })
+
+  .on("change", ".sample_checkbox", function() {
+    $('.sample_checkbox').not(this).prop('checked', false);
+  })
+
+  .on("click", "#ship_date_recalc", function() {
+    if($("#order_status").val() === '#') {
+      pricingFunction.updateShipDate();
+    } else {
+      displayToast('error', 'Unable to recalculate ship date, this room is not in quote anymore.', 'Unable to Recalculate.');
+    }
+  })
+  .on("click", "#overrideShipCost", function() {
+    $.post("/html/pricing/ajax/global_actions.php?action=modalOverrideShipCost&roomID=" + active_room_id, function(data) {
+      $("#modalGlobal").html(data).modal("show");
+    });
+  })
+  .on("click", "#modalShippingCostOverride", function() {
+    let shippingInfo = $("#modalShippingOverrideCost").serialize();
+
+    $.post("/html/pricing/ajax/global_actions.php?action=shipCostOverride&roomID=" + active_room_id, {info: shippingInfo}, function(data, response) {
+      if(response === 'success') {
+        $("#shipping_cost").attr('data-cost', data).text('$' + data);
+
+        displayToast("success", "Successfully overrode ship cost.", "Ship Cost Overriden");
+
+        $("#modalGlobal").modal('hide');
+
+        pricingFunction.recalcSummary();
+      } else {
+        displayToast("error", "Unable to update ship cost. Please contact IT.", "Ship Cost Override Error");
+      }
     });
 
     unsaved = false;
@@ -1069,7 +1366,7 @@ $("body")
           type: 'red',
           buttons: {
             yes: function() {
-              updateShipDate();
+              pricingFunction.updateShipDate();
             },
             no: function() {}
           }
@@ -1077,183 +1374,4 @@ $("body")
       }
     }
   })*/
-
-  .on("blur", ".custom_price", function() {
-    let id = $(this).attr("data-id");
-    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
-
-    node.data.price = parseFloat($(this).val().replace(/[^0-9-.]/g, ''));
-
-    recalcSummary();
-  })
-  .on("focus mouseup", ".custom_price", function() {
-    $(this).select();
-  })
-  .on("keyup", ".custom-line-item", function() {
-    let id = $(this).attr("data-id");
-    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
-
-    node.data.name = $(this).val();
-  })
-  .on("click", "#detailed_item_summary", function() {
-    $("#modalDetailedItemList").modal("show")
-  })
-
-  .on("click", "#pricingSpeciesGrade, #pricingDoorDesign", function() {
-    let speciesGrade = $("#species_grade").val();
-    let doorDesign = $("#door_design").val();
-
-    $.post("/html/pricing/ajax/global_actions.php?action=getPriceGroup&speciesGrade=" + speciesGrade + "&doorDesign=" + doorDesign, function(data) {
-      $("#cab_spec_pg").text(data);
-      priceGroup = data;
-    });
-
-    recalcSummary();
-  })
-
-  .on("click", "#modalSaveCatItemSubmit", function() {
-    let node = catalog.fancytree("getTree").getActiveNode();
-    let fields = $("#catalogAddEditItem").serialize();
-
-    let sku = $("#catalogAddEditItem input[name='title']").val();
-
-    $.post("/html/pricing/ajax/item_actions.php?action=updateItem", {key: node.key, folder: node.folder, update: fields}, function(data, status) {
-      $("body").append(data);
-
-      if(status === 'success') {
-        let title = sku +
-          '<span class="actions">' +
-            '<div class="info_container"><i class="fa fa-info-circle primary-color view_item_info" data-id="' + node.key + '"></i></div>' +
-            '<i class="fa fa-plus-circle success-color add_item_cabinet_list" data-id="' + node.key + '" title="Add To Cabinet List"></i>' +
-          '</span>';
-
-        node.setTitle(title);
-        $("#modalGeneral").html(data).modal("hide");
-      }
-    });
-
-    unsaved = false;
-  })
-  .on("click", "#modalAddCatItemSubmit", function() {
-    let node = catalog.fancytree("getTree").getActiveNode();
-    let fields = $("#catalogAddEditItem").serialize();
-    let catID = node.key;
-    let createFolder = false;
-    let folderType = null;
-
-    let sku = $("#catalogAddEditItem input[name='title']").val();
-
-    if($(this).attr("data-type") === 'newSameFolder') {
-      createFolder = true;
-      folderType = 'alongside';
-    } else if($(this).attr('data-type') === 'newSubFolder') {
-      createFolder = true;
-      folderType = 'child';
-    }
-
-    if(!node.isFolder()) {
-      catID = node.parent.key;
-    }
-
-    $.post("/html/pricing/ajax/item_actions.php?action=createItem", {key: catID, folder: createFolder, folderType: folderType, update: fields}, function(data, status) {
-      if(status === 'success') {
-        let insertID = data;
-
-        if(createFolder) {
-          if(folderType === 'alongside') {
-            catalog.fancytree("getTree").getNodeByKey(catID).parent.addChildren({'key': insertID, 'title': sku, 'folder': true});
-          } else {
-            catalog.fancytree("getTree").getNodeByKey(catID).addChildren({'key': insertID, 'title': sku, 'folder': true});
-          }
-
-          displayToast('success', 'Successfully created category', 'Category Created');
-
-          $("#modalGeneral").html(data).modal("hide");
-        } else {
-          let title = sku +
-            '<span class="actions">' +
-            '<div class="info_container"><i class="fa fa-info-circle primary-color view_item_info" data-id="' + insertID + '"></i></div>' +
-            '<i class="fa fa-plus-circle success-color add_item_cabinet_list" data-id="' + insertID + '" title="Add To Cabinet List"></i>' +
-            '</span>';
-
-          catalog.fancytree("getTree").getNodeByKey(catID).addChildren({'key': insertID, 'icon': 'fa fa-magic', 'title': title, 'is_item': true, 'qty': 1});
-
-          displayToast('success', 'Successfully created item.', 'Item Created');
-
-          $("#modalGeneral").html(data).modal("hide");
-        }
-      } else {
-        displayToast('error', 'Unable to create the requested item/category.', 'Error');
-      }
-    });
-
-    unsaved = false;
-  })
-
-  .on("change", "#left_menu_options", function() {
-    let result = $(this).val();
-    let asearch = $(".action_search");
-    let newSourceOption = null;
-
-    switch(result) {
-      case 'catalog':
-        asearch.show();
-
-        newSourceOption = {
-          url: '/html/pricing/ajax/nav_menu.php',
-          type: 'POST',
-          dataType: 'json'
-        };
-
-        catalog.fancytree("getTree").reload(newSourceOption);
-        break;
-      case 'samples':
-        asearch.hide();
-
-        newSourceOption = {
-          url: '/html/pricing/ajax/samples_menu.php',
-          type: 'POST',
-          dataType: 'json'
-        };
-
-        catalog.fancytree("getTree").reload(newSourceOption);
-        break;
-    }
-  })
-
-  .on("change", ".sample_checkbox", function() {
-    $('.sample_checkbox').not(this).prop('checked', false);
-  })
-
-  .on("click", "#ship_date_recalc", function() {
-    if($("#order_status").val() === '#') {
-      updateShipDate();
-    } else {
-      displayToast('error', 'Unable to recalculate ship date, this room is not in quote anymore.', 'Unable to Recalculate.');
-    }
-  })
-  .on("click", "#overrideShipCost", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=modalOverrideShipCost&roomID=" + active_room_id, function(data) {
-      $("#modalGeneral").html(data).modal("show");
-    });
-  })
-  .on("click", "#modalShippingCostOverride", function() {
-    let shippingInfo = $("#modalShippingOverrideCost").serialize();
-
-    $.post("/html/pricing/ajax/global_actions.php?action=shipCostOverride&roomID=" + active_room_id, {info: shippingInfo}, function(data, response) {
-      if(response === 'success') {
-        $("#shipping_cost").attr('data-cost', data).text('$' + data);
-
-        displayToast("success", "Successfully overrode ship cost.", "Ship Cost Overriden");
-
-        $("#modalGeneral").html("").modal('hide');
-
-        recalcSummary();
-      } else {
-        displayToast("error", "Unable to update ship cost. Please contact IT.", "Ship Cost Override Error");
-      }
-    });
-
-    unsaved = false;
-  })
 ;

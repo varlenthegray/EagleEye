@@ -22,6 +22,7 @@ require '../../includes/header_start.php';
 </div>
 
 <script src="/html/crm/js/crmCompany.min.js?v=<?php echo VERSION; ?>"></script>
+<script src="/html/crm/js/crmBatch.min.js?v=<?php echo VERSION; ?>"></script>
 <script src="/html/crm/js/crmMain.js?v=<?php echo VERSION; ?>"></script>
 <script src="/includes/js/window-manager.min.js?v=<?php echo VERSION; ?>"></script>
 
@@ -31,8 +32,8 @@ require '../../includes/header_start.php';
     winMgr.init('crmUID');
     crmMain.widgetInit();
 
-    if(crmMain.getURLParams('maximized') === 'true') {
-      let win = crmMain.getURLParams('win');
+    if(globalFunctions.getURLParams('maximized') === 'true') {
+      let win = globalFunctions.getURLParams('win');
 
       winMgr.newAutoWin(win, true);
 

@@ -160,11 +160,7 @@ if((bool)$_SESSION['userInfo']['dealer']) {
 }
 
 // obtain the VIN database table and commit to memory for this query (MAJOR reduction in DB query count)
-$vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY FIELD(`value`, 'Custom/Other', 'TBD', 'N/A', 'Completed', 'Job', 'Quote', 'Lost') DESC, segment, `key` ASC");
-
-while($vin = $vin_qry->fetch_assoc()) {
-  $vin_schema[$vin['segment']][$vin['key']] = $vin['value'];
-}
+$vin_schema = getVINSchema();
 
 if($exact) {
   $qry = $dbconn->query("SELECT * FROM sales_order WHERE id = $find $dealer_filter ORDER BY so_num DESC");

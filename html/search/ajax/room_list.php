@@ -11,8 +11,6 @@ $strip = (bool)$_REQUEST['strip']; // if we're trying to view in a browser with 
 
 //outputPHPErrs();
 
-$vin_schema = array();
-
 // obtain the VIN database table and commit to memory for this query (MAJOR reduction in DB query count)
 $vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY FIELD(`value`, 'Custom/Other', 'TBD', 'N/A', 'Completed', 'Job', 'Quote', 'Lost') DESC, segment, `key` ASC");
 
@@ -57,7 +55,7 @@ if($room_qry = $dbconn->query("SELECT id, so_parent, room, iteration, product_ty
     $output[$i]['room'] = $room['room'];
     $output[$i]['iteration'] = $iteration;
     $output[$i]['product_type'] = $room['product_type'];
-    $output[$i]['order_status'] = $vin_schema['order_status'][$room['order_status']];
+    $output[$i]['order_status'] = $vin_schema['order_status']['$'];
     $output[$i]['days_to_ship'] = $room['days_to_ship'];
     $output[$i]['room_name'] = $room['room_name'];
     //</editor-fold>

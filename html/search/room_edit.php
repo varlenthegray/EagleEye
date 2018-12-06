@@ -119,20 +119,9 @@ HEREDOC;
 }
 
 // obtain the VIN database table and commit to memory for this query (MAJOR reduction in DB query count)
-/*$vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY
-  case right(`value`, 5) when 'Paint' then 1 when 'Stain' then 2 end,
-  FIELD(`value`, '0.15', 'TBD', 'N/A', 'Custom/Other', 'Design Specific', 'Design Specific (5X-Wood)', 'Design Specific (5X-MDF)', 'Red [6 days]', 'Orange [13 days]', 'Yellow [19 days]', 'Green [26 days]', 'None', 'No', 'Completed', 'Job', 'Quote', 'Lost', ' - Paint', ' - Stain') DESC, segment, `value` ASC");
+/*$vin_schema = getVINSchema();*/
 
-while($vin = $vin_qry->fetch_assoc()) {
-    $vin_schema[$vin['segment']][$vin['key']] = $vin['value'];
-}*/
-
-$vin_qry = $dbconn->query("SELECT * FROM vin_schema ORDER BY segment ASC, case `group` when 'Custom' then 1 when 'Other' then 2 else 3 end, `group` ASC,
- FIELD(`value`, 'Custom', 'Other', 'No', 'None') DESC");
-
-while($vin = $vin_qry->fetch_assoc()) {
-  $vin_schema[$vin['segment']][] = $vin;
-}
+$vin_schema = getVINSchema();
 
 $room_id = sanitizeInput($_REQUEST['room_id']);
 

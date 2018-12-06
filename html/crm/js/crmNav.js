@@ -1,7 +1,10 @@
+/*global active_room_id:true*//*global active_so_num:true*/
+
 var crmNav = {
   tree: $("#searchResultTree"),
   getTree: null, // assigned in init
-  search: null, // what's being searched for
+  search: null, // what's being searched for,
+  searchAjax: null, // the search AJAX results
 
   initTree: function() {
     this.tree.fancytree({
@@ -12,39 +15,51 @@ var crmNav = {
         highlight: false,
         autoExpand: false
       },
-      source: { url: "/html/crm/ajax/cached_result_tree.json?v=2" },
+      source: { url: "/html/crm/ajax/cached_result_tree.json" },
       renderNode: function(event, data) {
         let node = data.node, $span = $(node.span);
 
         switch(node.data.orderStatus) {
           case 'N':
             $span.addClass("crmSearchLead");
+
+            if(!$("#search_lead").is(":checked")) { $span.hide(); }
+
             break;
           case '#':
             $span.addClass("crmSearchQuote");
+
+            if(!$("#search_quote").is(":checked")) { $span.hide(); }
+
             break;
           case '$':
             $span.addClass("crmSearchProd");
+
+            if(!$("#search_prod").is(":checked")) { $span.hide(); }
+
             break;
           case '-':
             $span.addClass("crmSearchLost");
+
+            if(!$("#search_lost").is(":checked")) { $span.hide(); }
+
             break;
           case '+':
             $span.addClass("crmSearchCompleted");
+
+            if(!$("#search_completed").is(":checked")) { $span.hide(); }
+
             break;
           case 'P':
             $span.addClass("crmSearchPending");
+
+            if(!$("#search_pending").is(":checked")) { $span.hide(); }
+
             break;
         }
       },
       activate: function(event, data) {
         let node = data.node; // capture the node
-
-        if(node.isFolder()) { // if it's a folder
-          crmNav.tree.fancytree("getTree").filterBranches(node.title); // filter by branch
-        } else {
-          crmNav.tree.fancytree("getTree").filterBranches(node.getParentList()[0].title); // otherwise filter by the parent branch
-        }
 
         crmCompany.getCompany($(this).attr("data-id")); // get the company information for that listing and display it
 
@@ -53,6 +68,13 @@ var crmNav = {
          *******************************************************/
         let activateType = node.data.keyType;
         let typeID = node.key;
+
+        if(activateType === 'rID') {
+          active_room_id = typeID;
+          active_so_num = node.getParent().key;
+        } else if(activateType === 'soID') {
+          active_so_num = typeID;
+        }
 
         $.post("/html/crm/templates/crm_view.php", {'type': activateType, 'id': typeID}, function(data) { // pull the data for the main tab of the CRM
           crmMain.body.html(data); // insert it into the body
@@ -80,48 +102,67 @@ var crmNav = {
     $(".crm_search_results").hide();
   },
   checkFilters: function() {
-    function showHide(checkbox, element) {
-      if($("#" + checkbox).is(":checked")) {
-        $(element).show();
-      } else {
-        $(element).hide();
-      }
-    }
-
-    showHide('search_lead', '.crmSearchLead');
-    showHide('search_quote', '.crmSearchQuote');
-    showHide('search_prod', '.crmSearchProd');
-    showHide('search_lost', '.crmSearchLost');
-    showHide('search_completed', '.crmSearchCompleted');
-    showHide('search_pending', '.crmSearchPending');
+    crmNav.showHideCheckbox('search_lead', '.crmSearchLead');
+    crmNav.showHideCheckbox('search_quote', '.crmSearchQuote');
+    crmNav.showHideCheckbox('search_prod', '.crmSearchProd');
+    crmNav.showHideCheckbox('search_lost', '.crmSearchLost');
+    crmNav.showHideCheckbox('search_completed', '.crmSearchCompleted');
+    crmNav.showHideCheckbox('search_pending', '.crmSearchPending');
   },
   startListening: function() {
-    $("body")
-      .on("keyup", "#crm_search", function() {
-        if($(this).val().length > 0) {
-          $(".crm_search_results").show();
+    $("#crm_search").keyup(function() {
+      let search = $(this).val();
 
-          // begin custom match for FancyTree data based on altData
-          let cSearch = new RegExp($(this).val(), 'i'); // create a new insensitive regex on the search value
+      if(search.length > 0) {
+        crmNav.getTree.clear();
 
-          // filter the nodes with a custom function
-          crmNav.getTree.filterNodes(function(node) {
-            return cSearch.test(node.data.altData); // return the match
-          });
-        } else {
-          $(".crm_search_results").hide();
-          crmNav.search = null;
-          crmNav.getTree.clearFilter();
-        }
+        $(".crm_search_results").show();
 
-        crmNav.clearMain();
-      })
-      .on("click", "#display_widgets", function() {
-        $("#widget_box").toggle();
-      })
-      .on("change", "#searchFilter", function() {
-        crmNav.checkFilters();
-      })
-    ;
+        crmNav.searchAjax = $.ajax({
+          type: 'POST',
+          data: 'search=' + search,
+          url: '/html/crm/ajax/results_tree.php',
+          beforeSend: function() {
+            if(crmNav.searchAjax !== null) {
+              crmNav.searchAjax.abort();
+            }
+          },
+          success: function(data) {
+            crmNav.getTree.reload(JSON.parse(data));
+
+            crmNav.searchAjax = null;
+          }
+        });
+
+        /*// begin custom match for FancyTree data based on altData
+        let cSearch = new RegExp($(this).val(), 'i'); // create a new insensitive regex on the search value
+
+        // filter the nodes with a custom function
+        crmNav.getTree.filterNodes(function(node) {
+          return cSearch.test(node.data.altData); // return the match
+        });*/
+      } else {
+        $(".crm_search_results").hide();
+        crmNav.search = null;
+        crmNav.getTree.clearFilter();
+      }
+
+      crmNav.clearMain();
+    });
+
+    $("#display_widgets").click(function() {
+      $("#widget_box").toggle();
+    });
+
+    $("#searchFilter").change(function() {
+      crmNav.checkFilters();
+    });
+  },
+  showHideCheckbox: function(checkbox, element) {
+    if($("#" + checkbox).is(":checked")) {
+      $(element).show();
+    } else {
+      $(element).hide();
+    }
   }
 };

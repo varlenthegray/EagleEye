@@ -166,7 +166,7 @@ outputPHPErrs();
   $("#queue_header").html("<h4 class='pull-left'>Operations for " + op_queue_list + "</h4>");
   $("#active_header").html("<h4>Operations (Active) for <?php echo $_SESSION['shop_user']['name']; ?></h4>");
 
-  updateOpQueue();
+  globalFunctions.updateOpQueue();
 
   <?php } if($_SESSION['userInfo']['account_type'] <= 4) { ?>
   dash_auto_interval = setInterval(function() {

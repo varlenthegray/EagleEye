@@ -3,7 +3,9 @@ require '../../../includes/header_start.php';
 
 //outputPHPErrs();
 
-$qry = $dbconn->query('SELECT
+$find = sanitizeInput($_REQUEST['search']);
+
+$qry = $dbconn->query("SELECT
     so.id AS soID,
     r.id as rID,
     d.id as dID,
@@ -18,7 +20,10 @@ $qry = $dbconn->query('SELECT
   FROM sales_order so
     LEFT JOIN rooms r ON so.so_num = r.so_parent
     LEFT JOIN dealers d ON so.dealer_code = d.dealer_id
-  ORDER BY d.dealer_name, so.so_num, r.room, r.iteration ASC;');
+  WHERE (so.so_num LIKE '%$find%' OR LOWER(so.dealer_code) LIKE LOWER('%$find%') OR LOWER(so.project_name) LIKE LOWER('%$find%') 
+    OR LOWER(so.project_mgr) LIKE LOWER('%$find%') OR LOWER(so.name_1) LIKE LOWER('%$find%') OR LOWER(so.name_2) LIKE LOWER('%$find%') 
+    OR LOWER(d.dealer_name) LIKE LOWER('%$find%'))
+  ORDER BY d.dealer_name, so.so_num, r.room, r.iteration ASC;");
 
 $result = [];
 $output = [];
@@ -36,6 +41,7 @@ $prevDealer = null; $pd = -1;
 $prevSO = null; $ps = 0;
 $prevRoom = null; $pr = 0;
 $prevSeq = null;
+$prev_room = null; $prev_sequence = null;
 
 $r = 0;
 
@@ -74,6 +80,25 @@ foreach($result AS $ans) {
 
   $altData = "{$ans['dealer_name']}, {$ans['project_name']}, {$ans['so_num']}, {$ans['room']}, {$ans['room_name']}, {$ans['so_num']}{$ans['room']}{$ans['iteration']}, $altOStatus, {$ans['dealer_id']}";
 
+  $ans['iteration'] = number_format((float)$ans['iteration'], 2);
+
+  $seq_it = explode('.', $ans['iteration']);
+
+  if($prev_room !== $ans['room']) {
+    $prev_room = $ans['room'];
+    $prev_sequence = $seq_it[0];
+
+    $room_header = "{$ans['room']}{$ans['iteration']}: {$ans['room_name']}";
+  } else {
+    if($prev_sequence !== $seq_it[0]) {
+      $prev_sequence = $seq_it[0];
+
+      $room_header = "&nbsp;&nbsp;{$ans['iteration']}: {$ans['room_name']}";
+    } else {
+      $room_header = "&nbsp;&nbsp;&nbsp;&nbsp;.{$seq_it[1]}: {$ans['room_name']}";
+    }
+  }
+
   if($ans['dealer_name'] !== $prevDealer) {
     $pd++; // increment the dealer code
     $ps = 0; // set previous SO back to 0
@@ -92,7 +117,7 @@ foreach($result AS $ans) {
     $output[$pd]['children'][$ps]['altData'] = $altData;
 
     // room within the SO
-    $output[$pd]['children'][$ps]['children'][$pr]['title'] = "{$ans['room']}{$ans['iteration']} - {$ans['room_name']}";
+    $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
     $output[$pd]['children'][$ps]['children'][$pr]['key'] = $ans['rID'];
     $output[$pd]['children'][$ps]['children'][$pr]['keyType'] = 'rID';
     $output[$pd]['children'][$ps]['children'][$pr]['altData'] = $altData;
@@ -117,7 +142,7 @@ foreach($result AS $ans) {
       $output[$pd]['children'][$ps]['keyType'] = 'soID';
       $output[$pd]['children'][$ps]['altData'] = $altData;
 
-      $output[$pd]['children'][$ps]['children'][$pr]['title'] = "{$ans['room']}{$ans['iteration']} - {$ans['room_name']}";
+      $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
       $output[$pd]['children'][$ps]['children'][$pr]['key'] = $ans['rID'];
       $output[$pd]['children'][$ps]['children'][$pr]['keyType'] = 'rID';
       $output[$pd]['children'][$ps]['children'][$pr]['altData'] = $altData;
@@ -125,7 +150,7 @@ foreach($result AS $ans) {
       $output[$pd]['children'][$ps]['children'][$pr]['icon'] = $icon;
       $pr++;
     } else {
-      $output[$pd]['children'][$ps]['children'][$pr]['title'] = "{$ans['room']}{$ans['iteration']} - {$ans['room_name']}";
+      $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
       $output[$pd]['children'][$ps]['children'][$pr]['key'] = $ans['rID'];
       $output[$pd]['children'][$ps]['children'][$pr]['keyType'] = 'rID';
       $output[$pd]['children'][$ps]['children'][$pr]['altData'] = $altData;
@@ -142,6 +167,6 @@ foreach($result AS $ans) {
 //echo json_encode($result);
 echo json_encode($output);
 
-$file = fopen('cached_result_tree.json', 'wb');
+/*$file = fopen('cached_result_tree.json', 'wb');
 fwrite($file, json_encode($output));
-fclose($file);
+fclose($file);*/

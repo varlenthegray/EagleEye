@@ -3,8 +3,8 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define('RELEASE_DATE', '11/26/18');
-define('VERSION', '2.5.127');
+define('RELEASE_DATE', '12/3/18');
+define('VERSION', '2.5.131');
 
 // Global definitions
 define('LOGO_TEXT', 'EagleEye ERP'); // The logo text displayed
@@ -14,7 +14,6 @@ define('DATE_TIME_DEFAULT', 'M jS Y g:i:s A T'); // the default date/time format
 define('DATE_DEFAULT', 'n/j/y'); // the default date format to use
 define('DATE_TIME_ABBRV', 'n/j/y g:i:s A'); // the abbreviated date/time format to use
 define('TIME_ONLY', 'g:i:s A'); // format for only time excluding date
-define('SITE_URL', 'http://smc.trustedprogrammer.com/'); // the SITE URL, used to configure header_start.php's includes
 
 // Navigation bar definitions
 define('NAV_DASHBOARD', 'Dashboard'); // Navigation menu dashboard item name
