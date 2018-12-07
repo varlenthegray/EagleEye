@@ -1,7 +1,7 @@
 <?php
 require '../../includes/header_start.php';
 
-//outputPHPErrs();
+outputPHPErrs();
 
 $room_id = sanitizeInput($_REQUEST['room_id']);
 
@@ -139,11 +139,6 @@ $ship_cost = number_format($ship_cost, 2);
 </div>
 
 <div class='info-popup'></div>
-
-<!-- modal -->
-<div id="modalAddModification" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAddModificationLabel" aria-hidden="true">
-
-</div><!-- /.modal -->
 
 <iframe id="dlORDfile" src="" style="display:none;visibility:hidden;"></iframe>
 

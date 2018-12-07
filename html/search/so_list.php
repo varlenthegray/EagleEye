@@ -869,7 +869,7 @@ if($qry->num_rows > 0) {
 
                 <div class="row" style="margin-top:5px;">
                   <div class="col-md-12">
-                    <div class="so_note_box">
+                    <div class="custom_note_box so_note_box">
                       <table class="table table-custom-nb table-v-top" width="100%">
                         <tr>
                           <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">SO Notes</h5></td>

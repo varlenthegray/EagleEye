@@ -1,6 +1,8 @@
 <?php
 require '../../../../includes/header_start.php';
 
+outputPHPErrs();
+
 $room_id = sanitizeInput($_REQUEST['room_id']);
 
 $vin_schema = getVINSchema();
@@ -50,7 +52,7 @@ $dealer = $dealer_qry->fetch_assoc();
                 </div>
 
                 <div class="col-md-6">
-                  <div class="so_note_box">
+                  <div class="custom_note_box so_note_box">
                     <table class="table table-custom-nb table-v-top" width="100%">
                       <tr>
                         <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Project Notes</h5></td>
