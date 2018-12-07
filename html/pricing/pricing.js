@@ -521,6 +521,7 @@ $("body")
     let val_array = {};
     let customVals = null;
     let inputSelect = $("select");
+    let cab_list = null;
 
     // based on what we're saving, we're going to take an action
     switch(curTab) {
@@ -581,15 +582,19 @@ $("body")
         });
 
         break;
+      case 'room-item-list-tab':
+        cab_list = JSON.stringify(getMiniTree(cabinetList));
+
+        $.post("/html/pricing/ajax/global_actions.php?action=saveItemList", {room_id: active_room_id, cabinet_list: cab_list}, function(data) {
+          $('body').append(data);
+        });
+
+        break;
       default: // no tabs selected at all, we must be in the old interface, run the old save code
         //<editor-fold desc="Room Data">
-        var cab_list = JSON.stringify(getMiniTree(cabinetList));
-
-        var current_tab = $("#roomTabViewContent .tab-pane.active").attr("id");
-
-        // SUPER IMPORTANT to enable and then re-disable select fields during serialization
-        var cabinet_specifications = pricingFunction.disabledSerialize($("#cabinet_specifications"));
-        var accounting_notes = pricingFunction.disabledSerialize($("#accounting_notes"));
+        var cabinet_specifications = $("#cabinet_specifications").serialize();
+        var accounting_notes = $("#accounting_notes").serialize();
+        cab_list = JSON.stringify(getMiniTree(cabinetList));
 
         inputSelect.each(function() {
           var ele = $(this);
@@ -607,7 +612,7 @@ $("body")
 
         customVals = JSON.stringify(val_array);
 
-        $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes, tab: current_tab}, function(data) {
+        $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes}, function(data) {
           $('body').append(data);
         });
         //</editor-fold>

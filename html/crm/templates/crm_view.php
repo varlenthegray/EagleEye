@@ -1,8 +1,6 @@
 <?php
 require '../../../includes/header_start.php';
 
-outputPHPErrs();
-
 $id = sanitizeInput($_REQUEST['id']);
 $type = sanitizeInput($_REQUEST['type']);
 
@@ -38,7 +36,7 @@ if($type === 'rID') {
       <ul class="nav nav-tabs" id="crmViewGlobal" role="tablist">
         <li class="nav-item m-r-5" style="font-size:1.2em;"><strong>View:</strong></li>
         <li class="nav-item">
-          <a class="nav-link tab-ajax active" data-ajax="/html/crm/templates/company.php" data-toggle="tab"
+          <a class="nav-link tab-ajax active" data-ajax="/html/crm/templates/tab_company.php" data-toggle="tab"
              id="home-tab" href="#crmCompany" role="tab" aria-controls="home" aria-expanded="true"><i class="fa fa-building-o m-r-5"></i> Company</a>
         </li>
         <li class="nav-item">
@@ -52,7 +50,7 @@ if($type === 'rID') {
       </ul>
       <div class="tab-content" id="crmViewGlobalContent">
         <div class="tab-pane fade in active show" id="crmCompany" role="tabpanel" aria-labelledby="home-tab">
-          <?php require_once 'company.php'; ?>
+          <?php require_once 'tab_company.php'; ?>
         </div>
         <div class="tab-pane fade" id="crmProject" role="tabpanel" aria-labelledby="profile-tab"></div>
         <div class="tab-pane fade" id="crmBatch" role="tabpanel" aria-labelledby="batch-tab"></div>

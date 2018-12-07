@@ -574,6 +574,18 @@ switch($_REQUEST['action']) {
     //</editor-fold>
 
     break;
+  case 'saveItemList':
+    $room_id = sanitizeInput($_REQUEST['room_id']);
+    $cat = new Catalog;
+
+    //<editor-fold desc="Saving the Cabinet List">
+    $cab_list = sanitizeInput($_REQUEST['cabinet_list']);
+    $cat->saveCatalog($room_id, $cab_list);
+    //</editor-fold>
+
+    echo displayToast('success', 'Successfully saved the item list.', 'Item List Saved');
+
+    break;
   case 'roomSave':
     //<editor-fold desc="Initial Setup, variable capture">
     $cat = new Catalog;
