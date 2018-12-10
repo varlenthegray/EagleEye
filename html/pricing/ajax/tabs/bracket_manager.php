@@ -20,57 +20,9 @@ $so_qry = $dbconn->query("SELECT * FROM sales_order so LEFT JOIN dealers d ON so
 $so = $so_qry->fetch_assoc();
 ?>
 
-<style>
-  .bracket_header {
-    top: 60px;
-    background-color: #FFF;
-    font-weight: bold;
-    font-size: 1.1em;
-    padding: 2px 5px;
-    width: 100%;
-  }
-
-  .room_bracket {
-    border: solid #000;
-    border-width: 1px 1px 0 1px;
-    background-color: rgba(192, 192, 192, .5);
-    margin: 0;
-  }
-
-  .room_bracket:first-of-type {
-    margin-top: 10px;
-  }
-
-  .room_bracket:last-of-type {
-    border-width: 1px;
-  }
-
-  .bracket_details {
-    width: 425px;
-    margin: 5px 5px 0 5px;
-    display: none;
-  }
-
-  .bracket_details thead {
-    border-bottom: 1px solid #000;
-  }
-
-  .col-red {
-    background-color: rgba(255,0,0,.75);
-  }
-
-  .col-gray {
-    background-color: rgba(192,192,192,.75);
-  }
-
-  .col-green {
-    background-color: rgba(0,255,0,.6);
-  }
-</style>
-
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4 bracket_info">
       <?php
       $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' ORDER BY room, iteration ASC");
 
@@ -126,7 +78,12 @@ $so = $so_qry->fetch_assoc();
         echo /** @lang HTML */
         <<<HEREDOC
         <div class="room_bracket">
-          <div class="sticky bracket_header cursor-hand">$room_header</div>
+          <div class="sticky bracket_header cursor-hand">
+          <button class="btn waves-effect btn_secondary disabled" id="show_attachments_room_{$room['id']}"><i class="zmdi zmdi-attachment-alt"></i></button> 
+          <button class="btn btn-primary-outline waves-effect add_iteration" data-roomid="{$room['id']}" data-sonum="{$room['so_parent']}" data-addto="sequence" data-iteration="{$room['iteration']}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional sequence" style="font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:visible;"> S +1</button> 
+          <button class="btn btn-primary-outline waves-effect add_iteration" data-roomid="{$room['id']}" data-sonum="{$room['so_parent']}" data-addto="iteration" data-iteration="{$room['iteration']}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add additional iteration" style="font-size:10px;width:30px;height:22px;margin-top:1px;padding:0;visibility:visible;"> I +.01</button></td>
+            $room_header
+          </div>
           
           <table class="bracket_details">
             <colgroup>

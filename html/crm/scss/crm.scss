@@ -179,4 +179,54 @@
       color: #FFFFFF;
     }
   }
+
+  //<editor-fold desc="Bracket Management">
+  .bracket_info {
+    .bracket_header {
+      top: 60px;
+      background-color: #FFF;
+      font-weight: bold;
+      font-size: 1.1em;
+      padding: 2px 5px;
+      width: 100%;
+    }
+
+    .room_bracket {
+      border: solid #000;
+      border-width: 1px 1px 0 1px;
+      background-color: rgba(192, 192, 192, .5);
+      margin: 0;
+    }
+
+    .room_bracket:first-of-type {
+      margin-top: 10px;
+    }
+
+    .room_bracket:last-of-type {
+      border-width: 1px;
+    }
+
+    .bracket_details {
+      width: 425px;
+      margin: 5px 5px 0 5px;
+      display: none;
+    }
+
+    .bracket_details thead {
+      border-bottom: 1px solid #000;
+    }
+
+    .col-red {
+      background-color: rgba(255,0,0,.75);
+    }
+
+    .col-gray {
+      background-color: rgba(192,192,192,.75);
+    }
+
+    .col-green {
+      background-color: rgba(0,255,0,.6);
+    }
+  }
+  //</editor-fold>
 }

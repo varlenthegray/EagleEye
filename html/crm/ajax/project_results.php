@@ -3,6 +3,17 @@ require '../../../includes/header_start.php';
 
 $so_num = sanitizeInput($_REQUEST['so_num']);
 
+$vin_schema = getVINSchema();
+
+$operations = []; // operation information
+
+// get all operations
+$op_qry = $dbconn->query('SELECT * FROM operations');
+
+while($op = $op_qry->fetch_assoc()) {
+  $operations[$op['id']] = $op;
+}
+
 $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$so_num'");
 $so = $so_qry->fetch_assoc();
 ?>
@@ -10,6 +21,7 @@ $so = $so_qry->fetch_assoc();
 <div class="container-fluid">
   <form id="form_so_<?php echo $so['so_num']; ?>">
     <div class="row">
+      <!--<editor-fold desc="Project information">-->
       <div class="col-md-3">
         <table style="width:100%;margin-top:8px;" class="table table-custom-nb">
           <?php if((bool)$_SESSION['userInfo']['dealer']) {
@@ -369,7 +381,7 @@ $so = $so_qry->fetch_assoc();
               <td colspan="3"><div style="width:100%;height:3px;border:2px solid #BBB;margin:5px 0;border-radius:5px;"></div></td>
             </tr>
             <tr>
-              <td colspan="3"><h5>Associations</h5></td>
+              <td colspan="3"><h5>Contacts</h5></td>
             </tr>
             <?php
             $contact_dropdown = null;
@@ -407,231 +419,465 @@ $so = $so_qry->fetch_assoc();
                 echo "<tr><td colspan='3'><button type='button' class='btn waves-effect waves-light btn-danger remove_assigned_contact_so' style='margin:2px 0;' data-id='{$so_contacts['id']}'> <i class='zmdi zmdi-minus-circle'></i> </button> <a href='#' class='get_customer_info' data-view-id='{$so_contacts['id']}''>$name ({$so_contacts['description']})</a></td></tr>";
               }
             } else {
-              echo "<tr><td colspan='3'><strong>No Associations</strong></td></tr>";
+              echo "<tr><td colspan='3'><strong>No Contacts</strong></td></tr>";
             }
             ?>
           <?php } ?>
         </table>
       </div>
+      <!--</editor-fold>-->
 
-      <!--<editor-fold desc="Notes/Accounting">-->
-      <div class="col-md-6 sticky no-print" style="top:38px;">
-        <form id="batch_notes" action="#">
-          <div class="row">
-            <div class="col-md-12">
-              <ul class="nav nav-tabs m-b-10 m-t-10" id="roomNotes" role="tablist">
-                <li class="nav-item">
-                  <a class="nav-link active show" id="so-tab" data-toggle="tab" href="#so" role="tab" aria-controls="so" aria-selected="false">Project Notes</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" id="room-tab" data-toggle="tab" href="#room" role="tab" aria-controls="room" aria-expanded="true" aria-selected="true">Batch Notes</a>
-                </li>
-              </ul>
-              <div class="tab-content" id="roomNotesContent">
-                <div role="tabpanel" class="tab-pane fade in active show" id="so"  aria-labelledby="so-tab">
-                  <!--<editor-fold desc="SO Notes">-->
-                  <div class="col-md-6">
-                    <textarea class="form-control" name="project_note_input" id="project_note_input" placeholder="Notes" style="width:100%;height:33.4vh;"></textarea>
-                    <input type="text" name="project_followup_date" id="project_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
-                    <label for="project_followup_requested_of" style="float:left;padding:4px;"> requested of </label>
-                    <select name="project_followup_requested_of" id="project_followup_requested_of" class="form-control" style="width:45%;float:left;">
-                      <option value="null" selected disabled></option>
-                      <?php
-                      $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
+      <!--<editor-fold desc="Old Notes/Accounting">-->
+      <div class="col-md-3 no-print">
+        <div class="row">
+          <div class="col-md-12">
+            <textarea class="form-control" name="inquiry" id="inquiry" placeholder="New Inquiry/Note" style="width:100%;height:215px;"></textarea>
+            <input type="text" name="inquiry_followup_date" id="inquiry_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
+            <label for="inquiry_requested_of" style="float:left;padding:4px;"> requested of </label>
+            <select name="inquiry_requested_of" id="inquiry_requested_of" class="form-control" style="width:45%;float:left;">
+              <option value="null" selected disabled></option>
+              <?php
+              $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
 
-                      while ($user = $user_qry->fetch_assoc()) {
-                        echo "<option value='{$user['id']}'>{$user['name']}</option>";
-                      }
-                      ?>
-                    </select>
-                  </div>
+              while ($user = $user_qry->fetch_assoc()) {
+                echo "<option value='{$user['id']}'>{$user['name']}</option>";
+              }
+              ?>
+            </select>
+          </div>
+        </div>
 
-                  <div class="col-md-6">
-                    <div class="custom_note_box so_note_box">
-                      <table class="table table-custom-nb table-v-top" width="100%">
-                        <tr>
-                          <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Project Notes</h5></td>
-                        </tr>
-                        <tr style="height:5px;"><td colspan="2"></td></tr>
-                        <?php
-                        if((bool)$_SESSION['userInfo']['dealer']) {
-                          $dealer = strtolower($_SESSION['userInfo']['dealer_code']);
-                          $where = "AND user.username LIKE '$dealer%'";
-                        } else {
-                          $where = null;
-                        }
+        <div class="row" style="margin-top:5px;">
+          <div class="col-md-12">
+            <div class="custom_note_box so_note_box">
+              <table class="table table-custom-nb table-v-top" width="100%">
+                <tr>
+                  <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">SO Notes</h5></td>
+                </tr>
+                <tr style="height:5px;"><td colspan="2"></td></tr>
+                <?php
+                if((bool)$_SESSION['userInfo']['dealer']) {
+                  $dealer = strtolower($_SESSION['userInfo']['dealer_code']);
+                  $where = "AND user.username LIKE '$dealer%'";
+                } else {
+                  $where = null;
+                }
 
-                        $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$so['id']}' $where ORDER BY notes.timestamp DESC;");
+                $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$so['id']}' $where ORDER BY notes.timestamp DESC;");
 
-                        while ($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
-                          $inquiry_replies = null;
+                while ($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
+                  $inquiry_replies = null;
 
-                          $time = date(DATE_TIME_ABBRV, $so_inquiry['NTimestamp']);
+                  $time = date(DATE_TIME_ABBRV, $so_inquiry['NTimestamp']);
 
-                          if (!empty($so_inquiry['followup_time'])) {
-                            $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$so_inquiry['user_to']}");
-                            $followup_usr = $followup_usr_qry->fetch_assoc();
+                  if (!empty($so_inquiry['followup_time'])) {
+                    $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$so_inquiry['user_to']}");
+                    $followup_usr = $followup_usr_qry->fetch_assoc();
 
-                            $followup_time = date(DATE_TIME_ABBRV, $so_inquiry['followup_time']);
+                    $followup_time = date(DATE_TIME_ABBRV, $so_inquiry['followup_time']);
 
-                            $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
-                          } else {
-                            $followup = null;
-                          }
+                    $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
+                  } else {
+                    $followup = null;
+                  }
 
-                          $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$so_inquiry['nID']}' ORDER BY timestamp DESC");
+                  $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$so_inquiry['nID']}' ORDER BY timestamp DESC");
 
-                          if ($inquiry_reply_qry->num_rows > 0) {
-                            while ($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
-                              $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
+                  if ($inquiry_reply_qry->num_rows > 0) {
+                    while ($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
+                      $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
 
-                              $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
-                            }
-                          } else {
-                            $inquiry_replies = null;
-                          }
+                      $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+                    }
+                  } else {
+                    $inquiry_replies = null;
+                  }
 
-                          $notes = str_replace('  ', '&nbsp;&nbsp;', $so_inquiry['note']);
+                  $notes = str_replace('  ', '&nbsp;&nbsp;', $so_inquiry['note']);
 
-                          echo '<tr>';
-//                        echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$so_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
-                          echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
-                          echo '</tr>';
+                  echo '<tr>';
+//                  echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$so_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
+                  echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
+                  echo '</tr>';
 
-                          /*echo "<tr id='inquiry_reply_line_{$so_inquiry['nID']}' style='display:none;'>";
-                          echo "  <td colspan='2'>
-                                        <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$so_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
-                                        <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$so_inquiry['nID']}'>Reply</button>
-                                    </td>";
-                          echo '</tr>';
+                  /*echo "<tr id='inquiry_reply_line_{$so_inquiry['nID']}' style='display:none;'>";
+                  echo "  <td colspan='2'>
+                                    <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$so_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
+                                    <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$so_inquiry['nID']}'>Reply</button>
+                                </td>";
+                  echo '</tr>';
 
-                          echo $inquiry_replies;*/
+                  echo $inquiry_replies;*/
 
-                          echo "<tr style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
-                        }
-                        ?>
-                      </table>
-                    </div>
-                  </div>
-                  <!--</editor-fold>-->
-                </div>
-                <div role="tabpanel" class="tab-pane fade" id="room" aria-labelledby="room-tab">
-                  <!--<editor-fold desc="Room Notes">-->
-                  <div class="col-md-6">
-                    <textarea class="form-control" name="batch_note_input" id="batch_note_input" placeholder="Notes" style="width:100%;height:33.4vh;"></textarea>
-
-                    <?php if(!empty($_SESSION['userInfo'])) { ?>
-                      <input type="text" name="batch_inquiry_followup_date" id="batch_inquiry_followup_date" class="form-control" placeholder="Followup On" style="width:30%;float:left;">
-                      <label for="batch_inquiry_requested_of" style="float:left;padding:4px;"> by </label>
-                      <select name="batch_inquiry_requested_of" id="batch_inquiry_requested_of" class="form-control" style="width:62%;float:right;">
-                        <option value="null" selected disabled></option>
-                        <?php
-                        $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
-
-                        while($user = $user_qry->fetch_assoc()) {
-                          echo "<option value='{$user['id']}'>{$user['name']}</option>";
-                        }
-                        ?>
-                      </select>
-                    <?php } ?>
-                  </div>
-
-                  <div class="col-md-6">
-                    <div class="room_note_box">
-                      <table class="table table-custom-nb table-v-top">
-                        <tr>
-                          <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Batch Notes</h5> <?php if($bouncer->validate('view_audit_log')) { ?><div class="pull-right"><input type="checkbox" class="ignoreSaveAlert" id="display_log" /> <label for="display_log">Show Audit Log</label></div><?php } ?></td>
-                        </tr>
-                        <tr style="height:5px;"><td colspan="2"></td></tr>
-                        <?php
-                        //<editor-fold desc="Dealer check">
-                        if((bool)$_SESSION['userInfo']['dealer']) {
-                          $dealer = strtolower($_SESSION['userInfo']['dealer_code']);
-                          $where = "AND user.username LIKE '$dealer%'";
-                        } else {
-                          $where = null;
-                        }
-                        //</editor-fold>
-
-                        $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'room_note' OR note_type = 'room_note_log') AND notes.type_id = '{$room['id']}' $where ORDER BY notes.timestamp DESC;");
-
-                        while($room_inquiry = $room_inquiry_qry->fetch_assoc()) {
-                          $inquiry_replies = null;
-
-                          // get the time the note was logged and format it
-                          $time = date(DATE_TIME_ABBRV, $room_inquiry['NTimestamp']);
-
-                          //<editor-fold desc="Followup Note">
-                          // if there is a followup time
-                          if(!empty($room_inquiry['followup_time'])) {
-                            // find the followup user information
-                            $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$room_inquiry['user_to']}");
-                            $followup_usr = $followup_usr_qry->fetch_assoc();
-
-                            // format the followup date/time
-                            $followup_time = date(DATE_TIME_ABBRV, $room_inquiry['followup_time']);
-
-                            // add the followup information
-                            $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
-                          } else {
-                            // otherwise, there is no followup information
-                            $followup = null;
-                          }
-                          //</editor-fold>
-
-                          //<editor-fold desc="Replies to the notes, deprecated">
-                          /*$inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$room_inquiry['nID']}' ORDER BY timestamp DESC");
-
-                          if($inquiry_reply_qry->num_rows > 0) {
-                            while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
-                              $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
-
-                              $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
-                            }
-                          } else {
-                            $inquiry_replies = null;
-                          }*/
-                          //</editor-fold>
-
-                          $notes = str_replace('  ', '&nbsp;&nbsp;', $room_inquiry['note']);
-                          $notes = nl2br($notes);
-
-                          echo "<tr style='height:5px;'><td colspan='2'></td></tr>";
-
-                          $room_note_log = ($room_inquiry['note_type'] === 'room_note_log') ? 'room_note_log' : null;
-
-                          echo "<tr class='$room_note_log'>";
-//                        echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$room_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
-                          echo "  <td>$notes -- <small><em>{$room_inquiry['name']} on $time $followup</em></small><div><button type='button' class='btn waves-effect btn-primary post_to_cal'>Post to Calendar</button></div></td>";
-                          echo '</tr>';
-
-                          //<editor-fold desc="Reply textbox, deprecated">
-                          /*echo "<tr id='inquiry_reply_line_{$room_inquiry['nID']}' style='display:none;'>";
-                          echo "<td colspan='2'>
-                                <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
-                                <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='r_{$room_inquiry['nID']}_submit'>Reply</button>
-                            </td>";
-                          echo '</tr>';
-
-                          echo $inquiry_replies;*/
-                          //</editor-fold>
-
-                          echo "<tr class='$room_note_log' style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
-                        }
-                        ?>
-                        <tr style="height:5px;"><td colspan="2"></td></tr>
-                      </table>
-                    </div>
-                  </div>
-                  <!--</editor-fold>-->
-                </div>
-              </div>
+                  echo "<tr style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
+                }
+                ?>
+              </table>
             </div>
           </div>
-        </form>
+        </div>
       </div>
       <!--</editor-fold>-->
+
+      <!--<editor-fold desc="TODO: New Notes/Accounting">-->
+<!--      <div class="col-md-6 sticky no-print" style="top:38px;">-->
+<!--        <form id="batch_notes" action="#">-->
+<!--          <div class="row">-->
+<!--            <div class="col-md-12">-->
+<!--              <ul class="nav nav-tabs m-b-10 m-t-10" id="roomNotes" role="tablist">-->
+<!--                <li class="nav-item">-->
+<!--                  <a class="nav-link active show" id="so-tab" data-toggle="tab" href="#so" role="tab" aria-controls="so" aria-selected="false">Project Notes</a>-->
+<!--                </li>-->
+<!--                <li class="nav-item">-->
+<!--                  <a class="nav-link" id="room-tab" data-toggle="tab" href="#room" role="tab" aria-controls="room" aria-expanded="true" aria-selected="true">Batch Notes</a>-->
+<!--                </li>-->
+<!--              </ul>-->
+<!--              <div class="tab-content" id="roomNotesContent">-->
+<!--                <div role="tabpanel" class="tab-pane fade in active show" id="so"  aria-labelledby="so-tab">-->
+                  <!--<editor-fold desc="SO Notes">-->
+<!--                  <div class="col-md-6">-->
+<!--                    <textarea class="form-control" name="project_note_input" id="project_note_input" placeholder="Notes" style="width:100%;height:33.4vh;"></textarea>-->
+<!--                    <input type="text" name="project_followup_date" id="project_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">-->
+<!--                    <label for="project_followup_requested_of" style="float:left;padding:4px;"> requested of </label>-->
+<!--                    <select name="project_followup_requested_of" id="project_followup_requested_of" class="form-control" style="width:45%;float:left;">-->
+<!--                      <option value="null" selected disabled></option>-->
+<!--                      --><?php
+//                      $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
+//
+//                      while ($user = $user_qry->fetch_assoc()) {
+//                        echo "<option value='{$user['id']}'>{$user['name']}</option>";
+//                      }
+//                      ?>
+<!--                    </select>-->
+<!--                  </div>-->
+<!---->
+<!--                  <div class="col-md-6">-->
+<!--                    <div class="custom_note_box so_note_box">-->
+<!--                      <table class="table table-custom-nb table-v-top" width="100%">-->
+<!--                        <tr>-->
+<!--                          <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Project Notes</h5></td>-->
+<!--                        </tr>-->
+<!--                        <tr style="height:5px;"><td colspan="2"></td></tr>-->
+<!--                        --><?php
+//                        if((bool)$_SESSION['userInfo']['dealer']) {
+//                          $dealer = strtolower($_SESSION['userInfo']['dealer_code']);
+//                          $where = "AND user.username LIKE '$dealer%'";
+//                        } else {
+//                          $where = null;
+//                        }
+//
+//                        $so_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'so_inquiry' OR note_type = 'so_note_log') AND notes.type_id = '{$so['id']}' $where ORDER BY notes.timestamp DESC;");
+//
+//                        while ($so_inquiry = $so_inquiry_qry->fetch_assoc()) {
+//                          $inquiry_replies = null;
+//
+//                          $time = date(DATE_TIME_ABBRV, $so_inquiry['NTimestamp']);
+//
+//                          if (!empty($so_inquiry['followup_time'])) {
+//                            $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$so_inquiry['user_to']}");
+//                            $followup_usr = $followup_usr_qry->fetch_assoc();
+//
+//                            $followup_time = date(DATE_TIME_ABBRV, $so_inquiry['followup_time']);
+//
+//                            $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
+//                          } else {
+//                            $followup = null;
+//                          }
+//
+//                          $inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$so_inquiry['nID']}' ORDER BY timestamp DESC");
+//
+//                          if ($inquiry_reply_qry->num_rows > 0) {
+//                            while ($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
+//                              $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
+//
+//                              $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+//                            }
+//                          } else {
+//                            $inquiry_replies = null;
+//                          }
+//
+//                          $notes = str_replace('  ', '&nbsp;&nbsp;', $so_inquiry['note']);
+//
+//                          echo '<tr>';
+////                        echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$so_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
+//                          echo "  <td>$notes -- <small><em>{$so_inquiry['name']} on $time $followup</em></small></td>";
+//                          echo '</tr>';
+//
+//                          /*echo "<tr id='inquiry_reply_line_{$so_inquiry['nID']}' style='display:none;'>";
+//                          echo "  <td colspan='2'>
+//                                        <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$so_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
+//                                        <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='{$so_inquiry['nID']}'>Reply</button>
+//                                    </td>";
+//                          echo '</tr>';
+//
+//                          echo $inquiry_replies;*/
+//
+//                          echo "<tr style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
+//                        }
+//                        ?>
+<!--                      </table>-->
+<!--                    </div>-->
+<!--                  </div>-->
+                  <!--</editor-fold>-->
+<!--                </div>-->
+<!--                <div role="tabpanel" class="tab-pane fade" id="room" aria-labelledby="room-tab">-->
+                  <!--<editor-fold desc="Room Notes">-->
+<!--                  <div class="col-md-6">-->
+<!--                    <textarea class="form-control" name="batch_note_input" id="batch_note_input" placeholder="Notes" style="width:100%;height:33.4vh;"></textarea>-->
+<!---->
+<!--                    --><?php //if(!empty($_SESSION['userInfo'])) { ?>
+<!--                      <input type="text" name="batch_inquiry_followup_date" id="batch_inquiry_followup_date" class="form-control" placeholder="Followup On" style="width:30%;float:left;">-->
+<!--                      <label for="batch_inquiry_requested_of" style="float:left;padding:4px;"> by </label>-->
+<!--                      <select name="batch_inquiry_requested_of" id="batch_inquiry_requested_of" class="form-control" style="width:62%;float:right;">-->
+<!--                        <option value="null" selected disabled></option>-->
+<!--                        --><?php
+//                        $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
+//
+//                        while($user = $user_qry->fetch_assoc()) {
+//                          echo "<option value='{$user['id']}'>{$user['name']}</option>";
+//                        }
+//                        ?>
+<!--                      </select>-->
+<!--                    --><?php //} ?>
+<!--                  </div>-->
+<!---->
+<!--                  <div class="col-md-6">-->
+<!--                    <div class="room_note_box">-->
+<!--                      <table class="table table-custom-nb table-v-top">-->
+<!--                        <tr>-->
+<!--                          <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Batch Notes</h5> --><?php //if($bouncer->validate('view_audit_log')) { ?><!--<div class="pull-right"><input type="checkbox" class="ignoreSaveAlert" id="display_log" /> <label for="display_log">Show Audit Log</label></div>--><?php //} ?><!--</td>-->
+<!--                        </tr>-->
+<!--                        <tr style="height:5px;"><td colspan="2"></td></tr>-->
+<!--                        --><?php
+//                        //<editor-fold desc="Dealer check">
+//                        if((bool)$_SESSION['userInfo']['dealer']) {
+//                          $dealer = strtolower($_SESSION['userInfo']['dealer_code']);
+//                          $where = "AND user.username LIKE '$dealer%'";
+//                        } else {
+//                          $where = null;
+//                        }
+//                        //</editor-fold>
+//
+//                        $room_inquiry_qry = $dbconn->query("SELECT notes.timestamp AS NTimestamp, notes.id AS nID, notes.*, user.name, cal_followup.* FROM notes LEFT JOIN user ON notes.user = user.id LEFT JOIN cal_followup ON cal_followup.type_id = notes.id WHERE (note_type = 'room_note' OR note_type = 'room_note_log') AND notes.type_id = '{$room['id']}' $where ORDER BY notes.timestamp DESC;");
+//
+//                        while($room_inquiry = $room_inquiry_qry->fetch_assoc()) {
+//                          $inquiry_replies = null;
+//
+//                          // get the time the note was logged and format it
+//                          $time = date(DATE_TIME_ABBRV, $room_inquiry['NTimestamp']);
+//
+//                          //<editor-fold desc="Followup Note">
+//                          // if there is a followup time
+//                          if(!empty($room_inquiry['followup_time'])) {
+//                            // find the followup user information
+//                            $followup_usr_qry = $dbconn->query("SELECT name FROM user WHERE id = {$room_inquiry['user_to']}");
+//                            $followup_usr = $followup_usr_qry->fetch_assoc();
+//
+//                            // format the followup date/time
+//                            $followup_time = date(DATE_TIME_ABBRV, $room_inquiry['followup_time']);
+//
+//                            // add the followup information
+//                            $followup = " (Followup by {$followup_usr['name']} on $followup_time)";
+//                          } else {
+//                            // otherwise, there is no followup information
+//                            $followup = null;
+//                          }
+//                          //</editor-fold>
+//
+//                          //<editor-fold desc="Replies to the notes, deprecated">
+//                          /*$inquiry_reply_qry = $dbconn->query("SELECT notes.*, user.name FROM notes LEFT JOIN user ON notes.user = user.id WHERE note_type = 'inquiry_reply' AND type_id = '{$room_inquiry['nID']}' ORDER BY timestamp DESC");
+//
+//                          if($inquiry_reply_qry->num_rows > 0) {
+//                            while($inquiry_reply = $inquiry_reply_qry->fetch_assoc()) {
+//                              $ireply_time = date(DATE_TIME_ABBRV, $inquiry_reply['timestamp']);
+//
+//                              $inquiry_replies .= "<tr><td colspan='2' style='padding-left:30px;'><i class='fa fa-level-up fa-rotate-90' style='margin-right:5px;'></i> {$inquiry_reply['note']} -- <small><em>{$inquiry_reply['name']} on $ireply_time</em></small></td></tr>";
+//                            }
+//                          } else {
+//                            $inquiry_replies = null;
+//                          }*/
+//                          //</editor-fold>
+//
+//                          $notes = str_replace('  ', '&nbsp;&nbsp;', $room_inquiry['note']);
+//                          $notes = nl2br($notes);
+//
+//                          echo "<tr style='height:5px;'><td colspan='2'></td></tr>";
+//
+//                          $room_note_log = ($room_inquiry['note_type'] === 'room_note_log') ? 'room_note_log' : null;
+//
+//                          echo "<tr class='$room_note_log'>";
+////                        echo "  <td width='26px' style='padding-right:5px;'><button class='btn waves-effect btn-primary pull-right reply_to_inquiry' id='{$room_inquiry['nID']}'> <i class='zmdi zmdi-mail-reply'></i> </button></td>";
+//                          echo "  <td>$notes -- <small><em>{$room_inquiry['name']} on $time $followup</em></small><div><button type='button' class='btn waves-effect btn-primary post_to_cal'>Post to Calendar</button></div></td>";
+//                          echo '</tr>';
+//
+//                          //<editor-fold desc="Reply textbox, deprecated">
+//                          /*echo "<tr id='inquiry_reply_line_{$room_inquiry['nID']}' style='display:none;'>";
+//                          echo "<td colspan='2'>
+//                                <textarea class='form-control' name='inquiry_reply' id='inquiry_reply_{$room_inquiry['nID']}' placeholder='Reply to inquiry...'></textarea>
+//                                <button type='button' style='margin-top:5px;' class='btn btn-primary waves-effect waves-light w-xs inquiry_reply_btn' id='r_{$room_inquiry['nID']}_submit'>Reply</button>
+//                            </td>";
+//                          echo '</tr>';
+//
+//                          echo $inquiry_replies;*/
+//                          //</editor-fold>
+//
+//                          echo "<tr class='$room_note_log' style='height:2px;'><td colspan='2' style='background-color:#000;'></td></tr>";
+//                        }
+//                        ?>
+<!--                        <tr style="height:5px;"><td colspan="2"></td></tr>-->
+<!--                      </table>-->
+<!--                    </div>-->
+<!--                  </div>-->
+                  <!--</editor-fold>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </form>-->
+<!--      </div>-->
+      <!--</editor-fold>-->
+
+      <!--<editor-fold desc="Bracket Info">-->
+      <div class="col-md-4 bracket_info m-t-10">
+        <button type="button" class="btn btn-secondary waves-effect waves-light no-print add_room_trigger" data-sonum="<?php echo $so['so_num']; ?>"><span class="btn-label"><i class="fa fa-plus-square"></i> </span>Add Room</button>
+
+        <?php
+        $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' ORDER BY room, iteration ASC");
+
+        function getBracketStatus($bracket_pub) {
+          $out['class'] = (bool)$bracket_pub ? 'col-green' : null;
+          $out['text'] = (bool)$bracket_pub ? 'Published' : 'Not Published';
+
+          return $out;
+        }
+
+        $prev_room = null;
+        $prev_sequence = null;
+
+        while($room = $room_qry->fetch_assoc()) {
+          $output['sales_bracket'] = !empty($operations[$room['sales_bracket']]) ? $operations[$room['sales_bracket']] : array('job_title' => 'Unassigned');
+          $output['sample_bracket'] = !empty($operations[$room['sample_bracket']]) ? $operations[$room['sample_bracket']] : array('job_title' => 'Unassigned');
+          $output['preproduction_bracket'] = !empty($operations[$room['preproduction_bracket']]) ? $operations[$room['preproduction_bracket']] : array('job_title' => 'Unassigned');
+          $output['doordrawer_bracket'] = !empty($operations[$room['doordrawer_bracket']]) ? $operations[$room['doordrawer_bracket']] : array('job_title' => 'Unassigned');
+          $output['main_bracket'] = !empty($operations[$room['main_bracket']]) ? $operations[$room['main_bracket']] : array('job_title' => 'Unassigned');
+          $output['custom_bracket'] = !empty($operations[$room['custom_bracket']]) ? $operations[$room['custom_bracket']] : array('job_title' => 'Unassigned');
+          $output['shipping_bracket'] = !empty($operations[$room['shipping_bracket']]) ? $operations[$room['shipping_bracket']] : array('job_title' => 'Unassigned');
+          $output['install_bracket'] = !empty($operations[$room['install_bracket']]) ? $operations[$room['install_bracket']] : array('job_title' => 'Unassigned');
+          $output['pick_materials_bracket'] = !empty($operations[$room['pick_materials_bracket']]) ? $operations[$room['pick_materials_bracket']] : array('job_title' => 'Unassigned');
+          $output['edgebanding_bracket'] = !empty($operations[$room['edgebanding_bracket']]) ? $operations[$room['edgebanding_bracket']] : array('job_title' => 'Unassigned');
+
+          $bstat_sales = getBracketStatus($room['sales_published']);
+          $bstat_sample = getBracketStatus($room['sample_published']);
+          $bstat_preprod = getBracketStatus($room['preproduction_published']);
+          $bstat_main = getBracketStatus($room['main_published']);
+          $bstat_custom = getBracketStatus($room['custom_published']);
+          $bstat_shipping = getBracketStatus($room['shipping_published']);
+          $bstat_install = getBracketStatus($room['install_bracket_published']);
+          $bstat_pick = getBracketStatus($room['pick_materials_published']);
+          $bstat_eb = getBracketStatus($room['edgebanding_published']);
+
+          $seq_it = explode('.', $room['iteration']);
+
+          if($prev_room !== $room['room']) {
+            $prev_room = $room['room'];
+            $prev_sequence = $seq_it[0];
+
+            $room_header = "{$room['room']}{$room['iteration']}: {$room['room_name']}";
+          } else {
+            if($prev_sequence !== $seq_it[0]) {
+              $prev_sequence = $seq_it[0];
+
+              $room_header = "&nbsp;&nbsp;&nbsp;{$room['iteration']}: {$room['room_name']}";
+            } else {
+              $room_header = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.{$seq_it[1]}: {$room['room_name']}";
+            }
+          }
+
+          echo /** @lang HTML */
+          <<<HEREDOC
+        <div class="room_bracket">
+          <div class="sticky bracket_header cursor-hand">
+            <button class="btn waves-effect btn-primary room_manage_bracket" data-roomid="{$room['id']}" title="Edit Bracket"><i class="fa fa-code-fork"></i></button> 
+            <button class="btn waves-effect btn_secondary disabled" id="show_attachments_room_{$room['id']}"><i class="zmdi zmdi-attachment-alt"></i></button> 
+            <button class="btn btn-primary-outline waves-effect add_iteration" data-roomid="{$room['id']}" data-sonum="{$room['so_parent']}" data-addto="sequence" data-iteration="{$room['iteration']}" title="Add additional sequence"> S +1</button> 
+            <button class="btn btn-primary-outline waves-effect add_iteration" data-roomid="{$room['id']}" data-sonum="{$room['so_parent']}" data-addto="iteration" data-iteration="{$room['iteration']}" title="Add additional iteration"> I +.01</button></td>
+
+            $room_header
+          </div>
+          
+          <table class="bracket_details">
+            <colgroup>
+              <col width="150px">
+              <col width="200px">
+              <col width="*">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Bracket</th>
+                <th>Operation</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="{$bstat_sales['class']}">
+                <td>Sales:</td>
+                <td>{$output['sales_bracket']['job_title']}</td>
+                <td>{$bstat_sales['text']}</td>
+              </tr>
+              <tr class="{$bstat_sample['class']}">
+                <td>Sample:</td>
+                <td>{$output['sample_bracket']['job_title']}</td>
+                <td>{$bstat_sample['text']}</td>
+              </tr>
+              <tr class="{$bstat_preprod['class']}">
+                <td>Pre-production:</td>
+                <td>{$output['preproduction_bracket']['job_title']}</td>
+                <td>{$bstat_preprod['text']}</td>
+              </tr>
+              <tr class="{$bstat_sales['class']}">
+                <td>Door/Drawer:</td>
+                <td>{$output['doordrawer_bracket']['job_title']}</td>
+                <td>{$bstat_sales['text']}</td>
+              </tr>
+              <tr class="{$bstat_main['class']}">
+                <td>Main:</td>
+                <td>{$output['main_bracket']['job_title']}</td>
+                <td>{$bstat_main['text']}</td>
+              </tr>
+              <tr class="{$bstat_custom['class']}">
+                <td>Custom:</td>
+                <td>{$output['custom_bracket']['job_title']}</td>
+                <td>{$bstat_custom['text']}</td>
+              </tr>
+              <tr class="{$bstat_shipping['class']}">
+                <td>Shipping:</td>
+                <td>{$output['shipping_bracket']['job_title']}</td>
+                <td>{$bstat_shipping['text']}</td>
+              </tr>
+              <tr class="{$bstat_install['class']}">
+                <td>Installation:</td>
+                <td>{$output['install_bracket']['job_title']}</td>
+                <td>{$bstat_install['text']}</td>
+              </tr>
+              <tr class="{$bstat_pick['class']}">
+                <td>Pick/Materials:</td>
+                <td>{$output['pick_materials_bracket']['job_title']}</td>
+                <td>{$bstat_pick['text']}</td>
+              </tr>
+              <tr class="{$bstat_eb['class']}">
+                <td>Edgebanding:</td>
+                <td>{$output['edgebanding_bracket']['job_title']}</td>
+                <td>{$bstat_eb['text']}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+HEREDOC;
+        }
+        ?>
+      </div>
     </div>
+    <!--</editor-fold>-->
 
     <div class="row">
       <div class="col-md-12">
@@ -675,4 +921,8 @@ $so = $so_qry->fetch_assoc();
   nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';
   checkEmptyFields('.name1group');
   checkEmptyFields('.name2group');
+
+  $(".add_contact_id").select2();
+
+  crmBatch.bracketMgr.init();
 </script>

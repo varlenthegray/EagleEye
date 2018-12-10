@@ -861,8 +861,6 @@ if($pg_qry->num_rows > 0) {
     });
     //</editor-fold>
 
-
-
     if($("#submit_for_quote").prop("disabled")) {
       $.confirm({
         title: "Item List Submitted.",

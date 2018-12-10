@@ -1,5 +1,5 @@
 /*jshint strict: false*/
-/*global displayToast*//*global checkTransition*//*global unsaved:true*//*global tinysort*//*global scrollPosition:true*//*global globalFunctions*//*global document*/
+/*global displayToast*//*global checkTransition*//*global unsaved:true*//*global tinysort*//*global scrollPosition:true*//*global globalFunctions*//*global document*//*global nameOfUser*//*global searchTable*//*global FormData*/
 
 // Goal: to ensure the loading of Global Search input field
 var timer;
@@ -438,7 +438,7 @@ $("body")
     }
   })
 
-  .on("click", "#generate_code", function(e) {
+  .on("click", "#generate_code", function() {
     var so = $(this).data("so");
 
     $.ajax({
@@ -467,19 +467,29 @@ $("body")
     active_so_num = $(this).attr('data-sonum');
 
     $.post("/html/search/modal/add_room.php", {addType: 'room', so_num: active_so_num}, function(data) {
-      $("#modalAddRoom").html(data).modal("show");
+      $("#modalGlobal").html(data).modal("show");
     });
   })
   .on("click", "#modalAddRoomCreate", function() {
     let room_data = $("#modalAddRoomData").serialize();
 
-    $.post("/html/search/ajax/room_actions.php?action=add_new_room", {data: room_data}, function(data) {
-      $("body").append(data);
-    });
+    if($("#modalAddRoomData input[name='room_name']").val() === '') {
+      $.confirm({
+        title: "Unable to Save",
+        content: "Cannot save with no room name!",
+        buttons: {
+          ok: function() {}
+        }
+      });
+    } else {
+      $.post("/html/search/ajax/room_actions.php?action=add_new_room", {data: room_data}, function (data) {
+        $("body").append(data);
+      });
 
-    $("#modalAddRoom").modal("hide");
+      $("#modalGlobal").modal("hide");
 
-    unsaved = false;
+      unsaved = false;
+    }
   })
 
   .on("click", ".add_iteration", function(e) {
@@ -492,17 +502,18 @@ $("body")
       active_so_num = $(thisClick).attr('data-sonum');
       let addTo = $(thisClick).attr('data-addto');
 
-      console.log(active_so_num);
-
       $.post("/html/search/modal/add_room.php", {so_num: active_so_num, addType: addTo, room_id: active_room_id}, function(data) {
-        $("#modalAddRoom").html(data).modal("show");
+        $("#modalGlobal").html(data).modal("show");
       });
     });
+
+    return false;
   })
-  .on("click", ".iteration_save", function(e) {
+
+  /*.on("click", ".iteration_save", function(e) {
     e.stopPropagation();
 
-    if($("input[name='room_name']").val() === '') {
+    if($("#modalAddRoomData input[name='room_name']").val() === '') {
       $.confirm({
         title: "Unable to Save",
         content: "Cannot save with no room name!",
@@ -522,8 +533,7 @@ $("body")
 
       unsaved = false;
     }
-  })
-
+  })*/
   /* .on("click", ".edit_room_save", function(e) {
     e.stopPropagation();
 

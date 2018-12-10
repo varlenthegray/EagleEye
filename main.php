@@ -123,6 +123,8 @@ require 'includes/header_start.php';
           </ul>
         </div> <!-- end menu-extras -->
 
+        <?php echo $_SERVER['SERVER_NAME'] === 'eagleeye' ? '<div style="position:absolute;left:50%;transform:translateX(-50%);color:#FFF;z-index:1;margin-top:5px;"><h1>DEVELOPMENT</h1></div>' : null; ?>
+
         <div class="clearfix"></div>
       </div> <!-- end container -->
     </div>
@@ -1289,7 +1291,7 @@ require 'includes/header_start.php';
 
   <?php if($bouncer->validate('search')) { ?>
     <!-- Global Search loading, required for global search to work -->
-    <script src="/ondemand/js/global_search.js?v=<?php echo VERSION; ?>"></script>
+    <script src="/ondemand/js/global_search.min.js?v=<?php echo VERSION; ?>"></script>
   <?php } ?>
 
   <!-- jQuery  -->

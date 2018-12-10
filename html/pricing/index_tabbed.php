@@ -122,17 +122,12 @@ $ship_cost = number_format($ship_cost, 2);
           <a class="nav-link tab-ajax" data-ajax="/html/pricing/ajax/tabs/item_list.php?room_id=<?php echo $room_id; ?>" data-toggle="tab"
              id="room-item-list-tab" data-toggle="tab" href="#roomItemList" role="tab" aria-controls="room-item-list"><i class="fa fa-shopping-bag m-r-5"></i> Item List</a>
         </li>
-        <li class="nav-item ">
-          <a class="nav-link tab-ajax" data-ajax="/html/pricing/ajax/tabs/bracket_manager.php?so_num=<?php echo $room['so_parent']; ?>" data-toggle="tab"
-             id="room-bracket-management-tab" data-toggle="tab" href="#roomBracketManagement" role="tab" aria-controls="room-bracket-management"><i class="fa fa-code-fork m-r-5"></i> Bracket Details</a>
-        </li>
       </ul>
       <div class="tab-content" id="roomTabViewContent">
         <div class="tab-pane fade in active show" id="roomNotes" role="tabpanel" aria-labelledby="room-notes-tab"></div>
         <div class="tab-pane fade" id="roomDetails" role="tabpanel" aria-labelledby="room-details-tab"></div>
         <div class="tab-pane fade" id="roomCabinetDetails" role="tabpanel" aria-labelledby="room-cabinet-details-tab"></div>
         <div class="tab-pane fade" id="roomItemList" role="tabpanel" aria-labelledby="room-item-list-tab"></div>
-        <div class="tab-pane fade" id="roomBracketManagement" role="tabpanel" aria-labelledby="room-bracket-management-tab"></div>
       </div>
     </div>
   </div>

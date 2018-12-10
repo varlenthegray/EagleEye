@@ -706,11 +706,6 @@ $("body")
       $("#modalGlobal").html(data).modal("show");
     });
   })
-  .on("click", "#bracket_management", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=modalBracketMgmt&roomID=" + active_room_id, function(data) {
-      $("#modalGlobal").html(data).modal("show");
-    });
-  })
   .on("click", "#appliance_ws", function() {
     $.post("/html/pricing/ajax/global_actions.php?action=modalApplianceWS&roomID=" + active_room_id, function(data) {
       $("#modalGlobal").html(data).modal("show");
@@ -1379,4 +1374,9 @@ $("body")
       }
     }
   })*/
+  /*.on("click", "#bracket_management", function() {
+  $.post("/html/pricing/ajax/global_actions.php?action=modalBracketMgmt&roomID=" + active_room_id, function(data) {
+    $("#modalGlobal").html(data).modal("show");
+  });
+})*/
 ;

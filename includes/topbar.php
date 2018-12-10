@@ -4,7 +4,7 @@ $title_name = 'Dashboard';
 
 <!-- Navigation Bar-->
 <header id="topnav">
-  <div class="custom-logo hidden-print" style="margin-right:130px;position:reliatve;z-index:2;margin-top:-2px;">
+  <div class="custom-logo hidden-print" style="margin-right:130px;position:relative;z-index:2;margin-top:-2px;">
     <img src="../assets/images/logo_new.png" height="135px" />
   </div>
 
@@ -54,6 +54,8 @@ $title_name = 'Dashboard';
           </li>
         </ul>
       </div> <!-- end menu-extras -->
+
+
 
       <div id="clock" style="z-index:999;color:#000;position:absolute;top:40px;right:-110px;"></div>
 
