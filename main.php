@@ -1214,20 +1214,7 @@ require 'includes/header_start.php';
         });
       })
 
-      .on("click", ".assign_contact_so", function() {
-        var contact_id = $(".add_contact_id :selected").val();
 
-        $.post("/ondemand/contact_actions.php?action=add_contact_project", {contact_id: contact_id, so: active_so_num}, function(data) {
-          $("body").append(data);
-        });
-      })
-      .on("click", ".remove_assigned_contact_so", function() {
-        var contact_id = $(this).attr('data-id');
-
-        $.post("/ondemand/contact_actions.php?action=remove_contact_project", {contact_id: contact_id, so: active_so_num}, function(data) {
-          $("body").append(data);
-        });
-      })
       .on("click", ".get_customer_info", function(e) {
         $.post("/html/add_contact.php?action=edit", {id: $(this).attr('data-view-id')}, function(data) {
           $("#modalGlobal").html(data).modal('show');

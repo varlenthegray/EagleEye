@@ -239,7 +239,7 @@ $dealer_display = ($type === '2') ? "block" : "none";
               if($_REQUEST['action'] === 'edit') {
                 echo "<tr style='height: 10px;'><td colspan='3'></td></tr><tr><td colspan='3'><h5>Assigned Projects</h5></td></tr>";
                 
-                $so_contact_qry = $dbconn->query("SELECT * FROM sales_order_contacts soc LEFT JOIN sales_order o ON soc.so_id = o.id WHERE contact_id = '$id'");
+                $so_contact_qry = $dbconn->query("SELECT * FROM contact_associations soc LEFT JOIN sales_order o ON soc.so_id = o.id WHERE contact_id = '$id'");
                 
                 if($so_contact_qry->num_rows > 0) {
                   while($so_contact = $so_contact_qry->fetch_assoc()) {

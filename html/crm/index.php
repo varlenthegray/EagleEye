@@ -22,6 +22,7 @@ require '../../includes/header_start.php';
 </div>
 
 <script src="/html/crm/js/crmCompany.min.js?v=<?php echo VERSION; ?>"></script>
+<script src="/html/crm/js/crmProject.min.js?v=<?php echo VERSION; ?>"></script>
 <script src="/html/crm/js/crmBatch.min.js?v=<?php echo VERSION; ?>"></script>
 <script src="/html/crm/js/crmMain.js?v=<?php echo VERSION; ?>"></script>
 <script src="/includes/js/window-manager.min.js?v=<?php echo VERSION; ?>"></script>

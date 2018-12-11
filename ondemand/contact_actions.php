@@ -171,54 +171,85 @@ switch($_REQUEST['action']) {
   // adds a contact to a project/so
   case 'add_contact_project':
     $con_id = sanitizeInput($_REQUEST['contact_id']);
-    $so_num = sanitizeInput($_REQUEST['so']);
+    $so_id = sanitizeInput($_REQUEST['so']);
 
-    $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$so_num'");
+    parse_str($_REQUEST['formInfo'], $info);
+
+    $contact_role = (bool)$info['custom_association'] ? sanitizeInput($info['custom_contact_role']) : sanitizeInput($info['contact_role']);
+
+    $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE id = $so_id");
 
     if($so_qry->num_rows === 1) {
       $so = $so_qry->fetch_assoc();
 
       if(!empty($con_id)) {
-        $so_contact_qry = $dbconn->query("SELECT * FROM sales_order_contacts WHERE contact_id = '$con_id' AND so_id = '{$so['id']}'");
+        $so_contact_qry = $dbconn->query("SELECT * FROM contact_associations WHERE contact_id = '$con_id' AND so_id = {$so['id']}");
 
         if($so_contact_qry->num_rows === 0) {
-          $dbconn->query("INSERT INTO sales_order_contacts (so_id, contact_id, assigned_by, created_on) VALUES ('{$so['id']}', '$con_id', {$_SESSION['userInfo']['id']}, UNIX_TIMESTAMP())");
+          if($dbconn->query("INSERT INTO contact_associations (so_id, contact_id, assigned_by, created_on, associated_as) VALUES ('{$so['id']}', '$con_id', {$_SESSION['userInfo']['id']}, UNIX_TIMESTAMP()), '$contact_role'")) {
+            $contact_qry = $dbconn->query("SELECT c.*, a.associated_as FROM contact c LEFT JOIN contact_associations a on c.id = a.contact_id WHERE c.id = $con_id");
+            $contact = $contact_qry->fetch_assoc();
 
-          echo displayToast("success", "Successfully assigned contact to project.", "Contact Assigned");
+            echo json_encode($contact);
+          } else {
+            header('error: Database Error');
+            http_response_code(400);
+
+            dbLogSQLErr($dbconn);
+          }
         } else {
-          echo displayToast("info", "Contact has already been assigned to project.", "Contact Already Assigned");
+          header('error: Contact already assigned'); // FIXME: Totally broken, fix between jQuery and this
+          http_response_code(400);
+
+          echo displayToast('info', 'Contact has already been assigned to project.', 'Contact Already Assigned');
         }
+      } else {
+        header('error: Contact Missing');
+        http_response_code(400);
+
+        echo displayToast('error', 'Unable to find contact information. Please refresh and try again.', 'Unable to Find Contact');
       }
     } else {
-      displayToast("error", "Unable to properly identify SO number. Please refresh and try again.", "Unable to Obtain SO");
+      header('error: SO Missing');
+      http_response_code(400);
+
+      echo displayToast('error', 'Unable to properly identify SO number. Please refresh and try again.', 'Unable to Obtain SO');
     }
 
     break;
   case 'remove_contact_project':
     // TODO: Remove duplication between remove and add contact
     $con_id = sanitizeInput($_REQUEST['contact_id']);
-    $so_num = sanitizeInput($_REQUEST['so']);
+    $so_id = sanitizeInput($_REQUEST['so']);
 
-    $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$so_num'");
+    $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE id = $so_id");
 
     if($so_qry->num_rows === 1) {
       $so = $so_qry->fetch_assoc();
 
       if(!empty($con_id)) {
-        $so_contact_qry = $dbconn->query("SELECT * FROM sales_order_contacts WHERE contact_id = '$con_id' AND so_id = '{$so['id']}'");
+        $so_contact_qry = $dbconn->query("SELECT * FROM contact_associations WHERE contact_id = '$con_id' AND so_id = '{$so['id']}'");
 
         if($so_contact_qry->num_rows === 1) {
           $so_contact = $so_contact_qry->fetch_assoc();
 
-          $dbconn->query("DELETE FROM sales_order_contacts WHERE id = '{$so_contact['id']}'");
+          $dbconn->query("DELETE FROM contact_associations WHERE id = '{$so_contact['id']}'");
 
-          echo displayToast("success", "Successfully removed contact from project.", "Contact Removed");
+          echo displayToast('success', 'Successfully removed contact from project.', 'Contact Removed');
         } else {
-          echo displayToast("info", "Contact has already been deleted from project.", "Contact Already Removed");
+          http_response_code(400);
+
+          echo displayToast('info', 'Contact has already been deleted from project.', 'Contact Already Removed');
         }
+      } else {
+        http_response_code(400);
+
+        echo displayToast('error', 'Unable to identify contact to remove. Please refresh and try again.', 'Unable to Find Contact');
       }
     } else {
-      displayToast("error", "Unable to properly identify SO number. Please refresh and try again.", "Unable to Obtain SO");
+      http_response_code(400);
+
+      displayToast('error', 'Unable to properly identify SO number. Please refresh and try again.', 'Unable to Obtain SO');
     }
 
     break;

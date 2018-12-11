@@ -1,3 +1,5 @@
+/*global $:false*/
+
 var crmMain = {
   body: null, // the main body to insert ALL CRM data into
 
