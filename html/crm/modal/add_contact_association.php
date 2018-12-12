@@ -42,11 +42,11 @@ $contact_id = sanitizeInput($_REQUEST['contact_id']);
                 <td id="displayStdRole">
                   <select class="c_input" name="contact_role" id="contact_role">
                     <?php
-                    $contact_ass_qry = $dbconn->query('SELECT DISTINCT(associated_as), id FROM contact_associations WHERE associated_as IS NOT NULL;');
+                    $contact_ass_qry = $dbconn->query('SELECT DISTINCT(associated_as) FROM contact_associations WHERE associated_as IS NOT NULL;');
 
                     if($contact_ass_qry->num_rows > 0) {
                       while($assoc = $contact_ass_qry->fetch_assoc()) {
-                        echo "<option value='{$assoc['id']}'>{$assoc['associated_as']}</option>";
+                        echo "<option value='{$assoc['associated_as']}'>{$assoc['associated_as']}</option>";
                       }
                     } else {
                       echo "<option value='none' selected disabled>None defined yet</option>";

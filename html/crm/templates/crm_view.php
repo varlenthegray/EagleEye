@@ -10,20 +10,20 @@ $room_disabled = $type !== 'rID' ? 'disabled': null;
 $soNum = false;
 
 if($type === 'rID') {
-  $soNum_qry = $dbconn->query("SELECT so_parent FROM rooms WHERE id = $id");
+  $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $id");
 
-  if($soNum_qry->num_rows > 0) {
-    $soNum = $soNum_qry->fetch_assoc();
+  if($room_qry->num_rows > 0) {
+    $room = $room_qry->fetch_assoc();
 
-    $soNum = $soNum['so_parent'];
+    $soNum = $room['so_parent'];
   }
 } else {
-  $soNum_qry = $dbconn->query("SELECT so_num FROM sales_order WHERE id = $id");
+  $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE id = $id");
 
-  if($soNum_qry->num_rows > 0) {
-    $soNum = $soNum_qry->fetch_assoc();
+  if($so_qry->num_rows > 0) {
+    $so = $so_qry->fetch_assoc();
 
-    $soNum = $soNum['so_num'];
+    $soNum = $so['so_num'];
   }
 }
 
@@ -31,6 +31,13 @@ if($type === 'rID') {
 ?>
 
 <div class="container-fluid">
+  <div class="row m-t-10 m-b-10" style="font-weight:bold;">
+    <div class="col-md-3">SO: 939</div>
+    <div class="col-md-3">A01a: Robert Grieves</div>
+    <div class="col-md-3">Customer PO: Fennessy_Barkley</div>
+    <div class="col-md-3">PM: Robert Grieves</div>
+  </div>
+
   <div class="row">
     <div class="col-md-12 m-t-10">
       <ul class="nav nav-tabs" id="crmViewGlobal" role="tablist">

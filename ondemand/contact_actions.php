@@ -175,7 +175,7 @@ switch($_REQUEST['action']) {
 
     parse_str($_REQUEST['formInfo'], $info);
 
-    $contact_role = (bool)$info['custom_association'] ? sanitizeInput($info['custom_contact_role']) : sanitizeInput($info['contact_role']);
+    $contact_role = !empty($info['custom_association']) ? sanitizeInput($info['custom_contact_role']) : sanitizeInput($info['contact_role']);
 
     $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE id = $so_id");
 
@@ -186,31 +186,27 @@ switch($_REQUEST['action']) {
         $so_contact_qry = $dbconn->query("SELECT * FROM contact_associations WHERE contact_id = '$con_id' AND so_id = {$so['id']}");
 
         if($so_contact_qry->num_rows === 0) {
-          if($dbconn->query("INSERT INTO contact_associations (so_id, contact_id, assigned_by, created_on, associated_as) VALUES ('{$so['id']}', '$con_id', {$_SESSION['userInfo']['id']}, UNIX_TIMESTAMP()), '$contact_role'")) {
+          if($dbconn->query("INSERT INTO contact_associations (so_id, contact_id, assigned_by, created_on, associated_as) VALUES ('{$so['id']}', '$con_id', {$_SESSION['userInfo']['id']}, UNIX_TIMESTAMP(), '$contact_role')")) {
             $contact_qry = $dbconn->query("SELECT c.*, a.associated_as FROM contact c LEFT JOIN contact_associations a on c.id = a.contact_id WHERE c.id = $con_id");
             $contact = $contact_qry->fetch_assoc();
 
             echo json_encode($contact);
           } else {
-            header('error: Database Error');
             http_response_code(400);
 
             dbLogSQLErr($dbconn);
           }
         } else {
-          header('error: Contact already assigned'); // FIXME: Totally broken, fix between jQuery and this
           http_response_code(400);
 
           echo displayToast('info', 'Contact has already been assigned to project.', 'Contact Already Assigned');
         }
       } else {
-        header('error: Contact Missing');
         http_response_code(400);
 
         echo displayToast('error', 'Unable to find contact information. Please refresh and try again.', 'Unable to Find Contact');
       }
     } else {
-      header('error: SO Missing');
       http_response_code(400);
 
       echo displayToast('error', 'Unable to properly identify SO number. Please refresh and try again.', 'Unable to Obtain SO');

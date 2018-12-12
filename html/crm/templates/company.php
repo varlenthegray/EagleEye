@@ -15,31 +15,80 @@ $so = $so_qry->fetch_assoc();
       <div class="col-md-3">
         <table style="width:100%;margin-top:8px;" class="table table-custom-nb">
           <tr>
-            <td><label for="project_name">Company Name:</label></td>
-            <td><input type="text" value="<?php echo $so['project_name']; ?>" name="project_name" class="c_input" placeholder="Project Name" id="project_name" /></td>
+            <td colspan="2"><u><b>Company</b></u></td>
           </tr>
           <tr>
-            <td><label for="project_addr">Company Address:</label></td>
-            <td><input type="text" value="<?php echo $so['project_addr']; ?>" name="project_addr" class="c_input " placeholder="Project Address" id="project_addr" /></td>
+            <td><label for="project_name">Name:</label></td>
+            <td><input type="text" value="<?php echo $so['project_name']; ?>" name="project_name" class="c_input" placeholder="Company Name" id="project_name" /></td>
           </tr>
           <tr>
-            <td><label for="project_city">Company City:</label></td>
-            <td><input type="text" value="<?php echo $so['project_city']; ?>" name="project_city" class="c_input" placeholder="Project City" id="project_city"></td>
+            <td><label for="project_addr">Address:</label></td>
+            <td><input type="text" value="<?php echo $so['project_addr']; ?>" name="project_addr" class="c_input " placeholder="Company Address" id="project_addr" /></td>
           </tr>
           <tr>
-            <td><label for="project_state">Company State:</label></td>
+            <td><label for="project_city">City:</label></td>
+            <td><input type="text" value="<?php echo $so['project_city']; ?>" name="project_city" class="c_input" placeholder="Company City" id="project_city"></td>
+          </tr>
+          <tr>
+            <td><label for="project_state">State:</label></td>
             <td><select class="c_input" id="project_state" name="project_state"><?php echo getStateOpts($so['project_state']); ?></select></td>
           </tr>
           <tr>
-            <td><label for="project_zip">Company Zip:</label></td>
-            <td><input type="text" value="<?php echo $so['project_zip']; ?>" name="project_zip" class="c_input" placeholder="Project Zip" id="project_zip"></td>
+            <td><label for="project_zip">Zip:</label></td>
+            <td><input type="text" value="<?php echo $so['project_zip']; ?>" name="project_zip" class="c_input" placeholder="Company Zip" id="project_zip"></td>
           </tr>
           <tr>
-            <td><label for="project_landline">Company Landline:</label></td>
-            <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="project_landline" class="c_input" placeholder="Project Landline" id="project_landline"></td>
+            <td><label for="project_landline">Landline:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="project_landline" class="c_input" placeholder="Company Landline" id="project_landline"></td>
+          </tr>
+          <tr>
+            <td colspan="2"><b><u>Billing</u></b></td>
+          </tr>
+          <tr>
+            <td><label for="ach_acct_1">ACH Account 1:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="ach_acct_1" autocomplete="no" class="c_input" placeholder="ACH Account Number" id="ach_acct_1"></td>
+          </tr>
+          <tr>
+            <td><label for="ach_routing_1">ACH Routing 1:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="ach_routing_1" autocomplete="no" class="c_input" placeholder="ACH Routing Number" id="ach_routing_1"></td>
+          </tr>
+          <tr>
+            <td><label for="ach_acct_2">ACH Account 2:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="ach_acct_2" autocomplete="no" class="c_input" placeholder="ACH Account Number" id="ach_acct_2"></td>
+          </tr>
+          <tr>
+            <td><label for="ach_routing_2">ACH Routing 2:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="ach_routing_2" autocomplete="no" class="c_input" placeholder="ACH Routing Number" id="ach_routing_2"></td>
+          </tr>
+          <tr>
+            <td><label for="cc_num_1">CC 1:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" maxlength="16" name="cc_num_1" autocomplete="no" class="c_input" placeholder="CC Number" id="cc_num_1"></td>
+          </tr>
+          <tr>
+            <td><label for="cc_exp_1">CC Exp 1:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" maxlength="8" name="cc_exp_1" autocomplete="no" class="c_input" placeholder="CC Expiration" id="cc_exp_1"></td>
+          </tr>
+          <tr>
+            <td><label for="cc_ccv_1">CC CCV 1:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" maxlength="4" name="cc_ccv_1" autocomplete="no" class="c_input" placeholder="CC CCV" id="cc_ccv_1"></td>
+          </tr>
+          <tr>
+            <td><label for="cc_num_2">CC 2:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" maxlength="16" name="cc_num_2" autocomplete="no" class="c_input" placeholder="CC Number" id="cc_num_2"></td>
+          </tr>
+          <tr>
+            <td><label for="cc_exp_2">CC Exp 2:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" maxlength="8" name="cc_exp_2" autocomplete="no" class="c_input" placeholder="CC Expiration" id="cc_exp_2"></td>
+          </tr>
+          <tr>
+            <td><label for="cc_ccv_2">CC CCV 2:</label></td>
+            <td><input type="text" value="<?php echo $so['project_landline']; ?>" maxlength="4" name="cc_ccv_2" autocomplete="no" class="c_input" placeholder="CC CCV" id="cc_ccv_2"></td>
           </tr>
           <tr>
             <td colspan="3"><div style="width:100%;height:3px;border:2px solid #BBB;margin:5px 0;border-radius:5px;"></div></td>
+          </tr>
+          <tr>
+            <td colspan="2"></td>
           </tr>
           <tr>
             <td colspan="3"><h5>Contacts</h5></td>

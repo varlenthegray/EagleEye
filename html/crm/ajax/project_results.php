@@ -107,14 +107,14 @@ $so = $so_qry->fetch_assoc();
           <h5>Contacts</h5>
 
           <?php
-          function getContactCard($so) {
+          function getContactCard($contact) {
             return <<<HEREDOC
 <div class="contact-card">
-  <div style="float:right;"><i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact_so" data-id="{$so['id']}" title="Remove Contact"></i></div>
-  <h5><a href="#">{$so['first_name']} {$so['last_name']}</a></h5>
-  <h6>{TITLE}</h6>
+  <div style="float:right;"><i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact_so" data-id="{$contact['id']}" title="Remove Contact"></i></div>
+  <h5><a href="#">{$contact['first_name']} {$contact['last_name']}</a></h5>
+  <h6>{$contact['associated_as']}</h6>
 
-  <p>{$so['cell']}<br>{$so['email']}</p>
+  <p>{$contact['cell']}<br>{$contact['email']}</p>
 </div>
 HEREDOC;
           }
@@ -124,7 +124,7 @@ HEREDOC;
           $contact_qry = $dbconn->query('SELECT c.id, c.first_name, c.last_name, c.company_name, c2.description FROM contact c LEFT JOIN contact_types c2 ON c.type = c2.id LEFT JOIN user u ON c.created_by = u.id LEFT JOIN dealers d ON u.dealer_id = d.id ORDER BY c2.description, c.first_name, c.last_name ASC');
 
           if($contact_qry->num_rows > 0) {
-            $contact_dropdown = "<select class='c_input pull-left add_contact_id ignoreSaveAlert' name='add_contact'><option value=''>Select</option>";
+            $contact_dropdown = "<select class='c_input pull-left add_contact_id ignoreSaveAlert' name='add_contact'><option value='' disabled selected>Select</option>";
 
             $last_group = null;
 
@@ -626,39 +626,7 @@ HEREDOC;
 </div>
 
 <script>
-  function checkEmptyFields(group) {
-    let i = 0;
-
-    $(group + " input").each(function() {
-      if($(this).val() !== '') {
-        i++;
-      }
-    });
-
-    if(i === 0) {
-      $(group).hide();
-    }
-  }
-
-  $("#show_all_fields").change(function() {
-    if($("#show_all_fields").is(":checked")) {
-      $(".name1group").show();
-      $(".name2group").show();
-      $('.s_addr_empty').show();
-      $('.con_empty').show();
-      $('.billing_empty').show();
-    } else {
-      checkEmptyFields(".name1group");
-      checkEmptyFields(".name2group");
-      $('.s_addr_empty').hide();
-      $('.con_empty').hide();
-      $('.billing_empty').hide();
-    }
-  });
-
   nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';
-  checkEmptyFields('.name1group');
-  checkEmptyFields('.name2group');
 
   $(".add_contact_id").select2();
 
