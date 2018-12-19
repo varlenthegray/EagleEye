@@ -34,7 +34,7 @@
           <ul>
             <li><a href="#"><i class="fa fa-fw fa-user-plus"></i> Add Company</a></li>
             <li><a href="#" class="nav_add_contact"><i class="fa fa-fw fa-plus-circle"></i> Add Contact</a></li>
-            <li><a href="#" class="crm_view_company_list"><i class="fa fa-fw fa-building-o"></i> Company List</a></li>
+<!--            <li><a href="#" class="crm_view_company_list"><i class="fa fa-fw fa-building-o"></i> Company List</a></li>-->
           </ul>
         </nav>
       </div>
@@ -44,12 +44,18 @@
 
         <div class="col-md-12">
           <form id="searchFilter">
-            <div class="checkbox checkbox-primary"><input id="search_lead" type="checkbox" checked><label for="search_lead"> <i class="fa fa-fw fa-fire"></i> Lead</label></div>
-            <div class="checkbox checkbox-primary"><input id="search_quote" type="checkbox" checked><label for="search_quote"> <i class="fa fa-fw fa-flag-o"></i> Quote</label></div>
-            <div class="checkbox checkbox-primary"><input id="search_prod" type="checkbox" checked><label for="search_prod"> <i class="fa fa-fw fa-sitemap"></i> Production</label></div>
-            <div class="checkbox checkbox-primary"><input id="search_lost" type="checkbox"><label for="search_lost"> <i class="fa fa-fw fa-thumbs-o-down"></i> Lost</label></div>
-            <div class="checkbox checkbox-primary"><input id="search_completed" type="checkbox"><label for="search_completed"> <i class="fa fa-fw fa-thumbs-up"></i> Completed</label></div>
-            <div class="checkbox checkbox-primary"><input id="search_pending" type="checkbox"><label for="search_pending"> <i class="fa fa-fw fa-hourglass-3"></i> Pending</label></div>
+            <table width="100%">
+              <tr>
+                <td><div class="checkbox checkbox-primary"><input id="search_lead" type="checkbox" checked><label for="search_lead"> <i class="fa fa-fw fa-fire"></i> Lead</label></div></td>
+                <td><div class="checkbox checkbox-primary"><input id="search_quote" type="checkbox" checked><label for="search_quote"> <i class="fa fa-fw fa-flag-o"></i> Quote</label></div></td>
+                <td><div class="checkbox checkbox-primary"><input id="search_prod" type="checkbox" checked><label for="search_prod"> <i class="fa fa-fw fa-sitemap"></i> Production</label></div></td>
+              </tr>
+              <tr>
+                <td><div class="checkbox checkbox-primary"><input id="search_lost" type="checkbox"><label for="search_lost"> <i class="fa fa-fw fa-thumbs-o-down"></i> Lost</label></div></td>
+                <td><div class="checkbox checkbox-primary"><input id="search_completed" type="checkbox"><label for="search_completed"> <i class="fa fa-fw fa-thumbs-up"></i> Completed</label></div></td>
+                <td><div class="checkbox checkbox-primary"><input id="search_pending" type="checkbox"><label for="search_pending"> <i class="fa fa-fw fa-hourglass-3"></i> Pending</label></div></td>
+              </tr>
+            </table>
           </form>
         </div>
 

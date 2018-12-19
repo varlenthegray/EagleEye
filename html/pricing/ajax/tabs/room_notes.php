@@ -142,7 +142,7 @@ $dealer = $dealer_qry->fetch_assoc();
                 </div>
 
                 <div class="col-md-6">
-                  <div class="room_note_box">
+                  <div class="custom_note_box room_note_box">
                     <table class="table table-custom-nb table-v-top">
                       <tr>
                         <td colspan="2" class="bracket-border-top" style="padding: 2px 7px;"><h5 class="pull-left">Batch Notes</h5> <?php if($bouncer->validate('view_audit_log')) { ?><div class="pull-right"><input type="checkbox" class="ignoreSaveAlert" id="display_log" /> <label for="display_log">Show Audit Log</label></div><?php } ?></td>

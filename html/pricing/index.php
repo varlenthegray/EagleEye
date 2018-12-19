@@ -94,7 +94,7 @@ if($pg_qry->num_rows > 0) {
   <?php echo $submit_disabled !== null ? 'var already_submitted = true;' : 'var already_submitted = false;'; ?>
 </script>
 
-<div class="container-fluid" style="width:100%;">
+<div class="container-fluid" style="width:100%;background-color:#FFF;">
   <div class="row sticky no-print" style="background-color:#FFF;z-index:2;top:0;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
@@ -952,6 +952,7 @@ if($pg_qry->num_rows > 0) {
   echo "var calcShipZip = '{$room['ship_zip']}';";
   echo "var calcDealerShipZip = '{$dealer['shipping_zip']}';";
   echo "var calcShipInfo = '$shipInfo';";
+  echo "var customFieldInfo = JSON.parse('{$room['custom_vin_info']}');";
   ?>
 
   pricingVars.nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';
@@ -1735,17 +1736,7 @@ if($pg_qry->num_rows > 0) {
 
     $(".room_note_log").hide();
 
-    <?php echo !empty($room['custom_vin_info']) ? "customFieldInfo = JSON.parse('{$room['custom_vin_info']}');": null; ?>
-
     pricingFunction.productTypeSwitch();
-
-    <?php if (!empty($room['custom_vin_info'])) { ?>
-    $.each(customFieldInfo, function(mainID, value) {
-      $.each(value, function(i, v) {
-        $("#" + mainID).parent().find("input[name='" + i + "']").val(v);
-      });
-    });
-    <?php } ?>
 
     // Calculate totals and summary
     setTimeout(function() {
@@ -1769,7 +1760,15 @@ if($pg_qry->num_rows > 0) {
       setTimeout(function() {
         window.print();
         window.close();
-      }, 250);
+      }, 1000);
     }
+
+    //<editor-fold desc="Custom select field display">
+    $.each(customFieldInfo, function(mainID, value) {
+      $.each(value, function(i, v) {
+        $("#" + mainID).parent().find("input[name='" + i + "']").val(v);
+      });
+    });
+    //</editor-fold>
   });
 </script>

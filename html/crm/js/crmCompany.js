@@ -1,7 +1,40 @@
 var crmCompany = {
   editor: null,
 
-  getCompany: function(id) {
+  init: function() {
+    $("#shipping_different").change(function() {
+      if($(this).is(":checked")) {
+        $(".shipping_empty_hide").show();
+      } else {
+        $(".shipping_empty_hide").hide();
+      }
+    });
+
+    $("#billing_different").change(function() {
+      if($(this).is(":checked")) {
+        $(".billing_empty_hide").show();
+      } else {
+        $(".billing_empty_hide").hide();
+      }
+    });
+
+    $("#show_payment_info").change(function() {
+      if($(this).is(":checked")) {
+        $(".payment_info").show();
+      } else {
+        $(".payment_info").hide();
+      }
+    });
+
+    $(".save_company").click(function() {
+      let formInfo = $("#company_information").serialize();
+
+      $.post("/html/crm/ajax/company.php?action=saveCompany", {formInfo: formInfo}, function(data) {
+        $("body").append(data);
+      });
+    });
+  },
+  getCompany: function() {
     $.post("/html/crm/templates/crm_view.php", function(data) {
       crmMain.body.html(data);
     });
@@ -59,6 +92,23 @@ var crmCompany = {
         iconsPath: "/assets/plugins/dhtmlXEditor/imgs/", // path for toolbar icons
         content: curContent
       });
+    }
+  },
+  checkEmpty: function(input_name_starts_with, checkbox_check, hide_what) {
+    let isEmpty = true;
+
+    $.each($("input[name^='" + input_name_starts_with + "']"), function(i, ele) {
+      if($(ele).val() !== '') {
+        isEmpty = false;
+      }
+    });
+
+    if(isEmpty) {
+      $(checkbox_check).prop("checked", false);
+      $(hide_what).hide();
+    } else {
+      $(checkbox_check).prop("checked", true);
+      $(hide_what).show();
     }
   }
 };

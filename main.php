@@ -678,7 +678,7 @@ require 'includes/header_start.php';
         var start = Math.round(new Date().getTime()/1000);
         var end = Math.round(new Date().getTime()/1000);
 
-        window.open("/print/timecard.php?start_date=" + start + "&end_date=" + end + "&employee=23", "_blank");
+        window.open("/print/timecard.php?start_date=" + start + "&end_date=" + end + "&employee=1", "_blank");
       })
       // -- End Navigation --
       <?php } ?>
@@ -1163,7 +1163,7 @@ require 'includes/header_start.php';
       .on("click", ".nav_add_contact", function() {
         var defaultType = $(this).attr('data-default');
 
-        $.post('/html/add_contact.php?default=' + defaultType, function(data) {
+        $.post('/html/modals/add_contact.php?default=' + defaultType, function(data) {
           $("#modalGlobal").html(data).modal('show');
         });
       })
@@ -1214,14 +1214,19 @@ require 'includes/header_start.php';
         });
       })
 
-
       .on("click", ".get_customer_info", function(e) {
-        $.post("/html/add_contact.php?action=edit", {id: $(this).attr('data-view-id')}, function(data) {
+        $.post("/html/modals/add_contact.php?action=edit", {id: $(this).attr('data-view-id')}, function(data) {
           $("#modalGlobal").html(data).modal('show');
         });
 
         // stops it from posting to the URL in the browser
         e.preventDefault().stopPropagation();
+      })
+
+      .on("click", ".nav_add_company", function() {
+        $.post("/html/modals/add_company.php", function(data) {
+          $("#modalGlobal").html(data).modal('show');
+        });
       })
       <?php } ?>
 
@@ -1347,6 +1352,9 @@ require 'includes/header_start.php';
 
   <!-- Sticky table header -->
   <script src="https://cdn.datatables.net/fixedheader/3.1.3/js/dataTables.fixedHeader.min.js"></script>
+
+  <!-- Association management module -->
+  <script src="/includes/js/association.min.js"></script>
 
   <script src="/assets/plugins/dhtmlxScheduler/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>
   <link rel="stylesheet" href="/assets/plugins/dhtmlxScheduler/dhtmlxscheduler_material.css" type="text/css"  title="no title" charset="utf-8">

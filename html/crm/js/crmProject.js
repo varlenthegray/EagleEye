@@ -28,7 +28,7 @@ var crmProject = {
         let contact_id = $(".add_contact_id :selected").val();
 
         if(contact_id !== '') {
-          $.post("/html/crm/modal/add_contact_association.php", {contact_id: contact_id, so: active_so_num}, function(data) {
+          $.post("/html/modals/add_contact_association.php", {contact_id: contact_id, so: active_so_num}, function(data) {
             $("#modalGlobal").html(data).modal("show");
           });
         } else {
@@ -70,6 +70,8 @@ var crmProject = {
       $("#modalAddContactAssociation").click(function() {
         let formInfo = $("#contactAssociationForm").serialize();
         let contact_id = $(".add_contact_id :selected").val();
+
+        console.log("Old code runnin.");
 
         if($("#contact_role :selected").val() !== 'none' || $("#custom_association").is(":checked")) {
           $.post("/ondemand/contact_actions.php?action=add_contact_project", {contact_id: contact_id, so: active_so_num, formInfo: formInfo}, function(data) {

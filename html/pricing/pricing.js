@@ -513,18 +513,42 @@ $("body")
   })
 
   .on("click", "#save", function() {
-    // find out what tab we're saving first
-    let curTab = $("#roomTabView .nav-item .active").attr("id");
-
     // variable for storing the form data
-    let formData = null;
+    let formData = pricingFunction.disabledSerialize($("#batch_info"));
     let val_array = {};
-    let customVals = null;
     let inputSelect = $("select");
-    let cab_list = null;
+    let cab_list = JSON.stringify(getMiniTree(cabinetList));
+
+    //<editor-fold desc="Room Data">
+    inputSelect.each(function() {
+      var ele = $(this);
+      var field = $(this).attr('id');
+      var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
+
+      if($.inArray(ele.val(), custom_fields) >= 0) {
+        val_array[field] = {};
+
+        ele.parent().find('input').each(function() {
+          val_array[field][$(this).attr('name')] = $(this).val();
+        });
+      }
+    });
+
+    let customVals = JSON.stringify(val_array);
+
+    $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, formData: formData}, function(data) {
+      $('body').append(data);
+    });
+    //</editor-fold>
+
+    // live notes for Room notes box
+    pricingFunction.checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
+
+    // live notes for SO notes box
+    pricingFunction.checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
 
     // based on what we're saving, we're going to take an action
-    switch(curTab) {
+   /* switch(curTab) {
       case 'room-notes-tab': // saving notes
         formData = $("#batch_notes").serialize();
 
@@ -624,7 +648,7 @@ $("body")
         pricingFunction.checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
 
         break;
-    }
+    }*/
 
     unsaved = false;
   })
@@ -1027,7 +1051,7 @@ $("body")
     // TODO: https://github.com/mar10/fancytree/issues/551
   })
   .on("click", "#modificationAddSelected", function() {
-    let modifications = itemModifications.fancytree("getTree").getSelectedNodes();
+    let modifications = $("#item_modifications").fancytree("getTree").getSelectedNodes();
     let cablist = cabinetList.fancytree("getTree").getActiveNode();
 
     let outputPrice = 0.00;
@@ -1102,7 +1126,7 @@ $("body")
   .on("keyup", ".modAddlInfo", function() {
     let id = $(this).attr("id");
 
-    itemModifications.fancytree("getTree").getNodeByKey(id).data.addlInfo = $(this).val();
+    $("#item_modifications").fancytree("getTree").getNodeByKey(id).data.addlInfo = $(this).val();
   })
 
   .on("click", "#category_collapse", function() {

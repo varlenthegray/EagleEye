@@ -421,8 +421,13 @@ function getStateOpts($selState) {
     'IL' => '', 'IN' => '', 'IA' => '', 'KS' => '', 'KY' => '', 'LA' => '', 'ME' => '', 'MD' => '', 'MA' => '', 'MI' => '', 'MN' => '', 'MS' => '', 'MO' => '', 
     'MT' => '', 'NE' => '', 'NV' => '', 'NH' => '', 'NJ' => '', 'NM' => '', 'NY' => '', 'NC' => '', 'ND' => '', 'OH' => '', 'OK' => '', 'OR' => '', 'PA' => '', 
     'RI' => '', 'SC' => '', 'SD' => '', 'TN' => '', 'TX' => '', 'UT' => '', 'VT' => '', 'VA' => '', 'WA' => '', 'WV' => '', 'WI' => '', 'WY' => '');
-  
-  $state[$selState] = 'selected';
+
+  if(!empty($selState)) {
+    $state[$selState] = 'selected';
+  } else {
+    $state['NC'] = 'selected';
+  }
+
 
   return "
   <option value='AL' {$state['AL']}>Alabama</option>

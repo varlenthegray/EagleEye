@@ -8,7 +8,7 @@ outputPHPErrs();
 $mail = new \MailHandler\mail_handler();
 
 function dbOrQry($post_field, $col) {
-  return (!empty($post_field)) ? " AND LOWER($col) LIKE LOWER('%$post_field%')" : null;
+  return !empty($post_field) ? " AND LOWER($col) LIKE LOWER('%$post_field%')" : null;
 }
 
 switch($_REQUEST['action']) {
@@ -171,82 +171,53 @@ switch($_REQUEST['action']) {
   // adds a contact to a project/so
   case 'add_contact_project':
     $con_id = sanitizeInput($_REQUEST['contact_id']);
-    $so_id = sanitizeInput($_REQUEST['so']);
+    $type_id = sanitizeInput($_REQUEST['type_id']);
+    $type = sanitizeInput($_REQUEST['type']);
 
     parse_str($_REQUEST['formInfo'], $info);
 
     $contact_role = !empty($info['custom_association']) ? sanitizeInput($info['custom_contact_role']) : sanitizeInput($info['contact_role']);
 
-    $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE id = $so_id");
+    if(!empty($con_id)) {
+      $so_contact_qry = $dbconn->query("SELECT * FROM contact_associations WHERE contact_id = $con_id AND associated_as = '$contact_role' AND type = '$type' AND type_id = $type_id");
 
-    if($so_qry->num_rows === 1) {
-      $so = $so_qry->fetch_assoc();
+      if($so_contact_qry->num_rows === 0) {
+        if($dbconn->query("INSERT INTO contact_associations (type, type_id, contact_id, assigned_by, created_on, associated_as) VALUES ('$type', '$type_id', '$con_id', {$_SESSION['userInfo']['id']}, UNIX_TIMESTAMP(), '$contact_role')")) {
+          $contact_qry = $dbconn->query("SELECT c.*, a.associated_as FROM contact c LEFT JOIN contact_associations a on c.id = a.contact_id WHERE c.id = $con_id");
+          $contact = $contact_qry->fetch_assoc();
 
-      if(!empty($con_id)) {
-        $so_contact_qry = $dbconn->query("SELECT * FROM contact_associations WHERE contact_id = '$con_id' AND so_id = {$so['id']}");
-
-        if($so_contact_qry->num_rows === 0) {
-          if($dbconn->query("INSERT INTO contact_associations (so_id, contact_id, assigned_by, created_on, associated_as) VALUES ('{$so['id']}', '$con_id', {$_SESSION['userInfo']['id']}, UNIX_TIMESTAMP(), '$contact_role')")) {
-            $contact_qry = $dbconn->query("SELECT c.*, a.associated_as FROM contact c LEFT JOIN contact_associations a on c.id = a.contact_id WHERE c.id = $con_id");
-            $contact = $contact_qry->fetch_assoc();
-
-            echo json_encode($contact);
-          } else {
-            http_response_code(400);
-
-            dbLogSQLErr($dbconn);
-          }
+          echo json_encode($contact);
         } else {
           http_response_code(400);
 
-          echo displayToast('info', 'Contact has already been assigned to project.', 'Contact Already Assigned');
+          dbLogSQLErr($dbconn);
         }
       } else {
         http_response_code(400);
 
-        echo displayToast('error', 'Unable to find contact information. Please refresh and try again.', 'Unable to Find Contact');
+        echo displayToast('info', 'Contact has already been assigned to project.', 'Contact Already Assigned');
       }
     } else {
       http_response_code(400);
 
-      echo displayToast('error', 'Unable to properly identify SO number. Please refresh and try again.', 'Unable to Obtain SO');
+      echo displayToast('error', 'Unable to find contact information. Please refresh and try again.', 'Unable to Find Contact');
     }
 
     break;
   case 'remove_contact_project':
     // TODO: Remove duplication between remove and add contact
-    $con_id = sanitizeInput($_REQUEST['contact_id']);
-    $so_id = sanitizeInput($_REQUEST['so']);
+    $id = sanitizeInput($_REQUEST['id']);
 
-    $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE id = $so_id");
-
-    if($so_qry->num_rows === 1) {
-      $so = $so_qry->fetch_assoc();
-
-      if(!empty($con_id)) {
-        $so_contact_qry = $dbconn->query("SELECT * FROM contact_associations WHERE contact_id = '$con_id' AND so_id = '{$so['id']}'");
-
-        if($so_contact_qry->num_rows === 1) {
-          $so_contact = $so_contact_qry->fetch_assoc();
-
-          $dbconn->query("DELETE FROM contact_associations WHERE id = '{$so_contact['id']}'");
-
-          echo displayToast('success', 'Successfully removed contact from project.', 'Contact Removed');
-        } else {
-          http_response_code(400);
-
-          echo displayToast('info', 'Contact has already been deleted from project.', 'Contact Already Removed');
-        }
-      } else {
-        http_response_code(400);
-
-        echo displayToast('error', 'Unable to identify contact to remove. Please refresh and try again.', 'Unable to Find Contact');
+    if(!empty($id)) {
+      if($dbconn->query("DELETE FROM contact_associations WHERE id = '$id'")) {
+        echo displayToast('success', 'Successfully removed contact from project.', 'Contact Removed');
       }
     } else {
       http_response_code(400);
 
-      displayToast('error', 'Unable to properly identify SO number. Please refresh and try again.', 'Unable to Obtain SO');
+      echo displayToast('error', 'Unable to identify contact to remove. Please refresh and try again.', 'Unable to Find Contact');
     }
+
 
     break;
 }

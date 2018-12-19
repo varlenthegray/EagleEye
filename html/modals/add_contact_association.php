@@ -5,11 +5,11 @@
  * Date: 12/10/2018
  * Time: 2:53 PM
  */
-require '../../../includes/header_start.php';
+require '../../includes/header_start.php';
 
 //outputPHPErrs();
 
-$so = sanitizeInput($_REQUEST['so']);
+$type_id = sanitizeInput($_REQUEST['type_id']);
 $contact_id = sanitizeInput($_REQUEST['contact_id']);
 ?>
 
@@ -76,11 +76,14 @@ $contact_id = sanitizeInput($_REQUEST['contact_id']);
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
-      <button type="button" class="btn btn-primary waves-effect waves-light" id="modalAddContactAssociation">Associate</button>
+      <button type="button" class="btn btn-primary waves-effect waves-light" id="modalAddContactAssociation" data-type-id="<?php echo $type_id; ?>" data-contact-id="<?php echo $contact_id; ?>">Associate</button>
     </div>
   </div>
 </div>
 
 <script>
-  crmProject.contactMgr.contactAssociation();
+  // crmProject.contactMgr.contactAssociation();
+
+  association.customAssociation();
+  association.modalManager();
 </script>

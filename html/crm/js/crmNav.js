@@ -5,6 +5,11 @@ var crmNav = {
   getTree: null, // assigned in init
   search: null, // what's being searched for,
   searchAjax: null, // the search AJAX results
+  activatedType: null, // the current selected type
+  companyID: null, // company id # (if available)
+  projectID: null, // project id # (if available)
+  batchID: null, // batch id # (if available)
+  navKeys: null,
 
   initTree: function() {
     this.tree.fancytree({
@@ -66,17 +71,18 @@ var crmNav = {
         /********************************************************
          * Begin management of clicking on SO or Room
          *******************************************************/
-        let activateType = node.data.keyType;
-        let typeID = node.key;
+        crmNav.activatedType = node.data.keyType;
 
-        if(activateType === 'rID') {
-          active_room_id = typeID;
-          active_so_num = node.getParent().key;
-        } else if(activateType === 'soID') {
-          active_so_num = typeID;
-        }
+        let keyPath = node.getKeyPath();
+        let keys = keyPath.substring(1, keyPath.length).split('/');
 
-        $.post("/html/crm/templates/crm_view.php", {'type': activateType, 'id': typeID}, function(data) { // pull the data for the main tab of the CRM
+        crmNav.companyID = keys[0];
+        active_so_num = keys[1];
+        active_room_id = keys[2];
+
+        crmNav.navKeys = keys;
+
+        $.post("/html/crm/templates/crm_view.php", {'keys': JSON.stringify(keys)}, function(data) { // pull the data for the main tab of the CRM
           crmMain.body.html(data); // insert it into the body
         });
       },

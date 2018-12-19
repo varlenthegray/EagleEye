@@ -71,7 +71,7 @@ $so = $so_qry->fetch_assoc();
           echo "<tr><td><div class='form-group'><label for='add_contact' class='pull-left' style='line-height:28px;padding-right:10px;'>Add Contact</label> $contact_dropdown <button type='button' class='btn waves-effect waves-light btn-primary assign_contact_so' style='margin:2px 0 0 10px;'> <i class='zmdi zmdi-plus-circle-o'></i> </button></div></td></tr>";
 
           // displaying existing contact relationships
-          $so_contacts_qry = $dbconn->query("SELECT c.*, c2.description FROM contact_associations soc LEFT JOIN contact c ON soc.contact_id = c.id LEFT JOIN contact_types c2 ON c.type = c2.id WHERE so_id = '{$so['id']}' ORDER BY c.first_name, c.last_name ASC");
+          $so_contacts_qry = $dbconn->query("SELECT c.*, c2.description FROM contact_associations soc LEFT JOIN contact c ON soc.contact_id = c.id LEFT JOIN contact_types c2 ON c.type = c2.id WHERE type_id = '{$so['id']}' ORDER BY c.first_name, c.last_name ASC");
 
           if($so_contacts_qry->num_rows > 0) {
             while($so_contacts = $so_contacts_qry->fetch_assoc()) {
@@ -335,7 +335,7 @@ $so = $so_qry->fetch_assoc();
             echo "<tr><td colspan='3'><div class='form-group'><label for='add_contact' class='pull-left' style='line-height:28px;padding-right:10px;'>Add Association</label> $contact_dropdown <button type='button' class='btn waves-effect waves-light btn-primary assign_contact_so' style='margin:2px 0 0 10px;'> <i class='zmdi zmdi-plus-circle'></i> </button></div></td></tr>";
 
             // displaying existing contact relationships
-            $so_contacts_qry = $dbconn->query("SELECT c.*, c2.description FROM contact_associations soc LEFT JOIN contact c ON soc.contact_id = c.id LEFT JOIN contact_types c2 ON c.type = c2.id WHERE so_id = '{$so['id']}' ORDER BY c.first_name, c.last_name ASC");
+            $so_contacts_qry = $dbconn->query("SELECT c.*, c2.description FROM contact_associations soc LEFT JOIN contact c ON soc.contact_id = c.id LEFT JOIN contact_types c2 ON c.type = c2.id WHERE type_id = '{$so['id']}' ORDER BY c.first_name, c.last_name ASC");
 
             if($so_contacts_qry->num_rows > 0) {
               while($so_contacts = $so_contacts_qry->fetch_assoc()) {

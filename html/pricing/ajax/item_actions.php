@@ -201,4 +201,66 @@ switch($_REQUEST['action']) {
     }
 
     break;
+  case 'delete':
+    $type = sanitizeInput($_REQUEST['type']);
+    $id = sanitizeInput($_REQUEST['key']);
+
+    if($type === 'folder') {
+      $cat_qry = $dbconn->query("SELECT * FROM pricing_categories WHERE id = $id");
+
+      if($cat_qry->num_rows > 0) {
+        // https://stackoverflow.com/questions/28363893/mysql-select-recursive-get-all-child-with-multiple-level/28366310
+        $subcat_qry = $dbconn->query("SELECT GROUP_CONCAT(lv SEPARATOR ',') AS subcategories FROM
+        (SELECT @pv:=(SELECT GROUP_CONCAT(id SEPARATOR ',') FROM pricing_categories WHERE parent IN (@pv))
+        AS lv FROM pricing_categories JOIN
+        (SELECT @pv:=$id)tmp WHERE parent IN (@pv)) a;");
+
+        // get all subcategories separated by commas
+        $subcat = $subcat_qry->fetch_assoc();
+
+        // get items related to the current ID
+        $item_qry = $dbconn->query("SELECT id FROM pricing_nomenclature WHERE category_id = $id");
+
+        // for all of those items, remove them
+        while($item = $item_qry->fetch_assoc()) {
+          $dbconn->query("DELETE FROM pricing_nomenclature WHERE id = {$item['id']}");
+        }
+
+        // delete the category that has the current ID
+        $dbconn->query("DELETE FROM pricing_categories WHERE id = $id");
+
+        // if there are sub-categories
+        if(!empty($subcat['subcategories'])) {
+          // explode out the delimited list for working with
+          $subcat_pending_delete = explode(',', $subcat['subcategories']);
+
+          // for every item in the list
+          foreach($subcat_pending_delete AS $cat_id) {
+            // delete the category
+            $dbconn->query("DELETE FROM pricing_categories WHERE id = $cat_id");
+
+            // find the items that are inside of that category
+            $item_qry = $dbconn->query("SELECT id FROM pricing_nomenclature WHERE category_id = $cat_id");
+
+            // for each item inside of that category
+            while($item = $item_qry->fetch_assoc()) {
+              // delete that item
+              $dbconn->query("DELETE FROM pricing_nomenclature WHERE id = {$item['id']}");
+            }
+          }
+
+          echo displayToast('success', 'Successfully deleted folders and items.', 'Folders and Items Deleted');
+        } else {
+          echo displayToast('success', 'Successfully deleted folder.', 'Folder Deleted');
+        }
+      } else {
+        echo displayToast('error', 'Category does not exist.', 'Does not exist');
+      }
+    } else {
+      $dbconn->query("DELETE FROM pricing_nomenclature WHERE id = $id");
+
+      echo displayToast('success', 'Item has been deleted.', 'Item Deleted');
+    }
+
+    break;
 }

@@ -195,9 +195,9 @@ $("body")
   })
 
   .on("click", ".save_so", function() {
-    var so_info = $("#form_so_" + active_so_num).serialize();
+    var so_info = $("#project_form").serialize();
 
-    $.post('/ondemand/so_actions.php?action=save_so&' + so_info + '&so_num=' + active_so_num, function(data) {
+    $.post('/ondemand/so_actions.php?action=save_so&so_num=' + active_so_num, {formInfo: so_info}, function(data) {
       $("body").append(data);
     });
 

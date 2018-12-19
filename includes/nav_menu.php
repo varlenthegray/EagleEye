@@ -19,7 +19,7 @@ HEREDOC;
 
     $nav_out .= $bouncer->validate('add_so') ? "<li id='nav_add_so'><a><i class='zmdi zmdi-file-plus m-r-5'></i>New SO</a></li>" : null;
     $nav_out .= $bouncer->validate('view_contacts') ? "<li class='nav_add_company'><a><i class='zmdi zmdi-city-alt m-r-5'></i>New Company</a></li>" : null;
-    $nav_out .= $bouncer->validate('view_contacts') ? "<li class='nav_add_contact'><a><i class='zmdi zmdi-account-add m-r-5'></i>New Organization</a></li>" : null;
+    $nav_out .= $bouncer->validate('view_contacts') ? "<li class='nav_add_contact'><a><i class='zmdi zmdi-account-add m-r-5'></i>New Contact</a></li>" : null;
     $nav_out .= $bouncer->validate('add_project') ? "<li id='nav_add_project'><a><i class='zmdi zmdi-plus-square m-r-5'></i>New Project</a></li>" : null;
 
     $nav_out .= <<<HEREDOC

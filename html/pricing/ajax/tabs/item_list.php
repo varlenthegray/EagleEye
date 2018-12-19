@@ -38,7 +38,7 @@ if($pg_qry->num_rows > 0) {
 
 <div class="container-fluid pricing_table_format">
   <div class="row">
-    <div class="col-md-2 pricing_left_nav no-print sticky">
+    <div class="col-md-3 pricing_left_nav no-print sticky">
       <div class="sticky nav_filter">
         <table width="100%" style="margin-bottom:10px;">
           <tr>
@@ -68,7 +68,7 @@ if($pg_qry->num_rows > 0) {
     </div>
 
     <!--<editor-fold desc="Item List">-->
-    <div class="col-md-10 itemListWrapper" style="margin-top:5px;">
+    <div class="col-md-9 itemListWrapper" style="margin-top:5px;">
       <div class="item_list_header sticky">
         <h5><u>Item List</u></h5>
 
@@ -158,11 +158,8 @@ if($pg_qry->num_rows > 0) {
         </tr>
         </tfoot>
       </table>
-    </div>
-    <!--</editor-fold>-->
 
-    <!--<editor-fold desc="Summary of Charges">-->
-    <div class="row pricing_value">
+      <!--<editor-fold desc="Summary of Charges">-->
       <div class="col-sm-3 col-sm-offset-9 summary_of_charges">
         <div class="left_header"><h5>Summary of Charges:</h5></div>
 
@@ -220,6 +217,7 @@ if($pg_qry->num_rows > 0) {
 
         <div class="clearfix"></div>
       </div>
+      <!--</editor-fold>-->
     </div>
     <!--</editor-fold>-->
   </div>
@@ -345,6 +343,8 @@ if($pg_qry->num_rows > 0) {
         // lining and styles for main lines
         if(node.isTopLevel()) {
           $tdList.addClass("main-level");
+        } else {
+          $tdList.eq(2).find('.add_item_mod, .item_copy').css('visibility', 'hidden');
         }
 
         // calculation of how many pages are going to print (total)
@@ -356,7 +356,7 @@ if($pg_qry->num_rows > 0) {
         // TODO: Short Drawer Raise, Tall Drawer Raise, Frame Option, Drawer Box
 
         // Glaze Technique:
-        $("#gt_amt").text()
+        $("#gt_amt").text();
       },
       modifyChild: function(event, data) {
         pricingFunction.recalcSummary();
@@ -694,13 +694,20 @@ if($pg_qry->num_rows > 0) {
               node.setActive(false);
             break;
           case "delete":
+            let hasChildren = (node.hasChildren()) ? " <b>and <u>ALL</u> items/categories under it</b>" : '';
+
             $.confirm({
               title: "Are you sure you want to remove this item?",
-              content: "You are about to remove " + node.title + ". Are you sure?",
+              content: "You are about to remove " + node.title + hasChildren + ". Are you sure?",
               type: 'red',
               buttons: {
                 yes: function() {
-                  node.remove();
+                  let type = (node.isFolder()) ? 'folder' : 'item';
+
+                  $.post("/html/pricing/ajax/item_actions.php", {action: 'delete', type: type, key: node.key}, function(data) {
+                    $("body").append(data);
+                    node.remove();
+                  });
                 },
                 no: function() {}
               }

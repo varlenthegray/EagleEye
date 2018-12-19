@@ -8,8 +8,10 @@ $find = sanitizeInput($_REQUEST['search']);
 $qry = $dbconn->query("SELECT
     so.id AS soID,
     r.id as rID,
+    cc.id as cID,
     d.id as dID,
     d.dealer_name,
+    cc.name AS companyName,
     so.so_num,
     so.project_name,
     r.room,
@@ -20,6 +22,7 @@ $qry = $dbconn->query("SELECT
   FROM sales_order so
     LEFT JOIN rooms r ON so.so_num = r.so_parent
     LEFT JOIN dealers d ON so.dealer_code = d.dealer_id
+    LEFT JOIN contact_company cc on so.company_id = cc.id
   WHERE (so.so_num LIKE '%$find%' OR LOWER(so.dealer_code) LIKE LOWER('%$find%') OR LOWER(so.project_name) LIKE LOWER('%$find%') 
     OR LOWER(so.project_mgr) LIKE LOWER('%$find%') OR LOWER(so.name_1) LIKE LOWER('%$find%') OR LOWER(so.name_2) LIKE LOWER('%$find%') 
     OR LOWER(d.dealer_name) LIKE LOWER('%$find%'))
@@ -37,7 +40,7 @@ if($qry->num_rows > 0) {
 
 $children = [];
 
-$prevDealer = null; $pd = -1;
+$prevCompany = null; $pd = -1;
 $prevSO = null; $ps = 0;
 $prevRoom = null; $pr = 0;
 $prevSeq = null;
@@ -99,16 +102,16 @@ foreach($result AS $ans) {
     }
   }
 
-  if($ans['dealer_name'] !== $prevDealer) {
+  if($ans['companyName'] !== $prevCompany) {
     $pd++; // increment the dealer code
     $ps = 0; // set previous SO back to 0
     $pr = 0;
 
     // establish dealer information
-    $output[$pd]['title'] = $ans['dealer_name'];
+    $output[$pd]['title'] = $ans['companyName'];
     $output[$pd]['folder'] = 'true';
-    $output[$pd]['key'] = $ans['dID'];
-    $output[$pd]['keyType'] = 'dID';
+    $output[$pd]['key'] = $ans['cID'];
+    $output[$pd]['keyType'] = 'cID';
 
     // establish the first SO within that dealer
     $output[$pd]['children'][$ps]['title'] = "<strong>{$ans['so_num']} - {$ans['project_name']}</strong>";
@@ -125,7 +128,7 @@ foreach($result AS $ans) {
     $output[$pd]['children'][$ps]['children'][$pr]['icon'] = $icon;
 
     $prevSO = $ans['soID']; // tell the system what SO we just worked on was
-    $prevDealer = $ans['dealer_name']; // let the system know what dealer we just worked on
+    $prevCompany = $ans['companyName']; // let the system know what dealer we just worked on
 
     $pr++;
   } else { // otherwise, we're continuing on with that one dealer
@@ -141,24 +144,16 @@ foreach($result AS $ans) {
       $output[$pd]['children'][$ps]['key'] = $ans['soID'];
       $output[$pd]['children'][$ps]['keyType'] = 'soID';
       $output[$pd]['children'][$ps]['altData'] = $altData;
-
-      $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
-      $output[$pd]['children'][$ps]['children'][$pr]['key'] = $ans['rID'];
-      $output[$pd]['children'][$ps]['children'][$pr]['keyType'] = 'rID';
-      $output[$pd]['children'][$ps]['children'][$pr]['altData'] = $altData;
-      $output[$pd]['children'][$ps]['children'][$pr]['orderStatus'] = $ans['order_status'];
-      $output[$pd]['children'][$ps]['children'][$pr]['icon'] = $icon;
-      $pr++;
-    } else {
-      $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
-      $output[$pd]['children'][$ps]['children'][$pr]['key'] = $ans['rID'];
-      $output[$pd]['children'][$ps]['children'][$pr]['keyType'] = 'rID';
-      $output[$pd]['children'][$ps]['children'][$pr]['altData'] = $altData;
-      $output[$pd]['children'][$ps]['children'][$pr]['orderStatus'] = $ans['order_status'];
-      $output[$pd]['children'][$ps]['children'][$pr]['icon'] = $icon;
-
-      $pr++;
     }
+
+    $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
+    $output[$pd]['children'][$ps]['children'][$pr]['key'] = $ans['rID'];
+    $output[$pd]['children'][$ps]['children'][$pr]['keyType'] = 'rID';
+    $output[$pd]['children'][$ps]['children'][$pr]['altData'] = $altData;
+    $output[$pd]['children'][$ps]['children'][$pr]['orderStatus'] = $ans['order_status'];
+    $output[$pd]['children'][$ps]['children'][$pr]['icon'] = $icon;
+
+    $pr++;
   }
 
   $r++;

@@ -1,4 +1,4 @@
-<div class="modal-dialog" role="document">
+<div class="modal-dialog modal-lg" role="document">
   <div class="modal-content">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -14,9 +14,9 @@
 
           <table id="item_modifications" width="100%">
             <colgroup>
-              <col width="35%">
-              <col width="40%">
-              <col width="25%">
+              <col width="30%">
+              <col width="50%">
+              <col width="20%">
             </colgroup>
             <thead>
             <tr>

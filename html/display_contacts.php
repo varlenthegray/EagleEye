@@ -78,7 +78,7 @@
         var node = data.node;
 
         if(!node.isFolder()) {
-          $.post("/html/add_contact.php?action=edit", {id: node.key}, function(data) {
+          $.post("/html/modals/add_contact.php?action=edit", {id: node.key}, function(data) {
             $("#modalGlobal").html(data).modal('show');
           });
         }
