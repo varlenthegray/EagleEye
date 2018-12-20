@@ -478,8 +478,10 @@ if($pg_qry->num_rows > 0) {
               <table width="100%">
                 <tr><th>&nbsp;Notes</th></tr>
                 <tr><td class="gray_bg">&nbsp;Delivery Notes:</td></tr>
-                <tr><td id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width pricing_textbox"><?php echo $note_arr['room_note_delivery']['note']; ?></textarea></td></tr>
+                <tr><td id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width pricing_textbox"><?php echo stripslashes($note_arr['room_note_delivery']['note']); ?></textarea></td></tr>
               </table>
+
+              <input type="hidden" name="delivery_notes_id" value="<?php echo $note_arr['room_note_delivery']['id']; ?>" />
             </td>
           </tr>
         </table>
@@ -558,7 +560,7 @@ if($pg_qry->num_rows > 0) {
                 <table width="100%">
                   <tr><th>&nbsp;</th></tr>
                   <tr><td class="gray_bg">&nbsp;Design Notes:</td></tr>
-                  <tr><td><textarea name="room_note_design" maxlength="280" class="pricing_textbox"><?php echo $note_arr['room_note_design']['note']; ?></textarea></td>
+                  <tr><td><textarea name="room_note_design" maxlength="280" class="pricing_textbox"><?php echo stripslashes($note_arr['room_note_design']['note']); ?></textarea></td>
                   </tr>
                 </table>
 
@@ -606,15 +608,17 @@ if($pg_qry->num_rows > 0) {
               <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('green_gard'); ?></div></td>
             </tr>
             <tr>
-              <td colspan="2" style="height:178px;"></td>
+              <td colspan="2" style="height:212px;"></td>
             </tr>
             <tr>
               <td colspan="2">
                 <table width="100%">
                   <tr><th>&nbsp;</th></tr>
                   <tr><td class="gray_bg">&nbsp;Finishing/Sample Notes:</td></tr>
-                  <tr><td><textarea name="fin_sample_notes" maxlength="280" class="static_width pricing_textbox"><?php echo $note_arr['room_note_fin_sample']['note']; ?></textarea></td></tr>
+                  <tr><td><textarea name="fin_sample_notes" maxlength="280" class="static_width pricing_textbox"><?php echo stripslashes($note_arr['room_note_fin_sample']['note']); ?></textarea></td></tr>
                 </table>
+
+                <input type="hidden" name="fin_sample_notes_id" value="<?php echo $note_arr['room_note_fin_sample']['id']; ?>" />
               </td>
             </tr>
           </table>

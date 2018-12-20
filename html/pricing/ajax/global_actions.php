@@ -903,19 +903,19 @@ switch($_REQUEST['action']) {
     $delivery_notes = sanitizeInput($info['delivery_notes']);
     $delivery_notes_id = sanitizeInput($info['delivery_notes_id']);
 
-    if(!empty($notes)) {
-      $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+//    if(!empty($notes)) {
+//      $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+//
+//      $inquiry_id = $dbconn->insert_id;
+//
+//      echo displayToast('success', 'Successfully updated the room with the notes attached.', 'Room Updated with Notes');
+//    }
 
-      $inquiry_id = $dbconn->insert_id;
-
-      echo displayToast('success', 'Successfully updated the room with the notes attached.', 'Room Updated with Notes');
-    }
-
-    if(!empty($cabinet_specifications['delivery_notes_id'])) {
+    if(!empty($info['delivery_notes_id'])) {
       $dbconn->query("UPDATE notes SET note = '$delivery_notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$delivery_notes_id'");
 
       $changed[] = 'Delivery Notes Updated';
-    } else if(!empty($cabinet_specifications['delivery_notes'])) {
+    } else if(!empty($info['delivery_notes'])) {
       if ($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_delivery'")->num_rows === 0) {
         $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$delivery_notes', 'room_note_delivery', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
@@ -925,11 +925,11 @@ switch($_REQUEST['action']) {
       }
     }
 
-    if(!empty($cabinet_specifications['design_notes_id'])) {
+    if(!empty($info['design_notes_id'])) {
       $dbconn->query("UPDATE notes SET note = '$room_note_design', timestamp = UNIX_TIMESTAMP() WHERE id = '$room_note_design_id'");
 
       $changed[] = 'Design Notes Updated';
-    } else if(!empty($cabinet_specifications['room_note_design'])) {
+    } else if(!empty($info['room_note_design'])) {
       if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_design'")->num_rows === 0) {
         $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$room_note_design', 'room_note_design', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
@@ -939,13 +939,13 @@ switch($_REQUEST['action']) {
       }
     }
 
-    if(!empty($cabinet_specifications['fin_sample_notes_id'])) {
+    if(!empty($info['fin_sample_notes_id'])) {
       if($dbconn->query("UPDATE notes SET note = '$fin_sample_notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$fin_sample_notes_id'")) {
         $changed[] = 'Finishing/Sample Notes Updated';
       } else {
         dbLogSQLErr($dbconn);
       }
-    } else if(!empty($cabinet_specifications['fin_sample_notes'])) {
+    } else if(!empty($info['fin_sample_notes'])) {
       if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
         $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$fin_sample_notes', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
