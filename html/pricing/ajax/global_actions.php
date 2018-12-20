@@ -604,15 +604,9 @@ switch($_REQUEST['action']) {
     $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
     $room_info = $room_qry->fetch_assoc();
 
-//    $notes = sanitizeInput($accounting_notes['room_notes']);
-
     $deposit_received = !empty($info['deposit_received']) ? (bool)$info['deposit_received'] : 0;
     $final_payment = !empty($info['final_payment']) ? (bool)$info['final_payment'] : 0;
     $ptl_del = !empty($info['ptl_del']) ? (bool)$info['ptl_del'] : 0;
-
-//    $followup_date = sanitizeInput($accounting_notes['room_inquiry_followup_date']);
-//    $followup_individual = sanitizeInput($accounting_notes['room_inquiry_requested_of']);
-//    $inquiry_id = null;
 
     $changed[] = whatChanged($deposit_received, $room_info['payment_deposit'], 'Deposit Payment');
     $changed[] = whatChanged($final_payment, $room_info['payment_final'], 'Final Payment');
@@ -705,113 +699,10 @@ switch($_REQUEST['action']) {
     //</editor-fold>
 
     //<editor-fold desc="Variable assignment">
-    //<editor-fold desc="Batch info itself">
-    $room_name = sanitizeInput($info['room_name']);
-    $product_type = sanitizeInput($info['product_type']);
-    $leadtime = sanitizeInput($info['days_to_ship']);
-    $order_status = sanitizeInput($info['order_status']);
-    $ship_via = sanitizeInput($info['ship_via']);
-    $ship_to_name = sanitizeInput($info['ship_to_name']);
-    $ship_to_address = sanitizeInput($info['ship_to_address']);
-    $ship_to_city = sanitizeInput($info['ship_to_city']);
-    $ship_to_state = sanitizeInput($info['ship_to_state']);
-    $ship_to_zip = sanitizeInput($info['ship_to_zip']);
-    $multi_room_ship = !empty($info['multi_room_ship']) ? sanitizeInput($info['multi_room_ship']) : 0;
-    $payment_method = sanitizeInput($info['payment_method']);
-    $seen_approved = !empty($info['seen_approved']) ? sanitizeInput($info['seen_approved']) : 0;
-    $unseen_approved = !empty($info['unseen_approved']) ? sanitizeInput($info['unseen_approved']) : 0;
-    $requested_sample = !empty($info['requested_sample']) ? sanitizeInput($info['requested_sample']) : 0;
-    $sample_reference = sanitizeInput($info['sample_reference']);
-    //</editor-fold>
-
     //<editor-fold desc="Signature details">
     $signature = sanitizeInput($info['signature']);
     $sig_ip = $_SERVER['REMOTE_ADDR'];
     $sig_time = time();
-    //</editor-fold>
-
-    //<editor-fold desc="Variable assignment">
-    $construction_method = sanitizeInput($info['construction_method']);
-    $species_grade = sanitizeInput($info['species_grade']);
-    $carcass_material = sanitizeInput($info['carcass_material']);
-    $door_design = sanitizeInput($info['door_design']);
-    $panel_raise_door = sanitizeInput($info['panel_raise_door']);
-    $panel_raise_sd = sanitizeInput($info['panel_raise_sd']);
-    $panel_raise_td = sanitizeInput($info['panel_raise_td']);
-    $style_rail_width = sanitizeInput($info['style_rail_width']);
-    $edge_profile = sanitizeInput($info['edge_profile']);
-    $framing_bead = sanitizeInput($info['framing_bead']);
-    $framing_options = sanitizeInput($info['framing_options']);
-    $drawer_boxes = sanitizeInput($info['drawer_boxes']);
-    $drawer_guide = sanitizeInput($info['drawer_guide']);
-    $finish_code = sanitizeInput($info['finish_code']);
-    $sheen = sanitizeInput($info['sheen']);
-    $glaze = sanitizeInput($info['glaze']);
-    $glaze_technique = sanitizeInput($info['glaze_technique']);
-    $antiquing = sanitizeInput($info['antiquing']);
-    $worn_edges = sanitizeInput($info['worn_edges']);
-    $distress_level = sanitizeInput($info['distress_level']);
-    $green_gard = sanitizeInput($info['green_gard']);
-    //</editor-fold>
-
-    //<editor-fold desc="What's Changed">
-    $changed[] = whatChanged($construction_method, $room_info['construction_method'], 'Construction Method');
-    $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
-    $changed[] = whatChanged($carcass_material, $room_info['carcass_material'], 'Carcass Material');
-    $changed[] = whatChanged($door_design, $room_info['door_design'], 'Door Design');
-    $changed[] = whatChanged($panel_raise_door, $room_info['panel_raise_door'], 'Panel Raise (Door)');
-    $changed[] = whatChanged($panel_raise_sd, $room_info['panel_raise_sd'], 'Panel Raise Shoot Drawer');
-    $changed[] = whatChanged($panel_raise_td, $room_info['panel_raise_td'], 'Panel Raise Tall Drawer');
-    $changed[] = whatChanged($style_rail_width, $room_info['style_rail_width'], 'Style/Rail Width');
-    $changed[] = whatChanged($edge_profile, $room_info['edge_profile'], 'Edge Profile');
-    $changed[] = whatChanged($framing_bead, $room_info['framing_bead'], 'Framing Bead');
-    $changed[] = whatChanged($framing_options, $room_info['framing_options'], 'Framing Options');
-    $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
-    $changed[] = whatChanged($drawer_guide, $room_info['drawer_guide'], 'Drawer Guide');
-    $changed[] = whatChanged($finish_code, $room_info['finish_code'], 'Finish Code');
-    $changed[] = whatChanged($sheen, $room_info['sheen'], 'Sheen');
-    $changed[] = whatChanged($glaze, $room_info['glaze'], 'Glaze');
-    $changed[] = whatChanged($glaze_technique, $room_info['glaze_technique'], 'Glaze Technique');
-    $changed[] = whatChanged($antiquing, $room_info['antiquing'], 'Antiquing');
-    $changed[] = whatChanged($worn_edges, $room_info['worn_edges'], 'Worn Edges');
-    $changed[] = whatChanged($distress_level, $room_info['distress_level'], 'Distress Level');
-    $changed[] = whatChanged($green_gard, $room_info['green_gard'], 'Green Gard');
-    //</editor-fold>
-
-    //<editor-fold desc="DB: Update Cabinet Details for room">
-    if($dbconn->query("UPDATE rooms SET 
-        construction_method = '$construction_method', 
-        species_grade = '$species_grade', 
-        carcass_material = '$carcass_material', 
-        door_design = '$door_design', 
-        panel_raise_door = '$panel_raise_door', 
-        panel_raise_sd = '$panel_raise_sd', 
-        panel_raise_td = '$panel_raise_td', 
-        style_rail_width = '$style_rail_width', 
-        edge_profile = '$edge_profile', 
-        framing_bead = '$framing_bead', 
-        framing_options = '$framing_options', 
-        drawer_boxes = '$drawer_boxes', 
-        drawer_guide = '$drawer_guide', 
-        finish_code = '$finish_code', 
-        sheen = '$sheen', 
-        glaze = '$glaze', 
-        glaze_technique = '$glaze_technique', 
-        antiquing = '$antiquing', 
-        worn_edges = '$worn_edges', 
-        distress_level = '$distress_level', 
-        green_gard = '$green_gard', 
-        custom_vin_info = '$custom_vals'
-      WHERE id = '$room_id'")) {
-      echo displayToast('success', 'Room updated successfully.', 'Room Updated');
-    } else {
-      dbLogSQLErr($dbconn);
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="Delivery Notes">
-//    $delivery_notes = sanitizeInput($formData['delivery_notes']);
-//    $delivery_notes_id = sanitizeInput($formData['delivery_notes_id']);
     //</editor-fold>
 
     //<editor-fold desc="Accounting checkboxes">
@@ -823,7 +714,6 @@ switch($_REQUEST['action']) {
 
     //<editor-fold desc="What's changed">
     //<editor-fold desc="Batch info itself">
-    $changed[] = whatChanged($room_name, $room['room_name'], 'Room Name');
     $changed[] = whatChanged($product_type, $room['product_type'], 'Product Type');
     $changed[] = whatChanged($leadtime, $room['days_to_ship'], 'Lead Time');
     $changed[] = whatChanged($ship_via, $room['ship_via'], 'Ship Via');
@@ -832,12 +722,7 @@ switch($_REQUEST['action']) {
     $changed[] = whatChanged($ship_to_city, $room['ship_to_city'], 'Ship To City');
     $changed[] = whatChanged($ship_to_state, $room['ship_to_state'], 'Ship To State');
     $changed[] = whatChanged($ship_to_zip, $room['ship_to_zip'], 'Ship To Zip');
-    $changed[] = whatChanged($multi_room_ship, $room['multi_room_ship'], 'Multi-room Shipping');
     $changed[] = whatChanged($payment_method, $room['payment_method'], 'Payment Method');
-    $changed[] = whatChanged($seen_approved, $room['seen_approved'], 'Sample seen/approved');
-    $changed[] = whatChanged($unseen_approved, $room['unseen_approved'], 'Sample unseen/approved');
-    $changed[] = whatChanged($requested_sample, $room['requested_sample'], 'Sample Requested');
-    $changed[] = whatChanged($sample_reference, $room['sample_reference'], 'Sample Reference');
     //</editor-fold>
 
     //<editor-fold desc="Signature">
@@ -855,43 +740,6 @@ switch($_REQUEST['action']) {
     //</editor-fold>
     //</editor-fold>
 
-    //<editor-fold desc="Database Update">
-    //<editor-fold desc="DB: Update Room">
-    $update_room = $dbconn->query("UPDATE rooms SET
-      room_name = '$room_name', 
-      product_type = '$product_type', 
-      days_to_ship = '$leadtime', 
-      order_status = '$order_status',
-      ship_via = '$ship_via', 
-      ship_name = '$ship_to_name', 
-      ship_address = '$ship_to_address', 
-      ship_city = '$ship_to_city',
-      ship_state = '$ship_to_state', 
-      ship_zip = '$ship_to_zip', 
-      multi_room_ship = $multi_room_ship,
-      payment_method = '$payment_method',
-      sample_seen_approved = $seen_approved, 
-      sample_unseen_approved = $unseen_approved, 
-      sample_requested = $requested_sample,
-      sample_reference = '$sample_reference', 
-      esig = '$signature',
-      esig_ip = '$sig_ip',
-      esig_time = $sig_time,
-      payment_deposit = $deposit_received, 
-      payment_del_ptl = $ptl_del,
-      payment_final = $final_payment
-    WHERE id = '$room_id'");
-
-    //<editor-fold desc="Output based on DB update">
-    if($update_room) {
-      echo displayToast('success', 'Room updated successfully.', 'Room Updated');
-    } else {
-      dbLogSQLErr($dbconn);
-    }
-    //</editor-fold>
-    //</editor-fold>
-
-
     //<editor-fold desc="DB: Notes">
     //<editor-fold desc="Room Notes">
     $room_note_design = sanitizeInput($info['room_note_design']);
@@ -902,14 +750,6 @@ switch($_REQUEST['action']) {
 
     $delivery_notes = sanitizeInput($info['delivery_notes']);
     $delivery_notes_id = sanitizeInput($info['delivery_notes_id']);
-
-//    if(!empty($notes)) {
-//      $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
-//
-//      $inquiry_id = $dbconn->insert_id;
-//
-//      echo displayToast('success', 'Successfully updated the room with the notes attached.', 'Room Updated with Notes');
-//    }
 
     if(!empty($info['delivery_notes_id'])) {
       $dbconn->query("UPDATE notes SET note = '$delivery_notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$delivery_notes_id'");
@@ -960,9 +800,6 @@ switch($_REQUEST['action']) {
     $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = {$room_info['so_parent']}");
     $so = $so_qry->fetch_assoc();
 
-//    $followup_date = sanitizeInput($accounting_notes['inquiry_followup_date']);
-//    $followup_individual = sanitizeInput($accounting_notes['inquiry_requested_of']);
-
     if(!empty($accounting_notes['inquiry'])) {
       $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('{$accounting_notes['inquiry']}', 'so_inquiry', UNIX_TIMESTAMP(), '{$_SESSION['userInfo']['id']}', '{$so['id']}')");
       $inquiry_id = $dbconn->insert_id;
@@ -1009,19 +846,10 @@ HEREDOC;
     }
     //</editor-fold>
 
-    //<editor-fold desc="DB query for update of global data">
+    //<editor-fold desc="DB: Update Cabinet Details for room">
     if($dbconn->query("UPDATE rooms SET 
-        product_type = '$product_type',
-        ship_via = '$ship_via',
-        ship_name = '$ship_to_name',
-        ship_address = '$ship_to_address',
-        ship_city = '$ship_to_city',
-        ship_state = '$ship_to_state',
-        ship_zip = '$ship_to_zip',
-        ship_cubes = '$shipping_cubes',
-        payment_method = '$payment_method',
-        species_grade = '$species_grade', 
         construction_method = '$construction_method', 
+        species_grade = '$species_grade', 
         carcass_material = '$carcass_material', 
         door_design = '$door_design', 
         panel_raise_door = '$panel_raise_door', 
@@ -1031,29 +859,50 @@ HEREDOC;
         edge_profile = '$edge_profile', 
         framing_bead = '$framing_bead', 
         framing_options = '$framing_options', 
+        drawer_boxes = '$drawer_boxes', 
+        drawer_guide = '$drawer_guide', 
         finish_code = '$finish_code', 
         sheen = '$sheen', 
         glaze = '$glaze', 
         glaze_technique = '$glaze_technique', 
-        green_gard = '$green_gard', 
         antiquing = '$antiquing', 
         worn_edges = '$worn_edges', 
         distress_level = '$distress_level', 
-        drawer_boxes = '$drawer_boxes', 
-        drawer_guide = '$drawer_guide', 
+        green_gard = '$green_gard', 
         custom_vin_info = '$custom_vals',
-        payment_deposit = $deposit_received, 
-        payment_final = $final_payment, 
-        payment_del_ptl = $ptl_del,
-        days_to_ship = '$leadtime',
-        dealer_po = '$dealer_po',
-        room_name = '$room_name',
+        room_name = '$room_name', 
+        product_type = '$product_type', 
+        days_to_ship = '$leadtime', 
         order_status = '$order_status',
-        sample_seen_approved = $seen_approved,
-        sample_unseen_approved = $unseen_approved,
+        ship_via = '$ship_via', 
+        ship_name = '$ship_to_name', 
+        ship_address = '$ship_to_address', 
+        ship_city = '$ship_to_city',
+        ship_state = '$ship_to_state', 
+        ship_zip = '$ship_to_zip', 
+        multi_room_ship = $multi_room_ship,
+        payment_method = '$payment_method',
+        sample_seen_approved = $seen_approved, 
+        sample_unseen_approved = $unseen_approved, 
         sample_requested = $requested_sample,
-        sample_reference = '$sample_reference',
-        multi_room_ship = $multi_room_ship
+        sample_reference = '$sample_reference', 
+        esig = '$signature',
+        esig_ip = '$sig_ip',
+        esig_time = $sig_time,
+        payment_deposit = $deposit_received, 
+        payment_del_ptl = $ptl_del,
+        payment_final = $final_payment,
+        ship_cubes = '$shipping_cubes'
+      WHERE id = '$room_id'")) {
+      echo displayToast('success', 'Room updated successfully.', 'Room Updated');
+    } else {
+      dbLogSQLErr($dbconn);
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="DB query for update of global data">
+    if($dbconn->query("UPDATE rooms SET 
+        
       WHERE id = '$room_id'")) {
       echo displayToast('success', 'Room updated successfully.', 'Room Updated');
     } else {

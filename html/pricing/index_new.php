@@ -157,10 +157,10 @@ if($pg_qry->num_rows > 0) {
               <div class="tab-content" id="roomNotesContent">
                 <div role="tabpanel" class="tab-pane fade" id="b_company" aria-labelledby="company-tab">
                   <div class="col-md-12">
-                    <textarea class="form-control" name="company_notes" id="c_company_notes" placeholder="New Note" style="width:100%;height:130px;"></textarea>
-                    <input type="text" name="company_followup_date" id="c_company_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
-                    <label for="c_requested_of" style="float:left;padding:4px;"> requested of </label>
-                    <select name="requested_of" id="c_requested_of" class="form-control" style="width:45%;float:left;">
+                    <textarea class="form-control" name="company_notes" id="b_company_notes" placeholder="New Note" style="width:100%;height:130px;"></textarea>
+                    <input type="text" name="company_followup_date" id="b_company_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
+                    <label for="b_requested_of" style="float:left;padding:4px;"> requested of </label>
+                    <select name="requested_of" id="b_requested_of" class="form-control" style="width:45%;float:left;">
                       <option value="null" selected disabled></option>
                       <?php
                       $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
@@ -220,10 +220,10 @@ if($pg_qry->num_rows > 0) {
                 </div>
                 <div role="tabpanel" class="tab-pane fade" id="b_project" aria-labelledby="project-tab">
                   <div class="col-md-12">
-                    <textarea class="form-control" name="company_notes" id="c_company_notes" placeholder="New Note" style="width:100%;height:130px;"></textarea>
-                    <input type="text" name="company_followup_date" id="c_company_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
-                    <label for="c_requested_of" style="float:left;padding:4px;"> requested of </label>
-                    <select name="requested_of" id="c_requested_of" class="form-control" style="width:45%;float:left;">
+                    <textarea class="form-control" name="project_notes" id="b_project_notes" placeholder="New Note" style="width:100%;height:130px;"></textarea>
+                    <input type="text" name="project_followup_date" id="b_project_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
+                    <label for="b_project_requested_of" style="float:left;padding:4px;"> requested of </label>
+                    <select name="project_requested_of" id="b_project_requested_of" class="form-control" style="width:45%;float:left;">
                       <option value="null" selected disabled></option>
                       <?php
                       $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
@@ -248,7 +248,7 @@ if($pg_qry->num_rows > 0) {
                       </thead>
                       <tbody>
                       <?php
-                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'company_note' AND type_id = $company_id");
+                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'so_inquiry' AND type_id = $company_id");
 
                       if($note_qry->num_rows > 0) {
                         while($note = $note_qry->fetch_assoc()) {
@@ -283,10 +283,10 @@ if($pg_qry->num_rows > 0) {
                 </div>
                 <div role="tabpanel" class="tab-pane fade in active show" id="b_batch" aria-labelledby="batch-tab">
                   <div class="col-md-12">
-                    <textarea class="form-control" name="company_notes" id="c_company_notes" placeholder="New Note" style="width:100%;height:130px;"></textarea>
-                    <input type="text" name="company_followup_date" id="c_company_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
-                    <label for="c_requested_of" style="float:left;padding:4px;"> requested of </label>
-                    <select name="requested_of" id="c_requested_of" class="form-control" style="width:45%;float:left;">
+                    <textarea class="form-control" name="batch_notes" id="b_batch_notes" placeholder="New Note" style="width:100%;height:130px;"></textarea>
+                    <input type="text" name="batch_followup_date" id="b_batch_followup_date" class="form-control" placeholder="Followup Date" style="width:30%;float:left;">
+                    <label for="b_batch_requested_of" style="float:left;padding:4px;"> requested of </label>
+                    <select name="batch_requested_of" id="b_batch_requested_of" class="form-control" style="width:45%;float:left;">
                       <option value="null" selected disabled></option>
                       <?php
                       $user_qry = $dbconn->query('SELECT * FROM user WHERE account_status = 1 ORDER BY name ASC');
@@ -311,7 +311,7 @@ if($pg_qry->num_rows > 0) {
                       </thead>
                       <tbody>
                       <?php
-                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'company_note' AND type_id = $company_id");
+                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'room_note' AND type_id = $company_id");
 
                       if($note_qry->num_rows > 0) {
                         while($note = $note_qry->fetch_assoc()) {
