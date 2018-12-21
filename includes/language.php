@@ -3,8 +3,8 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define('RELEASE_DATE', '12/19/18');
-define('VERSION', '2.6.013');
+define('RELEASE_DATE', '12/21/18');
+define('VERSION', '2.6.014');
 
 // Global definitions
 define('LOGO_TEXT', 'EagleEye ERP'); // The logo text displayed
@@ -54,7 +54,7 @@ define('NAV_EMPLOYEELOGIN', 'Employees'); // List of employees and ability to im
 define('NAV_EMP_OPS', 'Employee Ops'); // List of employees and ability to impersonate
 define('NAV_TASKS', 'Tasks'); // Task list
 define('NAV_VIN', 'VIN'); // VIN management page
-define('NAV_ADD_SO', 'Add SO'); // Adding a SO
+define('NAV_ADD_SO', 'Add Project'); // Adding a SO
 define('NAV_FEEDBACK', 'Feedback'); // Providing feedback
 define('NAV_LOGOUT', 'Logout'); // Logging out completely
 define('NAV_CLOCKOUT', 'Clock Out'); // Clocking out early

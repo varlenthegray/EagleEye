@@ -29,7 +29,6 @@ require '../../includes/header_start.php';
 
 <script>
   $(function() {
-    crmCompany.startListening();
     winMgr.init('crmUID');
     crmMain.widgetInit();
 
@@ -42,15 +41,23 @@ require '../../includes/header_start.php';
     } else {
       // default windows
       winMgr.newAutoWin('crm');
-      winMgr.newAutoWin('quotes');
+      // winMgr.newAutoWin('quotes');
       winMgr.newAutoWin('production');
-      winMgr.newAutoWin('operations');
+      winMgr.newAutoWin('activeOps');
+      winMgr.newAutoWin('pendingOps');
 
       winMgr.setFocus('crm');
     }
 
     winMgr.getWins().attachEvent("onResizeFinish", function(win) {
-      crmCompany.reInitEditor();
+      // crmCompany.reInitEditor();
+
+      // FIXME: This needs to detect if there is a datatable inside of the window... should be able to dig through Win to find out
+      console.log(win.getAttachedObject());
+
+      $.each(crmMain.dataTableContainer, function(index, container) {
+        container.draw(false);
+      });
     });
 
     winMgr.getWins().attachEvent("onMaximize", function(win) {

@@ -3,7 +3,13 @@
 var crmMain = {
   body: null, // the main body to insert ALL CRM data into
 
-  // datatable skeleton setup
+  dataTableContainer: {
+    production_table: null,
+    queue_table: null,
+    active_table: null
+  },
+
+  // datatable skeleton setup for production, active ops, quotes
   dtSkeleton: function(ajaxURL, customDefs) {
     if(customDefs !== '' || customDefs !== null || customDefs !== undefined) {
       return {
@@ -14,7 +20,6 @@ var crmMain = {
         "paging": false,
         scrollY: '30vh',
         scrollCollapse: true,
-        "dom": '<"#quote_header.dt-custom-header">tipr',
         customDefs
       };
     } else {
@@ -26,6 +31,7 @@ var crmMain = {
         "paging": false,
         scrollY: '30vh',
         scrollCollapse: true,
+        searching: false,
         "dom": '<"#quote_header.dt-custom-header">tipr',
         "order": [[0, "asc"]]
       };

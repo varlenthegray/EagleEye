@@ -24,6 +24,6 @@ require_once '../../includes/header_start.php';
 
 <script>
   $(function() {
-    $(".orders_global_table").DataTable(crmMain.dtSkeleton('/ondemand/display_actions.php?action=display_orders'));
+    crmMain.dataTableContainer.production_table = $(".orders_global_table").DataTable(crmMain.dtSkeleton('/ondemand/display_actions.php?action=display_orders'));
   });
 </script>

@@ -13,6 +13,7 @@ $company = $company_qry->fetch_assoc();
   <div class="row sticky no-print" style="background-color:#FFF;z-index:3;top:0;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline save_company" title="Save Changes" data-id="<?php echo $company['id']; ?>"> <i class="fa fa-save fa-2x"></i> </button>
+      <button class="btn waves-effect btn-primary-outline add_project" title="Add Project" data-id="<?php echo $company['id']; ?>"> <i class="fa fa-plus-circle fa-2x"></i> </button>
     </div>
   </div>
 

@@ -106,11 +106,11 @@ var winMgr = {
         'attachObj': null,
         'ajaxURL': '/html/windows/crm.php'
       },
-      'quotes': {
+      'pendingOps': {
         'position': 2,
-        'windowTitle': 'Quotes',
+        'windowTitle': 'Pending Operations',
         'attachObj': null,
-        'ajaxURL': '/html/windows/quotes.php'
+        'ajaxURL': '/html/windows/pending_operations.php'
       },
       'production': {
         'position': 3,
@@ -118,11 +118,17 @@ var winMgr = {
         'attachObj': null,
         'ajaxURL': '/html/windows/production.php'
       },
-      'operations': {
+      'activeOps': {
         'position': 4,
         'windowTitle': 'Active Operations',
         'attachObj': null,
         'ajaxURL': '/html/windows/active_operations.php'
+      },
+      'quotes': {
+        // 'position': 2,
+        'windowTitle': 'Quotes',
+        'attachObj': null,
+        'ajaxURL': '/html/windows/quotes.php'
       },
       'calendar': {
         // position is skipped

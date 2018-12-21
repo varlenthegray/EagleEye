@@ -5,15 +5,24 @@ require_once '../../includes/header_start.php';
 <div style="width:100%;height:100%;overflow:hidden;">
   <div class="col-md-12" style="min-height:42vh;">
     <table class="table table-striped table-bordered active_ops_global_table" width="100%">
+      <colgroup>
+        <col width="115px">
+        <col width="35px">
+        <col width="125px">
+        <col width="125px">
+        <col width="225px">
+        <col width="100px">
+        <col width="90px">
+      </colgroup>
       <thead>
       <tr>
-        <th style="min-width:20px;">&nbsp;</th>
-        <th width="35px">SO#</th>
-        <th width="125px">Room</th>
-        <th width="125px">Department</th>
-        <th width="225px">Operation</th>
-        <th width="100px">Activated At</th>
-        <th width="90px">Time In</th>
+        <th>&nbsp;</th>
+        <th>SO#</th>
+        <th>Room</th>
+        <th>Department</th>
+        <th>Operation</th>
+        <th>Activated At</th>
+        <th>Time In</th>
       </tr>
       </thead>
       <tbody id="active_ops_table"></tbody>
@@ -23,12 +32,21 @@ require_once '../../includes/header_start.php';
 
 <script>
   $(function() {
-    // active operations has a custom sort order and column definition setup
-    let custDefs = {
-      "columnDefs": [ { "targets": [0], "orderable": false, className: "nowrap" } ],
-      "order": [[1, "desc"]]
-    };
+    $("#active_header").html("<h4>Operations (Active) for <?php echo $_SESSION['shop_user']['name']; ?></h4>");
 
-    $(".active_ops_global_table").DataTable(crmMain.dtSkeleton('/ondemand/display_actions.php?action=display_ind_active_jobs', custDefs));
+    crmMain.dataTableContainer.active_table = $(".active_ops_global_table").DataTable({
+      "ajax": "/ondemand/display_actions.php?action=display_ind_active_jobs",
+      "createdRow": function(row,data,dataIndex) {
+        $(row).addClass("cursor-hand view_so_info").attr('data-project-name', data.project_name);
+      },
+      "paging": false,
+      scrollY: '31.5vh',
+      scrollCollapse: true,
+      "dom": '<"#active_header.dt-custom-header">tipr',
+      "columnDefs": [
+        {"targets": [0], "orderable": false, className: "nowrap"}
+      ],
+      "order": [[1, "desc"]]
+    });
   });
 </script>

@@ -7,9 +7,10 @@
 
       <div class="col-md-12 m-b-10 widget_box" id="widget_box" style="display:none;">
         <div class="col-md-3 cursor-hand widget-item widget-active" data-window="crm"><i class="fa fa-book fa-3x"></i><h5>CRM</h5></div>
-        <div class="col-md-3 cursor-hand widget-item widget-active" data-window="quotes"><i class="fa fa-pencil-square-o fa-3x"></i><h5>Quotes</h5></div>
         <div class="col-md-3 cursor-hand widget-item widget-active" data-window="production"><i class="fa fa-sitemap fa-3x"></i><h5>Production</h5></div>
-        <div class="col-md-3 cursor-hand widget-item widget-active" data-window="operations"><i class="fa fa-check fa-3x"></i><h5>Operations</h5></div>
+        <div class="col-md-3 cursor-hand widget-item widget-active" data-window="pendingOps"><i class="fa fa-hourglass-start fa-3x"></i><h5>Pend. Ops</h5></div>
+        <div class="col-md-3 cursor-hand widget-item widget-active" data-window="activeOps"><i class="fa fa-hourglass-end fa-3x"></i><h5>Act. Ops</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="quotes"><i class="fa fa-pencil-square-o fa-3x"></i><h5>Quotes</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="reports"><i class="fa fa-inbox fa-3x"></i><h5>Reports</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="calendar"><i class="fa fa-calendar fa-3x"></i><h5>Calendar</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="inventory"><i class="fa fa-barcode fa-3x"></i><h5>Inventory</h5></div>
@@ -32,7 +33,7 @@
       <div class="col-md-12">
         <nav class="vert-nav">
           <ul>
-            <li><a href="#"><i class="fa fa-fw fa-user-plus"></i> Add Company</a></li>
+            <li><a href="#" class="nav_add_company"><i class="fa fa-fw fa-user-plus"></i> Add Company</a></li>
             <li><a href="#" class="nav_add_contact"><i class="fa fa-fw fa-plus-circle"></i> Add Contact</a></li>
 <!--            <li><a href="#" class="crm_view_company_list"><i class="fa fa-fw fa-building-o"></i> Company List</a></li>-->
           </ul>

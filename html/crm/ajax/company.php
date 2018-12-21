@@ -54,4 +54,44 @@ switch($_REQUEST['action']) {
     }
 
     break;
+  case 'addProject':
+    parse_str($_REQUEST['formInfo'], $info);
+
+    foreach($info AS $k => $v) {
+      $info[$k] = sanitizeInput($v);
+    }
+
+    if($dbconn->query("INSERT INTO sales_order (company_id, so_num, project_name, project_addr, project_city, project_state, project_zip, project_landline) VALUES ({$info['company_id']}, '{$info['project_num']}', '{$info['project_name']}', '{$info['project_addr']}', '{$info['project_city']}', '{$info['project_state']}', '{$info['project_zip']}', '{$info['project_landline']}');")) {
+      $op_qry = $dbconn->query("SELECT * FROM operations WHERE op_id != '000' AND job_title NOT LIKE '%N/A%' ORDER BY op_id;");
+
+      $ind_bracket = array();
+
+      $starting_ops = array();
+
+      while ($op = $op_qry->fetch_assoc()) {
+        if (empty($starting_ops[$op['bracket']])) {
+          $starting_ops[$op['bracket']] = $op['id'];
+        }
+
+        $ind_bracket[] = $op['id'];
+      }
+
+      $ind_bracket_final = json_encode($ind_bracket);
+
+      $dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, individual_bracket_buildout, order_status, sales_bracket, sample_bracket,
+      preproduction_bracket, doordrawer_bracket, main_bracket, custom_bracket, install_bracket, shipping_bracket, sales_published) 
+      VALUES ('{$info['project_num']}', 'A', 'Intake (Auto-Generated)', 'C', '$ind_bracket_final', '#', '{$starting_ops['Sales']}', '{$starting_ops['Sample']}', 
+      '{$starting_ops['Pre-Production']}', '{$starting_ops['Drawer & Doors']}', '{$starting_ops['Main']}', '{$starting_ops['Custom']}', 
+      '{$starting_ops['Installation']}', '{$starting_ops['Shipping']}', TRUE);");
+
+      $room_id = $dbconn->insert_id;
+
+      $dbconn->query("INSERT INTO op_queue (room_id, operation_id, created) VALUES ('$room_id', '{$starting_ops['Sales']}', UNIX_TIMESTAMP())");
+
+      echo displayToast('success', "Successfully created project {$info['project_num']}", 'Project Created');
+    } else {
+      dbLogSQLErr($dbconn);
+    }
+
+    break;
 }

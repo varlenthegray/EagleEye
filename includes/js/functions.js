@@ -27,8 +27,17 @@ var globalFunctions = {
     });
   },
   updateOpQueue: function() {
-    queue_table.ajax.url("/ondemand/display_actions.php?action=display_ind_job_queue&queue=" + $('#viewing_queue').val()).load(null,false);
-    active_table.ajax.reload(null,false);
+    if(typeof queue_table !== 'undefined') {
+      queue_table.ajax.url("/ondemand/display_actions.php?action=display_ind_job_queue&queue=" + $('#viewing_queue').val()).load(null,false);
+    } else {
+      crmMain.dataTableContainer.queue_table.ajax.url("/ondemand/display_actions.php?action=display_ind_job_queue&queue=" + $('#viewing_queue').val()).load(null,false);
+    }
+
+    if(typeof active_table !== 'undefined') {
+      active_table.ajax.reload(null,false);
+    } else {
+      crmMain.dataTableContainer.active_table.ajax.reload(null,false);
+    }
   },
   loadPage: function(page) {
     var mainBody = $("#main_body");

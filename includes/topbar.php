@@ -74,7 +74,7 @@ $title_name = 'Dashboard';
           </div>
           <li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>
           <?php
-          echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>" . NAV_ADD_SO . "</span></a></li>" : null;
+          echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li class='nav_add_so'><a><i class='zmdi zmdi-account-add m-r-5'></i><span>" . NAV_ADD_SO . "</span></a></li>" : null;
           //echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li id='nav_quick_add'><a><i class='zmdi zmdi-plus-circle-o m-r-5'></i><span>" . NAV_QUICKADD . "</span></a></li>" : null;
 
           echo ($_SESSION['userInfo']['account_type'] !== '6') ? "<li class='nav-separator'><span></span></li>" : null;

@@ -1084,7 +1084,7 @@ require 'includes/header_start.php';
       <?php } ?>
 
       <?php if($bouncer->validate('add_so')) { ?>
-      .on("click", "#nav_add_so", function() {
+      .on("click", ".nav_add_so", function() {
         $.post('/html/new_customer.php', function(data) {
           $("#modalGlobal").html(data).modal('show');
         });

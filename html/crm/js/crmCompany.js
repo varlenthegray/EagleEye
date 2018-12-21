@@ -1,3 +1,5 @@
+/*global unsaved:true*/
+
 var crmCompany = {
   editor: null,
 
@@ -31,6 +33,14 @@ var crmCompany = {
 
       $.post("/html/crm/ajax/company.php?action=saveCompany", {formInfo: formInfo}, function(data) {
         $("body").append(data);
+      });
+    });
+
+    $(".add_project").click(function() {
+      let company_id = $(this).attr('data-id');
+
+      $.post('/html/modals/add_project.php', {id: company_id}, function(data) {
+        $("#modalGlobal").html(data).modal('show');
       });
     });
   },
@@ -69,6 +79,19 @@ var crmCompany = {
       })
       .on("click", ".crm_view_company_list", function() {
         crmCompany.getCompanyList();
+      })
+      .on("click", "#modalAddProjectSave", function() {
+        console.log("Click add project");
+
+        let info = $("#add_project_form").serialize();
+
+        $.post("/html/crm/ajax/company.php?action=addProject", {formInfo: info}, function(data) {
+          $("body").append(data);
+
+          $("#modalGlobal").modal('hide');
+        });
+
+        unsaved = false;
       })
     ;
   },
