@@ -106,11 +106,11 @@ var winMgr = {
         'attachObj': null,
         'ajaxURL': '/html/windows/crm.php'
       },
-      'pendingOps': {
+      'activeOps': {
         'position': 2,
-        'windowTitle': 'Pending Operations',
+        'windowTitle': 'Active Operations',
         'attachObj': null,
-        'ajaxURL': '/html/windows/pending_operations.php'
+        'ajaxURL': '/html/windows/active_operations.php'
       },
       'production': {
         'position': 3,
@@ -118,11 +118,11 @@ var winMgr = {
         'attachObj': null,
         'ajaxURL': '/html/windows/production.php'
       },
-      'activeOps': {
+      'pendingOps': {
         'position': 4,
-        'windowTitle': 'Active Operations',
+        'windowTitle': 'Pending Operations',
         'attachObj': null,
-        'ajaxURL': '/html/windows/active_operations.php'
+        'ajaxURL': '/html/windows/pending_operations.php'
       },
       'quotes': {
         // 'position': 2,

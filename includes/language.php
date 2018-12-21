@@ -4,7 +4,7 @@
  */
 // Release Date
 define('RELEASE_DATE', '12/21/18');
-define('VERSION', '2.6.014');
+define('VERSION', '2.6.015');
 
 // Global definitions
 define('LOGO_TEXT', 'EagleEye ERP'); // The logo text displayed
