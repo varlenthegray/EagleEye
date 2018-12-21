@@ -6,7 +6,7 @@ require_once '../../includes/header_start.php';
   <div class="col-md-12" style="min-height:42vh;">
     <table class="table table-striped table-bordered active_ops_global_table" width="100%">
       <colgroup>
-        <col width="115px">
+        <col width="120px">
         <col width="35px">
         <col width="125px">
         <col width="125px">

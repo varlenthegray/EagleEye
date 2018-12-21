@@ -300,7 +300,7 @@ require 'includes/header_start.php';
 
     // if there's a queue update
     socket.on("catchQueueUpdate", function() {
-      if(currentPage === 'dashboard' || currentPage === 'eng_report') {
+      if(currentPage === 'dashboard' || currentPage === 'eng_report' || currentPage === 'crm/index') {
         globalFunctions.updateOpQueue();
         globalFunctions.updateBreakButton();
       }
@@ -710,9 +710,9 @@ require 'includes/header_start.php';
 
         if(opFull === 'NB00: Non-Billable' || opFull === 'TF00: On The Fly') {
           $.post("/ondemand/op_actions.php?action=get_start_info", {opID: op_id, op: opFull}, function(data) {
-            $("#modalStartJob").html(data);
+            $("#modalGlobal").html(data);
           }).done(function() {
-            $("#modalStartJob").modal();
+            $("#modalGlobal").modal();
           }).fail(function() { // if we're receiving a header error
             $("body").append(data); // echo an error and log it
           });
@@ -741,7 +741,7 @@ require 'includes/header_start.php';
 
               socket.emit("updateQueue");
 
-              $("#modalStartJob").modal('hide');
+              $("#modalGlobal").modal('hide');
             });
           } else { // otherwise, the notes is less than 3 and they need to enter notes in
             displayToast("error", "Enter notes in before continuing (more than 3 characters).", "Notes Required");
@@ -760,7 +760,7 @@ require 'includes/header_start.php';
 
             $('body').append(data);
 
-            $("#modalStartJob").modal('hide');
+            $("#modalGlobal").modal('hide');
           });
         }
 
@@ -781,7 +781,7 @@ require 'includes/header_start.php';
         op_id = $(this).attr("id");
 
         $.post("/ondemand/op_actions.php?action=get_pause_info", {opID: op_id}, function(data) {
-          $("#modalUpdateJob").html(data).modal();
+          $("#modalGlobal").html(data).modal();
         });
       })
       .on("click", "#pause_op", function() {
@@ -789,7 +789,7 @@ require 'includes/header_start.php';
           socket.emit("updateQueue");
 
           $("body").append(data);
-          $("#modalUpdateJob").modal('hide');
+          $("#modalGlobal").modal('hide');
         });
       })
 
@@ -799,7 +799,7 @@ require 'includes/header_start.php';
         op_id = $(this).attr("id");
 
         $.post("/ondemand/op_actions.php?action=get_stop_info", {opID: op_id}, function(data) {
-          $("#modalUpdateJob").html(data).modal();
+          $("#modalGlobal").html(data).modal();
         });
 
         unsaved = false;
@@ -838,13 +838,11 @@ require 'includes/header_start.php';
           contentType: false,
           success: function(data) {
             $('body').append(data);
-            $("#modalUpdateJob").modal('hide');
+            $("#modalGlobal").modal('hide');
 
             socket.emit("updateQueue");
           }
         });
-
-
 
         unsaved = false;
       })

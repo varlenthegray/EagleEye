@@ -276,7 +276,7 @@ HEREDOC;
         if($op_queue_qry->num_rows === 1) {
             $op_queue = $op_queue_qry->fetch_assoc();
 
-            $header = "Partially Complete {$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']} {$op_queue['op_id']}: {$op_queue['job_title']}";
+            $header = "Partially Complete {$op_queue['so_parent']}{$op_queue['room']}-{$op_queue['iteration']} {$op_queue['job_title']}";
 
             echo <<<HEREDOC
         <div class="modal-dialog" role="document">
