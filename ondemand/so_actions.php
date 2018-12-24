@@ -152,7 +152,7 @@ switch($_REQUEST['action']) {
     $note_id = null;
     $inquiry_id = null;
 
-    $so_num = sanitizeInput($_REQUEST['so_num']);
+    $so_id = sanitizeInput($_REQUEST['so_num']);
 
     parse_str($_REQUEST['formInfo'], $info);
 
@@ -160,8 +160,10 @@ switch($_REQUEST['action']) {
       $info[$k] = sanitizeInput($v);
     }
 
-    $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$so_num'");
+    $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE id = $so_id");
     $so = $so_qry->fetch_assoc();
+
+    $so_num = $so['so_num'];
 
     $changed[] = whatChanged($info['project_name'], $so['project_name'], 'Project Name');
     $changed[] = whatChanged($info['project_addr'], $so['project_addr'], 'Project Address');
@@ -201,7 +203,7 @@ switch($_REQUEST['action']) {
     }
 
     if($dbconn->query("UPDATE sales_order SET project_name = '{$info['project_name']}', project_addr = '{$info['project_addr']}', project_city = '{$info['project_city']}',
-    project_state = '{$info['project_state']}', project_zip = '{$info['project_zip']}', project_landline = '{$info['project_landline']}', ship_cubes = 0 WHERE so_num = '$so_num'")) {
+    project_state = '{$info['project_state']}', project_zip = '{$info['project_zip']}', project_landline = '{$info['project_landline']}' WHERE so_num = '$so_num'")) {
       if(!empty(array_values(array_filter($changed)))) {
         $c_note = '<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
         $c_note .= implode(', ', array_values(array_filter($changed)));
