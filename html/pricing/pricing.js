@@ -281,6 +281,10 @@ var pricingFunction = {
     //// Display the global room detail charges
     $("#itemListGlobalRoomDetails").text(global_room_charges.formatMoney());
 
+    if($("#jobsite_delivery").is(":checked") && !$("#multi_room_ship").is(":checked")) {
+      global_room_charges += 150.00;
+    }
+
     let subtotal = netPrice + global_room_charges;
 
     // TODO: We're not adding credit card here right now, we need to add that in
@@ -1340,6 +1344,33 @@ $("body")
     });
 
     unsaved = false;
+  })
+
+  .on("change", "#jobsite_delivery", function() {
+    let jobnode = cabinetList.fancytree("getTree").getNodeByKey('jobsitedelivery');
+
+    if(jobnode !== null) {
+      jobnode.remove();
+    }
+
+    if($(this).is(":checked")) {
+      cabinetList.fancytree("getRootNode").addChildren({
+        qty: 1,
+        title: 'GLOBALNOTE',
+        price: 0.00,
+        key: 'jobsitedelivery',
+        icon: 'fa fa-truck',
+        name: 'Jobsite Delivery',
+        sqft: 0,
+        singlePrice: 0.00,
+        cabinet: 0,
+        customNote: 0
+      });
+
+      $("#itemListJobsiteDelivery").parent().show();
+    } else {
+      $("#itemListJobsiteDelivery").parent().hide();
+    }
   })
 
   /*.on("click", ".option", function(e) {

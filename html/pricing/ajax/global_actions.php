@@ -658,12 +658,14 @@ switch($_REQUEST['action']) {
     $requested_sample = sanitizeInput($info['requested_sample']);
     $sample_reference = sanitizeInput($info['sample_reference']);
     $multi_room_ship = sanitizeInput($info['multi_room_ship']);
+    $jobsite_delivery = sanitizeInput($info['jobsite_delivery']);
     //</editor-fold>
 
     $seen_approved = empty($seen_approved) ? 0 : 1;
     $unseen_approved = empty($unseen_approved) ? 0 : 1;
     $requested_sample = empty($requested_sample) ? 0 : 1;
     $multi_room_ship = empty($multi_room_ship) ? 0 : 1;
+    $jobsite_delivery = empty($jobsite_delivery) ? 0 : 1;
 
     //<editor-fold desc="What's Changed">
     $changed[] = whatChanged($species_grade, $room_info['species_grade'], 'Species/Grade');
@@ -696,6 +698,7 @@ switch($_REQUEST['action']) {
     $changed[] = whatChanged($requested_sample, $room_info['requested_sample'], 'Sample Requested');
     $changed[] = whatChanged($sample_reference, $room_info['sample_reference'], 'Sample Reference');
     $changed[] = whatChanged($multi_room_ship, $room_info['multi_room_ship'], 'Multi-room Shipping');
+    $changed[] = whatChanged($jobsite_delivery, $room_info['jobsite_delivery'], 'Jobsite Delivery');
     //</editor-fold>
 
     //<editor-fold desc="Variable assignment">
@@ -892,7 +895,8 @@ HEREDOC;
         payment_deposit = $deposit_received, 
         payment_del_ptl = $ptl_del,
         payment_final = $final_payment,
-        ship_cubes = '$shipping_cubes'
+        ship_cubes = '$shipping_cubes',
+        jobsite_delivery = $jobsite_delivery
       WHERE id = '$room_id'")) {
       echo displayToast('success', 'Room updated successfully.', 'Room Updated');
     } else {

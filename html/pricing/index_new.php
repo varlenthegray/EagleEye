@@ -19,8 +19,12 @@ while($vin = $vin_qry->fetch_assoc()) {
 }
 //</editor-fold>
 
-$room_qry = $dbconn->query("SELECT r.*, so.dealer_code FROM rooms r LEFT JOIN sales_order so on r.so_parent = so.so_num WHERE r.id = $room_id ORDER BY room, iteration ASC;");
+$room_qry = $dbconn->query("SELECT r.*, so.dealer_code, so.company_id, so.project_addr, so.project_city, so.project_state, so.project_zip
+  FROM rooms r LEFT JOIN sales_order so on r.so_parent = so.so_num WHERE r.id = $room_id ORDER BY room, iteration ASC;");
 $room = $room_qry->fetch_assoc();
+
+$company_qry = $dbconn->query("SELECT * FROM contact_company WHERE id = {$room['company_id']}");
+$company = $company_qry->fetch_assoc();
 
 $dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$room['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();
@@ -403,12 +407,12 @@ if($pg_qry->num_rows > 0) {
           <tr>
             <td>Order Type:</td>
             <td><?php echo getSelect('product_type'); ?></td>
-            <td id="product_type_cost" class="pricing_value"></td>
+            <td></td>
           </tr>
           <tr>
             <td><span id="leadTimeDef">Lead Time:</span></td>
             <td><?php echo getSelect('days_to_ship'); ?></td>
-            <td class="pricing_value"></td>
+            <td></td>
           </tr>
           <tr>
             <td>Order Status:</td>
@@ -428,8 +432,38 @@ if($pg_qry->num_rows > 0) {
           <tr>
             <td>Ship VIA:</td>
             <td><?php echo getSelect('ship_via'); ?></td>
-            <td class="pricing_value"></td>
+            <td></td>
           </tr>
+
+          <?php
+          // determine ship to address
+          if($room['jobsite_delivery']) {
+            $ship_addr = $room['project_addr'];
+            $ship_city = $room['project_city'];
+            $ship_state = $room['project_state'];
+            $ship_zip = $room['project_zip'];
+          } else {
+            if(empty($room['ship_addr'])) { // batch doesn't have an address, so lets move up to company
+              if(empty($company['shipping_address'])) { // company doesn't have a shipping address, default to company address
+                $ship_addr = $company['address'];
+                $ship_city = $company['city'];
+                $ship_state = $company['state'];
+                $ship_zip = $company['zip'];
+              } else { // company has a shipping address
+                $ship_addr = $company['shipping_address'];
+                $ship_city = $company['shipping_city'];
+                $ship_state = $company['shipping_state'];
+                $ship_zip = $company['shipping_zip'];
+              }
+            } else { // batch has an address
+              $ship_addr = $room['ship_addr'];
+              $ship_city = $room['ship_city'];
+              $ship_state = $room['ship_state'];
+              $ship_zip = $room['ship_zip'];
+            }
+          }
+          ?>
+
           <tr rowspan="3">
             <td style="vertical-align:top !important;">Ship To:</td>
             <td colspan="2">
@@ -437,6 +471,10 @@ if($pg_qry->num_rows > 0) {
               <input type="text" style="width:75%;" class="c_input static_width align_left" placeholder="Address" name="ship_to_address" value="<?php echo $ship_addr; ?>">
               <input type="text" style="width:50%;" class="c_input static_width align_left pull-left" placeholder="City" name="ship_to_city" value="<?php echo $ship_city; ?>"> <input type="text" style="width:15px;margin-left:10px;" class="static_width align_left c_input pull-left" name="ship_to_state" value="<?php echo $ship_state; ?>"> <input type="text" style="width:51px;margin-left:10px;" class="static_width align_left c_input pull-left" placeholder="ZIP" name="ship_to_zip" value="<?php echo $ship_zip; ?>">
             </td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td colspan="2"><input type="checkbox" value="1" name="jobsite_delivery" id="jobsite_delivery" <?php echo $room['jobsite_delivery'] ? 'checked' : null; ?>> <label for="jobsite_delivery">Jobsite Delivery</label></td>
           </tr>
           <tr>
             <td>&nbsp;</td>
@@ -783,6 +821,11 @@ if($pg_qry->num_rows > 0) {
               <td class="total_text">Global: Room Details/Shipping:</td>
               <td class="total_text">&nbsp;</td>
               <td class="text-md-right total_text" id="itemListGlobalRoomDetails">$0.00</td>
+            </tr>
+            <tr class="border_thin_bottom" style="<?php echo $room['jobsite_delivery'] ? null : 'display:none;' ?>">
+              <td class="total_text">Jobsite Delivery:</td>
+              <td class="total_text">&nbsp;</td>
+              <td class="text-md-right total_text" id="itemListJobsiteDelivery">$150.00</td>
             </tr>
             <tr class="border_thin_bottom">
               <td class="total_text">Credit Card:</td>
