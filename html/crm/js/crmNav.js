@@ -85,6 +85,8 @@ var crmNav = {
 
           crmNav.navKeys = keys;
 
+          console.log(keys); // schrodinger's code; without this batch doesn't always load...
+
           $.post("/html/crm/templates/crm_view.php", {'keys': JSON.stringify(keys)}, function(data) { // pull the data for the main tab of the CRM
             crmMain.body.html(data); // insert it into the body
           });
