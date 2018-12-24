@@ -112,7 +112,7 @@ if($pg_qry->num_rows > 0) {
 </script>
 
 <div class="container-fluid" style="width:100%;">
-  <div class="row sticky no-print" style="background-color:#FFF;z-index:3;top:0;padding:4px;">
+  <div class="row sticky no-print" style="background-color:#FFF;z-index:3;top:21px;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline" title="Save Changes" id="save" <?php echo $submit_disabled; ?>> <i class="fa fa-save fa-2x"></i> </button>
       <button class="btn waves-effect btn-success-outline" title="Submit Quote" id="submit_for_quote_BROKEN" <?php echo $submit_disabled; ?>> <i class="fa fa-paper-plane-o fa-2x"></i> </button>

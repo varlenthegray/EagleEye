@@ -47,7 +47,7 @@ $room_disabled = empty($keys[2]) ? 'disabled' : null;
 
   <div class="row">
     <div class="col-md-12 m-t-10">
-      <ul class="nav nav-tabs" id="crmViewGlobal" role="tablist">
+      <ul class="nav nav-tabs sticky" id="crmViewGlobal" role="tablist" style="background-color:#FFF;z-index:2;top:0;">
         <li class="nav-item m-r-5" style="font-size:1.2em;"><strong>View:</strong></li>
         <li class="nav-item">
           <a class="nav-link tab-ajax active" data-ajax="/html/crm/templates/company.php?company_id=<?php echo $company['id']; ?>" data-toggle="tab"

@@ -25,7 +25,7 @@ $so = $so_qry->fetch_assoc();
 </style>
 
 <div class="container-fluid">
-  <div class="row sticky no-print" style="background-color:#FFF;z-index:3;top:0;padding:4px;">
+  <div class="row sticky no-print" style="background-color:#FFF;z-index:3;top:21px;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline save_so" title="Save Changes" data-sonum="<?php echo $so['so_num']; ?>"> <i class="fa fa-save fa-2x"></i> </button>
     </div>
