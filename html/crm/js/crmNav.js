@@ -64,33 +64,29 @@ var crmNav = {
         }
       },
       activate: function(event, data) {
-        let thisClick = $(this);
+        let node = data.node; // capture the node
+
+        crmCompany.getCompany($(this).attr("data-id")); // get the company information for that listing and display it
+
+        /********************************************************
+         * Begin management of clicking on SO or Room
+         *******************************************************/
+        crmNav.activatedType = node.data.keyType;
+
+        let keyPath = node.getKeyPath();
+        let keys = keyPath.substring(1, keyPath.length).split('/');
+
+        crmNav.companyID = keys[0];
+        active_so_num = keys[1];
+        active_room_id = keys[2];
+
+        crmNav.navKeys = keys;
 
         setTimeout(function() {
-          let node = data.node; // capture the node
-
-          crmCompany.getCompany(thisClick.attr("data-id")); // get the company information for that listing and display it
-
-          /********************************************************
-           * Begin management of clicking on SO or Room
-           *******************************************************/
-          crmNav.activatedType = node.data.keyType;
-
-          let keyPath = node.getKeyPath();
-          let keys = keyPath.substring(1, keyPath.length).split('/');
-
-          crmNav.companyID = keys[0];
-          active_so_num = keys[1];
-          active_room_id = keys[2];
-
-          crmNav.navKeys = keys;
-
-          console.log(keys); // schrodinger's code; without this batch doesn't always load...
-
           $.post("/html/crm/templates/crm_view.php", {'keys': JSON.stringify(keys)}, function(data) { // pull the data for the main tab of the CRM
             crmMain.body.html(data); // insert it into the body
           });
-        }, 250);
+        }, 50);
       },
       expand: function() {
         crmNav.checkFilters();
