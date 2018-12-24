@@ -144,7 +144,7 @@ if($pg_qry->num_rows > 0) {
     <div class="row">
       <div class="col-md-12 m-t-10">
         <!--<editor-fold desc="Notes">-->
-        <div class="col-md-6 col-md-offset-3 sticky no-print" style="top:38px;border:1px solid #000;">
+        <div class="col-md-6 sticky no-print" style="top:38px;border:1px solid #000;">
           <div class="row">
             <div class="col-md-12">
               <ul class="nav nav-tabs m-b-10 m-t-10" id="companyNotes" role="tablist">
@@ -357,7 +357,7 @@ if($pg_qry->num_rows > 0) {
     </div>
 
     <div class="row">
-      <div class="col-md-3 col-md-offset-3">
+      <div class="col-md-3">
         <h5>Payment</h5>
 
         <?php if($bouncer->validate('view_accounting')) { ?>
@@ -397,7 +397,7 @@ if($pg_qry->num_rows > 0) {
             <th colspan="3">&nbsp;</th>
           </tr>
           <tr>
-            <td>Dealer PO:</td>
+            <td>Dealer PO/Batch:</td>
             <td colspan="2"><input type="text" class="c_input border_thin_bottom" id="room_name" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
           </tr>
           <tr>

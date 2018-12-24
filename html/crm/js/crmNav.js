@@ -64,27 +64,31 @@ var crmNav = {
         }
       },
       activate: function(event, data) {
-        let node = data.node; // capture the node
+        let thisClick = $(this);
 
-        crmCompany.getCompany($(this).attr("data-id")); // get the company information for that listing and display it
+        setTimeout(function() {
+          let node = data.node; // capture the node
 
-        /********************************************************
-         * Begin management of clicking on SO or Room
-         *******************************************************/
-        crmNav.activatedType = node.data.keyType;
+          crmCompany.getCompany(thisClick.attr("data-id")); // get the company information for that listing and display it
 
-        let keyPath = node.getKeyPath();
-        let keys = keyPath.substring(1, keyPath.length).split('/');
+          /********************************************************
+           * Begin management of clicking on SO or Room
+           *******************************************************/
+          crmNav.activatedType = node.data.keyType;
 
-        crmNav.companyID = keys[0];
-        active_so_num = keys[1];
-        active_room_id = keys[2];
+          let keyPath = node.getKeyPath();
+          let keys = keyPath.substring(1, keyPath.length).split('/');
 
-        crmNav.navKeys = keys;
+          crmNav.companyID = keys[0];
+          active_so_num = keys[1];
+          active_room_id = keys[2];
 
-        $.post("/html/crm/templates/crm_view.php", {'keys': JSON.stringify(keys)}, function(data) { // pull the data for the main tab of the CRM
-          crmMain.body.html(data); // insert it into the body
-        });
+          crmNav.navKeys = keys;
+
+          $.post("/html/crm/templates/crm_view.php", {'keys': JSON.stringify(keys)}, function(data) { // pull the data for the main tab of the CRM
+            crmMain.body.html(data); // insert it into the body
+          });
+        }, 250);
       },
       expand: function() {
         crmNav.checkFilters();

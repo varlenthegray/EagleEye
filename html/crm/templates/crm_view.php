@@ -51,20 +51,20 @@ $room_disabled = empty($keys[2]) ? 'disabled' : null;
         <li class="nav-item m-r-5" style="font-size:1.2em;"><strong>View:</strong></li>
         <li class="nav-item">
           <a class="nav-link tab-ajax active" data-ajax="/html/crm/templates/company.php?company_id=<?php echo $company['id']; ?>" data-toggle="tab"
-             id="home-tab" href="#crmCompany" role="tab" aria-controls="home" aria-expanded="true"><i class="fa fa-building-o m-r-5"></i> Company</a>
+             id="company-tab" href="#crmCompany" role="tab" aria-controls="home" aria-expanded="true"><i class="fa fa-building-o m-r-5"></i> Company</a>
         </li>
         <li class="nav-item">
           <a class="nav-link tab-ajax <?php echo $project_disabled; ?>" data-ajax="/html/crm/templates/project_results.php?so_num=<?php echo $project['so_num']; ?>&company_id=<?php echo $company['id']; ?>" data-toggle="tab"
-             id="project-tab" href="#crmProject" role="tab" aria-controls="profile"><i class="fa fa-folder-o m-r-5"></i> Project</a>
+             id="project-tab" href="#crmProject" role="tab" aria-controls="project"><i class="fa fa-folder-o m-r-5"></i> Project</a>
         </li>
         <li class="nav-item ">
           <a class="nav-link tab-ajax <?php echo $room_disabled; ?>" data-ajax="/html/pricing/index_new.php?room_id=<?php echo $room['id']; ?>" data-toggle="tab"
-             id="batch-tab" data-toggle="tab" href="#crmBatch" role="tab" aria-controls="profile"><i class="fa fa-archive m-r-5"></i> Batch</a>
+             id="batch-tab" data-toggle="tab" href="#crmBatch" role="tab" aria-controls="batch"><i class="fa fa-archive m-r-5"></i> Batch</a>
         </li>
       </ul>
       <div class="tab-content" id="crmViewGlobalContent">
-        <div class="tab-pane fade in active show" id="crmCompany" role="tabpanel" aria-labelledby="home-tab"></div>
-        <div class="tab-pane fade" id="crmProject" role="tabpanel" aria-labelledby="profile-tab"></div>
+        <div class="tab-pane fade in active show" id="crmCompany" role="tabpanel" aria-labelledby="company-tab"></div>
+        <div class="tab-pane fade" id="crmProject" role="tabpanel" aria-labelledby="project-tab"></div>
         <div class="tab-pane fade" id="crmBatch" role="tabpanel" aria-labelledby="batch-tab"></div>
       </div>
     </div>
@@ -88,7 +88,17 @@ $room_disabled = empty($keys[2]) ? 'disabled' : null;
       return false;
     });
 
-    $("#home-tab").trigger("click");
+    switch(crmNav.activatedType) {
+      case 'cID':
+        $("#company-tab").trigger("click");
+        break;
+      case 'soID':
+        $("#project-tab").trigger("click");
+        break;
+      case 'rID':
+        $("#batch-tab").trigger("click");
+        break;
+    }
 
     // crmCompany.initEditor();
   });

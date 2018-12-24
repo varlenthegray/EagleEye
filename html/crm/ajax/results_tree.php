@@ -3,6 +3,8 @@ require '../../../includes/header_start.php';
 
 //outputPHPErrs();
 
+$strip = $_REQUEST['strip'];
+
 $find = sanitizeInput($_REQUEST['search']);
 
 $qry = $dbconn->query("SELECT
@@ -27,6 +29,9 @@ $qry = $dbconn->query("SELECT
     OR LOWER(so.project_mgr) LIKE LOWER('%$find%') OR LOWER(so.name_1) LIKE LOWER('%$find%') OR LOWER(so.name_2) LIKE LOWER('%$find%') 
     OR LOWER(d.dealer_name) LIKE LOWER('%$find%'))
   ORDER BY d.dealer_name, so.so_num, r.room, r.iteration ASC;");
+
+$so_count_qry = $dbconn->query("SELECT id FROM sales_order WHERE so_num = '$find'");
+$so_expanded = $so_count_qry->num_rows === 1;
 
 $result = [];
 $output = [];
@@ -112,12 +117,14 @@ foreach($result AS $ans) {
     $output[$pd]['folder'] = 'true';
     $output[$pd]['key'] = $ans['cID'];
     $output[$pd]['keyType'] = 'cID';
+    $output[$pd]['expanded'] = $so_expanded;
 
     // establish the first SO within that dealer
     $output[$pd]['children'][$ps]['title'] = "<strong>{$ans['so_num']} - {$ans['project_name']}</strong>";
     $output[$pd]['children'][$ps]['key'] = $ans['soID'];
     $output[$pd]['children'][$ps]['keyType'] = 'soID';
     $output[$pd]['children'][$ps]['altData'] = $altData;
+    $output[$pd]['children'][$ps]['expanded'] = $so_expanded;
 
     // room within the SO
     $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
@@ -126,6 +133,7 @@ foreach($result AS $ans) {
     $output[$pd]['children'][$ps]['children'][$pr]['altData'] = $altData;
     $output[$pd]['children'][$ps]['children'][$pr]['orderStatus'] = $ans['order_status'];
     $output[$pd]['children'][$ps]['children'][$pr]['icon'] = $icon;
+    $output[$pd]['children'][$ps]['children'][$pr]['expanded'] = $so_expanded;
 
     $prevSO = $ans['soID']; // tell the system what SO we just worked on was
     $prevCompany = $ans['companyName']; // let the system know what dealer we just worked on
@@ -144,6 +152,7 @@ foreach($result AS $ans) {
       $output[$pd]['children'][$ps]['key'] = $ans['soID'];
       $output[$pd]['children'][$ps]['keyType'] = 'soID';
       $output[$pd]['children'][$ps]['altData'] = $altData;
+      $output[$pd]['children'][$ps]['expanded'] = $so_expanded;
     }
 
     $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
@@ -152,6 +161,7 @@ foreach($result AS $ans) {
     $output[$pd]['children'][$ps]['children'][$pr]['altData'] = $altData;
     $output[$pd]['children'][$ps]['children'][$pr]['orderStatus'] = $ans['order_status'];
     $output[$pd]['children'][$ps]['children'][$pr]['icon'] = $icon;
+    $output[$pd]['children'][$ps]['children'][$pr]['expanded'] = $so_expanded;
 
     $pr++;
   }
@@ -160,7 +170,11 @@ foreach($result AS $ans) {
 }
 
 //echo json_encode($result);
-echo json_encode($output);
+if($strip === 'true') {
+  echo strip_tags(json_encode($output));
+} else {
+  echo json_encode($output);
+}
 
 /*$file = fopen('cached_result_tree.json', 'wb');
 fwrite($file, json_encode($output));
