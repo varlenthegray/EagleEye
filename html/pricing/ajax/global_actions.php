@@ -877,14 +877,14 @@ HEREDOC;
         product_type = '$product_type', 
         days_to_ship = '$leadtime', 
         order_status = '$order_status',
-        ship_via = '$ship_via', 
+        ship_via = $ship_via, 
         ship_name = '$ship_to_name', 
         ship_address = '$ship_to_address', 
         ship_city = '$ship_to_city',
         ship_state = '$ship_to_state', 
         ship_zip = '$ship_to_zip', 
         multi_room_ship = $multi_room_ship,
-        payment_method = '$payment_method',
+        payment_method = $payment_method,
         sample_seen_approved = $seen_approved, 
         sample_unseen_approved = $unseen_approved, 
         sample_requested = $requested_sample,
@@ -895,19 +895,9 @@ HEREDOC;
         payment_deposit = $deposit_received, 
         payment_del_ptl = $ptl_del,
         payment_final = $final_payment,
-        ship_cubes = '$shipping_cubes',
+        ship_cubes = $shipping_cubes,
         jobsite_delivery = $jobsite_delivery
-      WHERE id = '$room_id'")) {
-      echo displayToast('success', 'Room updated successfully.', 'Room Updated');
-    } else {
-      dbLogSQLErr($dbconn);
-    }
-    //</editor-fold>
-
-    //<editor-fold desc="DB query for update of global data">
-    if($dbconn->query("UPDATE rooms SET 
-        
-      WHERE id = '$room_id'")) {
+      WHERE id = $room_id")) {
       echo displayToast('success', 'Room updated successfully.', 'Room Updated');
     } else {
       dbLogSQLErr($dbconn);
