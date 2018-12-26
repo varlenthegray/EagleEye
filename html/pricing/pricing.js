@@ -894,6 +894,7 @@ $("body")
     let info = "";
     let thisEle = $(this);
     let infoPopup = $(".info-popup");
+    let position = thisEle.offset();
 
     $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: thisEle.data('id'), room_id: active_room_id}, function(data) {
       if(data !== '') {
@@ -909,13 +910,13 @@ $("body")
     }).done(function() {
       if(info !== '') {
         let infoHeight = infoPopup.height();
-        let infoTop = mouseY - 190;
+        let infoTop = position.top - 85;
         let windowOverflow = $(window).scrollTop() + $(window).height();
 
         if((infoHeight + infoTop + 100) > windowOverflow) {
-          infoPopup.css({"bottom": 0, "top": "inherit", "left": (mouseX - 20)});
+          infoPopup.css({"bottom": 0, "top": "inherit", "left": (position.left - 20)});
         } else {
-          infoPopup.css({"top": infoTop, "bottom": "inherit", "left": mouseX});
+          infoPopup.css({"top": infoTop, "bottom": "inherit", "left": position.left});
         }
 
         infoPopup.fadeIn(250).html(info);

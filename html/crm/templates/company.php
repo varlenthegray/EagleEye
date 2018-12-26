@@ -64,7 +64,7 @@ $company = $company_qry->fetch_assoc();
             <td colspan="2"><div class="pull-left"><b><u>Shipping Address</u></b></div></td>
           </tr>
           <tr>
-            <td colspan="2"><div style="margin-left:20px;float:left;" class="checkbox"><input id="shipping_different" class="ignoreSaveAlert" type="checkbox" value="1"><label for="shipping_different"> If Different</label></div></td>
+            <td colspan="2"><div style="margin-left:20px;float:left;" class="checkbox"><input id="shipping_different" class="ignoreSaveAlert" type="checkbox" value="1"><label for="shipping_different"> Alternate Address</label></div></td>
           </tr>
           <tr class="shipping_empty_hide">
             <td><label for="company_ship_addr">Address:</label></td>
@@ -128,7 +128,7 @@ $company = $company_qry->fetch_assoc();
             <td colspan="2">&nbsp;</td>
           </tr>
           <tr>
-            <td colspan="2"><div style="margin-left:20px;float:left;" class="checkbox"><input id="billing_different" class="ignoreSaveAlert" type="checkbox" value="1"><label for="billing_different"> Address Different</label></div></td>
+            <td colspan="2"><div style="margin-left:20px;float:left;" class="checkbox"><input id="billing_different" class="ignoreSaveAlert" type="checkbox" value="1"><label for="billing_different"> Alternate Address</label></div></td>
           </tr>
           <tr class="billing_empty_hide">
             <td><label for="company_billing_addr">Address:</label></td>
