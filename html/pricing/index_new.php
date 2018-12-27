@@ -759,7 +759,7 @@ if($pg_qry->num_rows > 0) {
             <td class="text-md-center">
               <i class="fa fa-info-circle primary-color view_item_info cursor-hand" data-id=""></i>
               <i class="fa fa-minus-circle danger-color delete_item cursor-hand" title="Delete line"></i>
-              <i class="fa fa-sliders secondary-color add_item_mod cursor-hand" title="Add modification"></i>
+              <i class="fa fa-pencil-square secondary-color add_item_mod cursor-hand" title="Add modification"></i>
               <i class="fa fa-copy secondary-color item_copy cursor-hand" title="Copy line"></i>
             </td>
             <td style="white-space:nowrap;"></td>
