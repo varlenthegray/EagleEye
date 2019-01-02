@@ -1201,10 +1201,47 @@ $("body")
     pricingFunction.recalcSummary();
   })
 
+  .on("keyup", "input[name='pg4']", function() {
+    let markup_calc = 0.0684;
+    let pg4 = parseFloat($(this).val());
+
+    let pg3 = Math.round(pg4 - (pg4 * markup_calc));
+    let pg2 = Math.round(pg3 - (pg3 * markup_calc));
+    let pg1 = Math.round(pg2 - (pg2 * markup_calc));
+
+    let pg5 = Math.round(pg4 * (1 + markup_calc));
+    let pg6 = Math.round(pg5 * (1 + markup_calc));
+    let pg7 = Math.round(pg6 * (1 + markup_calc));
+    let pg8 = Math.round(pg7 * (1 + markup_calc));
+    let pg9 = Math.round(pg8 * (1 + markup_calc));
+    let pg10 = Math.round(pg9 * (1 + markup_calc));
+    let pg11 = Math.round(pg10 * (1 + markup_calc));
+    let pg12 = Math.round(pg11 * (1 + markup_calc));
+    let pg13 = Math.round(pg12 * (1 + markup_calc));
+    let pg14 = Math.round(pg13 * (1 + markup_calc));
+
+    $("#pg1").val(pg1);
+    $("#pg2").val(pg2);
+    $("#pg3").val(pg3);
+    $("#pg5").val(pg5);
+    $("#pg6").val(pg6);
+    $("#pg7").val(pg7);
+    $("#pg8").val(pg8);
+    $("#pg9").val(pg9);
+    $("#pg10").val(pg10);
+    $("#pg11").val(pg11);
+    $("#pg12").val(pg12);
+    $("#pg13").val(pg13);
+    $("#pg14").val(pg14);
+  })
   .on("click", "#modalSaveCatItemSubmit", function() {
     let node = catalog.fancytree("getTree").getActiveNode();
     let formInfo = document.querySelector("#catalogAddEditItem");
+
+    let disabled = $("#catalogAddEditItem").find(":input:disabled").removeAttr("disabled");
     let fieldData = new FormData(formInfo);
+    disabled.attr('disabled', 'disabled');
+
     let name = $("#catalogAddEditItem input[name='name']").val();
     let sku = $("#catalogAddEditItem input[name='sku']").val();
     let title = null;
@@ -1247,7 +1284,11 @@ $("body")
     let node = catalog.fancytree("getTree").getActiveNode(); // current node (where are we adding this?)
     // let fields = $("#catalogAddEditItem").serialize(); // get all of the form information
     let formInfo = document.querySelector("#catalogAddEditItem");
+
+    let disabled = $("#catalogAddEditItem").find(":input:disabled").removeAttr("disabled");
     let fieldData = new FormData(formInfo);
+    disabled.attr('disabled', 'disabled');
+
     let catID = node.key; // current key is the category ID unless we modify it later
     let createFolder = false; // are we creating a folder?
     let folderType = null; // what type of folder is it, main? sub?

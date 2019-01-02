@@ -8,6 +8,14 @@ if(!empty($id)) {
   if($type === 'folder') {
     $info_qry = $dbconn->query("SELECT pc.*, pnd.description FROM pricing_categories pc LEFT JOIN pricing_nomenclature_details pnd on pc.description_id = pnd.id WHERE pc.id = $id");
   } elseif($type === 'item') {
+    $price_groups = [];
+
+    $pg_qry = $dbconn->query("SELECT * FROM pricing_price_map WHERE nomenclature_id = $id");
+
+    while($pg = $pg_qry->fetch_assoc()) {
+      $price_groups[$pg['price_group_id']] = $pg['price'];
+    }
+
     $info_qry = $dbconn->query("SELECT pn.*, pnd.description, pnd.image_path, pnd.title FROM pricing_nomenclature pn LEFT JOIN pricing_nomenclature_details pnd on pn.description_id = pnd.id WHERE pn.id = $id");
   }
 }
@@ -181,6 +189,78 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                   <tr class="displayImage" id="displayNewImageUpload">
                     <td><label>New Image:</label></td>
                     <td><input type="file" id="image_upload" class="c_input" style="border:none;" name="image" placeholder="Image"/></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"><div style="height:5px;"></div></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">
+                      <table class="add_item_table" style="width:75%;">
+                        <colgroup>
+                          <col width="5%">
+                          <col width="16%">
+                          <col width="5%">
+                          <col width="5%">
+                          <col width="16%">
+                          <col width="5%">
+                          <col width="5%">
+                          <col width="16%">
+                          <col width="5%">
+                          <col width="5%">
+                          <col width="16%">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                        </tr>
+                        <tr>
+                          <td><label for="ai_pg_1">PG1:</label></td>
+                          <td><input type="text" id="pg1" placeholder="0.00" class="c_input price_group_input" name="pg1" value="<?php echo $price_groups[1]; ?>" disabled /> </td>
+                          <td>&nbsp;</td>
+                          <td><label for="ai_pg_5">PG5:</label></td>
+                          <td><input type="text" id="pg5" placeholder="0.00" class="c_input price_group_input" name="pg5" value="<?php echo $price_groups[5]; ?>" disabled /> </td>
+                          <td>&nbsp;</td>
+                          <td><label for="ai_pg_9">PG9:</label></td>
+                          <td><input type="text" id="pg9" placeholder="0.00" class="c_input price_group_input" name="pg9" value="<?php echo $price_groups[9]; ?>" disabled /> </td>
+                          <td>&nbsp;</td>
+                          <td><label for="ai_pg_13">PG13:</label></td>
+                          <td><input type="text" id="pg13" placeholder="0.00" class="c_input price_group_input" name="pg13" value="<?php echo $price_groups[13]; ?>" disabled /> </td>
+                        </tr>
+                        <tr>
+                          <td><label for="ai_pg_2">PG2:</label></td>
+                          <td><input type="text" id="pg2" placeholder="0.00" class="c_input price_group_input" name="pg2" value="<?php echo $price_groups[2]; ?>" disabled /> </td>
+                          <td>&nbsp;</td>
+                          <td><label for="ai_pg_6">PG6:</label></td>
+                          <td><input type="text" id="pg6" placeholder="0.00" class="c_input price_group_input" name="pg6" value="<?php echo $price_groups[6]; ?>" disabled /> </td>
+                          <td>&nbsp;</td>
+                          <td><label for="ai_pg_10">PG10:</label></td>
+                          <td><input type="text" id="pg10" placeholder="0.00" class="c_input price_group_input" name="pg10" value="<?php echo $price_groups[10]; ?>" disabled /> </td>
+                          <td>&nbsp;</td>
+                          <td><label for="ai_pg_14">PG14:</label></td>
+                          <td><input type="text" id="pg14" placeholder="0.00" class="c_input price_group_input" name="pg14" value="<?php echo $price_groups[14]; ?>" disabled /> </td>
+                        </tr>
+                        <tr>
+                          <td><label for="ai_pg_3">PG3:</label></td>
+                          <td><input type="text" id="pg3" placeholder="0.00" class="c_input price_group_input" name="pg3" value="<?php echo $price_groups[3]; ?>" disabled /> </td>
+                          <td>&nbsp;</td>
+                          <td><label for="ai_pg_7">PG7:</label></td>
+                          <td><input type="text" id="pg7" placeholder="0.00" class="c_input price_group_input" name="pg7" value="<?php echo $price_groups[7]; ?>" disabled /> </td>
+                          <td>&nbsp;</td>
+                          <td><label for="ai_pg_11">PG11:</label></td>
+                          <td><input type="text" id="pg11" placeholder="0.00" class="c_input price_group_input" name="pg11" value="<?php echo $price_groups[11]; ?>" disabled /> </td>
+                        </tr>
+                        <tr>
+                          <td><label for="ai_pg_4">PG4:</label></td>
+                          <td><input type="text" id="pg4" placeholder="0.00" style="background-color:#00EE00;" class="c_input price_group_input" name="pg4" value="<?php echo $price_groups[4]; ?>" /> </td>
+                          <td>&nbsp;</td>
+                          <td><label for="ai_pg_8">PG8:</label></td>
+                          <td><input type="text" id="pg8" placeholder="0.00" class="c_input price_group_input" name="pg8" value="<?php echo $price_groups[8]; ?>" disabled /> </td>
+                          <td>&nbsp;</td>
+                          <td><label for="ai_pg_12">PG12:</label></td>
+                          <td><input type="text" id="pg12" placeholder="0.00" class="c_input price_group_input" name="pg12" value="<?php echo $price_groups[12]; ?>" disabled /> </td>
+                        </tr>
+                        </tbody>
+                      </table>
+                    </td>
                   </tr>
                 <?php } ?>
               </tbody>

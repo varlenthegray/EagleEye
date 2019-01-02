@@ -134,6 +134,8 @@ switch($_REQUEST['action']) {
     $id = sanitizeInput($_REQUEST['key']);
     $folder = sanitizeInput($_REQUEST['folder']);
 
+    $pg = [];
+
     $name = sanitizeInput($_REQUEST['name']);
     $description = trim(sanitizeInput($_REQUEST['description']));
     $sku = sanitizeInput($_REQUEST['sku']);
@@ -143,6 +145,10 @@ switch($_REQUEST['action']) {
     $default_hinge = sanitizeInput($_REQUEST['default_hinge']);
     $image_type = sanitizeInput($_REQUEST['image_type']);
     $recent_image = sanitizeInput($_REQUEST['recent_image']);
+
+    for($i = 1; $i <= 14; $i++) {
+      $pg[$i] = sanitizeInput($_REQUEST['pg'. $i]);
+    }
 
     $description_id = 'null';
 
@@ -260,11 +266,20 @@ switch($_REQUEST['action']) {
         dbLogSQLErr($dbconn);
       }
     } else {
-      // now we're working on an item, check for images first
+      // now we're working on an item
       if($dbconn->query("UPDATE pricing_nomenclature SET sku = '$sku', width = '$width', height = '$height', depth = '$depth', default_hinge = '$default_hinge',
       hinge = '$hinge_available' WHERE id = $id")) {
+        $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_map WHERE nomenclature_id = $id;");
 
-
+        if($price_group_qry->num_rows > 0) {
+          foreach($pg AS $key => $value) {
+            $dbconn->query("UPDATE pricing_price_map SET price = $value WHERE nomenclature_id = $id AND price_group_id = $key");
+          }
+        } else {
+          foreach($pg AS $key => $value) {
+            $dbconn->query("INSERT INTO pricing_price_map (price_group_id, nomenclature_id, price) VALUES ($key, $id, $value);");
+          }
+        }
 
         http_response_code(200);
         echo displayToast('success', 'Successfully updated item.', "Updated $sku");
@@ -272,8 +287,6 @@ switch($_REQUEST['action']) {
         http_response_code(400);
         dbLogSQLErr($dbconn);
       }
-
-      echo displayToast('warning', 'Not implemented yet.', 'N/A');
     }
 
     break;
@@ -281,6 +294,8 @@ switch($_REQUEST['action']) {
     $id = sanitizeInput($_REQUEST['key']);
     $folder = sanitizeInput($_REQUEST['folder']);
     $folderType = sanitizeInput($_REQUEST['folderType']);
+
+    $pg = [];
 
     $name = sanitizeInput($_REQUEST['name']);
     $description = trim(sanitizeInput($_REQUEST['description']));
@@ -291,6 +306,10 @@ switch($_REQUEST['action']) {
     $default_hinge = sanitizeInput($_REQUEST['default_hinge']);
     $image_type = sanitizeInput($_REQUEST['image_type']);
     $recent_image = sanitizeInput($_REQUEST['recent_image']);
+
+    for($i = 1; $i <= 14; $i++) {
+      $pg[$i] = sanitizeInput($_REQUEST['pg'. $i]);
+    }
 
     $hinge_available = $_REQUEST['hinge_available'];
 
@@ -393,6 +412,12 @@ switch($_REQUEST['action']) {
       // now we're working on an item
       if($dbconn->query("INSERT INTO pricing_nomenclature (catalog_id, category_id, description_id, sku, width, height, depth, default_hinge, hinge, modification, 
       cabinet, sqft, linft, fixed_price, percent) VALUES (1, $id, $description_id, '$sku', $width, $height, $depth, '$default_hinge', '$hinge_available', 0, 1, 0, 0, 0, 0)")) {
+        $item_id = $dbconn->insert_id;
+
+        foreach($pg AS $key => $value) {
+          $dbconn->query("INSERT INTO pricing_price_map (price_group_id, nomenclature_id, price) VALUES ($key, $item_id, $value);");
+        }
+
         http_response_code(200);
 
         echo $dbconn->insert_id;
