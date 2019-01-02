@@ -211,6 +211,7 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                         </colgroup>
                         <tbody>
                         <tr>
+                          <td colspan="11"><b><u>Price Groups: Enter Net Price into PG4 (Remaining PG's auto-calculated)</u></b></td>
                         </tr>
                         <tr>
                           <td><label for="ai_pg_1">PG1:</label></td>
@@ -261,6 +262,13 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                         </tbody>
                       </table>
                     </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="height:5px;"></td>
+                  </tr>
+                  <tr>
+                    <td><label for="drawer_box_count">Drawer Box Count:</label></td>
+                    <td><input type="text" class="c_input" name="drawer_box_count" placeholder="0" value="<?php echo $info['drawer_box_count']; ?>" style="width:25px;" /></td>
                   </tr>
                 <?php } ?>
               </tbody>

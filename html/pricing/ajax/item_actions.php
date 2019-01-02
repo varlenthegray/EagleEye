@@ -145,6 +145,7 @@ switch($_REQUEST['action']) {
     $default_hinge = sanitizeInput($_REQUEST['default_hinge']);
     $image_type = sanitizeInput($_REQUEST['image_type']);
     $recent_image = sanitizeInput($_REQUEST['recent_image']);
+    $drawer_box_count = sanitizeInput($_REQUEST['drawer_box_count']);
 
     for($i = 1; $i <= 14; $i++) {
       $pg[$i] = sanitizeInput($_REQUEST['pg'. $i]);
@@ -268,7 +269,7 @@ switch($_REQUEST['action']) {
     } else {
       // now we're working on an item
       if($dbconn->query("UPDATE pricing_nomenclature SET sku = '$sku', width = '$width', height = '$height', depth = '$depth', default_hinge = '$default_hinge',
-      hinge = '$hinge_available' WHERE id = $id")) {
+      hinge = '$hinge_available', drawer_box_count = $drawer_box_count WHERE id = $id")) {
         $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_map WHERE nomenclature_id = $id;");
 
         if($price_group_qry->num_rows > 0) {
@@ -306,6 +307,7 @@ switch($_REQUEST['action']) {
     $default_hinge = sanitizeInput($_REQUEST['default_hinge']);
     $image_type = sanitizeInput($_REQUEST['image_type']);
     $recent_image = sanitizeInput($_REQUEST['recent_image']);
+    $drawer_box_count = sanitizeInput($_REQUEST['drawer_box_count']);
 
     for($i = 1; $i <= 14; $i++) {
       $pg[$i] = sanitizeInput($_REQUEST['pg'. $i]);
@@ -411,7 +413,8 @@ switch($_REQUEST['action']) {
 
       // now we're working on an item
       if($dbconn->query("INSERT INTO pricing_nomenclature (catalog_id, category_id, description_id, sku, width, height, depth, default_hinge, hinge, modification, 
-      cabinet, sqft, linft, fixed_price, percent) VALUES (1, $id, $description_id, '$sku', $width, $height, $depth, '$default_hinge', '$hinge_available', 0, 1, 0, 0, 0, 0)")) {
+      cabinet, sqft, linft, fixed_price, percent, drawer_box_count) VALUES (1, $id, $description_id, '$sku', $width, $height, $depth, '$default_hinge', '$hinge_available', 
+      0, 1, 0, 0, 0, 0, $drawer_box_count)")) {
         $item_id = $dbconn->insert_id;
 
         foreach($pg AS $key => $value) {

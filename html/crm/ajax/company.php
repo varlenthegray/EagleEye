@@ -30,9 +30,9 @@ switch($_REQUEST['action']) {
     }
 
     if($dbconn->query("UPDATE contact_company SET name = '{$info['company_name']}', address = '{$info['company_address']}', city = '{$info['company_city']}', state = '{$info['company_state']}', zip = '{$info['company_zip']}',
-                           email = '{$info['company_email']}', landline = '{$info['company_landline']}', payment_processor = '{$info['company_payment_processor']}', shipping_address = '{$info['company_ship_addr']}',
-                           shipping_city = '{$info['company_ship_city']}', shipping_state = '{$info['company_ship_state']}', shipping_zip = '{$info['company_ship_zip']}', billing_address = '{$info['company_billing_addr']}',
-                           billing_city = '{$info['company_billing_city']}', billing_state = '{$info['company_billing_state']}', billing_zip = '{$info['company_billing_zip']}' WHERE id = {$info['company_id']}")) {
+    email = '{$info['company_email']}', landline = '{$info['company_landline']}', payment_processor = '{$info['company_payment_processor']}', shipping_address = '{$info['company_ship_addr']}',
+    shipping_city = '{$info['company_ship_city']}', shipping_state = '{$info['company_ship_state']}', shipping_zip = '{$info['company_ship_zip']}', billing_address = '{$info['company_billing_addr']}',
+    billing_city = '{$info['company_billing_city']}', billing_state = '{$info['company_billing_state']}', billing_zip = '{$info['company_billing_zip']}' WHERE id = {$info['company_id']}")) {
       echo displayToast('success', 'Successfully updated company.', 'Company Updated');
     } else {
       dbLogSQLErr($dbconn);
