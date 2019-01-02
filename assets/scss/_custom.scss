@@ -271,7 +271,7 @@ table.dataTable thead th.sorting_desc:after {
 }
 
 table tbody td {
-  vertical-align: middle !important;
+  vertical-align: top;
 }
 
 // active room line, part of the table but not specifically
@@ -1061,6 +1061,19 @@ h5 {
 
   &[type=select] {
     margin-left: -4px;
+  }
+
+  &[type=radio], &[type=checkbox] {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -2px;
+    width: auto;
+  }
+
+  &[type=textarea] {
+    border: 1px solid #CCC;
+    height: 180px;
+    border-radius: 0 0 4px 4px;
   }
 
   optgroup {

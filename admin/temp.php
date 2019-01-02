@@ -3,36 +3,23 @@ require '../includes/header_start.php';
 
 outputPHPErrs();
 
-switch($_REQUEST['action']) {
-  case 'companyID':
-    $so_qry = $dbconn->query('SELECT id, LEFT(dealer_code, 3) AS dealer_parent FROM sales_order');
+$id = sanitizeInput($_REQUEST['id']);
 
-    while($so = $so_qry->fetch_assoc()) {
-      $dealer_qry = $dbconn->query("SELECT contact FROM dealers WHERE dealer_id = '{$so['dealer_parent']}'");
-      $dealer = $dealer_qry->fetch_assoc();
+$cat_qry = $dbconn->query("SELECT T2.id, T2.name, T2.description_id FROM (
+SELECT @r AS _id, 
+      (SELECT @r := parent FROM pricing_categories WHERE id = _id) AS parent_id, 
+      @l := @l + 1 AS lvl
+FROM (SELECT @r := $id, @l := 0) vars, pricing_categories h WHERE @r <> 0) 
+  T1 JOIN pricing_categories T2 ON T1._id = T2.id 
+ORDER BY T1.lvl DESC");
 
-      $company_qry = $dbconn->query("SELECT id FROM contact_company WHERE name = '{$dealer['contact']}'");
-      $company = $company_qry->fetch_assoc();
+while($cat = $cat_qry->fetch_assoc()) {
+  if(!empty($cat['description_id'])) {
+    $desc_id = $dbconn->query("SELECT * FROM pricing_nomenclature_details WHERE id = {$cat['description_id']}");
+    $desc = $desc_id->fetch_assoc();
+  } else {
+    $desc['description'] = '';
+  }
 
-      $dbconn->query("UPDATE sales_order SET company_id = {$company['id']} WHERE id = {$so['id']}");
-
-      echo "<h1>SO ID: {$so['id']} updated.</h1><hr />";
-    }
-
-    break;
-
-  case 'assignPM':
-    $so_qry = $dbconn->query('SELECT d.id AS dID, so.id AS soID, so.so_num FROM sales_order so LEFT JOIN dealers d ON so.dealer_code = d.dealer_id WHERE dealer_code IS NOT NULL AND char_length(dealer_code) > 3');
-
-    while($so = $so_qry->fetch_assoc()) {
-      $contact_qry = $dbconn->query("SELECT id FROM contact WHERE dealer_id = {$so['dID']}");
-      $contact = $contact_qry->fetch_assoc();
-
-      $dbconn->query("INSERT INTO contact_associations (type_id, contact_id, assigned_by, created_on, associated_as) VALUES ({$so['soID']}, {$contact['id']}, 1, UNIX_TIMESTAMP(), 'Project Manager');");
-
-      echo "<h1>SO Num {$so['so_num']} updated</h1><hr />";
-    }
-
-    break;
+  echo "<textarea>{$desc['description']}</textarea>";
 }
-

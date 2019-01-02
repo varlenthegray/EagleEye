@@ -14,11 +14,12 @@ switch($_REQUEST['action']) {
     $room_id = sanitizeInput($_REQUEST['room_id']);
 
     $item_qry = $dbconn->query("SELECT 
-      pn.sku, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog, detail.image_path AS image, 
-      detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.fixed_price, pn.kit_id
+      pn.sku, pn.category_id, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog, detail.image_path AS image, 
+      detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.fixed_price, pn.kit_id, pc.enabled_desc
     FROM pricing_nomenclature pn
       LEFT JOIN pricing_catalog catalog on pn.catalog_id = catalog.id
       LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
+      LEFT JOIN pricing_categories pc on pn.category_id = pc.id
     WHERE pn.id = $id");
 
     $price = 'N/A';
@@ -53,10 +54,43 @@ switch($_REQUEST['action']) {
 
     if(!empty($item_qry)) {
       $img = !empty($item['image']) ? "/html/pricing/images/{$item['image']}" : 'fa fa-magic';
-
       $item['icon'] = $img;
 
-      $item['description'] = nl2br($item['description']);
+      $description = null;
+
+      $cat_qry = $dbconn->query("SELECT T2.id, T2.name, T2.description_id, T2.enabled_desc FROM (
+        SELECT @r AS _id, (SELECT @r := parent FROM pricing_categories WHERE id = _id) AS parent_id, @l := @l + 1 AS lvl
+        FROM (SELECT @r := {$item['category_id']}, @l := 0) vars, pricing_categories h WHERE @r <> 0) T1 
+        JOIN pricing_categories T2 ON T1._id = T2.id ORDER BY T1.lvl DESC");
+
+      $desc_enabled = json_decode($item['enabled_desc']);
+
+      while($cat = $cat_qry->fetch_assoc()) {
+        if(!empty($cat['description_id'])) {
+          $desc_qry = $dbconn->query("SELECT * FROM pricing_nomenclature_details WHERE id = {$cat['description_id']}");
+          $desc = $desc_qry->fetch_assoc();
+
+          if(in_array($cat['id'], $desc_enabled, true)) {
+            if(!empty(trim($desc['description']))) {
+              $description .= "<label>{$cat['name']} Notes:</label> " . nl2br($desc['description']) . '<hr />';
+            } else {
+              $description .= "<label>{$cat['name']} Notes:</label> <i>None</i><hr />";
+            }
+          } else {
+            $description .= "<label>{$cat['name']} Notes:</label> <i>Excluded</i><hr />";
+          }
+        } else {
+          $description .= "<label>{$cat['name']} Notes:</label> <i>None</i><hr />";
+        }
+      }
+
+      if(!empty($item['description'])) {
+        $description .= '<label>Item Notes:</label> ' . nl2br($item['description']);
+      } else {
+        $description = rtrim($description, '<hr />');
+      }
+
+      $item['description'] = $description;
       $item['price'] = $price;
 
       echo json_encode($item, true);
@@ -99,25 +133,147 @@ switch($_REQUEST['action']) {
   case 'updateItem':
     $id = sanitizeInput($_REQUEST['key']);
     $folder = sanitizeInput($_REQUEST['folder']);
-    parse_str(sanitizeInput($_REQUEST['update']), $update);
+
+    $name = sanitizeInput($_REQUEST['name']);
+    $description = trim(sanitizeInput($_REQUEST['description']));
+    $sku = sanitizeInput($_REQUEST['sku']);
+    $width = sanitizeInput($_REQUEST['width']);
+    $height = sanitizeInput($_REQUEST['height']);
+    $depth = sanitizeInput($_REQUEST['depth']);
+    $default_hinge = sanitizeInput($_REQUEST['default_hinge']);
+    $image_type = sanitizeInput($_REQUEST['image_type']);
+    $recent_image = sanitizeInput($_REQUEST['recent_image']);
+
+    $description_id = 'null';
+
+    $desc_enabled = $_REQUEST['desc_enabled'];
+
+    foreach($desc_enabled AS $key => $value) {
+      $desc_enabled[$key] = sanitizeInput($value);
+    }
+
+    $desc_enabled = json_encode($desc_enabled);
+
+    $hinge_available = $_REQUEST['hinge_available'];
+
+    foreach($hinge_available AS $key => $value) {
+      $hinge_available[$key] = sanitizeInput($value);
+    }
+
+    $hinge_available = json_encode($hinge_available);
 
     if($folder === 'true') {
-      if($dbconn->query("UPDATE pricing_categories SET name = '{$update['title']}' WHERE id = $id")) {
+      $nom_qry = $dbconn->query("SELECT pc.*, pnd.description FROM pricing_categories pc LEFT JOIN pricing_nomenclature_details pnd on pc.description_id = pnd.id WHERE pc.id = $id");
+    } else {
+      $nom_qry = $dbconn->query("SELECT pn.*, pnd.description FROM pricing_nomenclature pn LEFT JOIN pricing_nomenclature_details pnd on pn.description_id = pnd.id WHERE pn.id = $id");
+    }
+
+    $nom = $nom_qry->fetch_assoc();
+
+    switch($image_type) {
+      case 'new':
+        //<editor-fold desc="Image Upload">
+        $upload = true; // by default, we should upload
+
+        $file_name = basename($_FILES['image']['name']);
+
+        $target_file = "../images/uploaded/$file_name";
+        $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+        $img_check = getimagesize($_FILES['image']['tmp_name']);
+
+        if($img_check === false) {
+          $upload = false; // it's not an image, we're not uploading
+          http_response_code(400);
+
+          echo displayToast('error', 'File attachment is not an image.', 'File Not Image');
+        } else { // it is an image
+          if(file_exists($target_file)) {
+            $upload = false;
+            http_response_code(400);
+
+            echo displayToast('error', 'Image name already exists.', 'Image Name Exists');
+          }
+
+          // must be less than 1MB
+          if ($_FILES['image']['size'] > 1000000) {
+            $upload = false;
+            http_response_code(400);
+
+            echo displayToast('error', 'Image is too large, must be less than 1MB.', 'Image Too Large');
+          }
+
+          if($file_type !== 'jpg' && $file_type !== 'png' && $file_type !== 'jpeg' && $file_type !== 'gif') {
+            $upload = false;
+            http_response_code(400);
+
+            echo displayToast('error', 'Image must be JPG, PNG, JPEG or GIF.', 'Image Extension Mismatch');
+          }
+
+          if($upload) {
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+              echo 'The file ' . basename( $_FILES['image']['name']). ' has been uploaded.';
+            } else {
+              echo displayToast('error', 'Unable to upload file. Contact IT.', 'File Not Uploaded');
+            }
+          }
+        }
+
+        $image_path = "uploaded/$file_name";
+        //</editor-fold>
+
+        break;
+      case 'library':
+        break;
+      default:
+        if(!empty($nom['description_id'])) {
+          $details_qry = $dbconn->query("SELECT * FROM pricing_nomenclature_details WHERE id = {$nom['description_id']};");
+          $details = $details_qry->fetch_assoc();
+
+          $image_path = $details['image_path'];
+        } else {
+          $image_path = '';
+        }
+
+        break;
+    }
+
+    if(!empty(trim($description))) {
+      if(!empty($nom['description_id'])) {
+        $dbconn->query("UPDATE pricing_nomenclature_details SET description = '$description', title = '$name', image_path = '$image_path' WHERE id = {$nom['description_id']}");
+        $description_id = $nom['description_id'];
+      } else {
+        if($dbconn->query("INSERT INTO pricing_nomenclature_details (description, title, image_path) VALUES ('$description', '$name', '$image_path')")) {
+          $description_id = $dbconn->insert_id;
+        } else {
+          dbLogSQLErr($dbconn);
+        }
+      }
+    }
+
+    if($folder === 'true') {
+      if($dbconn->query("UPDATE pricing_categories SET name = '$name', description_id = $description_id, enabled_desc = '$desc_enabled' WHERE id = $id")) {
         http_response_code(200);
-        echo displayToast('success', 'Successfully updated category.', "Updated {$update['title']}");
+        echo displayToast('success', 'Successfully updated category.', "Updated $name");
       } else {
         http_response_code(400);
         dbLogSQLErr($dbconn);
       }
     } else {
-      // now we're working on an item
-      if($dbconn->query("UPDATE pricing_nomenclature SET sku = '{$update['title']}', width = '{$update['width']}', height = '{$update['height']}', depth = '{$update['depth']}' WHERE id = $id")) {
+      // now we're working on an item, check for images first
+      if($dbconn->query("UPDATE pricing_nomenclature SET sku = '$sku', width = '$width', height = '$height', depth = '$depth', default_hinge = '$default_hinge',
+      hinge = '$hinge_available' WHERE id = $id")) {
+
+
+
         http_response_code(200);
-        echo displayToast('success', 'Successfully updated item.', "Updated {$update['title']}");
+        echo displayToast('success', 'Successfully updated item.', "Updated $sku");
       } else {
         http_response_code(400);
         dbLogSQLErr($dbconn);
       }
+
+      echo displayToast('warning', 'Not implemented yet.', 'N/A');
     }
 
     break;
@@ -125,12 +281,85 @@ switch($_REQUEST['action']) {
     $id = sanitizeInput($_REQUEST['key']);
     $folder = sanitizeInput($_REQUEST['folder']);
     $folderType = sanitizeInput($_REQUEST['folderType']);
-    parse_str(sanitizeInput($_REQUEST['update']), $update);
-    $parentID = null;
 
+    $name = sanitizeInput($_REQUEST['name']);
+    $description = trim(sanitizeInput($_REQUEST['description']));
+    $sku = sanitizeInput($_REQUEST['sku']);
+    $width = sanitizeInput($_REQUEST['width']);
+    $height = sanitizeInput($_REQUEST['height']);
+    $depth = sanitizeInput($_REQUEST['depth']);
+    $default_hinge = sanitizeInput($_REQUEST['default_hinge']);
+    $image_type = sanitizeInput($_REQUEST['image_type']);
+    $recent_image = sanitizeInput($_REQUEST['recent_image']);
+
+    $hinge_available = $_REQUEST['hinge_available'];
+
+    foreach($hinge_available AS $key => $value) {
+      $hinge_available[$key] = sanitizeInput($value);
+    }
+
+    $hinge_available = json_encode($hinge_available);
+
+    // if it's a new image, we're going to upload a file
+    if($image_type === 'new') {
+      //<editor-fold desc="Image Upload">
+      $upload = true; // by default, we should upload
+
+      $file_name = basename($_FILES['image']['name']);
+
+      $target_file = "../images/uploaded/$file_name";
+      $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+      $img_check = getimagesize($_FILES['image']['tmp_name']);
+
+      if($img_check === false) {
+        $upload = false; // it's not an image, we're not uploading
+        http_response_code(400);
+
+        echo displayToast('error', 'File attachment is not an image.', 'File Not Image');
+      } else { // it is an image
+        if(file_exists($target_file)) {
+          $upload = false;
+          http_response_code(400);
+
+          echo displayToast('error', 'Image name already exists.', 'Image Name Exists');
+        }
+
+        // must be less than 1MB
+        if ($_FILES['image']['size'] > 1000000) {
+          $upload = false;
+          http_response_code(400);
+
+          echo displayToast('error', 'Image is too large, must be less than 1MB.', 'Image Too Large');
+        }
+
+        if($file_type !== 'jpg' && $file_type !== 'png' && $file_type !== 'jpeg' && $file_type !== 'gif') {
+          $upload = false;
+          http_response_code(400);
+
+          echo displayToast('error', 'Image must be JPG, PNG, JPEG or GIF.', 'Image Extension Mismatch');
+        }
+
+        // confusing, but if we're able to upload AND there's no upload error, don't display anything (we're using the response of "ID" in JQuery)
+        if($upload && !move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+          http_response_code(400);
+          echo displayToast('error', 'Unable to upload file. Contact IT.', 'File Not Uploaded');
+        }
+      }
+
+      $image_path = "uploaded/$file_name";
+      //</editor-fold>
+    } // TODO: Implement recent/library images
+
+    $parentID = null;
     $result = array();
 
+    $dbconn->query("INSERT INTO pricing_nomenclature_details (description, title, image_path) VALUES ('$description', '$name', '$image_path');");
+    $description_id = $dbconn->insert_id;
+
+    // time to determine if the description has been created or not
     if($folder === 'true') { // if we're creating a folder
+      //<editor-fold desc="Determine what the max sort order is for the category">
       $cat_qry = $dbconn->query("SELECT * FROM pricing_categories WHERE id = $id"); // get the current node's information
       $cat = $cat_qry->fetch_assoc(); // current node
 
@@ -147,8 +376,9 @@ switch($_REQUEST['action']) {
       }
 
       $sort_order = $sort['maxSO'] + 1; // add one so that it's now at the bottom
+      //</editor-fold>
 
-      if($dbconn->query("INSERT INTO pricing_categories (catalog_id, name, parent, enabled, sort_order) VALUES (1, '{$update['title']}', $parentID, 1, $sort_order)")) {
+      if($dbconn->query("INSERT INTO pricing_categories (catalog_id, description_id, name, parent, enabled, sort_order) VALUES (1, $description_id, '$name', $parentID, 1, $sort_order)")) {
         http_response_code(200);
         echo $dbconn->insert_id;
       } else {
@@ -156,13 +386,13 @@ switch($_REQUEST['action']) {
         dbLogSQLErr($dbconn);
       }
     } else {
-      $width = !empty($update['width']) ? $update['width'] : 0;
-      $height = !empty($update['height']) ? $update['height'] : 0;
-      $depth = !empty($update['depth']) ? $update['depth'] : 0;
+      $width = !empty($width) ? $width : 0;
+      $height = !empty($height) ? $height : 0;
+      $depth = !empty($depth) ? $depth : 0;
 
       // now we're working on an item
-      if($dbconn->query("INSERT INTO pricing_nomenclature (catalog_id, category_id, sku, width, height, depth, modification, cabinet, sqft, linft, fixed_price, percent) VALUES 
-      (1, $id, '{$update['title']}', $width, $height, $depth, 0, 1, 0, 0, 0, 0)")) {
+      if($dbconn->query("INSERT INTO pricing_nomenclature (catalog_id, category_id, description_id, sku, width, height, depth, default_hinge, hinge, modification, 
+      cabinet, sqft, linft, fixed_price, percent) VALUES (1, $id, $description_id, '$sku', $width, $height, $depth, '$default_hinge', '$hinge_available', 0, 1, 0, 0, 0, 0)")) {
         http_response_code(200);
 
         echo $dbconn->insert_id;

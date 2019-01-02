@@ -1,4 +1,4 @@
-/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*/
+/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*/
 
 jQuery.expr.filters.offscreen = function(el) {
   var rect = el.getBoundingClientRect();
@@ -887,9 +887,9 @@ $("body")
 
     pricingFunction.recalcSummary();
   })
-  .on("mouseenter", ".view_item_info", function() {
-    // FIXME: Change this so the data isn't loaded on hover
-    // FIXME: omg queries... should be able to JSON this data into memory quite easily
+  .on("mouseover", ".view_item_info, .info-popup", function(e) {
+    // FIXME: Change this so the data isn't loaded on hover, should be able to JSON this data into memory quite easily
+    e.stopPropagation();
 
     let info = "";
     let thisEle = $(this);
@@ -901,7 +901,7 @@ $("body")
         let result = JSON.parse(data);
 
         if(result.image !== null) {
-          info += "<div class='image'><img src='/html/pricing/images/" + result.image + "' /></div>";
+          info += "<div class='image'><img style='max-width:300px;max-height:600px;' src='/html/pricing/images/" + result.image + "' /></div>";
         }
 
         info += "<div class='right_content'><div class='header'><h4>" + result.title + "</h4></div>";
@@ -914,7 +914,7 @@ $("body")
         let windowOverflow = $(window).scrollTop() + $(window).height();
 
         if((infoHeight + infoTop + 100) > windowOverflow) {
-          infoPopup.css({"bottom": 0, "top": "inherit", "left": (position.left - 20)});
+          infoPopup.css({"bottom": 0, "top": "inherit", "left": (position.left + 20)});
         } else {
           infoPopup.css({"top": infoTop, "bottom": "inherit", "left": position.left});
         }
@@ -923,7 +923,7 @@ $("body")
       }
     });
   })
-  .on("mouseleave", ".view_item_info", function() {
+  .on("mouseleave", ".view_item_info, .info-popup", function() {
     $(".info-popup").fadeOut(250);
   })
   .on("click", ".add_item_mod", function() {
@@ -1203,81 +1203,144 @@ $("body")
 
   .on("click", "#modalSaveCatItemSubmit", function() {
     let node = catalog.fancytree("getTree").getActiveNode();
-    let fields = $("#catalogAddEditItem").serialize();
+    let formInfo = document.querySelector("#catalogAddEditItem");
+    let fieldData = new FormData(formInfo);
+    let name = $("#catalogAddEditItem input[name='name']").val();
+    let sku = $("#catalogAddEditItem input[name='sku']").val();
+    let title = null;
 
-    let sku = $("#catalogAddEditItem input[name='title']").val();
+    fieldData.append("key", node.key);
+    // noinspection JSCheckFunctionSignatures
+    fieldData.append("folder", node.folder);
 
-    $.post("/html/pricing/ajax/item_actions.php?action=updateItem", {key: node.key, folder: node.folder, update: fields}, function(data, status) {
-      $("body").append(data);
+    $.ajax({
+      url: "/html/pricing/ajax/item_actions.php?action=updateItem",
+      data: fieldData,
+      cache: false,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      success: function(data) {
+        $("body").append(data);
 
-      if(status === 'success') {
-        let title = sku +
-          '<span class="actions">' +
-            '<div class="info_container"><i class="fa fa-info-circle primary-color view_item_info" data-id="' + node.key + '"></i></div>' +
-            '<i class="fa fa-plus-circle success-color add_item_cabinet_list" data-id="' + node.key + '" title="Add To Cabinet List"></i>' +
+        if(node.folder) {
+          title = name;
+        } else {
+          title = sku +
+          ' <span class="actions">' +
+          '<div class="info_container"><i class="fa fa-info-circle primary-color view_item_info" data-id="' + node.key + '"></i></div>&nbsp;' +
+          '<i class="fa fa-plus-circle success-color add_item_cabinet_list" data-id="' + node.key + '" title="Add To Cabinet List"></i>' +
           '</span>';
+        }
 
         node.setTitle(title);
         $("#modalGlobal").html(data).modal("hide");
+      },
+      fail: function(xhr) {
+        $("body").append(xhr.responseText);
       }
     });
 
     unsaved = false;
   })
   .on("click", "#modalAddCatItemSubmit", function() {
-    let node = catalog.fancytree("getTree").getActiveNode();
-    let fields = $("#catalogAddEditItem").serialize();
-    let catID = node.key;
-    let createFolder = false;
-    let folderType = null;
+    let node = catalog.fancytree("getTree").getActiveNode(); // current node (where are we adding this?)
+    // let fields = $("#catalogAddEditItem").serialize(); // get all of the form information
+    let formInfo = document.querySelector("#catalogAddEditItem");
+    let fieldData = new FormData(formInfo);
+    let catID = node.key; // current key is the category ID unless we modify it later
+    let createFolder = false; // are we creating a folder?
+    let folderType = null; // what type of folder is it, main? sub?
 
-    let sku = $("#catalogAddEditItem input[name='title']").val();
+    let sku = $("#catalogAddEditItem input[name='sku']").val(); // get the SKU so that we can auto-display it in the tree
+    let name = $("#catalogAddEditItem input[name='name']").val(); // get the SKU so that we can auto-display it in the tree
 
-    if($(this).attr("data-type") === 'newSameFolder') {
-      createFolder = true;
-      folderType = 'alongside';
-    } else if($(this).attr('data-type') === 'newSubFolder') {
-      createFolder = true;
-      folderType = 'child';
+    if($(this).attr("data-type") === 'newSameFolder') { // if we're creating a new folder on the same level
+      createFolder = true; // creating a folder
+      folderType = 'alongside'; // alongside the current selection
+    } else if($(this).attr('data-type') === 'newSubFolder') { // otherwise, if we're creating a sub-folder
+      createFolder = true; // creating a folder
+      folderType = 'child'; // under the current selection
     }
 
-    if(!node.isFolder()) {
-      catID = node.parent.key;
+    if(!node.isFolder()) { // if the current selection is an item
+      catID = node.parent.key; // get the current parent for category ID
     }
 
-    $.post("/html/pricing/ajax/item_actions.php?action=createItem", {key: catID, folder: createFolder, folderType: folderType, update: fields}, function(data, status) {
-      if(status === 'success') {
-        let insertID = data;
+    fieldData.append("key", catID);
+    // noinspection JSCheckFunctionSignatures
+    fieldData.append("folder", createFolder);
+    fieldData.append("folderType", folderType);
 
-        if(createFolder) {
-          if(folderType === 'alongside') {
-            catalog.fancytree("getTree").getNodeByKey(catID).parent.addChildren({'key': insertID, 'title': sku, 'folder': true});
+    $.ajax({
+      url: "/html/pricing/ajax/item_actions.php?action=createItem",
+      data: fieldData,
+      cache: false,
+      contentType: false,
+      processData: false,
+      type: 'POST',
+      success: function(data) {
+        let insertID = data; // current ID that was created (for clicking the + sign on the catalog)
+
+        if(createFolder) { // if we're creating a folder
+          if(folderType === 'alongside') { // check to see if it's a main or sub category
+            // noinspection JSCheckFunctionSignatures
+            catalog.fancytree("getTree").getNodeByKey(catID).parent.addChildren({'key': insertID, 'title': name, 'folder': true}); // add category alongside
           } else {
-            catalog.fancytree("getTree").getNodeByKey(catID).addChildren({'key': insertID, 'title': sku, 'folder': true});
+            // noinspection JSCheckFunctionSignatures
+            catalog.fancytree("getTree").getNodeByKey(catID).addChildren({'key': insertID, 'title': name, 'folder': true}); // add category under parent
           }
 
-          displayToast('success', 'Successfully created category', 'Category Created');
+          displayToast('success', 'Successfully created category', 'Category Created'); // notify user we've created the category
 
-          $("#modalGlobal").html(data).modal("hide");
+          $("#modalGlobal").html(data).modal("hide"); // poof, it's gone
         } else {
+          // create the title structure for the new item
           let title = sku +
             '<span class="actions">' +
             '<div class="info_container"><i class="fa fa-info-circle primary-color view_item_info" data-id="' + insertID + '"></i></div>' +
             '<i class="fa fa-plus-circle success-color add_item_cabinet_list" data-id="' + insertID + '" title="Add To Cabinet List"></i>' +
             '</span>';
 
+          // add the item to the tree
+          // noinspection JSCheckFunctionSignatures
           catalog.fancytree("getTree").getNodeByKey(catID).addChildren({'key': insertID, 'icon': 'fa fa-magic', 'title': title, 'is_item': true, 'qty': 1});
 
-          displayToast('success', 'Successfully created item.', 'Item Created');
+          displayToast('success', 'Successfully created item.', 'Item Created'); // let the user know it was successfully created
 
-          $("#modalGlobal").html(data).modal("hide");
+          $("#modalGlobal").html(data).modal("hide"); // poof, gone!
         }
-      } else {
-        displayToast('error', 'Unable to create the requested item/category.', 'Error');
+      },
+      fail: function(xhr) {
+        $("body").append(xhr.responseText);
       }
     });
 
     unsaved = false;
+  })
+
+  .on("change", "#catalogAddEditItem input[name='image_type']:checked", function() {
+    let container = $("#catalogAddEditItem");
+    let display = $(".displayImage");
+
+    switch($(this).val()) {
+      case 'current':
+        display.hide();
+        container.find('#displayCurrentImage').show();
+        break;
+      case 'recent':
+        display.hide();
+        container.find('#displayRecentImage').show();
+        break;
+      case 'new':
+        display.hide();
+        container.find('#displayNewImageUpload').show();
+        break;
+      case 'existing':
+        display.hide();
+        container.find('#displayImageLibrary').show();
+        break;
+    }
   })
 
   .on("change", "#left_menu_options", function() {

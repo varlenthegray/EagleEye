@@ -187,11 +187,20 @@
     float: left;
   }
 
+  .header h4 {
+    white-space: nowrap;
+  }
+
   .right_content {
     float: left;
-    max-width: 300px;
     word-wrap: break-word;
-    padding-left: 10px;
+    padding: 0 10px;
+
+    hr {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      border-top: 1px solid #000;
+    }
   }
 }
 

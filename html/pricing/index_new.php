@@ -1560,6 +1560,7 @@ HEREDOC;
         var node = $.ui.fancytree.getNode(ui.target);
         catalog.contextmenu("enableEntry", "paste", !!CLIPBOARD);
         node.setActive();
+        $(".info-popup").hide();
 
         ui.menu.css('zIndex', 1001);
 
