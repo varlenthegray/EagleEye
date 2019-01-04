@@ -167,7 +167,12 @@ require '../../includes/header_start.php';
       employee: true,
       oo: true,
       cd: true,
-      meetings: true
+      meetings: true,
+      box: true,
+      cust: true,
+      fin: true,
+      assmbly: true,
+      wload: true
     };
 
     var filter_inputs = document.getElementById("filters_wrapper").getElementsByTagName("input");
