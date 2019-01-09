@@ -23,11 +23,11 @@ $room_qry = $dbconn->query("SELECT r.*, so.dealer_code, so.company_id, so.projec
   FROM rooms r LEFT JOIN sales_order so on r.so_parent = so.so_num WHERE r.id = $room_id ORDER BY room, iteration ASC;");
 $room = $room_qry->fetch_assoc();
 
-$company_qry = $dbconn->query("SELECT * FROM contact_company WHERE id = {$room['company_id']}");
+$company_qry = $dbconn->query("SELECT cc.*, d.*, d.id AS dealerID FROM contact_company cc LEFT JOIN dealers d on cc.dealer_id = d.id WHERE cc.id = {$room['company_id']}");
 $company = $company_qry->fetch_assoc();
 
-$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$room['dealer_code']}'");
-$dealer = $dealer_qry->fetch_assoc();
+//$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$room['dealer_code']}'");
+//$dealer = $dealer_qry->fetch_assoc();
 
 //<editor-fold desc="Disable submit buttons (if submitted)">
 $existing_quote_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
@@ -57,7 +57,7 @@ if($notes_qry->num_rows > 0) {
   }
 }
 
-$shipZIP = !empty($room['ship_zip']) ? $room['ship_zip'] : $dealer['shipping_zip'];
+$shipZIP = !empty($room['ship_zip']) ? $room['ship_zip'] : $company['shipping_zip'];
 $ship_zone_info = calcShipZone($shipZIP);
 
 if($room['ship_cost'] === null) {
@@ -402,7 +402,7 @@ if($pg_qry->num_rows > 0) {
           </tr>
           <tr>
             <td>Billing Type:</td>
-            <td colspan="2"><strong><?php echo $dealer['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
+            <td colspan="2"><strong><?php echo $company['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
           </tr>
           <tr>
             <td>Order Type:</td>
@@ -516,7 +516,7 @@ if($pg_qry->num_rows > 0) {
               <table width="100%">
                 <tr><th>&nbsp;Notes</th></tr>
                 <tr><td class="gray_bg">&nbsp;Delivery Notes:</td></tr>
-                <tr><td id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width pricing_textbox"><?php echo stripslashes($note_arr['room_note_delivery']['note']); ?></textarea></td></tr>
+                <tr><td id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width pricing_textbox"><?php echo stripcslashes($note_arr['room_note_delivery']['note']); ?></textarea></td></tr>
               </table>
 
               <input type="hidden" name="delivery_notes_id" value="<?php echo $note_arr['room_note_delivery']['id']; ?>" />
@@ -598,7 +598,7 @@ if($pg_qry->num_rows > 0) {
                 <table width="100%">
                   <tr><th>&nbsp;</th></tr>
                   <tr><td class="gray_bg">&nbsp;Design Notes:</td></tr>
-                  <tr><td><textarea name="room_note_design" maxlength="280" class="pricing_textbox"><?php echo stripslashes($note_arr['room_note_design']['note']); ?></textarea></td>
+                  <tr><td><textarea name="room_note_design" maxlength="280" class="pricing_textbox"><?php echo stripcslashes($note_arr['room_note_design']['note']); ?></textarea></td>
                   </tr>
                 </table>
 
@@ -653,7 +653,7 @@ if($pg_qry->num_rows > 0) {
                 <table width="100%">
                   <tr><th>&nbsp;</th></tr>
                   <tr><td class="gray_bg">&nbsp;Finishing/Sample Notes:</td></tr>
-                  <tr><td><textarea name="fin_sample_notes" maxlength="280" class="static_width pricing_textbox"><?php echo stripslashes($note_arr['room_note_fin_sample']['note']); ?></textarea></td></tr>
+                  <tr><td><textarea name="fin_sample_notes" maxlength="280" class="static_width pricing_textbox"><?php echo stripcslashes($note_arr['room_note_fin_sample']['note']); ?></textarea></td></tr>
                 </table>
 
                 <input type="hidden" name="fin_sample_notes_id" value="<?php echo $note_arr['room_note_fin_sample']['id']; ?>" />
@@ -810,7 +810,7 @@ if($pg_qry->num_rows > 0) {
             <tr class="border_thin_bottom">
               <td class="total_text">Multiplier:</td>
               <td class="total_text">&nbsp;</td>
-              <td class="text-md-right total_text" id="itemListMultiplier"><?php echo $dealer['multiplier']; ?></td>
+              <td class="text-md-right total_text" id="itemListMultiplier"><?php echo $company['multiplier']; ?></td>
             </tr>
             <tr class="border_thin_bottom">
               <td class="total_text">NET:</td>
@@ -906,13 +906,13 @@ if($pg_qry->num_rows > 0) {
   pricingVars.shipCost = <?php echo $ship_cost; ?>;
 
   <?php
-  $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $dealer['shipping_zip'];
+  $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $company['shipping_zip'];
   $ship_zone_info = calcShipZone($shipZone);
   $shipInfo = json_encode($ship_zone_info, true);
 
   echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
   echo "var calcShipZip = '{$room['ship_zip']}';";
-  echo "var calcDealerShipZip = '{$dealer['shipping_zip']}';";
+  echo "var calcDealerShipZip = '{$company['shipping_zip']}';";
   echo "var calcShipInfo = '$shipInfo';";
   ?>
 
@@ -1457,6 +1457,9 @@ HEREDOC;
               $("#modalGlobal").html(data).modal("show");
             });
             break;
+          case "duplicateItem":
+
+            break;
           default:
             alert("Unhandled command: " + data.cmd);
             return;
@@ -1514,6 +1517,10 @@ HEREDOC;
         case "meta+o":
           // TODO: Assign an SO # to lines, we're gonna show operations and edit SO's from here
           break;
+        case "ctrl+d":
+        case "meta+d": // mac: cmd+d
+          cmd = "duplicateItem";
+          break;
         case "ctrl+shift+up":
         case "ctrl+up":
           cmd = "moveUp";
@@ -1550,6 +1557,7 @@ HEREDOC;
         {title: "Edit <kbd>[F2]</kbd>", cmd: "edit", uiIcon: "ui-icon-pencil" },
         {title: "----"},
         {title: "New Item <kbd>[Ctrl+E]</kbd>", cmd: "addChild", uiIcon: "ui-icon-plus"},
+        {title: "Duplicate Item <kbd>[Ctrl+D]</kbd>", cmd: "duplicateItem", uiIcon: "ui-icon-copy"},
         {title: "----"},
         {title: "New Same Level Category <kbd>[Ctrl+Shift+F]</kbd>", cmd: "addFolder", uiIcon: "ui-icon-folder-collapsed"},
         {title: "New Sub-Category <kbd>[Ctrl+F]</kbd>", cmd: "addSubFolder", uiIcon: "ui-icon-folder-open"},
