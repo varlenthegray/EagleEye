@@ -441,7 +441,7 @@ HEREDOC;
   $("#project_form").find(".contact_id").select2();
 
   crmProject.bracketMgr.init();
-
   association.init();
+  crmMain.initNoteExpand();
   // crmProject.contactMgr.init();
 </script>

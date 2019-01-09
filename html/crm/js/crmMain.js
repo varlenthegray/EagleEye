@@ -97,5 +97,10 @@ var crmMain = {
         projectName.show(x,y,w,h);
       }
     });
+  },
+  initNoteExpand: function() {
+    $(".view_note_information").click(function() {
+      $(this).find('td').eq(2).find('div').toggle();
+    });
   }
 };
