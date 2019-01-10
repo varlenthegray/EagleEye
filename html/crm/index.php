@@ -67,6 +67,5 @@ require '../../includes/header_start.php';
     });
 
     crmMain.dealerInit(); // initialize dealer listening
-    crmMain.initProjectHover();
   });
 </script>

@@ -161,7 +161,7 @@ outputPHPErrs();
   <!-- Inserted via AJAX -->
 </div>
 <!-- /.modal -->
-
+<script> </script>
 <script>
   // TODO: Figure out how to make it so that externally saved changes by someone else are not overwritten
   /*
@@ -636,6 +636,23 @@ outputPHPErrs();
         $tdList.eq(3).find("i").attr("id", node.data.id);
       }
     });
+
+
+    oplFunction.completeTaskInit();
+    oplFunction.addOplTaskInit();
+    oplFunction.taskInfoInit();
+    oplFunction.completeOplNodesInit();
+    oplFunction.saveOplInit();
+    oplFunction.refreshOplInit();
+    oplFunction.addOplFolderInit();
+    oplFunction.clearCheckedInit();
+    oplFunction.oplPrintInit();
+    oplFunction.oplPriorityInit();
+    oplFunction.taskLengthInit();
+    oplFunction.findOplInit();
+    oplFunction.viewHistoryInit();
+    oplFunction.oplCheckoutInit();
+
 
     socket.emit("getOPLEditingStatus", opl_usr);
   });

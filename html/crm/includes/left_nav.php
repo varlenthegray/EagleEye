@@ -56,11 +56,6 @@
                 <td><div class="checkbox checkbox-primary"><input id="search_completed" type="checkbox"><label for="search_completed"> <i class="fa fa-fw fa-thumbs-up"></i> Completed</label></div></td>
                 <td><div class="checkbox checkbox-primary"><input id="search_pending" type="checkbox"><label for="search_pending"> <i class="fa fa-fw fa-hourglass-3"></i> Pending</label></div></td>
               </tr>
-              <tr>
-                <td><div class="checkbox checkbox-primary"><input id="search_hold" type="checkbox"><label for="search_hold"> <i class="fa fa-fw fa-stop-circle"></i> Hold</label></div></td>
-                <td><div class="checkbox checkbox-primary"><input id="search_pillar_missing" type="checkbox"><label for="search_pillar_missing"> <i class="fa fa-fw fa-exclamation"></i> Pillar Missing</label></div></td>
-                <td><div class="checkbox checkbox-primary"><input id="search_referred" type="checkbox"><label for="search_referred"> <i class="fa fa-fw fa-mail-forward"></i> Referred</label></div></td>
-              </tr>
             </table>
           </form>
         </div>

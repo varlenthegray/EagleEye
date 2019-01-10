@@ -50,7 +50,6 @@ function getHMMSS($duration) {
 <head>
   <link href="css/timecard.css" type="text/css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-
   <link href="/includes/css/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
 </head>
 

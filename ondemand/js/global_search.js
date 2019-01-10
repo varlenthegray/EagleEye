@@ -14,8 +14,7 @@ var thisClick;
 }*/
 
 // TODO: Lock down separeate sections based on bouncer results
-$("body")
-  .on("keyup", "#global_search", function() {
+  $("#global_search").keyup (function() {
     checkTransition(function() {
       let searchDisplay = $("#search_display");
       let input = $("#global_search");
@@ -48,8 +47,9 @@ $("body")
         searchDisplay.hide();
       }
     });
-  })
-  .on("keyup keypress", "#global_search", function(e) {
+  });
+
+  $("#global_search").keyup (function(e) {
     if(e.keyCode === 13) {
       e.preventDefault();
 
@@ -57,22 +57,23 @@ $("body")
 
       return false;
     }
-  })
-  .on("click", "#global_search_button", function() {
-    $("#global_search").trigger("keyup");
-  })
+  });
 
-  .on("click", "#btn_search_to_main", function() {
+  $("#global_search_button").click (function() {
+    $("#global_search").trigger("keyup");
+  });
+
+  $("#btn_search_to_main").click (function() {
     checkTransition(function() {
       globalFunctions.backFromSearch();
     });
-  })
+  });
 
-  .on("click", ".wc-edit-queue", function() {
+  $(".wc-edit-queue").click (function() {
     $("#global_search").val($(this).attr("id")).trigger("keyup");
-  })
+  });
 
-  .on("click", "#edit_so", function(e) {
+  $("#edit_so").click (function(e) {
     $(this).find('i').removeClass('zmdi zmdi-edit').addClass('fa fa-spin fa-spinner');
 
     let thisClick = this;
@@ -97,8 +98,9 @@ $("body")
         });
       }
     });
-  })
-  .on("click", "[id^=show_room_]", function() {
+  });
+
+  $("[id^=show_room_]").click (function() {
     thisClick = this;
 
     checkTransition(function() {
@@ -107,8 +109,9 @@ $("body")
       $("#tr_room_" + active_so_num).show();
       $("#div_room_" + active_so_num).slideDown(250);
     });
-  })
-  .on("click", ".edit_room", function(e) {
+  });
+
+  $(".edit_room").click (function(e) {
     $(this).find('i').removeClass('zmdi zmdi-edit').addClass('fa fa-spin fa-spinner');
 
     let thisClick = this;
@@ -150,8 +153,9 @@ $("body")
         });
       }
     });
-  })
-  .on("click", ".activate_op", function() {
+  });
+
+  $(".activate_op").click (function() {
     var opid = $(this).data("opid");
     var roomid = $(this).data("roomid");
     var soid = $(this).data("soid");
@@ -174,8 +178,9 @@ $("body")
     tinysort("ul#activeops_" + roomid + "_" + bracket + ">li",{data:'opnum'});
 
     $(this).parent().remove();
-  })
-  .on("click", ".deactivate_op", function() {
+  });
+
+  $(".deactivate_op").click (function() {
     var opid = $(this).data("opid");
     var roomid = $(this).data("roomid");
     var soid = $(this).data("soid");
@@ -192,9 +197,9 @@ $("body")
     tinysort("ul#inactiveops_" + roomid + "_" + bracket + ">li",{data:'opnum'});
 
     $(this).parent().remove();
-  })
+  });
 
-  .on("click", ".save_so", function() {
+  $(".save_so").click (function() {
     var so_info = $("#project_form").serialize();
 
     $.post('/ondemand/so_actions.php?action=save_so&so_num=' + active_so_num, {formInfo: so_info}, function(data) {
@@ -259,17 +264,18 @@ $("body")
     }
 
     unsaved = false;
-  })
+  });
 
-  .on("click", ".reply_to_inquiry", function(e) {
+  $(".reply_to_inquiry").click (function(e) {
     e.preventDefault();
 
     var reply_id = $(this).attr('id');
 
     $("[id^=inquiry_reply_line_]").not("#inquiry_reply_line_" + reply_id).hide(100);
     $("#inquiry_reply_line_" + reply_id).toggle(250);
-  })
-  .on("click", ".inquiry_reply_btn", function() {
+  });
+
+  $(".inquiry_reply_btn").click (function() {
     var reply_id = $(this).attr("id");
     var reply_text = $("#inquiry_reply_" + reply_id).val();
 
@@ -279,9 +285,9 @@ $("body")
     });
 
     unsaved = false;
-  })
+  });
 
-  .on("click", "[id^=show_attachments_room_]", function(e) {
+  $("[id^=show_attachments_room_]").click (function(e) {
     thisClick = this;
 
     e.stopPropagation();
@@ -296,14 +302,15 @@ $("body")
         $(window).scrollTo($("#show_single_room_" + active_room_id), 800, {offset: -100});
       }, 300);
     });
-  })
+  });
 
-  .on("click", "#add_attachment", function() {
+  $("#add_attachment").click (function() {
     $.post("/html/modals/room_attachments.php", {room_id: active_room_id}, function(data) {
       $("#modalGlobal").html(data).modal("show");
     });
-  })
-  .on("click", "#submit_attachments", function(e) {
+  });
+
+  $("#submit_attachments").click (function(e) {
     e.stopPropagation();
 
     var footer = $("#r_attachments_footer");
@@ -349,9 +356,9 @@ $("body")
     });
 
     unsaved = false;
-  })
+  });
 
-  .on("change", "input[name='note_type']", function() {
+  $("input[name='note_type']").change (function() {
     var room_notes = $("#room_notes");
     var note_id = $("#note_id");
 
@@ -413,9 +420,9 @@ $("body")
 
         break;
     }
-  })
+  });
 
-  .on("change", "#hide_empty_fields", function() {
+  $("#hide_empty_fields").change (function() {
     if($(this).is(":checked")) {
       $("input[value='']").show();
       $(".s_addr_empty").show();
@@ -436,9 +443,9 @@ $("body")
         $(".billing_empty").hide();
       }
     }
-  })
+  });
 
-  .on("click", "#generate_code", function() {
+  $("#generate_code").click (function() {
     var so = $(this).data("so");
 
     $.ajax({
@@ -459,9 +466,9 @@ $("body")
         displayToast("success", "Copied code to clipboard!", "Code Copied");
       }
     });
-  })
+  });
 
-  .on("click", ".add_room_trigger", function(e) {
+  $(".add_room_trigger").click (function(e) {
     e.stopPropagation();
 
     active_so_num = $(this).attr('data-sonum');
@@ -469,8 +476,9 @@ $("body")
     $.post("/html/search/modal/add_room.php", {addType: 'room', so_num: active_so_num}, function(data) {
       $("#modalGlobal").html(data).modal("show");
     });
-  })
-  .on("click", "#modalAddRoomCreate", function() {
+  });
+
+  $("#modalAddRoomCreate").click (function() {
     let room_data = $("#modalAddRoomData").serialize();
 
     if($("#modalAddRoomData input[name='room_name']").val() === '') {
@@ -490,9 +498,9 @@ $("body")
 
       unsaved = false;
     }
-  })
+  });
 
-  .on("click", ".add_iteration", function(e) {
+  $(".add_iteration").click (function(e) {
     thisClick = this;
 
     e.stopPropagation();
@@ -508,7 +516,7 @@ $("body")
     });
 
     return false;
-  })
+  });
 
   /*.on("click", ".iteration_save", function(e) {
     e.stopPropagation();

@@ -23,7 +23,7 @@ require 'includes/header_start.php';
     <link href="/includes/css/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
 
     <!-- Global JS functions -->
-    <script src="/includes/js/functions.min.js?v=<?php echo VERSION; ?>"></script>
+    <script src="/includes/js/functions.js?v=<?php echo VERSION; ?>"></script>
     <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
 
     <!-- App CSS -->
@@ -413,6 +413,22 @@ require 'includes/header_start.php';
       });
 
       $.ui.fancytree.debugLevel = 0;
+
+      main.navTimeCardInit();
+      main.employeeClockOutInit();
+      main.viewBreakInit();
+      main.dashBoardInit();
+      main.viewContactsInit();
+      main.feedbackSubmitInit();
+      main.clickingSoInit();
+      main.workCenterInit();
+      main.vinInit();
+      main.taskPageInit();
+      main.roomPageInit();
+      main.salesListInit();
+      main.notificationInit();
+      main.addSoInit();
+      main.addProjectInit();
     });
 
     /** @var tree - the FancyTree to take in and convert into a minified version */
@@ -429,854 +445,64 @@ require 'includes/header_start.php';
       socket.emit("oplEditing", {initiator: '<?php echo $_SESSION['userInfo']['name']; ?>', timestamp: new Date().getTime()});
     }
 
-    $("body") // start of OPL functions
-      .on("change", ".task_length", function() {
-        $(this).removeClass("length_red length_green length_yellow length_black");
-        $(this).addClass($(this).find(":selected").attr("class"));
-
-        let node = opl.fancytree("getActiveNode");
-
-        node.data.time_left = $(this).find(":selected").val();
-
-        calcDueDate($(this));
-        sendOPLEdit();
-      })
-      .on("change", ".due_date", function() {
-        let node = opl.fancytree("getActiveNode");
-
-        node.data.due_date = $(this).val();
-
-        calcDueDate($(this));
-        sendOPLEdit();
-      })
-      .on("click", "#saveOPL", function() {
-        let opl_mini = getMiniTree(opl);
-
-        // capture the OPL tree completely
-        let opl_list = JSON.stringify(opl_mini);
-
-        // send it over to the save PHP section
-        $.post("/html/opl/ajax/actions.php?action=save", {opl: opl_list, user: opl_usr}, function(data) {
-          $("body").append(data); // return a value based on what happened with save
-        }).done(function() {
-          socket.emit("oplSaved");
-          socket.emit("getOPLEditingStatus");
-        });
-
-        unsaved = false;
-      })
-      .on("keyup", "#findOPL", function() {
-        opl.fancytree("getTree").filterNodes($(this).val());
-      })
-      .on("click", "#addOPLFolder", function() {
-        let creationPoint = null;
-
-        if(opl.fancytree("getActiveNode") !== null) {
-          creationPoint = opl.fancytree("getActiveNode");
-        } else {
-          creationPoint = opl.fancytree("getRootNode");
-        }
-
-        creationPoint.editCreateNode("child", {
-          title: "New Folder...",
-          folder: true,
-          creation_date: new Date().toLocaleString(),
-          time_left: '???',
-          key: generateUniqueKey()
-        });
-
-        sendOPLEdit();
-      })
-      .on("click", "#addOPLTask, .add_subtask", function() {
-        if(!disabled) opl.fancytree("getActiveNode").editCreateNode("child", {
-          title: "New Task...",
-          creation_date: new Date().toLocaleString(),
-          time_left: '???',
-          key: generateUniqueKey()
-        });
-
-        sendOPLEdit();
-      })
-      .on("click", "#completeOPLNodes", function() {
-        var tree = opl.fancytree("getTree"), // get the tree
-          selected = tree.getSelectedNodes(true); // define what is selected, true allows flag for selection type 3
-
-        // part of plural/singular words
-        let plural = "";
-        let multiple = "this";
-
-        // setting up the plural and singular versions of the sentence
-        if(selected.length > 1) {
-          plural = "s";
-          multiple = "these";
-        } else {
-          plural = "";
-          multiple = "this";
-        }
-
-        $.confirm({ // a confirmation box to ensure they are intending to complete tasks
-          title: "Are you sure you want to complete " + multiple + " task" + plural + "?",
-          content: "You are about to remove " + selected.length + " task" + plural + ". Are you sure?",
-          type: 'red',
-          buttons: {
-            yes: function() {
-              $.map(selected, function (node) { // get all selected notes
-                var parent = node.parent; // set the parent node
-
-                if(parent) { // if there is a parent, we're gonna fix the selection count
-                  parent.fixSelection3FromEndNodes();
-                }
-
-                node.remove(); // remove the node
-
-                sendOPLEdit();
-              });
-
-              // re-render the tree deeply so that we can recalculate the line item numbers
-              opl.fancytree("getRootNode").render(true,true);
-
-              // hide the remove items button, there are no items to remove now
-              $(this).hide();
-            },
-            no: function() {} // we're not doing anything
-          }
-        });
-      })
-      .on("change", "#user_id", function() {
-        // we're changing the user, time to update the OPL user for the global scope
-        opl_usr = $(this).find(":selected").val();
-
-        updateOPLTree();
-
-        socket.emit("getOPLEditingStatus");
-      })
-      .on("click", ".view_history", function() {
-        let history_id = $(this).attr('id');
-        let history_text = $(this).parent().parent().find("td:nth-child(2)").text();
-
-        opl.fancytree('getTree').reload({url: '/html/opl/ajax/actions.php?action=viewOPLHistorical&id=' + history_id});
-
-        if($(this).attr('id') !== 'live') {
-          $(".opl_action").prop("disabled", true);
-          disabled = true;
-          $("#viewing").text(history_text);
-        } else {
-          $(".opl_action").prop("disabled", false);
-          disabled = false;
-          $("#viewing").text("");
-        }
-      })
-      .on("click", ".complete_task", function() {
-        let node = opl.fancytree("getActiveNode");
-
-        if(!disabled) {
-          $.confirm({
-            title: "Are you sure you want to complete this task?",
-            content: "You are about to remove task " + node.getIndexHier() + ": " + node.title + ". Are you sure?",
-            type: 'red',
-            buttons: {
-              yes: function() {
-                node.remove();
-
-                // re-render the tree deeply so that we can recalculate the line item numbers
-                opl.fancytree("getRootNode").render(true,true);
-
-                sendOPLEdit();
-              },
-              no: function() {}
-            }
-          });
-        }
-      })
-      .on("click", ".view_task_info", function() {
-        let unique_id = $(this).attr("data-uid");
-        let indexHeir = $(this).attr("data-indexHeir");
-        let title = $(this).attr("data-title");
-
-        $.post("/html/opl/ajax/row_information.php", {unique_id: unique_id, user_id: opl_usr, indexHeir: indexHeir, title: title}, function(data) {
-          $("#modalOPLInfo").html(data).modal('show');
-        });
-      })
-      .on("keyup", "#oplTaskNewNotes", function(e) {
-        // this handles auto-display of the save button on the modal popup
-        let button = $("#oplTaskInfoSave");
-
-        // keycode chart: https://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
-        if((e.which >= 48 && e.which <= 90) || (e.which >= 96 && e.which <= 111) || (e.which >= 186 && e.which <= 222) || e.which === 32) {
-          if(button.is(":visible") && $(this).val().length === 0) {
-            button.hide();
-          } else {
-            button.show();
-          }
-        } else {
-          if(button.is(":visible") && $(this).val().length === 0) {
-            button.hide();
-          }
-        }
-      })
-      .on("click", "#oplTaskInfoSave", function() {
-        let unique_id = $(this).attr("data-unique-id");
-        let note = $("#oplTaskNewNotes").val();
-
-        $.post("/html/opl/ajax/actions.php?action=saveOPLRowInfo", {unique_id: unique_id, note: note, user_id: opl_usr}, function(data) {
-          $("body").append(data);
-        });
-
-        opl.fancytree("getTree").getNodeByKey(unique_id).data.hasInfo = true; // update that specific key to now have notes (on the table)
-        $(opl.fancytree("getTree").getNodeByKey(unique_id).tr).find(">td").eq(2).find(".view_task_info").removeClass("no-info").addClass("has-info"); // set the icon as active
-
-        sendOPLEdit();
-
-        unsaved = false;
-      })
-      .on("click", "#oplRefresh", function() {
-        updateOPLTree();
-        socket.emit("getOPLEditingStatus");
-      })
-      .on("change", ".OPLPriority", function() {
-        if($(this).val().length > 0) {
-          $(this).addClass("white_black");
-        } else {
-          $(this).removeClass("white_black");
-        }
-
-        let node = opl.fancytree("getActiveNode");
-
-        node.data.priority = $(this).val();
-      })
-      .on("click", "#oplPrint", function() {
-        if(opl.fancytree("getTree").getSelectedNodes().length > 1) {
-          opl.fancytree("getTree").filterNodes(function(node) {
-            return node.isSelected();
-          });
-
-          window.print();
-
-          opl.fancytree("getTree").clearFilter();
-        } else {
-          window.print();
-        }
-      })
-      .on("click", "#oplClearSelected", function() {
-        opl.fancytree("getTree").visit(function(node){
-            node.setSelected(false);
-          });
-
-        return false;
-      })
-      .on("click", "#OPLForceOverride", function() {
-        sendOPLEdit();
-      })
-      .on("click", "#OPLCheckout", function() {
-        sendOPLEdit();
-      })
-      // end of OPL functions
-
       <?php if($bouncer->validate('view_timecards')) { ?>
-    // -- Navigation --
-      .on("click", "#nav_timecard", function() {
-        var start = Math.round(new Date().getTime()/1000);
-        var end = Math.round(new Date().getTime()/1000);
-
-        window.open("/print/timecard.php?start_date=" + start + "&end_date=" + end + "&employee=1", "_blank");
-      })
-      // -- End Navigation --
+    
       <?php } ?>
 
       <?php if($bouncer->validate('view_so')) { ?>
-      // -- Clicking an SO to view it
-      .on("click", ".view_so_info", function(e) {
-        e.stopPropagation();
-
-        $("#modalGlobal").modal('hide');
-
-        var id = $(this).attr("id");
-        $("#global_search").val(id).trigger("keyup");
-      })
-      // -- End clicking an SO to view it
+     
       <?php } ?>
 
       <?php if($bouncer->validate('view_operation')) { ?>
-      // -- Dashboard --
-      .on("change", "#viewing_queue", function() {
-        globalFunctions.updateOpQueue();
-      })
 
-      .on("click", ".start-operation", function(e) {
-        e.stopPropagation();
-
-        opFull = $(this).closest('tr').find('td').eq(4).html();
-        op_id = $(this).attr("id");
-
-        if(opFull === 'NB00: Non-Billable' || opFull === 'TF00: On The Fly') {
-          $.post("/ondemand/op_actions.php?action=get_start_info", {opID: op_id, op: opFull}, function(data) {
-            $("#modalGlobal").html(data);
-          }).done(function() {
-            $("#modalGlobal").modal();
-          }).fail(function() { // if we're receiving a header error
-            $("body").append(data); // echo an error and log it
-          });
-        } else {
-          $.post("/ondemand/op_actions.php?action=start_operation", {operation: opFull, id: op_id}, function(data) {
-            $('body').append(data);
-
-            socket.emit("updateQueue");
-
-            $.post("/html/view_notes.php", {queueID: op_id}, function(data) {
-              $("#modalGlobal").html(data).modal("show");
-            });
-          });
-        }
-
-        unsaved = false;
-      })
-      .on("click", "#start_job", function() {
-        var other_notes_field = $("#other_notes_field").val(); // non-billable "other" section
-        var notes_field = $("#notes_field").val(); // Cabinet Vision task or anything with JUST a notes field
-
-        if($("#other_subtask").is(":checked")) { // if this is a subtask "other" section then we have to verify the notes
-          if (other_notes_field.length >= 3) { // and the length of notes is greater than 3
-            $.post("/ondemand/op_actions.php?action=start_operation", {id: op_id, operation: opFull, subtask: "Other", notes: other_notes_field}, function (data) {
-              $("body").append(data);
-
-              socket.emit("updateQueue");
-
-              $("#modalGlobal").modal('hide');
-            });
-          } else { // otherwise, the notes is less than 3 and they need to enter notes in
-            displayToast("error", "Enter notes in before continuing (more than 3 characters).", "Notes Required");
-          }
-        } else { // this is an OTF (for now?)
-          var subtask = $('input[name=nonBillableTask]:checked').val();
-          var otf_so_num = $("#otf_so_num").val();
-          var otf_room = $("#otf_room").val();
-          var otf_op = $("#otf_operation").val();
-          var otf_notes = $("#otf_notes").val();
-          var otf_iteration = $("#otf_iteration").val();
-
-          $.post("/ondemand/op_actions.php?action=start_operation", {id: op_id, operation: opFull, subtask: subtask,
-            notes: notes_field, otf_so_num: otf_so_num, otf_room: otf_room, otf_op: otf_op, otf_notes: otf_notes, otf_iteration: otf_iteration}, function(data) {
-            socket.emit("updateQueue");
-
-            $('body').append(data);
-
-            $("#modalGlobal").modal('hide');
-          });
-        }
-
-        unsaved = false;
-      })
-      .on("change", "input[name='nonBillableTask']", function() {
-        if($(this).prop("id") === 'other_subtask') {
-          $("#other_notes_section").show();
-          $("#other_notes_field").focus();
-        } else {
-          $("#other_notes_section").hide();
-        }
-      })
-
-      .on("click", ".pause-operation", function(e) {
-        e.stopPropagation();
-
-        op_id = $(this).attr("id");
-
-        $.post("/ondemand/op_actions.php?action=get_pause_info", {opID: op_id}, function(data) {
-          $("#modalGlobal").html(data).modal();
-        });
-      })
-      .on("click", "#pause_op", function() {
-        $.post("/ondemand/op_actions.php?action=pause_operation", {opID: op_id, notes: $("#notes").val(), qty: $("#qtyCompleted").val()}, function(data) {
-          socket.emit("updateQueue");
-
-          $("body").append(data);
-          $("#modalGlobal").modal('hide');
-        });
-      })
-
-      .on("click", ".complete-operation", function(e) {
-        e.stopPropagation();
-
-        op_id = $(this).attr("id");
-
-        $.post("/ondemand/op_actions.php?action=get_stop_info", {opID: op_id}, function(data) {
-          $("#modalGlobal").html(data).modal();
-        });
-
-        unsaved = false;
-      })
-      .on("change", "#rework_reqd", function() {
-        if($(this).is(":checked")) {
-          $(".rework_reason_group").show();
-          $("#complete_op").html("Send Back");
-        } else {
-          $(".rework_reason_group").hide();
-          $("#complete_op").html("Complete");
-        }
-      })
-      .on("click", "#complete_op", function() {
-        var notes = $("#notes").val();
-        var qty_compl = $("#qtyCompleted").val();
-        var rework = $("#rework_reqd").is(":checked");
-        var rw_reason = $("#rework_reason").find(":selected").val();
-
-        // formdata required because now we're attaching files
-        var formData = new FormData();
-        formData.append('opID', op_id);
-        formData.append('opnum', opFull);
-        formData.append('notes', notes);
-        formData.append('qty', qty_compl);
-        formData.append('rework_reqd', rework);
-        formData.append('rework_reason', rw_reason);
-        formData.append('attachment', $("input[type='file']")[0].files[0]);
-
-        $.ajax({
-          url: "/ondemand/op_actions.php?action=complete_operation",
-          //url: "/admin/test.php",
-          type: 'POST',
-          data: formData,
-          processData: false,
-          contentType: false,
-          success: function(data) {
-            $('body').append(data);
-            $("#modalGlobal").modal('hide');
-
-            socket.emit("updateQueue");
-          }
-        });
-
-        unsaved = false;
-      })
-
-      .on("click", ".op-notes", function(e) {
-        e.stopPropagation();
-
-        $.post("/html/view_notes.php", {queueID: $(this).attr("id")}, function(data) {
-          $("#modalGlobal").html(data).modal("show");
-        });
-      })
-      // -- End Dashboard --
       <?php } ?>
 
       <?php if($bouncer->validate('view_workcenter')) { ?>
-      // -- Workcenter --
-      .on("click", ".wc-view-queue-so", function() {
-        var id = $(this).attr("id");
-        $("#global_search").val(id).trigger("keyup");
-      })
-      // -- End Workcenter --
+
       <?php } ?>
 
       <?php if($bouncer->validate('edit_vin')) { ?>
-      // -- VIN Page --
-      .on("blur", "#so_num", function() {
-        vin_sonum = $(this).val();
 
-        $.post("/ondemand/livesearch/build_a_vin.php?search=room&so_num=" + vin_sonum, function(data) {
-          $("#room").html(data);
-        });
-      })
-      .on("click blur", "#room", function() {
-        $.post("/ondemand/livesearch/build_a_vin.php?search=iteration&so_num=" + vin_sonum + "&room=" + $("#room option:selected").val(), function (data) {
-          $("#iteration").html(data);
-        });
-      })
-
-      .on("click", ".print-sample", function() {
-        var room_id = $(this).attr("id");
-
-        globalFunctions.calcVin(room_id);
-
-        var formInfo = $("#room_edit_" + room_id).serialize();
-
-        $.post("/ondemand/room_actions.php?action=update_room&" + formInfo + "&roomid=" + room_id, function(data) {
-          $('body').append(data);
-        }).done(function() {
-          setTimeout(function() {
-            window.open("/print/sample.php?room_id=" + room_id);
-          }, 500);
-        });
-
-        unsaved = false;
-      })
-      .on("change keydown", ".vin_code_calc", function() {
-        globalFunctions.calcVin(active_room_id);
-      })
-
-      .on("change", ".recalcVin", function() {
-        globalFunctions.calcVin(active_room_id);
-      })
-
-      .on("change", "#ext_carcass_same", function() {
-        if($(this).is(":checked")) {
-          $(".ext_finish_block").hide();
-        } else {
-          $(".ext_finish_block").show();
-        }
-      })
-      .on("change", "#int_carcass_same", function() {
-        if($(this).is(":checked")) {
-          $(".int_finish_block").hide();
-        } else {
-          $(".int_finish_block").show();
-        }
-      })
-      // -- End VIN Page --
       <?php } ?>
 
       <?php if($bouncer->validate('view_tasks')) { ?>
-      // -- Task Page --
-      .on("click", ".display-task-info", function() {
-        $.post("/ondemand/admin/tasks.php?action=get_task_info", {task_id: $(this).attr("id")}, function(data) {
-          $("#modalTaskInfo").html(data);
-        }).done(function() {
-          $("#modalTaskInfo").modal();
-        }).fail(function(data) { // if we're receiving a header error
-          $("body").append(data); // echo an error and log it
-        });
-      })
-      .on("click", "#update_task_btn", function() {
-        var form_info = $("#task_details").serialize();
-        var task_id = $(this).data("taskid");
-        var s_text_1 = $("#split-text-1").val();
-        var s_text_2 = $("#split-text-2").val();
 
-        $.post("/ondemand/admin/tasks.php?action=update_task", {task_id: task_id, s_text_1: s_text_1, s_text_2: s_text_2, form: form_info}, function(data) {
-          $("body").append(data);
-          $("#modalTaskInfo").modal('hide');
-
-          unsaved = false;
-        });
-      })
-      .on("click", "#split_task_btn", function() {
-        $(".task_hide").toggle(100);
-        $("#split_body").toggle(250);
-
-        setTimeout(function() {
-          if($("#split_body").is(":visible")) {
-            $("#split_task_enabled").val("1");
-          } else {
-            $("#split_task_enabled").val("0");
-          }
-        }, 250);
-      })
-      .on("click", "#create_op_btn", function() {
-        var form_info = $("#task_details").serialize();
-        var task_id = $(this).data("taskid");
-
-        $.post("/ondemand/admin/tasks.php?action=create_operation&" + form_info, {task_id: task_id}, function(data) {
-          $("body").append(data);
-          $("#modalTaskInfo").modal('hide');
-
-          unsaved = false;
-        });
-      })
-      // -- End Task Page --
       <?php } ?>
 
       <?php if($bouncer->validate('view_audit_log')) { ?>
-      // -- Room Page --
-      .on("change", "#display_log", function() {
-        if($(this).is(":checked")) {
-          $(".room_note_log").show();
-        } else {
-          $(".room_note_log").hide();
-        }
-      })
-      // -- End Room Page --
+
       <?php } ?>
 
       <?php if($bouncer->validate('view_sales_list')) { ?>
-      // -- Sales List Page --
-      .on("change", "#job_status_lost", function() {
-        if($(this).is(":checked")) {
-          $(".room_lost").show();
-        } else {
-          $(".room_lost").hide();
-        }
-      })
-      .on("change", "#job_status_quote", function() {
-        if($(this).is(":checked")) {
-          $(".room_quote").show();
-        } else {
-          $(".room_quote").hide();
-        }
-      })
-      .on("change", "#job_status_job", function() {
-        if($(this).is(":checked")) {
-          $(".room_job").show();
-        } else {
-          $(".room_job").hide();
-        }
-      })
-      .on("change", "#job_status_completed", function() {
-        if($(this).is(":checked")) {
-          $(".room_completed").show();
-        } else {
-          $(".room_completed").hide();
-        }
-      })
-      .on("change", ".hide_dealer", function() {
-        var dealer_id = $(this).data("dealer-id");
 
-        if($(this).is(":checked")) {
-          $(".dealer_" + dealer_id).show();
-        } else {
-          $(".dealer_" + dealer_id).hide();
-        }
-      })
-      .on("click", ".sales_list_visible", function(e) {
-        e.stopPropagation();
-
-        var hide = $(this).data("identifier");
-
-        $("." + hide).hide();
-
-        $.post("/ondemand/display_actions.php?action=hide_sales_list_id&id=" + hide);
-      })
-      .on("click", ".sales_list_hidden", function(e) {
-        e.stopPropagation();
-
-        var show = $(this).data("identifier");
-        $(this).removeClass('btn-primary-outline sales_list_hidden').addClass('btn-primary sales_list_visible').children('i').removeClass('zmdi-eye').addClass('zmdi-eye-off');
-
-        $.post("/ondemand/display_actions.php?action=show_sales_list_id&id=" + show);
-      })
-      // -- End Sales List Page --
       <?php } ?>
 
       <?php if($bouncer->validate('add_feedback')) { ?>
-      // -- Feedback --
-      .on("click", "#feedback-submit", function() {
-        var description = $("#feedback-text").val();
-        var feedback_to = $("#feedback_to").val();
-        var priority = $("#feedback_priority").val();
 
-        $.post("/ondemand/admin/tasks.php?action=submit_feedback", {description: description, assignee: feedback_to, priority: priority}, function(data) {
-          $("body").append(data);
-          $("#feedback-page").modal('hide');
-          unsaved = false;
-          $("#feedback-text").val("");
-        });
-      })
-      // -- End Feedback --
       <?php } ?>
 
-      // -- Notifications --
-      .on("click", "#notification_list", function() {
-        $.post("/ondemand/alerts.php?action=viewed_alerts");
-      })
-      // -- End Notifications --
+
 
       <?php if($bouncer->validate('clock_out')) { ?>
-      // -- Employees --
-      .on("click", ".clock_out", function(e) {
-        var id = $(this).data("id");
 
-        e.stopPropagation();
-
-        $.post("/ondemand/account_actions.php?action=clock_out", {'clockout_id': id}, function(data) {
-          $("body").append(data);
-        });
-      })
-      // -- End Employees --
       <?php } ?>
 
       <?php if($bouncer->validate('add_so')) { ?>
-      .on("click", ".nav_add_so", function() {
-        $.post('/html/new_customer.php', function(data) {
-          $("#modalGlobal").html(data).modal('show');
-        });
-      })
-      .on("change", "input[name='cu_type']", function() {
-        var add_rc = $("#add_retail_customer");
-        var add_dist = $("#add_distributor_cc");
 
-        switch($(this).val()) {
-          case 'retail':
-            add_rc.show();
-            add_dist.hide();
-
-            break;
-          case 'distribution':
-            add_rc.hide();
-            add_dist.show();
-
-            break;
-          case 'cutting':
-            add_rc.hide();
-            add_dist.show();
-
-            break;
-          default:
-            break;
-        }
-      })
-      .on("click", "#submit_new_customer", function() {
-        var cuData = $("#add_retail_customer").serialize();
-
-        $.post("/ondemand/so_actions.php?action=add_customer", {so_num: $("#so_num").val(), cu_data: cuData}, function(data) {
-          $("body").append(data);
-
-          $("#modalGlobal").modal('hide');
-        });
-
-        unsaved = false;
-      })
-      .on("change", "#secondary_addr_chk", function() {
-        $(".secondary_addr_disp").toggle();
-      })
-      .on("change", "#billing_addr_chk", function() {
-        $(".billing_info_disp").toggle();
-      })
-      .on("change", "#contractor_chk", function() {
-        $(".contractor_disp").toggle();
-      })
       <?php } ?>
 
       <?php if($bouncer->validate('add_project')) { ?>
-      .on("click", "#nav_add_project", function() {
-        $.post('/html/add_project.php?display=dealer', function(data) {
-          $("#modalGlobal").html(data).modal('show');
-        });
-      })
-      .on("change", "#contractor_chk", function() {
-        $(".contractor_disp").toggle();
-      })
-      .on("click", "#submit_new_project", function() {
-        var cuData;
 
-        cuData = $("#add_project").serialize();
-
-        $.post("/ondemand/so_actions.php?action=add_customer", {so_num: $("#so_num").val(), cu_data: cuData}, function(data) {
-          $("body").append(data);
-
-          $("#modalGlobal").modal('hide');
-        });
-
-        unsaved = false;
-      })
       <?php } ?>
 
       <?php if($bouncer->validate('view_contacts')) { ?>
-      .on("click", ".nav_add_contact", function() {
-        var defaultType = $(this).attr('data-default');
 
-        $.post('/html/modals/add_contact.php?default=' + defaultType, function(data) {
-          $("#modalGlobal").html(data).modal('show');
-        });
-      })
-      .on("click", "#submit_new_contact", function() {
-        var contactData = $("#contact_form").serialize();
-
-        $.post('/ondemand/contact_actions.php?action=save_contact&' + contactData, function(data) {
-          $("body").append(data);
-
-          $("#modalGlobal").modal('hide');
-        });
-
-        unsaved = false;
-      })
-      .on("change", "#contact_type", function() {
-        if($(this).find("option:selected").text() === 'Dealer') {
-          $("#dealer_code").show();
-        } else {
-          $("#dealer_code").hide();
-        }
-      })
-      .on("click", "#update_contact", function() {
-        var contactData = $("#contact_form").serialize();
-
-        $.post('/ondemand/contact_actions.php?action=update_contact&' + contactData, function(data) {
-          $("body").append(data);
-
-          $("#modalGlobal").modal('hide');
-        });
-
-        unsaved = false;
-      })
-      .on("click", "#delete_contact", function() {
-        var contact_name = $(this).attr('data-name');
-        var contact_id = $(this).attr('data-contact-id');
-
-        $.confirm({
-          title: "Delete contact " + contact_name,
-          content: "You are about to <strong>permanently</strong> delete " + contact_name + ". Are you sure you would like to do this?",
-          buttons: {
-            yes: function() {
-              $.post("/ondemand/contact_actions.php?action=delete_contact", {id: contact_id}, function(data) {
-                $("body").append(data);
-              });
-            },
-            no: function() {}
-          }
-        });
-      })
-
-      .on("click", ".get_customer_info", function(e) {
-        $.post("/html/modals/add_contact.php?action=edit", {id: $(this).attr('data-view-id')}, function(data) {
-          $("#modalGlobal").html(data).modal('show');
-        });
-
-        // stops it from posting to the URL in the browser
-        e.preventDefault().stopPropagation();
-      })
-
-      .on("click", ".nav_add_company", function() {
-        $.post("/html/modals/add_company.php", function(data) {
-          $("#modalGlobal").html(data).modal('show');
-        });
-      })
       <?php } ?>
 
       <?php if($bouncer->validate('view_break')) { ?>
-      .on("click", ".nav_break", function() {
-        var thisText = $(this).find('span');
 
-        if($(this).attr('id') === '201') {
-          $.post("/ondemand/account_actions.php?action=start_break", {id: 201, operation: 'Break'}, function(data) {
-            $('body').append(data);
-
-            socket.emit("updateQueue");
-
-            $.post("/ondemand/account_actions.php?action=get_break_btn", function(data) {
-              var result = JSON.parse(data);
-              $(".nav_break").attr('id', result.id);
-
-              thisText.html("Stop Break");
-            });
-
-            $(this).addClass('btn-success');
-          });
-        } else {
-          $.post("/ondemand/account_actions.php?action=get_break_btn", function(data) {
-            var result = JSON.parse(data);
-
-            $(this).removeClass('btn-success');
-
-            $.post("/ondemand/op_actions.php?action=complete_operation", {'opID': result.id, 'opnum': 'NB00'}, function(data) {
-              $('body').append(data);
-
-              socket.emit("updateQueue");
-
-              $(".nav_break").attr('id', '201');
-
-              thisText.html("Start Break");
-            });
-          });
-        }
-      })
       <?php } ?>
 
-      .on("click", ".post_to_cal", function(e) {
-        e.stopPropagation();
-      })
-    ;
-
-    setInterval(function() { // stops the auto-logout
-      $.post("/ondemand/session_continue.php");
-    }, 600000);
-
-    globalFunctions.updateBreakButton(); // get the break button initial state
   </script>
 
   <?php if($bouncer->validate('search')) { ?>
@@ -1289,6 +515,8 @@ require 'includes/header_start.php';
   <script src="/assets/js/bootstrap.min.js"></script>
   <script src="/assets/js/waves.js"></script>
   <script src="/assets/js/jquery.nicescroll.js"></script>
+  <script src="/includes/js/main.js"></script>
+
 
   <!-- custom dropdown -->
   <script src="/includes/js/custom_dropdown.min.js?v=<?php echo VERSION; ?>"></script>
@@ -1326,7 +554,10 @@ require 'includes/header_start.php';
   <script src="/assets/plugins/math.min.js"></script>
 
   <!-- Pricing program -->
-  <script src="/html/pricing/pricing.min.js?v=<?php echo VERSION; ?>"></script>
+  <script src="/html/pricing/pricing.js?v=<?php echo VERSION; ?>"></script>
+
+  <!-- Opl Program -->
+  <script src="/includes/js/opl.js"></script>
 
   <!-- Fancytree -->
   <script src="/assets/plugins/fancytree/jquery.fancytree.js"></script>

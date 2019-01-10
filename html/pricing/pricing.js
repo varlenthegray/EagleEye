@@ -486,185 +486,194 @@ var pricingFunction = {
       $("#crmBatch").find("input, select").prop("disabled", true);
       productionLock.show();
     }
-  }
-};
+  },
+  productionLockInit: function() {
+    $("#production_lock").click(function() {
 
-var mouseX, mouseY;
+      $("#crmBatch").find("input, select").prop("disabled", false);
+      $(this).attr("data-clicked", "true").hide();
 
-$(document).mousemove(function(e) {
-  mouseX = e.pageX;
-  mouseY = e.pageY;
-});
+      $.get("/html/pricing/ajax/global_actions.php?action=overrideProductionLock&roomID=" + active_room_id);
+    });
+  },
+  saveInit: function() {
+    $("#save").click(function() {
+      // variable for storing the form data
+      let formData = pricingFunction.disabledSerialize($("#batch_info"));
+      let val_array = {};
+      let inputSelect = $("select");
+      let cab_list = JSON.stringify(getMiniTree(cabinetList));
 
-$("body")
-  .on("keyup", "#treeFilter", function() { // filters per keystroke on search catalog
+      //<editor-fold desc="Room Data">
+      inputSelect.each(function() {
+        var ele = $(this);
+        var field = $(this).attr('id');
+        var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
+
+        if ($.inArray(ele.val(), custom_fields) >= 0) {
+          val_array[field] = {};
+
+          ele.parent().find('input').each(function() {
+            val_array[field][$(this).attr('name')] = $(this).val();
+          });
+        }
+      });
+
+      let customVals = JSON.stringify(val_array);
+
+      $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {
+        cabinet_list: cab_list,
+        customVals: customVals,
+        formData: formData
+      }, function(data) {
+        $('body').append(data);
+      });
+      //</editor-fold>
+
+      // live notes for Room notes box
+      pricingFunction.checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
+
+      // live notes for SO notes box
+      pricingFunction.checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
+
+      // based on what we're saving, we're going to take an action
+      /* switch(curTab) {
+         case 'room-notes-tab': // saving notes
+           formData = $("#batch_notes").serialize();
+
+           $.post("/html/pricing/ajax/global_actions.php?action=saveBatchNotes", {room_id: active_room_id, notes: formData}, function(data, response) {
+             if(response === 'success') {
+               $('body').append(data);
+
+               pricingFunction.checkNote('.so_note_box', '#project_note_input', '#project_followup_date', '#project_followup_requested_of');
+               pricingFunction.checkNote('.room_note_box', '#batch_note_input', '#batch_inquiry_followup_date', '#batch_inquiry_requested_of');
+             } else {
+               displayToast('error', 'Something went wrong with notes. Please try again.', 'Note Error');
+             }
+           });
+
+           break;
+         case 'room-details-tab': // saving room details
+           formData = pricingFunction.disabledSerialize($("#batch_details"));
+
+           $.post("/html/pricing/ajax/global_actions.php?action=saveBatchDetails", {room_id: active_room_id, formData: formData}, function(data, response) {
+             if(response === 'success') {
+               $('body').append(data);
+             } else {
+               displayToast('error', 'Something went wrong saving Batch Details. Please try again.', 'Batch Details Error');
+             }
+           });
+
+           break;
+         case 'room-cabinet-details-tab':
+           val_array = {};
+
+           formData = pricingFunction.disabledSerialize($("#cabinet_details"));
+
+           inputSelect.each(function() {
+             var ele = $(this);
+             var field = $(this).attr('id');
+             var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
+
+             if($.inArray(ele.val(), custom_fields) >= 0) {
+               val_array[field] = {};
+
+               ele.parent().find('input').each(function() {
+                 val_array[field][$(this).attr('name')] = $(this).val();
+               });
+             }
+           });
+
+           customVals = JSON.stringify(val_array);
+
+           $.post("/html/pricing/ajax/global_actions.php?action=saveCabinetDetails", {room_id: active_room_id, formData: formData, customVals: customVals}, function(data, response) {
+             if(response === 'success') {
+               $('body').append(data);
+             } else {
+               displayToast('error', 'Something went wrong saving Batch Details. Please try again.', 'Batch Details Error');
+             }
+           });
+
+           break;
+         case 'room-item-list-tab':
+           cab_list = JSON.stringify(getMiniTree(cabinetList));
+
+           $.post("/html/pricing/ajax/global_actions.php?action=saveItemList", {room_id: active_room_id, cabinet_list: cab_list}, function(data) {
+             $('body').append(data);
+           });
+
+           break;
+         default: // no tabs selected at all, we must be in the old interface, run the old save code
+           //<editor-fold desc="Room Data">
+           var cabinet_specifications = $("#cabinet_specifications").serialize();
+           var accounting_notes = $("#accounting_notes").serialize();
+           cab_list = JSON.stringify(getMiniTree(cabinetList));
+
+           inputSelect.each(function() {
+             var ele = $(this);
+             var field = $(this).attr('id');
+             var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
+
+             if($.inArray(ele.val(), custom_fields) >= 0) {
+               val_array[field] = {};
+
+               ele.parent().find('input').each(function() {
+                 val_array[field][$(this).attr('name')] = $(this).val();
+               });
+             }
+           });
+
+           customVals = JSON.stringify(val_array);
+
+           $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes}, function(data) {
+             $('body').append(data);
+           });
+           //</editor-fold>
+
+           // live notes for Room notes box
+           pricingFunction.checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
+
+           // live notes for SO notes box
+           pricingFunction.checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
+
+           break;
+       }*/
+
+      unsaved = false;
+    });
+  },
+  init: function() {
+
+  $("#treeFilter").keyup (function() { // filters per keystroke on search catalog
     // grab this value and filter it down to the node needed
     catalog.fancytree("getTree").filterNodes($(this).val());
 
     // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
     // TODO: https://github.com/mar10/fancytree/issues/551
-  })
-  .on("keyup", "#addItemFilter", function() { // filters per keystroke on search catalog
+  });
+
+  $("#addItemFilter").keyup (function() { // filters per keystroke on search catalog
     // grab this value and filter it down to the node needed
     $("#add_item_categories").fancytree("getTree").filterNodes($(this).val());
 
     // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
     // TODO: Resolution can be found in CRM tree (for searching companies)
-  })
+  });
 
-  .on("change", "select", function() {
+  $("#select").change (function() {
     globalFunctions.checkDropdown();
-  })
+  });
 
-  .on("click", "#save", function() {
-    // variable for storing the form data
-    let formData = pricingFunction.disabledSerialize($("#batch_info"));
-    let val_array = {};
-    let inputSelect = $("select");
-    let cab_list = JSON.stringify(getMiniTree(cabinetList));
-
-    //<editor-fold desc="Room Data">
-    inputSelect.each(function() {
-      var ele = $(this);
-      var field = $(this).attr('id');
-      var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
-
-      if($.inArray(ele.val(), custom_fields) >= 0) {
-        val_array[field] = {};
-
-        ele.parent().find('input').each(function() {
-          val_array[field][$(this).attr('name')] = $(this).val();
-        });
-      }
-    });
-
-    let customVals = JSON.stringify(val_array);
-
-    $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, formData: formData}, function(data) {
-      $('body').append(data);
-    });
-    //</editor-fold>
-
-    // live notes for Room notes box
-    pricingFunction.checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
-
-    // live notes for SO notes box
-    pricingFunction.checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
-
-    // based on what we're saving, we're going to take an action
-   /* switch(curTab) {
-      case 'room-notes-tab': // saving notes
-        formData = $("#batch_notes").serialize();
-
-        $.post("/html/pricing/ajax/global_actions.php?action=saveBatchNotes", {room_id: active_room_id, notes: formData}, function(data, response) {
-          if(response === 'success') {
-            $('body').append(data);
-
-            pricingFunction.checkNote('.so_note_box', '#project_note_input', '#project_followup_date', '#project_followup_requested_of');
-            pricingFunction.checkNote('.room_note_box', '#batch_note_input', '#batch_inquiry_followup_date', '#batch_inquiry_requested_of');
-          } else {
-            displayToast('error', 'Something went wrong with notes. Please try again.', 'Note Error');
-          }
-        });
-
-        break;
-      case 'room-details-tab': // saving room details
-        formData = pricingFunction.disabledSerialize($("#batch_details"));
-
-        $.post("/html/pricing/ajax/global_actions.php?action=saveBatchDetails", {room_id: active_room_id, formData: formData}, function(data, response) {
-          if(response === 'success') {
-            $('body').append(data);
-          } else {
-            displayToast('error', 'Something went wrong saving Batch Details. Please try again.', 'Batch Details Error');
-          }
-        });
-
-        break;
-      case 'room-cabinet-details-tab':
-        val_array = {};
-
-        formData = pricingFunction.disabledSerialize($("#cabinet_details"));
-
-        inputSelect.each(function() {
-          var ele = $(this);
-          var field = $(this).attr('id');
-          var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
-
-          if($.inArray(ele.val(), custom_fields) >= 0) {
-            val_array[field] = {};
-
-            ele.parent().find('input').each(function() {
-              val_array[field][$(this).attr('name')] = $(this).val();
-            });
-          }
-        });
-
-        customVals = JSON.stringify(val_array);
-
-        $.post("/html/pricing/ajax/global_actions.php?action=saveCabinetDetails", {room_id: active_room_id, formData: formData, customVals: customVals}, function(data, response) {
-          if(response === 'success') {
-            $('body').append(data);
-          } else {
-            displayToast('error', 'Something went wrong saving Batch Details. Please try again.', 'Batch Details Error');
-          }
-        });
-
-        break;
-      case 'room-item-list-tab':
-        cab_list = JSON.stringify(getMiniTree(cabinetList));
-
-        $.post("/html/pricing/ajax/global_actions.php?action=saveItemList", {room_id: active_room_id, cabinet_list: cab_list}, function(data) {
-          $('body').append(data);
-        });
-
-        break;
-      default: // no tabs selected at all, we must be in the old interface, run the old save code
-        //<editor-fold desc="Room Data">
-        var cabinet_specifications = $("#cabinet_specifications").serialize();
-        var accounting_notes = $("#accounting_notes").serialize();
-        cab_list = JSON.stringify(getMiniTree(cabinetList));
-
-        inputSelect.each(function() {
-          var ele = $(this);
-          var field = $(this).attr('id');
-          var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
-
-          if($.inArray(ele.val(), custom_fields) >= 0) {
-            val_array[field] = {};
-
-            ele.parent().find('input').each(function() {
-              val_array[field][$(this).attr('name')] = $(this).val();
-            });
-          }
-        });
-
-        customVals = JSON.stringify(val_array);
-
-        $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes}, function(data) {
-          $('body').append(data);
-        });
-        //</editor-fold>
-
-        // live notes for Room notes box
-        pricingFunction.checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
-
-        // live notes for SO notes box
-        pricingFunction.checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
-
-        break;
-    }*/
-
-    unsaved = false;
-  })
-  .on("click", "#cabinet_list_save", function() {
+  $("#cabinet_list_save").click (function() {
     let cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
     let cat_id = $("#catalog").find(":selected").attr("id");
 
     $.post("/html/pricing/ajax/item_actions.php?action=saveCatalog&room_id=" + active_room_id, {cabinet_list: cab_list, catalog_id: cat_id}, function(data) {
       $("body").append(data);
     });
-  })
-  .on("click", "#terms_confirm", function() {
+  });
+
+  $("#terms_confirm").click (function() {
     let signature = $(".esig").val();
     let ip = $(".esig_id").html();
     let button = $("#terms_confirm");
@@ -690,8 +699,9 @@ $("body")
         }
       });
     }
-  })
-  .on("click", "#modalBracketSave", function() {
+  });
+
+  $("#modalBracketSave").click (function() {
     var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
     var bracket_status = $("#bracketAdjustments").serialize();
 
@@ -704,9 +714,9 @@ $("body")
     $("#modalGlobal").modal("hide");
 
     unsaved = false;
-  })
+  });
 
-  .on("click", "#submit_for_quote", function() {
+  $("#submit_for_quote").click (function() {
     let button = $(this);
     let cab_list = JSON.stringify(cabinetList.fancytree("getTree").toDict(true));
 
@@ -725,21 +735,9 @@ $("body")
         no: function() {} // we're not doing anything
       }
     });
-  })
-  .on("click", "#dl_ord_file", function() {
-    $("#dlORDfile").attr("src", "/html/pricing/ajax/make_ord.php?roomID=" + active_room_id);
-  })
-  .on("click", "#copy_room", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=modalCopyRoom&roomID=" + active_room_id, function(data) {
-      $("#modalGlobal").html(data).modal("show");
-    });
-  })
-  .on("click", "#appliance_ws", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=modalApplianceWS&roomID=" + active_room_id, function(data) {
-      $("#modalGlobal").html(data).modal("show");
-    });
-  })
-  .on("click", "#modalCopyRoom", function() {
+  });
+
+  $("#modalCopyRoom").click (function() {
     let replaceRoom = $("#modalCopyRoomData select[name='new_room'] :selected").text();
 
     $.confirm({
@@ -757,25 +755,17 @@ $("body")
         no: function() {}
       }
     });
-  })
-  .on("click", "#catalog_recalculate", function() {
-    pricingFunction.fullRecalc();
-  })
-  .on("click", "#production_lock", function() {
-    $("#crmBatch").find("input, select").prop("disabled", false);
-    $(this).attr("data-clicked", "true").hide();
+  });
 
-    $.get("/html/pricing/ajax/global_actions.php?action=overrideProductionLock&roomID=" + active_room_id);
-  })
-
-  .on("change", "#sheet_type", function() {
+  $("#sheet_type").change (function() {
     $.post("/html/search/appliance_ws_info.php?room_id=" + active_room_id + "&id=" + $(this).val(), function(data) {
       $(".sheet_data").html(data);
 
       $(":input", "#appliance_info").not(':button, :submit, :reset, :hidden, select').val('');
     });
-  })
-  .on("click", "#modalAppWSSave", function() {
+  });
+
+  $("#modalAppWSSave").click (function() {
     var formInfo = $("#appliance_info").serialize();
 
     $.post("/ondemand/room_actions.php?action=save_app_worksheet&room=" + active_room_id + "&" + formInfo, function(data) {
@@ -790,8 +780,9 @@ $("body")
     $("#modalGlobal").modal("hide");
 
     unsaved = false;
-  })
-  .on("click", ".load_app_worksheet", function(e) {
+  });
+
+  $(".load_app_worksheet").click (function(e) {
     e.stopPropagation();
 
     var id = $(this).attr("id");
@@ -811,153 +802,37 @@ $("body")
         $("#notes").val(result.notes);
       }, 150);
     });
-  })
+  });
 
-  .on("click", ".wrapper", function() {
+  $(".wrapper").click (function() {
     if($(".info-popup").is(":visible")) {
       $(".info-popup").fadeOut();
     }
-  })
+  });
 
-  .on("keyup", ".esig", function() {
+  $(".esig").keyup (function() {
     if($.trim($(this).val()) !== '') {
       $("#terms_confirm").prop("disabled", false);
     } else {
       $("#terms_confirm").prop("disabled", true);
     }
-  })
+  });
 
-  .on("click", "#item_note", function() { // the click of the "Add Item" button
-    pricingFunction.delNoData();
-
-    var root = cabinetList.fancytree("getRootNode");
-
-    var node = root.addChildren({
-      qty: 1,
-      title: 'NOTE',
-      price: 0.00,
-      key: pricingFunction.genKey(),
-      icon: 'fa fa-commenting-o',
-      name: 'Error',
-      sqft: 0,
-      singlePrice: 0.00,
-      cabinet: 0,
-      customNote: 1
-    });
-
-    let $tdList = $(node.tr).find(">td");
-
-    $tdList.eq(4).html('<input type="text" class="form-control custom-line-item" placeholder="Custom Description..." data-id="' + node.key + '" >');
-  })
-  .on("click", "#item_custom_line", function() { // the click of the "Add Item" button
-    pricingFunction.delNoData();
-
-    var root = cabinetList.fancytree("getRootNode");
-
-    var node = root.addChildren({
-      qty: 1,
-      title: ' ',
-      price: 0.00,
-      key: pricingFunction.genKey(),
-      icon: 'fa fa-hand-o-right',
-      name: 'Error',
-      sqft: 0,
-      singlePrice: 0.00,
-      cabinet: 1,
-      customPrice: 1,
-      itemID: 1321,
-      customNote: 1
-    });
-
-    console.log(node);
-
-    let $tdList = $(node.tr).find(">td");
-
-    $tdList.eq(4).html('<input type="text" class="form-control custom-line-item" placeholder="Custom Description..." data-id="' + node.key + '" >');
-    $tdList.eq(9).html('<input type="text" class="form-control custom_price" placeholder="Price" data-id="' + node.key + '" >');
-  })
-
-  .on("click", ".delete_item", function() { // removes whatever is checked
-    var tree = cabinetList.fancytree("getTree"); // get the tree
-
-    tree.getFocusNode().remove(); // remove the focused node
-
-    // re-render the tree deeply so that we can recalculate the line item numbers
-    cabinetList.fancytree("getRootNode").render(true,true);
-
-    pricingFunction.recalcSummary();
-  })
-  .on("mouseover", ".view_item_info, .info-popup", function(e) {
-    // FIXME: Change this so the data isn't loaded on hover, should be able to JSON this data into memory quite easily
-    e.stopPropagation();
-
-    let info = "";
-    let thisEle = $(this);
-    let infoPopup = $(".info-popup");
-    let position = thisEle.offset();
-
-    $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: thisEle.data('id'), room_id: active_room_id}, function(data) {
-      if(data !== '') {
-        let result = JSON.parse(data);
-
-        if(result.image !== null) {
-          info += "<div class='image'><img style='max-width:300px;max-height:600px;' src='/html/pricing/images/" + result.image + "' /></div>";
-        }
-
-        info += "<div class='right_content'><div class='header'><h4>" + result.title + "</h4></div>";
-        info += "<div class='description'>" + result.description + "</div></div>";
-      }
-    }).done(function() {
-      if(info !== '') {
-        let infoHeight = infoPopup.height();
-        let infoTop = position.top - 85;
-        let windowOverflow = $(window).scrollTop() + $(window).height();
-
-        if((infoHeight + infoTop + 100) > windowOverflow) {
-          infoPopup.css({"bottom": 0, "top": "inherit", "left": (position.left + 20)});
-        } else {
-          infoPopup.css({"top": infoTop, "bottom": "inherit", "left": position.left});
-        }
-
-        infoPopup.fadeIn(250).html(info);
-      }
-    });
-  })
-  .on("mouseleave", ".view_item_info, .info-popup", function() {
-    $(".info-popup").fadeOut(250);
-  })
-  .on("click", ".add_item_mod", function() {
-    $.post("/html/modals/item_list_add_modification.php", function(data) {
-      $("#modalGlobal").html(data).modal('show');
-    });
-  })
-  .on("click", ".item_copy", function() {
-    let activeNode = cabinetList.fancytree("getTree").getActiveNode().toDict(true);
-
-    activeNode.key = pricingFunction.genKey();
-
-    if(activeNode.children !== null) {
-      $.each(activeNode.children, function(key) {
-        activeNode.children[key].key = pricingFunction.genKey();
-      });
-    }
-
-    cabinetList.fancytree("getRootNode").addChildren(activeNode);
-  })
-
-  .on("focus", ".qty_input", function() { // when clicking or tabbing to quantity
+  $(".qty_input").focus (function() { // when clicking or tabbing to quantity
     $(this).select(); // auto-select the text
-  })
-  .on("keyup", ".qty_input", function() {
+  });
+
+  $(".qty_input").keyup (function() {
     let id = $(this).attr("data-id");
 
     cabinetList.fancytree("getTree").getNodeByKey(id).data.qty = $(this).val();
-  })
-  .on("change", ".qty_input", function() {
-    pricingFunction.recalcSummary();
-  })
+  });
 
-  .on("click", ".add_item_cabinet_list", function() {
+  $(".qty_input").change (function() {
+    pricingFunction.recalcSummary();
+  });
+
+  $(".add_item_cabinet_list").click (function() {
     pricingFunction.delNoData();
 
     var root = cabinetList.fancytree("getRootNode");
@@ -986,21 +861,15 @@ $("body")
 
       pricingFunction.recalcSummary();
     });
-  })
-  .on("click", "#editCatalogLock", function() {
-    if($(this).hasClass('fa-lock')) {
-      $(this).removeClass('fa-lock').addClass('fa-unlock');
-    } else {
-      $(this).removeClass('fa-unlock').addClass('fa-lock');
-    }
-  })
-  .on("click", "#catalog_add_item", function() {
+  });
+
+  $("#catalog_add_item").click (function() {
     $.get("/html/pricing/ajax/modify_item.php", function(data) {
       $("#modalGlobal").html(data).modal("show");
     });
-  })
+  });
 
-  .on("change", "#catalog", function() {
+  $("#catalog").change (function() {
     let id = $(this).find(":selected").attr("id");
 
     let catalogData = {
@@ -1013,14 +882,15 @@ $("body")
     };
 
     catalog.fancytree('getTree').reload(catalogData);
-  })
+  });
 
-  .on("change", ".item_hinge", function() {
+  $(".item_hinge").change (function() {
     let node = cabinetList.fancytree("getActiveNode");
 
     node.data.hinge = $(this).find(":selected").val();
-  })
-  .on("keyup", ".itm_width", function() {
+  });
+
+  $(".itm_width").keyup (function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
@@ -1028,8 +898,9 @@ $("body")
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
-  })
-  .on("keyup", ".itm_height", function() {
+  });
+
+  $(".itm_height").keyup (function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
@@ -1037,8 +908,9 @@ $("body")
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
-  })
-  .on("keyup", ".itm_depth", function() {
+  });
+
+  $(".itm_depth").keyup (function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
@@ -1046,16 +918,17 @@ $("body")
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
-  })
+  });
 
-  .on("keyup", "#modificationsFilter", function() { // filters per keystroke on search catalog
+  $("#modificationsFilter").keyup (function() { // filters per keystroke on search catalog
     // grab this value and filter it down to the node needed
     itemModifications.fancytree("getTree").filterNodes($(this).val());
 
     // TODO: Enable filter dropdown allowing keywords - expected result, type microwave and get nomenclature available under microwave
     // TODO: https://github.com/mar10/fancytree/issues/551
-  })
-  .on("click", "#modificationAddSelected", function() {
+  });
+
+  $("#modificationAddSelected").click (function() {
     let modifications = $("#item_modifications").fancytree("getTree").getSelectedNodes();
     let cablist = cabinetList.fancytree("getTree").getActiveNode();
 
@@ -1127,25 +1000,21 @@ $("body")
     cablist.setExpanded();
 
     $("#modalGlobal").modal("hide");
-  })
-  .on("keyup", ".modAddlInfo", function() {
+  });
+
+  $(".modAddlInfo").keyup (function() {
     let id = $(this).attr("id");
 
     $("#item_modifications").fancytree("getTree").getNodeByKey(id).data.addlInfo = $(this).val();
-  })
+  });
 
-  .on("click", "#category_collapse", function() {
+  $("#category_collapse").click (function() {
     catalog.fancytree("getTree").visit(function(node){
       node.setExpanded(false);
     });
-  })
+  });
 
-  .on("click", "#overrideShipDate", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=modalOverrideShipping&roomID=" + active_room_id, function(data) {
-      $("#modalGlobal").html(data).modal("show");
-    });
-  })
-  .on("click", "#modalShippingUpdate", function() {
+  $("#modalShippingUpdate").click (function() {
     let shippingInfo = $("#modalShippingOverrideData").serialize();
 
     $.post("/html/pricing/ajax/global_actions.php?action=overrideShipping&roomID=" + active_room_id, {info: shippingInfo}, function(data) {
@@ -1160,36 +1029,29 @@ $("body")
     });
 
     unsaved = false;
-  })
+  });
 
-  .on("blur", ".custom_price", function() {
+  $(".custom_price").blur (function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.price = parseFloat($(this).val().replace(/[^0-9-.]/g, ''));
 
     pricingFunction.recalcSummary();
-  })
-  .on("focus mouseup", ".custom_price", function() {
+  });
+
+  $(".custom_price").mouseup (function() {
     $(this).select();
-  })
-  .on("keyup", ".custom-line-item", function() {
+  });
+
+  $(".custom-line-item").keyup (function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
     node.data.name = $(this).val();
-  })
-  .on("click", "#detailed_item_summary", function() {
-    $.post("/html/modals/detailed_report_item_list.php", {room_id: active_room_id}, function(data) {
-      $("#modalGlobal").html(data);
-    }).done(function() {
-      pricingFunction.recalcSummary();
+  });
 
-      $("#modalGlobal").modal("show");
-    });
-  })
-
-  .on("click", "#pricingSpeciesGrade, #pricingDoorDesign", function() {
+  $("#pricingSpeciesGrade, #pricingDoorDesign").click (function() {
     let speciesGrade = $("#species_grade").val();
     let doorDesign = $("#door_design").val();
 
@@ -1199,9 +1061,9 @@ $("body")
     });
 
     pricingFunction.recalcSummary();
-  })
+  });
 
-  .on("keyup", "input[name='pg4']", function() {
+  $("input[name='pg4']").keyup (function() {
     let markup_calc = 0.0684;
     let pg4 = parseFloat($(this).val());
 
@@ -1233,8 +1095,9 @@ $("body")
     $("#pg12").val(pg12);
     $("#pg13").val(pg13);
     $("#pg14").val(pg14);
-  })
-  .on("click", "#modalSaveCatItemSubmit", function() {
+  });
+
+  $("#modalSaveCatItemSubmit").click (function() {
     let node = catalog.fancytree("getTree").getActiveNode();
     let formInfo = document.querySelector("#catalogAddEditItem");
 
@@ -1279,8 +1142,9 @@ $("body")
     });
 
     unsaved = false;
-  })
-  .on("click", "#modalAddCatItemSubmit", function() {
+  });
+
+  $("#modalAddCatItemSubmit").click (function() {
     let node = catalog.fancytree("getTree").getActiveNode(); // current node (where are we adding this?)
     // let fields = $("#catalogAddEditItem").serialize(); // get all of the form information
     let formInfo = document.querySelector("#catalogAddEditItem");
@@ -1358,9 +1222,9 @@ $("body")
     });
 
     unsaved = false;
-  })
+  });
 
-  .on("change", "#catalogAddEditItem input[name='image_type']:checked", function() {
+  $("#catalogAddEditItem input[name='image_type']:checked").change (function() {
     let container = $("#catalogAddEditItem");
     let display = $(".displayImage");
 
@@ -1382,9 +1246,9 @@ $("body")
         container.find('#displayImageLibrary').show();
         break;
     }
-  })
+  });
 
-  .on("change", "#left_menu_options", function() {
+  $("#left_menu_options").change (function() {
     let result = $(this).val();
     let asearch = $(".action_search");
     let newSourceOption = null;
@@ -1413,25 +1277,13 @@ $("body")
         catalog.fancytree("getTree").reload(newSourceOption);
         break;
     }
-  })
+  });
 
-  .on("change", ".sample_checkbox", function() {
+  $(".sample_checkbox").change (function() {
     $('.sample_checkbox').not(this).prop('checked', false);
-  })
+  });
 
-  .on("click", "#ship_date_recalc", function() {
-    if($("#order_status").val() === '#') {
-      pricingFunction.updateShipDate();
-    } else {
-      displayToast('error', 'Unable to recalculate ship date, this room is not in quote anymore.', 'Unable to Recalculate.');
-    }
-  })
-  .on("click", "#overrideShipCost", function() {
-    $.post("/html/pricing/ajax/global_actions.php?action=modalOverrideShipCost&roomID=" + active_room_id, function(data) {
-      $("#modalGlobal").html(data).modal("show");
-    });
-  })
-  .on("click", "#modalShippingCostOverride", function() {
+  $("#modalShippingCostOverride").click (function() {
     let shippingInfo = $("#modalShippingOverrideCost").serialize();
 
     $.post("/html/pricing/ajax/global_actions.php?action=shipCostOverride&roomID=" + active_room_id, {info: shippingInfo}, function(data, response) {
@@ -1449,9 +1301,9 @@ $("body")
     });
 
     unsaved = false;
-  })
+  });
 
-  .on("change", "#jobsite_delivery", function() {
+  $("#jobsite_delivery").change (function() {
     let jobnode = cabinetList.fancytree("getTree").getNodeByKey('jobsitedelivery');
 
     if(jobnode !== null) {
@@ -1476,7 +1328,7 @@ $("body")
     } else {
       $("#itemListJobsiteDelivery").parent().hide();
     }
-  })
+  });
 
   /*.on("click", ".option", function(e) {
     let dropdown_list = $(this).parent().parent();
@@ -1539,4 +1391,223 @@ $("body")
     $("#modalGlobal").html(data).modal("show");
   });
 })*/
-;
+  },
+  copyroomInit: function() {
+    $("#copy_room").click(function() {
+      $.post("/html/pricing/ajax/global_actions.php?action=modalCopyRoom&roomID=" + active_room_id, function(data) {
+        $("#modalGlobal").html(data).modal("show");
+      });
+    });
+  },
+  applianceInit: function() {
+    $("#appliance_ws").click(function() {
+      $.post("/html/pricing/ajax/global_actions.php?action=modalApplianceWS&roomID=" + active_room_id, function(data) {
+        $("#modalGlobal").html(data).modal("show");
+      });
+    });
+  },
+  recalcInit: function() {
+    $("#catalog_recalculate").click(function() {
+      pricingFunction.fullRecalc();
+    });
+  },
+  downloadInit: function() {
+    $("#dl_ord_file").click(function() {
+      $("#dlORDfile").attr("src", "/html/pricing/ajax/make_ord.php?roomID=" + active_room_id);
+    });
+  },
+  calShipDateInit: function() {
+    $("#ship_date_recalc").click(function() {
+      if ($("#order_status").val() === '#') {
+        pricingFunction.updateShipDate();
+      } else {
+        displayToast('error', 'Unable to recalculate ship date, this room is not in quote anymore.', 'Unable to Recalculate.');
+      }
+    });
+  },
+  editShipDateInit: function() {
+    $("#overrideShipDate").click(function() {
+      $.post("/html/pricing/ajax/global_actions.php?action=modalOverrideShipping&roomID=" + active_room_id, function(data) {
+        $("#modalGlobal").html(data).modal("show");
+      });
+    });
+  },
+  editShipCostInit: function() {
+    $("#overrideShipCost").click(function() {
+      $.post("/html/pricing/ajax/global_actions.php?action=modalOverrideShipCost&roomID=" + active_room_id, function(data) {
+        $("#modalGlobal").html(data).modal("show");
+      });
+    });
+  },
+  itemNoteInit: function() {
+    $("#item_note").click(function() { // the click of the "Add Item" button
+      pricingFunction.delNoData();
+
+      var root = cabinetList.fancytree("getRootNode");
+
+      var node = root.addChildren({
+        qty: 1,
+        title: 'NOTE',
+        price: 0.00,
+        key: pricingFunction.genKey(),
+        icon: 'fa fa-commenting-o',
+        name: 'Error',
+        sqft: 0,
+        singlePrice: 0.00,
+        cabinet: 0,
+        customNote: 1
+      });
+
+      let $tdList = $(node.tr).find(">td");
+
+      $tdList.eq(4).html('<input type="text" class="form-control custom-line-item" placeholder="Custom Description..." data-id="' + node.key + '" >');
+    });
+  },
+  editCatalogLockInit: function() {
+    $("#editCatalogLock").click(function() {
+      if ($(this).hasClass('fa-lock')) {
+        $(this).removeClass('fa-lock').addClass('fa-unlock');
+      } else {
+        $(this).removeClass('fa-unlock').addClass('fa-lock');
+      }
+    });
+  },
+  itemCustomLineInit: function() {
+    $("#item_custom_line").click(function() { // the click of the "Add Item" button
+      pricingFunction.delNoData();
+
+      var root = cabinetList.fancytree("getRootNode");
+
+      var node = root.addChildren({
+        qty: 1,
+        title: ' ',
+        price: 0.00,
+        key: pricingFunction.genKey(),
+        icon: 'fa fa-hand-o-right',
+        name: 'Error',
+        sqft: 0,
+        singlePrice: 0.00,
+        cabinet: 1,
+        customPrice: 1,
+        itemID: 1321,
+        customNote: 1
+      });
+
+      console.log(node);
+
+      let $tdList = $(node.tr).find(">td");
+
+      $tdList.eq(4).html('<input type="text" class="form-control custom-line-item" placeholder="Custom Description..." data-id="' + node.key + '" >');
+      $tdList.eq(9).html('<input type="text" class="form-control custom_price" placeholder="Price" data-id="' + node.key + '" >');
+    });
+  },
+  detailedReportInit: function() {
+    $("#detailed_item_summary").click(function() {
+      $.post("/html/modals/detailed_report_item_list.php", {
+        room_id: active_room_id
+      }, function(data) {
+        $("#modalGlobal").html(data);
+      }).done(function() {
+        pricingFunction.recalcSummary();
+
+        $("#modalGlobal").modal("show");
+      });
+    });
+  },
+  deleteLineItemInit: function() {
+    $("body")
+        .on("click", ".delete_item", function() { // removes whatever is checked
+          var tree = cabinetList.fancytree("getTree"); // get the tree
+
+          tree.getFocusNode().remove(); // remove the focused node
+
+          // re-render the tree deeply so that we can recalculate the line item numbers
+          cabinetList.fancytree("getRootNode").render(true, true);
+
+          pricingFunction.recalcSummary();
+        });
+  },
+  viewItemInfoInit: function() {
+    $("body")
+        .on("mouseover", ".view_item_info, .info-popup", function(e) {
+          // FIXME: Change this so the data isn't loaded on hover, should be able to JSON this data into memory quite easily
+          e.stopPropagation();
+
+          let info = "";
+          let thisEle = $(this);
+          let infoPopup = $(".info-popup");
+          let position = thisEle.offset();
+
+          $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {
+            id: thisEle.data('id'),
+            room_id: active_room_id
+          }, function(data) {
+            if (data !== '') {
+              let result = JSON.parse(data);
+
+              if (result.image !== null) {
+                info += "<div class='image'><img style='max-width:300px;max-height:600px;' src='/html/pricing/images/" + result.image + "' /></div>";
+              }
+
+              info += "<div class='right_content'><div class='header'><h4>" + result.title + "</h4></div>";
+              info += "<div class='description'>" + result.description + "</div></div>";
+            }
+          }).done(function() {
+            if (info !== '') {
+              let infoHeight = infoPopup.height();
+              let infoTop = position.top - 85;
+              let windowOverflow = $(window).scrollTop() + $(window).height();
+
+              if ((infoHeight + infoTop + 100) > windowOverflow) {
+                infoPopup.css({
+                  "bottom": 0,
+                  "top": "inherit",
+                  "left": (position.left + 20)
+                });
+              } else {
+                infoPopup.css({
+                  "top": infoTop,
+                  "bottom": "inherit",
+                  "left": position.left
+                });
+              }
+
+              infoPopup.fadeIn(250).html(info);
+            }
+          });
+        })
+        .on("mouseleave", ".view_item_info, .info-popup", function() {
+          $(".info-popup").fadeOut(250);
+        });
+  },
+  itemAddModificationInit: function () {
+    $("body")
+        .on("click", ".add_item_mod", function() {
+          $.post("/html/modals/item_list_add_modification.php", function(data) {
+            $("#modalGlobal").html(data).modal('show');
+          });
+        });
+  },
+  itemCopyInit: function () {
+    $("body")
+        .on("click", ".item_copy", function() {
+          let activeNode = cabinetList.fancytree("getTree").getActiveNode().toDict(true);
+
+          activeNode.key = pricingFunction.genKey();
+
+          if (activeNode.children !== null) {
+            $.each(activeNode.children, function(key) {
+              activeNode.children[key].key = pricingFunction.genKey();
+            });
+          }
+          cabinetList.fancytree("getRootNode").addChildren(activeNode);
+        });
+  }
+};
+
+var mouseX, mouseY;
+
+$(document).mousemove(function(e) {
+  mouseX = e.pageX;
+  mouseY = e.pageY;
+});

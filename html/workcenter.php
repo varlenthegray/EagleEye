@@ -115,6 +115,7 @@ require '../includes/header_start.php';
         }
     });
 
+
     $("div.dataTables_filter input").addClass("ignoreSaveAlert");
 
     $("#jiq_header").html("<h4>Ops in Queue</h4>");

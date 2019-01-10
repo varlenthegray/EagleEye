@@ -311,7 +311,9 @@ HEREDOC;
 
   crmCompany.init();
 
-  crmMain.initNoteExpand();
+  $(".view_note_information").click(function() {
+    $(this).find('td').eq(2).find('div').toggle();
+  });
 
   $(function() {
     crmCompany.checkEmpty('company_ship_', '#shipping_different', '.shipping_empty_hide');

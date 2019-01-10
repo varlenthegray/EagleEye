@@ -27,47 +27,38 @@ var crmNav = {
         switch(node.data.orderStatus) {
           case 'N':
             $span.addClass("crmSearchLead");
+
             if(!$("#search_lead").is(":checked")) { $span.hide(); }
 
             break;
           case '#':
             $span.addClass("crmSearchQuote");
+
             if(!$("#search_quote").is(":checked")) { $span.hide(); }
 
             break;
           case '$':
             $span.addClass("crmSearchProd");
+
             if(!$("#search_prod").is(":checked")) { $span.hide(); }
 
             break;
           case '-':
             $span.addClass("crmSearchLost");
+
             if(!$("#search_lost").is(":checked")) { $span.hide(); }
 
             break;
           case '+':
             $span.addClass("crmSearchCompleted");
+
             if(!$("#search_completed").is(":checked")) { $span.hide(); }
 
             break;
           case 'P':
             $span.addClass("crmSearchPending");
+
             if(!$("#search_pending").is(":checked")) { $span.hide(); }
-
-            break;
-          case 'H':
-            $span.addClass("crmSearchHold");
-            if(!$("#search_hold").is(":checked")) { $span.hide(); }
-
-            break;
-          case '!':
-            $span.addClass("crmSearchPillarMissing");
-            if(!$("#search_pillar_missing").is(":checked")) { $span.hide(); }
-
-            break;
-          case 'R':
-            $span.addClass("crmSearchReferred");
-            if(!$("#search_referred").is(":checked")) { $span.hide(); }
 
             break;
         }
@@ -125,9 +116,6 @@ var crmNav = {
     crmNav.showHideCheckbox('search_lost', '.crmSearchLost');
     crmNav.showHideCheckbox('search_completed', '.crmSearchCompleted');
     crmNav.showHideCheckbox('search_pending', '.crmSearchPending');
-    crmNav.showHideCheckbox('search_hold', '.crmSearchHold');
-    crmNav.showHideCheckbox('search_pillar_missing', '.crmSearchPillarMissing');
-    crmNav.showHideCheckbox('search_referred', '.crmSearchReferred');
   },
   startListening: function() {
     $("#crm_search").keyup(function() {

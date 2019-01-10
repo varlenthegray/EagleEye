@@ -81,18 +81,6 @@ foreach($result AS $ans) {
       $icon = 'fa fa-hourglass-3';
       $altOStatus = 'pending';
       break;
-    case 'H':
-      $icon = 'fa fa-stop-circle';
-      $altOStatus = 'hold';
-      break;
-    case '!':
-      $icon = 'fa fa-exclamation';
-      $altOStatus = 'pillar_missing';
-      break;
-    case 'R':
-      $icon = 'fa fa-mail-forward';
-      $altOStatus = 'referred';
-      break;
     default:
       $icon = 'fa fa-exclamation-triangle';
       break;

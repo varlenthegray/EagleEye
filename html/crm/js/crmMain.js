@@ -1,4 +1,4 @@
-/*global $:false*//*global dhtmlXPopup*/
+/*global $:false*/
 
 var crmMain = {
   body: null, // the main body to insert ALL CRM data into
@@ -80,27 +80,5 @@ var crmMain = {
           });
         }
       });
-  },
-  initProjectHover: function() {
-    let projectName = new dhtmlXPopup();
-
-    $("body").on("mouseenter mouseleave", ".view_so_info", function() {
-      projectName.attachHTML($(this).attr("data-project-name"));
-
-      if (projectName.isVisible()) {
-        projectName.hide();
-      } else {
-        var x = window.dhx4.absLeft(this) - 150; // returns left position related to window
-        var y = window.dhx4.absTop(this); // returns top position related to window
-        var w = this.offsetWidth;
-        var h = this.offsetHeight;
-        projectName.show(x,y,w,h);
-      }
-    });
-  },
-  initNoteExpand: function() {
-    $(".view_note_information").click(function() {
-      $(this).find('td').eq(2).find('div').toggle();
-    });
   }
 };
