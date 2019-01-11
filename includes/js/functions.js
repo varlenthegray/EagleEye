@@ -20,7 +20,6 @@ var globalFunctions = {
     });
   },
   updateBreakButton: function() {
-    console.log("clicked");
     $.post("/ondemand/account_actions.php?action=get_break_btn", function(data) {
       var result = JSON.parse(data);
 
