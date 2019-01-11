@@ -77,10 +77,11 @@ require_once '../../includes/header_start.php';
         $('td:eq(1)', nRow).html(index);
         return nRow;
 
+      },
+      "initComplete": function() {
+        globalFunctions.updateOpQueue();
       }
     });
-
-    globalFunctions.updateOpQueue.loadQueue();
 
     $("#queue_header").html("<h4 class='pull-left'>Operations for " + op_queue_list + "</h4>");
   });
