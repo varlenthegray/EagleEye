@@ -142,7 +142,8 @@ socket.on('connect', function (client) {
   // updating the operation queue, this updates it for everyone globally
   client.on("updateQueue", function() {
     try {
-      socket.emit("catchQueueUpdate"); // tell the pages to pull AJAX data, tons of information so no need to fetch via database and inject results
+      socket.emit("catchQueueUpdate");
+      // tell the pages to pull AJAX data, tons of information so no need to fetch via database and inject results
     } catch(e) {
       console.log("updateQueue Error: " + e); // log an error
     }

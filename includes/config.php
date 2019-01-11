@@ -27,7 +27,7 @@ switch($server[0]) {
     if(file_exists('C:/Users/Ben')) {
       define('SITE_ROOT', 'C:/Users/Ben/OneDrive/SMCM/Eagle Eye/SMCDev'); // Server Site
     } else {
-      define ('SITE_ROOT', 'C:/Users/subz3/OneDrive/SMCM/Eagle Eye/SMCDev'); // Desktop site
+      define ('SITE_ROOT', 'C:/wamp64/www_eagleeye'); // Desktop site
     }
 
     break;
