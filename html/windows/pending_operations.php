@@ -76,6 +76,10 @@ require_once '../../includes/header_start.php';
         var index = iDisplayIndexFull + 1;
         $('td:eq(1)', nRow).html(index);
         return nRow;
+
+      },
+      "initComplete": function() {
+        globalFunctions.updateOpQueue();
       }
     });
 

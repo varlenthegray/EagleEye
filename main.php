@@ -23,7 +23,7 @@ require 'includes/header_start.php';
     <link href="/includes/css/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
 
     <!-- Global JS functions -->
-    <script src="/includes/js/functions.min.js?v=<?php echo VERSION; ?>"></script>
+    <script src="/includes/js/functions.js?v=<?php echo VERSION; ?>"></script>
     <link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
 
     <!-- App CSS -->
@@ -302,7 +302,7 @@ require 'includes/header_start.php';
     socket.on("catchQueueUpdate", function() {
       if(currentPage === 'dashboard' || currentPage === 'eng_report' || currentPage === 'crm/index') {
         globalFunctions.updateOpQueue();
-        globalFunctions.updateBreakButton();
+        globalFunctions.updateBreakButton();  
       }
 
       if(currentPage === 'workcenter') {
@@ -1246,11 +1246,13 @@ require 'includes/header_start.php';
 
         if($(this).attr('id') === '201') {
           $.post("/ondemand/account_actions.php?action=start_break", {id: 201, operation: 'Break'}, function(data) {
+            console.log(data);
             $('body').append(data);
 
             socket.emit("updateQueue");
 
             $.post("/ondemand/account_actions.php?action=get_break_btn", function(data) {
+              console.log(data);
               var result = JSON.parse(data);
               $(".nav_break").attr('id', result.id);
 
