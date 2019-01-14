@@ -59,7 +59,7 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
           <div class="col-md-12">
             <table class="add_item_table" width="100%">
               <colgroup>
-                <col width="110px">
+                <col width="130px">
                 <col width="*">
               </colgroup>
               <tbody>
@@ -68,40 +68,48 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                   <td><input type="text" class="c_input" name="name" placeholder='<?php echo $title; ?> Name' value='<?php echo $nameValue; ?>' /> </td>
                 </tr>
 
-                <?php
-                if($type === 'folder') {
-                  // https://stackoverflow.com/questions/2441821/getting-all-parent-rows-in-one-sql-query
-                  $cat_qry = $dbconn->query("SELECT T2.id, T2.name, T2.description_id FROM (
-                  SELECT @r AS _id, (SELECT @r := parent FROM pricing_categories WHERE id = _id) AS parent_id, @l := @l + 1 AS lvl
-                  FROM (SELECT @r := $id, @l := 0) vars, pricing_categories h WHERE @r <> 0) T1 
-                  JOIN pricing_categories T2 ON T1._id = T2.id ORDER BY T1.lvl DESC");
+                <?php // display all category notes
+                $catID = $type === 'folder' ? $id : $info['category_id'];
+                $desc_available = json_decode($info['desc_available']);
 
-                  while($cat = $cat_qry->fetch_assoc()) {
-                    if(!empty($cat['description_id'])) {
-                      $desc_id = $dbconn->query("SELECT * FROM pricing_nomenclature_details WHERE id = {$cat['description_id']}");
-                      $desc = $desc_id->fetch_assoc();
+                // https://stackoverflow.com/questions/2441821/getting-all-parent-rows-in-one-sql-query
+                $cat_qry = $dbconn->query("SELECT T2.id, T2.name, T2.description_id FROM (
+                SELECT @r AS _id, (SELECT @r := parent FROM pricing_categories WHERE id = _id) AS parent_id, @l := @l + 1 AS lvl
+                FROM (SELECT @r := $catID, @l := 0) vars, pricing_categories h WHERE @r <> 0) T1 
+                JOIN pricing_categories T2 ON T1._id = T2.id ORDER BY T1.lvl DESC");
+
+                while($cat = $cat_qry->fetch_assoc()) {
+                  if(!empty($cat['description_id'])) {
+                    $desc_id = $dbconn->query("SELECT * FROM pricing_nomenclature_details WHERE id = {$cat['description_id']}");
+                    $desc = $desc_id->fetch_assoc();
+                  } else {
+                    $desc['description'] = '<i>None Specified</i>';
+                  }
+
+                  if($cat['id'] !== $info['id']) {
+                    $description = nl2br($desc['description']);
+
+                    if($type === 'item') {
+                      $checked = in_array($cat['id'], $desc_available, true) ? 'checked' : null;
+
+                      $checkbox = "<div class='checkbox checkbox-primary'><input id=\"desc_enabled_{$cat['id']}\" name=\"desc_enabled[]\" type='checkbox' value=\"{$cat['id']}\" $checked><label for=\"desc_enabled_{$cat['id']}\"> Enabled</label></div>";
                     } else {
-                      $desc['description'] = '<i>None Specified</i>';
+                      $checkbox = null;
                     }
 
-                    if($cat['id'] !== $info['id']) {
-                      echo "<tr>
-                      <td>
-                        <label>'{$cat['name']}' Description:</label>
-                        <div class='checkbox checkbox-primary'><input id=\"desc_enabled_{$cat['id']}\" name=\"desc_enabled[]\" type='checkbox' value=\"{$cat['id']}\" checked><label for=\"desc_enabled_{$cat['id']}\"> Enabled</label></div>
-                      </td>
-                      <td><div style='min-height:91px;'>{$desc['description']}</div></td>
-                    </tr>";
-                    }
+                    echo "<tr>
+                    <td>
+                      <label>'{$cat['name']}' Description:</label>
+                      $checkbox
+                    </td>
+                    <td><div style='min-height:91px;'>$description</div></td>
+                  </tr>";
                   }
                 }
                 ?>
 
                 <tr>
-                  <td>
-                    <label>This Description:</label>
-                    <div class='checkbox checkbox-primary'><input id="this_desc_enabled" name="desc_enabled[]" type='checkbox' value="<?php echo $info['id']; ?>" checked><label for="this_desc_enabled"> Enabled</label></div>
-                  </td>
+                  <td><label>This Description:</label></td>
                   <td><textarea class="c_input" name="description" placeholder="Description" style="min-height:91px;"><?php echo $info['description']; ?></textarea></td>
                 </tr>
                 <?php if($type === 'item' || $type === 'addItem') { ?>
@@ -154,10 +162,8 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                   <tr>
                     <td><label>Image:</label></td>
                     <td>
-                      <input class="c_input" id="item_current_image" value="current" name="image_type" type="radio" <?php echo $current_img; ?>> <label for="item_current_image"> Use Current Image</label>
-                      <input class="c_input" id="item_recent_image" value="recent" name="image_type" type="radio" <?php echo $recent_img; ?>> <label for="item_recent_image"> Use Recent Image</label>
-                      <input class="c_input" id="item_new_image" value="new" name="image_type" type="radio"> <label for="item_new_image"> Upload New Image</label>
-                      <input class="c_input" id="item_existing_image" value="existing" name="image_type" type="radio" disabled> <label for="item_existing_image"> Image Library</label>
+                      <input class="c_input" id="item_current_image" value="current" name="image_type" type="radio" <?php echo $current_img; ?>> <label for="item_current_image"> Use Current Images</label>
+                      <input class="c_input" id="item_new_image" value="new" name="image_type" type="radio" checked> <label for="item_new_image"> Upload New Images</label>
                     </td>
                   </tr>
                   <tr style="height:5px;">
@@ -167,35 +173,24 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                     <td><label>Current Image:</label></td>
                     <td><img style="max-width:100px;max-height:100px;" src="/html/pricing/images/<?php echo $info['image_path'] ?>" /></td>
                   </tr>
-                  <tr class="displayImage" id="displayRecentImage">
-                    <td><label>Recent Images:</label></td>
-                    <td>
-                      <table>
-                        <tr>
-                          <td><input class="c_input" id="recent_1" value="recent_1" name="recent_image" type="radio" checked></td>
-                          <td><label for="recent_1"><img alt="Cutlery Tray" style="max-width:100px;max-height:100px;" src="/html/pricing/images/uploaded/cutlery_tray.PNG" /></label></td>
-                          <td><input class="c_input" id="recent_2" value="recent_1" name="recent_image" type="radio"></td>
-                          <td><label for="recent_2"><img alt="Cutlery Tray" style="max-width:100px;max-height:100px;" src="/html/pricing/images/uploaded/cutlery_tray.PNG" /></label></td>
-                          <td><input class="c_input" id="recent_3" value="recent_1" name="recent_image" type="radio"></td>
-                          <td><label for="recent_3"><img alt="Cutlery Tray" style="max-width:100px;max-height:100px;" src="/html/pricing/images/uploaded/cutlery_tray.PNG" /></label></td>
-                        </tr>
-                      </table>
-                    </td>
+                  <tr class="displayImage displayNewImageUpload">
+                    <td><label>Perspective Image:</label></td>
+                    <td><input type="file" id="perspective_image" class="c_input" style="border:none;" name="perspective_image" /></td>
                   </tr>
-                  <tr class="displayImage" id="displayImageLibrary">
-                    <td><label>Image Library:</label></td>
-                    <td></td>
+                  <tr class="displayImage displayNewImageUpload">
+                    <td><label>Plan Image:</label></td>
+                    <td><input type="file" id="plan_image" class="c_input" style="border:none;" name="plan_image" /></td>
                   </tr>
-                  <tr class="displayImage" id="displayNewImageUpload">
-                    <td><label>New Image:</label></td>
-                    <td><input type="file" id="image_upload" class="c_input" style="border:none;" name="image" placeholder="Image"/></td>
+                  <tr class="displayImage displayNewImageUpload">
+                    <td><label>Side/Front Image:</label></td>
+                    <td><input type="file" id="side_image" class="c_input" style="border:none;" name="side_image" /></td>
                   </tr>
-                  <tr>
-                    <td colspan="2"><div style="height:5px;"></div></td>
+                  <tr style="height:5px;">
+                    <td colspan="2"><input type="hidden" id="image_description_id" name="image_description_id" value="<?php echo $info['description_id']; ?>" /></td>
                   </tr>
                   <tr>
                     <td colspan="2">
-                      <table class="add_item_table" style="width:75%;">
+                      <table style="width:75%;">
                         <colgroup>
                           <col width="5%">
                           <col width="16%">

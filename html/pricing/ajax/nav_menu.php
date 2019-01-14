@@ -11,7 +11,7 @@ $result = array();
 // get categories based on parent
 $parent_qry = $dbconn->prepare('SELECT
   pc.id AS catID, pn.id AS itemID, name, parent, pc.sort_order, pn.category_id, pn.sku, detail.image_path, pc.catalog_id AS catalog_id, pn.catalog_id AS itemCatalogID, 
-  pn.percent, pn.sort_order AS nomenclature_sort
+  pn.percent, pn.sort_order AS nomenclature_sort, detail.image_plan, detail.image_side, detail.image_perspective
 FROM pricing_categories pc
   LEFT JOIN pricing_nomenclature pn on pc.id = pn.category_id
   LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -24,7 +24,7 @@ function makeTree($parent_id) {
   $ret = array();
 
   $parent_qry->bind_param('i', $parent_id);
-  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $catCatalogID, $itemCatalogID, $pctMarkup, $nomSort);
+  $parent_qry->bind_result($catID, $itemID, $name, $parent, $sort_order, $item_catID, $sku, $image, $catCatalogID, $itemCatalogID, $pctMarkup, $nomSort, $image_plan, $image_side, $image_perspective);
   $parent_qry->execute();
   $parent_qry->store_result();
 
@@ -40,6 +40,9 @@ function makeTree($parent_id) {
       'item_catID' => $item_catID,
       'sku' => $sku,
       'image_path' => $image,
+      'image_plan' => $image_plan,
+      'image_side' => $image_side,
+      'image_perspective' => $image_perspective,
       'catCatalogID' => $catCatalogID,
       'itemCatalogID' => $itemCatalogID,
       'percentMarkup' => $pctMarkup,
@@ -70,7 +73,15 @@ function makeTree($parent_id) {
         }
 
         // if the image isn't empty, update the image
-        $img = !empty($item['image_path']) ? "/html/pricing/images/{$item['image_path']}" : 'fa fa-magic';
+        if(!empty($item['image_path'])) {
+          $img = "/html/pricing/images/{$item['image_path']}";
+        } else{
+          if(!empty($item['image_perspective'])) {
+            $img = "/html/pricing/images/{$item['image_perspective']}";
+          } else {
+            $img = 'fa fa-magic';
+          }
+        }
 
         // add this item to the children of that array
         $sku_items[$item['item_catID']]['children'][] = array('key' => $item['itemID'],'icon' => $img, 'title' => $title, 'is_item' => true, 'qty' => 1, 'nomSort' => $nomSort);

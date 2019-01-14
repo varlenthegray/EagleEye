@@ -3,7 +3,7 @@ require '../includes/header_start.php';
 require '../includes/classes/mail_handler.php';
 //require '../includes/functions.php';
 
-outputPHPErrs();
+//outputPHPErrs();
 
 $mail = new \MailHandler\mail_handler();
 
@@ -61,7 +61,7 @@ switch($_REQUEST['action']) {
           $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%$dealer_code%'");
 
           if($dealer_qry->num_rows > 0) {
-            echo displayToast("error", "Dealer code already exists in the system.", "Dealer Exists");
+            echo displayToast('error', 'Dealer code already exists in the system.', 'Dealer Exists');
           } else {
             if($dbconn->query($insert_SQL)) {
               $contact_id = $dbconn->insert_id;
@@ -72,21 +72,21 @@ switch($_REQUEST['action']) {
 
               $dbconn->query("UPDATE contact SET dealer_id = $dealer_entry_id");
 
-              echo displayToast("success", "Successfully created dealer.", "Dealer Created");
+              echo displayToast('success', 'Successfully created dealer.', 'Dealer Created');
             }
           }
         } else {
           if($dbconn->query($insert_SQL)) {
-            echo displayToast("success", "Successfully created contact.", "Contact Created");
+            echo displayToast('success', 'Successfully created contact.', 'Contact Created');
           } else {
             dbLogSQLErr($dbconn);
           }
         }
       } else {
-        echo displayToast("error", "Contact already exists in the system.", "Contact Exists");
+        echo displayToast('error', 'Contact already exists in the system.', 'Contact Exists');
       }
     } else {
-      echo displayToast("error", "Unable to create empty contact.", "Unable to Create");
+      echo displayToast('error', 'Unable to create empty contact.', 'Unable to Create');
     }
 
     break;

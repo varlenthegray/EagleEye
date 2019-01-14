@@ -8,6 +8,49 @@ use catalog\catalog as Catalog;
 
 $cat = new Catalog;
 
+function uploadImage($image, $image_name) {
+  if($image['error'] !== 4) {
+    $upload = true; // by default, we should upload
+
+    $file_name = basename($image['name']);
+
+    $target_file = "../images/uploaded/$file_name";
+    $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+    $img_check = getimagesize($image['tmp_name']);
+
+    if($img_check === false) {
+      http_response_code(400);
+
+      echo displayToast('error', 'File attachment is not an image.', 'File Not Image');
+    } else { // it is an image
+      // must be less than 1MB
+      if ($image['size'] > 1000000) {
+        $upload = false;
+        http_response_code(400);
+
+        echo displayToast('error', 'Image is too large, must be less than 1MB.', 'Image Too Large');
+      }
+
+      if($file_type !== 'jpg' && $file_type !== 'png' && $file_type !== 'jpeg' && $file_type !== 'gif') {
+        $upload = false;
+        http_response_code(400);
+
+        echo displayToast('error', 'Image must be JPG, PNG, JPEG or GIF.', 'Image Extension Mismatch');
+      }
+
+      if($upload) {
+        if (!move_uploaded_file($image['tmp_name'], "../images/uploaded/{$image_name}.{$file_type}")) {
+          echo displayToast('error', 'Unable to upload file. Contact IT.', 'File Not Uploaded');
+          return null;
+        }
+
+        return "uploaded/{$image_name}.{$file_type}";
+      }
+    }
+  }
+}
+
 switch($_REQUEST['action']) {
   case 'getItemInfo':
     $id = sanitizeInput($_REQUEST['id']);
@@ -15,7 +58,8 @@ switch($_REQUEST['action']) {
 
     $item_qry = $dbconn->query("SELECT 
       pn.sku, pn.category_id, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog, detail.image_path AS image, 
-      detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.fixed_price, pn.kit_id, pc.enabled_desc
+      detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.fixed_price, pn.kit_id, pn.desc_available,
+       detail.image_perspective, detail.image_plan, detail.image_side
     FROM pricing_nomenclature pn
       LEFT JOIN pricing_catalog catalog on pn.catalog_id = catalog.id
       LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -23,6 +67,7 @@ switch($_REQUEST['action']) {
     WHERE pn.id = $id");
 
     $price = 'N/A';
+    $img = null;
 
     if($room_qry = $dbconn->query("SELECT vs1.id AS species_grade_id, vs2.id AS door_design_id FROM rooms r LEFT JOIN vin_schema vs1 ON r.species_grade = vs1.key LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'")) {
       $room = $room_qry->fetch_assoc();
@@ -53,39 +98,33 @@ switch($_REQUEST['action']) {
     $item = $item_qry->num_rows === 1 ? $item_qry->fetch_assoc() : null;
 
     if(!empty($item_qry)) {
-      $img = !empty($item['image']) ? "/html/pricing/images/{$item['image']}" : 'fa fa-magic';
+      if(!empty($item['image'])) {
+        $img = "/html/pricing/images/{$item['image']}";
+      } else {
+        if(!empty($item['image_perspective'])) {
+          $img = "/html/pricing/images/{$item['image_perspective']}";
+        } else {
+          $img = 'fa fa-magic';
+        }
+      }
+
       $item['icon'] = $img;
 
       $description = null;
 
-      $cat_qry = $dbconn->query("SELECT T2.id, T2.name, T2.description_id, T2.enabled_desc FROM (
-        SELECT @r AS _id, (SELECT @r := parent FROM pricing_categories WHERE id = _id) AS parent_id, @l := @l + 1 AS lvl
-        FROM (SELECT @r := {$item['category_id']}, @l := 0) vars, pricing_categories h WHERE @r <> 0) T1 
-        JOIN pricing_categories T2 ON T1._id = T2.id ORDER BY T1.lvl DESC");
+      $desc_available = json_decode($item['desc_available']);
 
-      $desc_enabled = json_decode($item['enabled_desc']);
+      foreach($desc_available AS $desc_get) {
+        $desc_qry = $dbconn->query("SELECT * FROM pricing_categories pc RIGHT JOIN pricing_nomenclature_details pnd on pc.description_id = pnd.id WHERE pc.id = $desc_get");
+        $desc = $desc_qry->fetch_assoc();
 
-      while($cat = $cat_qry->fetch_assoc()) {
-        if(!empty($cat['description_id'])) {
-          $desc_qry = $dbconn->query("SELECT * FROM pricing_nomenclature_details WHERE id = {$cat['description_id']}");
-          $desc = $desc_qry->fetch_assoc();
-
-          if(in_array($cat['id'], $desc_enabled, true)) {
-            if(!empty(trim($desc['description']))) {
-              $description .= "<label>{$cat['name']} Notes:</label> " . nl2br($desc['description']) . '<hr />';
-            } else {
-              $description .= "<label>{$cat['name']} Notes:</label> <i>None</i><hr />";
-            }
-          } else {
-            $description .= "<label>{$cat['name']} Notes:</label> <i>Excluded</i><hr />";
-          }
-        } else {
-          $description .= "<label>{$cat['name']} Notes:</label> <i>None</i><hr />";
+        if(!empty($desc['description'])) {
+          $description .= nl2br($desc['description']) . '<hr />';
         }
       }
 
       if(!empty($item['description'])) {
-        $description .= '<label>Item Notes:</label> ' . nl2br($item['description']);
+        $description .= nl2br($item['description']);
       } else {
         $description = rtrim($description, '<hr />');
       }
@@ -151,7 +190,7 @@ switch($_REQUEST['action']) {
       $pg[$i] = sanitizeInput($_REQUEST['pg'. $i]);
     }
 
-    $description_id = 'null';
+    $description_id = sanitizeInput($_REQUEST['image_description_id']);
 
     $desc_enabled = $_REQUEST['desc_enabled'];
 
@@ -172,85 +211,39 @@ switch($_REQUEST['action']) {
     if($folder === 'true') {
       $nom_qry = $dbconn->query("SELECT pc.*, pnd.description FROM pricing_categories pc LEFT JOIN pricing_nomenclature_details pnd on pc.description_id = pnd.id WHERE pc.id = $id");
     } else {
-      $nom_qry = $dbconn->query("SELECT pn.*, pnd.description FROM pricing_nomenclature pn LEFT JOIN pricing_nomenclature_details pnd on pn.description_id = pnd.id WHERE pn.id = $id");
+      $nom_qry = $dbconn->query("SELECT pn.*, pnd.description, pnd.group_desc, pnd.image_perspective, pnd.image_side, pnd.image_plan, pnd.image_path
+      FROM pricing_nomenclature pn LEFT JOIN pricing_nomenclature_details pnd on pn.description_id = pnd.id WHERE pn.id = $id");
     }
 
     $nom = $nom_qry->fetch_assoc();
 
+    if(!$nom['group_desc'] && !empty($nom['description_id'])) { // if it's not a group description AND there is an existing description
+      $image_path = $nom['image_path'];
+      $perspective_image = $nom['image_perspective'];
+      $plan_image = $nom['image_plan'];
+      $side_image = $nom['image_side'];
+    }
+
     switch($image_type) {
       case 'new':
-        //<editor-fold desc="Image Upload">
-        $upload = true; // by default, we should upload
-
-        $file_name = basename($_FILES['image']['name']);
-
-        $target_file = "../images/uploaded/$file_name";
-        $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-        $img_check = getimagesize($_FILES['image']['tmp_name']);
-
-        if($img_check === false) {
-          $upload = false; // it's not an image, we're not uploading
-          http_response_code(400);
-
-          echo displayToast('error', 'File attachment is not an image.', 'File Not Image');
-        } else { // it is an image
-          if(file_exists($target_file)) {
-            $upload = false;
-            http_response_code(400);
-
-            echo displayToast('error', 'Image name already exists.', 'Image Name Exists');
-          }
-
-          // must be less than 1MB
-          if ($_FILES['image']['size'] > 1000000) {
-            $upload = false;
-            http_response_code(400);
-
-            echo displayToast('error', 'Image is too large, must be less than 1MB.', 'Image Too Large');
-          }
-
-          if($file_type !== 'jpg' && $file_type !== 'png' && $file_type !== 'jpeg' && $file_type !== 'gif') {
-            $upload = false;
-            http_response_code(400);
-
-            echo displayToast('error', 'Image must be JPG, PNG, JPEG or GIF.', 'Image Extension Mismatch');
-          }
-
-          if($upload) {
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-              echo 'The file ' . basename( $_FILES['image']['name']). ' has been uploaded.';
-            } else {
-              echo displayToast('error', 'Unable to upload file. Contact IT.', 'File Not Uploaded');
-            }
-          }
-        }
-
-        $image_path = "uploaded/$file_name";
-        //</editor-fold>
+        $perspective_image = uploadImage($_FILES['perspective_image'], "{$sku}_perspective");
+        $plan_image = uploadImage($_FILES['plan_image'], "{$sku}_plan");
+        $side_image = uploadImage($_FILES['side_image'], "{$sku}_side");
 
         break;
       case 'library':
         break;
       default:
-        if(!empty($nom['description_id'])) {
-          $details_qry = $dbconn->query("SELECT * FROM pricing_nomenclature_details WHERE id = {$nom['description_id']};");
-          $details = $details_qry->fetch_assoc();
-
-          $image_path = $details['image_path'];
-        } else {
-          $image_path = '';
-        }
-
         break;
     }
 
-    if(!empty(trim($description))) {
-      if(!empty($nom['description_id'])) {
-        $dbconn->query("UPDATE pricing_nomenclature_details SET description = '$description', title = '$name', image_path = '$image_path' WHERE id = {$nom['description_id']}");
-        $description_id = $nom['description_id'];
-      } else {
-        if($dbconn->query("INSERT INTO pricing_nomenclature_details (description, title, image_path) VALUES ('$description', '$name', '$image_path')")) {
+    if(!empty($nom['description_id']) && !$nom['group_desc']) {
+      $dbconn->query("UPDATE pricing_nomenclature_details SET description = '$description', title = '$name', image_path = '$image_path', image_perspective = '$perspective_image',
+      image_plan = '$plan_image', image_side = '$side_image'  WHERE id = $description_id");
+    } else {
+      if(!empty(trim($description))) {
+        if($dbconn->query("INSERT INTO pricing_nomenclature_details (description, title, image_path, image_perspective, image_plan, image_side) VALUES ('$description', '$name', 
+        '$image_path', '$perspective_image', '$plan_image', '$side_image')")) {
           $description_id = $dbconn->insert_id;
         } else {
           dbLogSQLErr($dbconn);
@@ -259,7 +252,7 @@ switch($_REQUEST['action']) {
     }
 
     if($folder === 'true') {
-      if($dbconn->query("UPDATE pricing_categories SET name = '$name', description_id = $description_id, enabled_desc = '$desc_enabled' WHERE id = $id")) {
+      if($dbconn->query("UPDATE pricing_categories SET name = '$name', description_id = $description_id WHERE id = $id")) {
         http_response_code(200);
         echo displayToast('success', 'Successfully updated category.', "Updated $name");
       } else {
@@ -269,7 +262,7 @@ switch($_REQUEST['action']) {
     } else {
       // now we're working on an item
       if($dbconn->query("UPDATE pricing_nomenclature SET sku = '$sku', width = '$width', height = '$height', depth = '$depth', default_hinge = '$default_hinge',
-      hinge = '$hinge_available', drawer_box_count = $drawer_box_count WHERE id = $id")) {
+      hinge = '$hinge_available', description_id = $description_id, drawer_box_count = $drawer_box_count, desc_available = '$desc_enabled' WHERE id = $id")) {
         $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_map WHERE nomenclature_id = $id;");
 
         if($price_group_qry->num_rows > 0) {

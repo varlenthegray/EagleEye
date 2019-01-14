@@ -500,7 +500,7 @@ if($pg_qry->num_rows > 0) {
             <table width="100%">
               <tr><th>&nbsp;Notes</th></tr>
               <tr><td class="gray_bg">&nbsp;Delivery Notes:</td></tr>
-              <tr><td id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="5"><?php echo $note_arr['room_note_delivery']['note']; ?></textarea></td></tr>
+              <tr><td id="delivery_notes" style="border:none;"><textarea name="delivery_notes" maxlength="280" class="static_width" rows="5"><?php echo stripcslashes($note_arr['room_note_delivery']['note']); ?></textarea></td></tr>
             </table>
 
             <input type="hidden" name="delivery_notes_id" value="<?php echo $note_arr['room_note_delivery']['id']; ?>" />
@@ -510,7 +510,7 @@ if($pg_qry->num_rows > 0) {
             <table width="100%">
               <tr><th>&nbsp;</th></tr>
               <tr><td class="gray_bg">&nbsp;Design Notes:</td></tr>
-              <tr><td style="border-right:2px solid #FFF;"><textarea name="room_note_design" maxlength="280" rows="5"><?php echo $note_arr['room_note_design']['note']; ?></textarea></td>
+              <tr><td style="border-right:2px solid #FFF;"><textarea name="room_note_design" maxlength="280" rows="5"><?php echo stripcslashes($note_arr['room_note_design']['note']); ?></textarea></td>
               </tr>
             </table>
 
@@ -521,7 +521,7 @@ if($pg_qry->num_rows > 0) {
             <table width="100%">
               <tr><th>&nbsp;</th></tr>
               <tr><td class="gray_bg">&nbsp;Finishing/Sample Notes:</td></tr>
-              <tr><td style="border-right:2px solid #FFF;"><textarea name="fin_sample_notes" maxlength="280" class="static_width" rows="5"><?php echo $note_arr['room_note_fin_sample']['note']; ?></textarea></td></tr>
+              <tr><td style="border-right:2px solid #FFF;"><textarea name="fin_sample_notes" maxlength="280" class="static_width" rows="5"><?php echo stripcslashes($note_arr['room_note_fin_sample']['note']); ?></textarea></td></tr>
             </table>
 
             <input type="hidden" name="fin_sample_notes_id" value="<?php echo $note_arr['room_note_fin_sample']['id']; ?>" />

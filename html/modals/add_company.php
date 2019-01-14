@@ -2,14 +2,14 @@
 require_once '../../includes/header_start.php';
 
 $title = 'Add';
-$submit_btn = 'submit_new_contact';
+$submit_btn = 'add_new_company';
 $default_type = sanitizeInput($_REQUEST['default']);
 
 if($_REQUEST['action'] === 'edit') {
   $id = sanitizeInput($_REQUEST['id']);
 
   $title = 'Edit';
-  $submit_btn = 'update_contact';
+  $submit_btn = 'update_company';
 
   $contact_qry = $dbconn->query("SELECT c.*, d.dealer_id FROM contact c LEFT JOIN dealers d ON c.dealer_id = d.id WHERE c.id = $id");
 } else {
@@ -24,52 +24,51 @@ $dealer_display = ($type === '2') ? 'block' : 'none';
   <div class="modal-content">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h4 class="modal-title" id="modalAddCustomerTitle"><?php echo $title; ?> Contact</h4>
+      <h4 class="modal-title" id="modalAddCustomerTitle"><?php echo $title; ?> Company</h4>
     </div>
     <div class="modal-body">
       <div class="row">
         <div class="col-md-12">
-          <form id="contact_form">
-            <?php echo $contact_id; ?>
+          <form id="add_edit_company_form">
             <table style="width:100%;margin-top:8px;" class="table table-custom-nb">
               <tr>
                 <td colspan="2"><u><b>Company</b></u></td>
               </tr>
               <tr>
-                <td><label for="project_name">Name:</label></td>
-                <td><input type="text" value="<?php echo $so['project_name']; ?>" name="project_name" class="c_input" placeholder="Company Name" id="project_name" /></td>
+                <td><label for="company_name">Name:</label></td>
+                <td><input type="text" value="<?php echo $so['company_name']; ?>" name="company_name" class="c_input" placeholder="Company Name" id="company_name" /></td>
               </tr>
               <tr>
-                <td><label for="project_addr">Address:</label></td>
-                <td><input type="text" value="<?php echo $so['project_addr']; ?>" name="project_addr" class="c_input " placeholder="Company Address" id="project_addr" /></td>
+                <td><label for="company_addr">Address:</label></td>
+                <td><input type="text" value="<?php echo $so['company_addr']; ?>" name="company_addr" class="c_input " placeholder="Company Address" id="company_addr" /></td>
               </tr>
               <tr>
-                <td><label for="project_city">City:</label></td>
-                <td><input type="text" value="<?php echo $so['project_city']; ?>" name="project_city" class="c_input" placeholder="Company City" id="project_city"></td>
+                <td><label for="company_city">City:</label></td>
+                <td><input type="text" value="<?php echo $so['company_city']; ?>" name="company_city" class="c_input" placeholder="Company City" id="company_city"></td>
               </tr>
               <tr>
-                <td><label for="project_state">State:</label></td>
-                <td><select class="c_input" id="project_state" name="project_state"><?php echo getStateOpts($so['project_state']); ?></select></td>
+                <td><label for="company_state">State:</label></td>
+                <td><select class="c_input" id="company_state" name="company_state"><?php echo getStateOpts($so['company_state']); ?></select></td>
               </tr>
               <tr>
-                <td><label for="project_zip">Zip:</label></td>
-                <td><input type="text" value="<?php echo $so['project_zip']; ?>" name="project_zip" class="c_input" placeholder="Company Zip" id="project_zip"></td>
+                <td><label for="company_zip">Zip:</label></td>
+                <td><input type="text" value="<?php echo $so['company_zip']; ?>" name="company_zip" class="c_input" placeholder="Company Zip" id="company_zip"></td>
               </tr>
               <tr>
-                <td><label for="project_email">Email:</label></td>
-                <td><input type="text" value="<?php echo $so['project_zip']; ?>" name="project_zip" class="c_input" placeholder="Company Email" id="project_email"></td>
+                <td><label for="company_email">Email:</label></td>
+                <td><input type="text" value="<?php echo $so['company_zip']; ?>" name="company_email" class="c_input" placeholder="Company Email" id="company_email"></td>
               </tr>
               <tr>
-                <td><label for="project_landline">Landline:</label></td>
-                <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="project_landline" class="c_input" placeholder="Company Landline" id="project_landline"></td>
+                <td><label for="company_landline">Landline:</label></td>
+                <td><input type="text" value="<?php echo $so['company_landline']; ?>" name="company_landline" class="c_input" placeholder="Company Landline" id="company_landline"></td>
               </tr>
               <tr>
                 <td colspan="2"><b><u>Billing</u></b></td>
               </tr>
               <tr>
-                <td><label for="payment_processor">Payment Processor:</label></td>
+                <td><label for="company_payment_processor">Payment Processor:</label></td>
                 <td>
-                  <select class="c_input" id="payment_processor" name="payment_processor">
+                  <select class="c_input" id="company_payment_processor" name="company_payment_processor">
                     <option>Stripe</option>
                     <option>Square</option>
                     <option>Bank</option>
@@ -106,20 +105,20 @@ $dealer_display = ($type === '2') ? 'block' : 'none';
                 <td colspan="2"><div class="pull-left"><b><u>Shipping</u></b></div> <div style="margin-left:10px;float:left;" class="checkbox"><input id="shipping_different" class="ignoreSaveAlert" type="checkbox" value="1"><label for="shipping_different"> Different</label></div></td>
               </tr>
               <tr class="shipping_empty_hide">
-                <td><label for="shipping_addr">Address:</label></td>
-                <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="shipping_addr" class="c_input" placeholder="Shipping Address" id="shipping_addr"></td>
+                <td><label for="company_shipping_addr">Address:</label></td>
+                <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="company_shipping_addr" class="c_input" placeholder="Shipping Address" id="company_shipping_addr"></td>
               </tr>
               <tr class="shipping_empty_hide">
-                <td><label for="shipping_city">City:</label></td>
-                <td><input type="text" value="<?php echo $so['project_city']; ?>" name="shipping_city" class="c_input" placeholder="Shipping City" id="shipping_city"></td>
+                <td><label for="company_shipping_city">City:</label></td>
+                <td><input type="text" value="<?php echo $so['project_city']; ?>" name="company_shipping_city" class="c_input" placeholder="Shipping City" id="company_shipping_city"></td>
               </tr>
               <tr class="shipping_empty_hide">
-                <td><label for="shipping_state">State:</label></td>
-                <td><select class="c_input" id="shipping_state" name="shipping_state"><?php echo getStateOpts($so['project_state']); ?></select></td>
+                <td><label for="company_shipping_state">State:</label></td>
+                <td><select class="c_input" id="company_shipping_state" name="company_shipping_state"><?php echo getStateOpts($so['project_state']); ?></select></td>
               </tr>
               <tr class="shipping_empty_hide">
-                <td><label for="shipping_zip">Zip:</label></td>
-                <td><input type="text" value="<?php echo $so['project_zip']; ?>" name="shipping_zip" class="c_input" placeholder="Shipping Zip" id="shipping_zip"></td>
+                <td><label for="company_shipping_zip">Zip:</label></td>
+                <td><input type="text" value="<?php echo $so['project_zip']; ?>" name="company_shipping_zip" class="c_input" placeholder="Shipping Zip" id="company_shipping_zip"></td>
               </tr>
               <tr class="shipping_empty_hide">
                 <td colspan="3"><div style="width:100%;height:3px;border:2px solid #BBB;margin:5px 0;border-radius:5px;"></div></td>
@@ -128,20 +127,20 @@ $dealer_display = ($type === '2') ? 'block' : 'none';
                 <td colspan="2"><div class="pull-left"><b><u>Billing</u></b></div> <div style="margin-left:10px;float:left;" class="checkbox"><input id="billing_different" class="ignoreSaveAlert" type="checkbox" value="1"><label for="billing_different"> Different</label></div></td>
               </tr>
               <tr class="billing_empty_hide">
-                <td><label for="billing_addr">Address:</label></td>
-                <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="billing_addr" class="c_input" placeholder="Billing Address" id="billing_addr"></td>
+                <td><label for="company_billing_addr">Address:</label></td>
+                <td><input type="text" value="<?php echo $so['project_landline']; ?>" name="company_billing_addr" class="c_input" placeholder="Billing Address" id="company_billing_addr"></td>
               </tr>
               <tr class="billing_empty_hide">
-                <td><label for="billing_city">City:</label></td>
-                <td><input type="text" value="<?php echo $so['project_city']; ?>" name="billing_city" class="c_input" placeholder="Billing City" id="billing_city"></td>
+                <td><label for="company_billing_city">City:</label></td>
+                <td><input type="text" value="<?php echo $so['project_city']; ?>" name="company_billing_city" class="c_input" placeholder="Billing City" id="company_billing_city"></td>
               </tr>
               <tr class="billing_empty_hide">
-                <td><label for="billing_state">State:</label></td>
-                <td><select class="c_input" id="billing_state" name="billing_state"><?php echo getStateOpts($so['project_state']); ?></select></td>
+                <td><label for="company_billing_state">State:</label></td>
+                <td><select class="c_input" id="company_billing_state" name="company_billing_state"><?php echo getStateOpts($so['project_state']); ?></select></td>
               </tr>
               <tr class="billing_empty_hide">
-                <td><label for="billing_zip">Zip:</label></td>
-                <td><input type="text" value="<?php echo $so['project_zip']; ?>" name="billing_zip" class="c_input" placeholder="Billing Zip" id="billing_zip"></td>
+                <td><label for="company_billing_zip">Zip:</label></td>
+                <td><input type="text" value="<?php echo $so['project_zip']; ?>" name="company_billing_zip" class="c_input" placeholder="Billing Zip" id="company_billing_zip"></td>
               </tr>
             </table>
           </form>
@@ -149,7 +148,6 @@ $dealer_display = ($type === '2') ? 'block' : 'none';
       </div>
     </div>
     <div class="modal-footer">
-      <?php echo ($_REQUEST['action'] === 'edit' && $bouncer->validate('delete_contact')) ? "<button type='button' class='btn btn-danger waves-effect pull-left' id='delete_contact' data-name='$output_name' data-contact-id='$id' data-dismiss='modal'>Delete</button>": null; ?>
       <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal">Cancel</button>
       <button type="button" class="btn btn-primary waves-effect waves-light" id="<?php echo $submit_btn; ?>">Save</button>
     </div>

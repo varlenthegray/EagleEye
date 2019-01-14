@@ -891,7 +891,6 @@ $("body")
     // FIXME: Change this so the data isn't loaded on hover, should be able to JSON this data into memory quite easily
     e.stopPropagation();
 
-    let info = "";
     let thisEle = $(this);
     let infoPopup = $(".info-popup");
     let position = thisEle.offset();
@@ -900,27 +899,40 @@ $("body")
       if(data !== '') {
         let result = JSON.parse(data);
 
-        if(result.image !== null) {
-          info += "<div class='image'><img style='max-width:300px;max-height:600px;' src='/html/pricing/images/" + result.image + "' /></div>";
+        if(result['image_perspective'] !== '' && result['image_perspective'] !== null) {
+          infoPopup.find('.img-perspective img').prop('src', '/html/pricing/images/' + result['image_perspective']);
+        } else {
+          infoPopup.find('.img-perspective img').prop('src', '/assets/images/blank.png');
         }
 
-        info += "<div class='right_content'><div class='header'><h4>" + result.title + "</h4></div>";
-        info += "<div class='description'>" + result.description + "</div></div>";
+        if(result['image_plan'] !== '' && result['image_plan'] !== null) {
+          infoPopup.find('.img-plan img').prop('src', '/html/pricing/images/' + result['image_plan']);
+        } else {
+          infoPopup.find('.img-plan img').prop('src', '/assets/images/blank.png');
+        }
+
+        if(result['image_side'] !== '' && result['image_side'] !== null) {
+          infoPopup.find('.img-side img').prop('src', '/html/pricing/images/' + result['image_side']);
+        } else {
+          infoPopup.find('.img-side img').prop('src', '/assets/images/blank.png');
+        }
+
+        infoPopup.find('.header').html('<h4>' + result['title'] + '</h4>');
+        infoPopup.find('.description').html(result['description']);
       }
     }).done(function() {
-      if(info !== '') {
-        let infoHeight = infoPopup.height();
-        let infoTop = position.top - 85;
-        let windowOverflow = $(window).scrollTop() + $(window).height();
+      let infoHeight = infoPopup.height();
+      let infoTop = position.top - 85;
+      let windowOverflow = $(window).scrollTop() + $(window).height();
 
-        if((infoHeight + infoTop + 100) > windowOverflow) {
-          infoPopup.css({"bottom": 0, "top": "inherit", "left": (position.left + 20)});
-        } else {
-          infoPopup.css({"top": infoTop, "bottom": "inherit", "left": position.left});
-        }
-
-        infoPopup.fadeIn(250).html(info);
+      if((infoHeight + infoTop + 100) > windowOverflow) {
+        infoPopup.css({"bottom": 0, "top": "inherit", "left": (position.left + 20)});
+      } else {
+        infoPopup.css({"top": infoTop, "bottom": "inherit", "left": position.left});
       }
+
+      // infoPopup.fadeIn(250).html(info);
+      infoPopup.fadeIn(250);
     });
   })
   .on("mouseleave", ".view_item_info, .info-popup", function() {
@@ -1369,17 +1381,9 @@ $("body")
         display.hide();
         container.find('#displayCurrentImage').show();
         break;
-      case 'recent':
-        display.hide();
-        container.find('#displayRecentImage').show();
-        break;
       case 'new':
         display.hide();
-        container.find('#displayNewImageUpload').show();
-        break;
-      case 'existing':
-        display.hide();
-        container.find('#displayImageLibrary').show();
+        container.find('.displayNewImageUpload').show();
         break;
     }
   })

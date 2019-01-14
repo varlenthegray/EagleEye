@@ -21,7 +21,30 @@ require '../../includes/header_start.php';
   </div>
 </div>
 
-<div class='info-popup'></div>
+<div class='info-popup'>
+  <div class="image">
+    <div class="img-container img-perspective">
+      <h5>Perspective</h5>
+      <img src='' />
+    </div>
+
+    <div class="img-container img-plan">
+      <h5>Plan</h5>
+      <img src='' />
+    </div>
+
+    <div class="img-container img-side">
+      <h5>Side/Front</h5>
+      <img src='' />
+    </div>
+  </div>
+
+  <div class="right_content">
+    <div class='header'></div>
+
+    <div class='description'></div>
+  </div>
+</div>
 
 <script src="/html/crm/js/crmCompany.min.js?v=<?php echo VERSION; ?>"></script>
 <script src="/html/crm/js/crmProject.min.js?v=<?php echo VERSION; ?>"></script>
@@ -55,7 +78,7 @@ require '../../includes/header_start.php';
       // crmCompany.reInitEditor();
 
       // FIXME: This needs to detect if there is a datatable inside of the window... should be able to dig through Win to find out
-      console.log(win.getAttachedObject());
+      // console.log(win.getAttachedObject());
 
       $.each(crmMain.dataTableContainer, function(index, container) {
         container.draw(false);

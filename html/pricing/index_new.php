@@ -26,9 +26,6 @@ $room = $room_qry->fetch_assoc();
 $company_qry = $dbconn->query("SELECT cc.*, d.*, d.id AS dealerID FROM contact_company cc LEFT JOIN dealers d on cc.dealer_id = d.id WHERE cc.id = {$room['company_id']}");
 $company = $company_qry->fetch_assoc();
 
-//$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$room['dealer_code']}'");
-//$dealer = $dealer_qry->fetch_assoc();
-
 //<editor-fold desc="Disable submit buttons (if submitted)">
 $existing_quote_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
 
