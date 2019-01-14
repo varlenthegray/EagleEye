@@ -1597,8 +1597,7 @@ var pricingFunction = {
           let activeNode = cabinetList.fancytree("getTree").getActiveNode().toDict(true);
 
           activeNode.key = pricingFunction.genKey();
-            console.log(activeNode);
-          if (activeNode.children !== null) {
+          if (activeNode.children === null) {
             $.each(activeNode.children, function(key) {
               activeNode.children[key].key = pricingFunction.genKey();
             });
