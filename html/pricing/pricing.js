@@ -831,37 +831,40 @@ var pricingFunction = {
   $(".qty_input").change (function() {
     pricingFunction.recalcSummary();
   });
+    $("body")
+      .on("click", ".add_item_cabinet_list", function() {
+        pricingFunction.delNoData();
 
-  $(".add_item_cabinet_list").click (function() {
-    pricingFunction.delNoData();
+        var root = cabinetList.fancytree("getRootNode");
 
-    var root = cabinetList.fancytree("getRootNode");
+        $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {
+          id: $(this).attr('data-id'),
+          room_id: active_room_id
+        }, function(data) {
+          let itemInfo = JSON.parse(data);
 
-    $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: $(this).attr('data-id'), room_id: active_room_id}, function(data) {
-      let itemInfo = JSON.parse(data);
+          let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
 
-      let fixedPrice = parseFloat(itemInfo.price).toFixed(2);
+          root.addChildren({
+            qty: 1,
+            title: itemInfo.sku,
+            width: itemInfo.width,
+            height: itemInfo.height,
+            depth: itemInfo.depth,
+            itemID: itemInfo.id,
+            price: fixedPrice,
+            key: pricingFunction.genKey(),
+            icon: itemInfo.icon,
+            name: itemInfo.title,
+            sqft: itemInfo.sqft,
+            singlePrice: fixedPrice,
+            cabinet: itemInfo.cabinet,
+            addlMarkup: itemInfo.addlMarkup
+          });
 
-      root.addChildren({
-        qty: 1,
-        title: itemInfo.sku,
-        width: itemInfo.width,
-        height: itemInfo.height,
-        depth: itemInfo.depth,
-        itemID: itemInfo.id,
-        price: fixedPrice,
-        key: pricingFunction.genKey(),
-        icon: itemInfo.icon,
-        name: itemInfo.title,
-        sqft: itemInfo.sqft,
-        singlePrice: fixedPrice,
-        cabinet: itemInfo.cabinet,
-        addlMarkup: itemInfo.addlMarkup
+          pricingFunction.recalcSummary();
+        });
       });
-
-      pricingFunction.recalcSummary();
-    });
-  });
 
   $("#catalog_add_item").click (function() {
     $.get("/html/pricing/ajax/modify_item.php", function(data) {
