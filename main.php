@@ -1246,13 +1246,11 @@ require 'includes/header_start.php';
 
         if($(this).attr('id') === '201') {
           $.post("/ondemand/account_actions.php?action=start_break", {id: 201, operation: 'Break'}, function(data) {
-            console.log(data);
             $('body').append(data);
 
             socket.emit("updateQueue");
 
             $.post("/ondemand/account_actions.php?action=get_break_btn", function(data) {
-              console.log(data);
               var result = JSON.parse(data);
               $(".nav_break").attr('id', result.id);
 

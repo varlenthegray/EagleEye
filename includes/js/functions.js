@@ -21,7 +21,6 @@ var globalFunctions = {
   },
   updateBreakButton: function() {
     $.post("/ondemand/account_actions.php?action=get_break_btn", function(data) {
-      console.log(data);
       var result = JSON.parse(data);
 
       $(".nav_break").attr('id', result.id).find('span').html(result.display);
@@ -29,7 +28,6 @@ var globalFunctions = {
   },
 
   updateOpQueue: function() {
-    console.log('updated');
     if(typeof queue_table !== 'undefined') {
       queue_table.ajax.url("/ondemand/display_actions.php?action=display_ind_job_queue&queue=" + $('#viewing_queue').val()).load(null,false);
     } else {
