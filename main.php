@@ -703,7 +703,7 @@ require 'includes/header_start.php';
         $("#modalGlobal").modal('hide');
 
         var id = $(this).attr("id");
-        $("#global_search").val(id).trigger("keyup");
+        $("#crm_search").val(id).trigger("keyup");
       })
       // -- End clicking an SO to view it
       <?php } ?>
