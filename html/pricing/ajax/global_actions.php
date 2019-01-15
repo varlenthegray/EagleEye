@@ -590,16 +590,21 @@ switch($_REQUEST['action']) {
     //<editor-fold desc="Initial Setup, variable capture">
     $cat = new Catalog;
 
-    parse_str($_REQUEST['formData'], $info);
+    parse_str($_REQUEST['formData'], $info); // general form information
+    parse_str($_REQUEST['cabinet_specifications'], $cabinet_specifications); // global: cabinet specifications
+    parse_str($_REQUEST['accounting_notes'], $accounting_notes); // accounting and notes
+
     $custom_vals = $_REQUEST['customVals']; // custom fields in VIN sheet
     $room_id = sanitizeInput($_REQUEST['room_id']);
+    $keyPath = json_decode($_REQUEST['keys']); // the ID's of company/project/batch
 
     foreach($info AS $k => $i) {
       $info[$k] = sanitizeInput($i);
     }
 
-    parse_str($_REQUEST['cabinet_specifications'], $cabinet_specifications); // global: cabinet specifications
-    parse_str($_REQUEST['accounting_notes'], $accounting_notes); // accounting and notes
+    foreach($keyPath AS $k => $i) {
+      $keyPath[$k] = sanitizeInput($i);
+    }
 
     $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id");
     $room_info = $room_qry->fetch_assoc();
@@ -800,6 +805,57 @@ switch($_REQUEST['action']) {
     //</editor-fold>
 
     //<editor-fold desc="SO Notes">
+    if(!empty($info['company_notes'])) {
+      $followup_date = $info['company_followup_date'];
+      $followup_individual = $info['requested_of'];
+
+      if($dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('{$info['company_notes']}', 'company_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '{$keyPath[0]}')")) {
+        $note_id = $dbconn->insert_id;
+
+        if(!empty($followup_date) && !empty($followup_individual)) {
+          $followup = strtotime($followup_date);
+
+          $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('company_followup', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'Company: {$info['company_name']}, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $note_id)");
+        }
+      } else {
+        dbLogSQLErr($dbconn);
+      }
+    }
+
+    if(!empty($info['project_notes'])) {
+      $followup_date = $info['project_followup_date'];
+      $followup_individual = $info['project_requested_of'];
+
+      if($dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('{$info['project_notes']}', 'so_inquiry', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '{$keyPath[1]}')")) {
+        $note_id = $dbconn->insert_id;
+
+        if(!empty($followup_date) && !empty($followup_individual)) {
+          $followup = strtotime($followup_date);
+
+          $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('so_inquiry', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'Company: {$info['company_name']}, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $note_id)");
+        }
+      } else {
+        dbLogSQLErr($dbconn);
+      }
+    }
+
+    if(!empty($info['batch_notes'])) {
+      $followup_date = $info['batch_followup_date'];
+      $followup_individual = $info['batch_requested_of'];
+
+      if($dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('{$info['batch_notes']}', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '{$keyPath[2]}')")) {
+        $note_id = $dbconn->insert_id;
+
+        if(!empty($followup_date) && !empty($followup_individual)) {
+          $followup = strtotime($followup_date);
+
+          $dbconn->query("INSERT INTO cal_followup (type, timestamp, user_to, user_from, notes, followup_time, type_id) VALUES ('room_note', UNIX_TIMESTAMP(), '$followup_individual', '{$_SESSION['userInfo']['id']}', 'Company: {$info['company_name']}, Inquiry by: {$_SESSION['userInfo']['name']}', $followup, $note_id)");
+        }
+      } else {
+        dbLogSQLErr($dbconn);
+      }
+    }
+
     $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = {$room_info['so_parent']}");
     $so = $so_qry->fetch_assoc();
 

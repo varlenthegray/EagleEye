@@ -1,4 +1,4 @@
-/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*/
+/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*/
 
 jQuery.expr.filters.offscreen = function(el) {
   var rect = el.getBoundingClientRect();
@@ -539,8 +539,9 @@ $("body")
     });
 
     let customVals = JSON.stringify(val_array);
+    let keyInfo = JSON.stringify(crmNav.navKeys);
 
-    $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, formData: formData}, function(data) {
+    $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, formData: formData, keys: keyInfo}, function(data) {
       $('body').append(data);
     });
     //</editor-fold>
@@ -550,109 +551,6 @@ $("body")
 
     // live notes for SO notes box
     pricingFunction.checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
-
-    // based on what we're saving, we're going to take an action
-   /* switch(curTab) {
-      case 'room-notes-tab': // saving notes
-        formData = $("#batch_notes").serialize();
-
-        $.post("/html/pricing/ajax/global_actions.php?action=saveBatchNotes", {room_id: active_room_id, notes: formData}, function(data, response) {
-          if(response === 'success') {
-            $('body').append(data);
-
-            pricingFunction.checkNote('.so_note_box', '#project_note_input', '#project_followup_date', '#project_followup_requested_of');
-            pricingFunction.checkNote('.room_note_box', '#batch_note_input', '#batch_inquiry_followup_date', '#batch_inquiry_requested_of');
-          } else {
-            displayToast('error', 'Something went wrong with notes. Please try again.', 'Note Error');
-          }
-        });
-
-        break;
-      case 'room-details-tab': // saving room details
-        formData = pricingFunction.disabledSerialize($("#batch_details"));
-
-        $.post("/html/pricing/ajax/global_actions.php?action=saveBatchDetails", {room_id: active_room_id, formData: formData}, function(data, response) {
-          if(response === 'success') {
-            $('body').append(data);
-          } else {
-            displayToast('error', 'Something went wrong saving Batch Details. Please try again.', 'Batch Details Error');
-          }
-        });
-
-        break;
-      case 'room-cabinet-details-tab':
-        val_array = {};
-
-        formData = pricingFunction.disabledSerialize($("#cabinet_details"));
-
-        inputSelect.each(function() {
-          var ele = $(this);
-          var field = $(this).attr('id');
-          var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
-
-          if($.inArray(ele.val(), custom_fields) >= 0) {
-            val_array[field] = {};
-
-            ele.parent().find('input').each(function() {
-              val_array[field][$(this).attr('name')] = $(this).val();
-            });
-          }
-        });
-
-        customVals = JSON.stringify(val_array);
-
-        $.post("/html/pricing/ajax/global_actions.php?action=saveCabinetDetails", {room_id: active_room_id, formData: formData, customVals: customVals}, function(data, response) {
-          if(response === 'success') {
-            $('body').append(data);
-          } else {
-            displayToast('error', 'Something went wrong saving Batch Details. Please try again.', 'Batch Details Error');
-          }
-        });
-
-        break;
-      case 'room-item-list-tab':
-        cab_list = JSON.stringify(getMiniTree(cabinetList));
-
-        $.post("/html/pricing/ajax/global_actions.php?action=saveItemList", {room_id: active_room_id, cabinet_list: cab_list}, function(data) {
-          $('body').append(data);
-        });
-
-        break;
-      default: // no tabs selected at all, we must be in the old interface, run the old save code
-        //<editor-fold desc="Room Data">
-        var cabinet_specifications = $("#cabinet_specifications").serialize();
-        var accounting_notes = $("#accounting_notes").serialize();
-        cab_list = JSON.stringify(getMiniTree(cabinetList));
-
-        inputSelect.each(function() {
-          var ele = $(this);
-          var field = $(this).attr('id');
-          var custom_fields = ['X', 'Xxx', 'AX', 'DX', 'TX', 'Xx', 'WX', '1cXXXX', '3gXXXX', 'HW', 'KW'];
-
-          if($.inArray(ele.val(), custom_fields) >= 0) {
-            val_array[field] = {};
-
-            ele.parent().find('input').each(function() {
-              val_array[field][$(this).attr('name')] = $(this).val();
-            });
-          }
-        });
-
-        customVals = JSON.stringify(val_array);
-
-        $.post("/html/pricing/ajax/global_actions.php?action=roomSave&room_id=" + active_room_id, {cabinet_list: cab_list, customVals: customVals, cabinet_specifications: cabinet_specifications, accounting_notes: accounting_notes}, function(data) {
-          $('body').append(data);
-        });
-        //</editor-fold>
-
-        // live notes for Room notes box
-        pricingFunction.checkNote('.room_note_box', '#room_notes', '#room_inquiry_followup_date', '#room_inquiry_requested_of');
-
-        // live notes for SO notes box
-        pricingFunction.checkNote('.so_note_box', '#so #inquiry', '#so #inquiry_followup_date', '#so #inquiry_requested_of');
-
-        break;
-    }*/
 
     unsaved = false;
   })

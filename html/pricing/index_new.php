@@ -87,6 +87,9 @@ if($pg_qry->num_rows > 0) {
   $price_group = '0';
 }
 //</editor-fold>
+
+$company_qry = $dbconn->query("SELECT so.id AS soID, cc.id AS cID FROM sales_order so LEFT JOIN contact_company cc on so.company_id = cc.id WHERE so.so_num = '{$room['so_parent']}'");
+$company = $company_qry->fetch_assoc();
 ?>
 
 <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
@@ -186,7 +189,7 @@ if($pg_qry->num_rows > 0) {
                       </thead>
                       <tbody>
                       <?php
-                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'company_note' AND type_id = $company_id");
+                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'company_note' AND type_id = {$company['cID']}");
 
                       if($note_qry->num_rows > 0) {
                         while($note = $note_qry->fetch_assoc()) {
@@ -249,7 +252,7 @@ if($pg_qry->num_rows > 0) {
                       </thead>
                       <tbody>
                       <?php
-                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'so_inquiry' AND type_id = $company_id");
+                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'so_inquiry' AND type_id = {$company['soID']}");
 
                       if($note_qry->num_rows > 0) {
                         while($note = $note_qry->fetch_assoc()) {
@@ -312,7 +315,7 @@ if($pg_qry->num_rows > 0) {
                       </thead>
                       <tbody>
                       <?php
-                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'room_note' AND type_id = $company_id");
+                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'room_note' AND type_id = $room_id");
 
                       if($note_qry->num_rows > 0) {
                         while($note = $note_qry->fetch_assoc()) {
