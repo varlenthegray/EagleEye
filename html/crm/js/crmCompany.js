@@ -81,8 +81,6 @@ var crmCompany = {
         crmCompany.getCompanyList();
       })
       .on("click", "#modalAddProjectSave", function() {
-        console.log("Click add project");
-
         let info = $("#add_project_form").serialize();
 
         $.post("/html/crm/ajax/company.php?action=addProject", {formInfo: info}, function(data) {

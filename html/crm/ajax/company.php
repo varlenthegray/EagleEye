@@ -3,6 +3,34 @@ require '../../../includes/header_start.php';
 
 //outputPHPErrs();
 
+function createBlankRoom($projectNum) {
+  global $dbconn;
+
+  $op_qry = $dbconn->query("SELECT * FROM operations WHERE op_id != '000' AND job_title NOT LIKE '%N/A%' ORDER BY op_id;");
+
+  $ind_bracket = array();
+
+  $starting_ops = array();
+
+  while ($op = $op_qry->fetch_assoc()) {
+    if (empty($starting_ops[$op['bracket']])) {
+      $starting_ops[$op['bracket']] = $op['id'];
+    }
+
+    $ind_bracket[] = $op['id'];
+  }
+
+  $ind_bracket_final = json_encode($ind_bracket);
+
+  $dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, individual_bracket_buildout, order_status, sales_bracket, sample_bracket,
+  preproduction_bracket, doordrawer_bracket, main_bracket, custom_bracket, install_bracket, shipping_bracket, sales_published) 
+  VALUES ('$projectNum', 'A', 'Intake (Auto-Generated)', 'C', '$ind_bracket_final', '#', '{$starting_ops['Sales']}', '{$starting_ops['Sample']}', 
+  '{$starting_ops['Pre-Production']}', '{$starting_ops['Drawer & Doors']}', '{$starting_ops['Main']}', '{$starting_ops['Custom']}', 
+  '{$starting_ops['Installation']}', '{$starting_ops['Shipping']}', TRUE);");
+
+  return $dbconn->insert_id;
+}
+
 switch($_REQUEST['action']) {
   case 'getCompanyList':
     $company_out['data'] = [];
@@ -54,6 +82,40 @@ switch($_REQUEST['action']) {
     }
 
     break;
+  case 'newCompany':
+    parse_str($_REQUEST['formInfo'], $info);
+
+    foreach($info AS $key => $r) {
+      $info[$key] = sanitizeInput($r);
+    }
+
+    $qry = $dbconn->query("SELECT DISTINCT so_num FROM sales_order WHERE so_num REGEXP '^[0-9]+$' ORDER BY so_num DESC LIMIT 0,1");
+    $result = $qry->fetch_assoc();
+
+    $next_so = $result['so_num'] + 1;
+
+    if(!empty($info['company_name'])) {
+      if($dbconn->query("INSERT INTO contact_company (name, address, city, state, zip, email, landline, payment_processor, shipping_address, shipping_city, shipping_state,
+      shipping_zip, billing_address, billing_city, billing_state, billing_zip) VALUES ('{$info['company_name']}', '{$info['company_addr']}', '{$info['company_city']}', 
+      '{$info['company_state']}', '{$info['company_zip']}', '{$info['company_email']}', '{$info['company_landline']}', '{$info['company_payment_processor']}', 
+      '{$info['company_shipping_addr']}', '{$info['company_shipping_city']}', '{$info['company_shipping_state']}', '{$info['company_shipping_zip']}', '{$info['company_billing_addr']}', 
+      '{$info['company_billing_city']}', '{$info['company_billing_state']}', '{$info['company_billing_zip']}');")) {
+        $insert_id = $dbconn->insert_id;
+
+        $dbconn->query("INSERT INTO sales_order (company_id, so_num, project_name) VALUES ($insert_id, '$next_so', 'New Project');");
+
+        createBlankRoom($next_so);
+
+        echo displayToast('success', 'Successfully created company.', 'Company Created');
+      } else {
+        dbLogSQLErr($dbconn);
+      }
+    } else {
+      echo displayToast('error', 'Please fill in company name.', 'Company Name Required');
+    }
+
+
+    break;
   case 'addProject':
     parse_str($_REQUEST['formInfo'], $info);
 
@@ -65,7 +127,6 @@ switch($_REQUEST['action']) {
       $op_qry = $dbconn->query("SELECT * FROM operations WHERE op_id != '000' AND job_title NOT LIKE '%N/A%' ORDER BY op_id;");
 
       $ind_bracket = array();
-
       $starting_ops = array();
 
       while ($op = $op_qry->fetch_assoc()) {
@@ -76,15 +137,7 @@ switch($_REQUEST['action']) {
         $ind_bracket[] = $op['id'];
       }
 
-      $ind_bracket_final = json_encode($ind_bracket);
-
-      $dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, individual_bracket_buildout, order_status, sales_bracket, sample_bracket,
-      preproduction_bracket, doordrawer_bracket, main_bracket, custom_bracket, install_bracket, shipping_bracket, sales_published) 
-      VALUES ('{$info['project_num']}', 'A', 'Intake (Auto-Generated)', 'C', '$ind_bracket_final', '#', '{$starting_ops['Sales']}', '{$starting_ops['Sample']}', 
-      '{$starting_ops['Pre-Production']}', '{$starting_ops['Drawer & Doors']}', '{$starting_ops['Main']}', '{$starting_ops['Custom']}', 
-      '{$starting_ops['Installation']}', '{$starting_ops['Shipping']}', TRUE);");
-
-      $room_id = $dbconn->insert_id;
+      $room_id = createBlankRoom($info['project_num']);
 
       $dbconn->query("INSERT INTO op_queue (room_id, operation_id, created) VALUES ('$room_id', '{$starting_ops['Sales']}', UNIX_TIMESTAMP())");
 
