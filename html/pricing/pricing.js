@@ -351,13 +351,13 @@ var pricingFunction = {
         let line_sqft = (parseFloat(node.data.width) * parseFloat(node.data.height)) / 144;
         let line_total = line_sqft * node.data.singlePrice;
 
-        $tdList.eq(8).text(line_total.formatMoney());
+        $tdList.eq(9).text(line_total.formatMoney());
 
         outprice = line_total;
       } else if(parseInt(node.data.linft) === 1) {
         let line_linft = (parseFloat(node.data.width) / 12) * node.data.singlePrice;
 
-        $tdList.eq(8).text(line_linft.formatMoney());
+        $tdList.eq(9).text(line_linft.formatMoney());
 
         outprice = line_linft;
       }
@@ -869,7 +869,6 @@ $("body")
       customNote: 1
     });
 
-    console.log(node);
 
     let $tdList = $(node.tr).find(">td");
 
@@ -1015,39 +1014,38 @@ $("body")
     catalog.fancytree('getTree').reload(catalogData);
   })
 
-  .on("change", ".item_hinge", function() {
-    let node = cabinetList.fancytree("getActiveNode");
+.on("change",".item_hinge", function() {
+  let node = cabinetList.fancytree("getActiveNode");
 
-    node.data.hinge = $(this).find(":selected").val();
-  })
-  .on("keyup", ".itm_width", function() {
-    let id = $(this).attr("data-id");
-    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+  node.data.hinge = $(this).find(":selected").val();
+})
+.on("keyup", ".itm_width", function() {
+  let id = $(this).attr("data-id");
+  let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    node.data.width = $(this).val();
-    node.data.price = pricingFunction.footCalc(node);
+  node.data.width = $(this).val();
+  node.data.price = pricingFunction.footCalc(node);
 
-    pricingFunction.recalcSummary();
-  })
-  .on("keyup", ".itm_height", function() {
-    let id = $(this).attr("data-id");
-    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+  pricingFunction.recalcSummary();
+})
+.on("keyup", ".itm_height", function() {
+  let id = $(this).attr("data-id");
+  let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    node.data.height = $(this).val();
-    node.data.price = pricingFunction.footCalc(node);
+  node.data.height = $(this).val();
+  node.data.price = pricingFunction.footCalc(node);
 
-    pricingFunction.recalcSummary();
-  })
-  .on("keyup", ".itm_depth", function() {
-    let id = $(this).attr("data-id");
-    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+  pricingFunction.recalcSummary();
+})
+.on("keyup", ".itm_depth", function() {
+  let id = $(this).attr("data-id");
+  let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    node.data.depth = $(this).val();
-    node.data.price = pricingFunction.footCalc(node);
+  node.data.depth = $(this).val();
+  node.data.price = pricingFunction.footCalc(node);
 
-    pricingFunction.recalcSummary();
-  })
-
+  pricingFunction.recalcSummary();
+})
   .on("keyup", "#modificationsFilter", function() { // filters per keystroke on search catalog
     // grab this value and filter it down to the node needed
     itemModifications.fancytree("getTree").filterNodes($(this).val());
