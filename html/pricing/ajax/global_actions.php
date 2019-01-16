@@ -64,24 +64,24 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
   $bracket_def = null;
 
   switch($bracket) {
-    case 'Sales':
-      $bracket_def = 'sales_bracket';
+    case 'Sales/Marketing':
+      $bracket_def = 'sales_marketing_bracket';
       break;
 
-    case 'Sample':
-      $bracket_def = 'sample_bracket';
+    case 'Shop':
+      $bracket_def = 'shop_bracket';
       break;
 
     case 'Pre-Production':
       $bracket_def = 'preproduction_bracket';
       break;
 
-    case 'Drawer & Doors':
-      $bracket_def = 'doordrawer_bracket';
+    case 'Press':
+      $bracket_def = 'press_bracket';
       break;
 
-    case 'Main':
-      $bracket_def = 'main_bracket';
+    case 'Paint':
+      $bracket_def = 'paint_bracket';
       break;
 
     case 'Custom':
@@ -92,16 +92,12 @@ function displayBracketOpsMgmt($bracket, $room, $individual_bracket) {
       $bracket_def = 'shipping_bracket';
       break;
 
-    case 'Installation':
-      $bracket_def = 'install_bracket';
+    case 'Assembly':
+      $bracket_def = 'assembly_bracket';
       break;
 
-    case 'Pick & Materials':
-      $bracket_def = 'pick_materials_bracket';
-      break;
-
-    case 'Edge Banding':
-      $bracket_def = 'edgebanding_bracket';
+    case 'Welding':
+      $bracket_def = 'welding_bracket';
       break;
 
     default:
@@ -332,10 +328,10 @@ switch($_REQUEST['action']) {
     $changed[] = whatChanged($ship_to_zip, $room['ship_to_zip'], 'Ship To Zip');
     $changed[] = whatChanged($multi_room_ship, $room['multi_room_ship'], 'Multi-room Shipping');
     $changed[] = whatChanged($payment_method, $room['payment_method'], 'Payment Method');
-    $changed[] = whatChanged($seen_approved, $room['seen_approved'], 'Sample seen/approved');
-    $changed[] = whatChanged($unseen_approved, $room['unseen_approved'], 'Sample unseen/approved');
-    $changed[] = whatChanged($requested_sample, $room['requested_sample'], 'Sample Requested');
-    $changed[] = whatChanged($sample_reference, $room['sample_reference'], 'Sample Reference');
+    $changed[] = whatChanged($seen_approved, $room['seen_approved'], 'Shop seen/approved');
+    $changed[] = whatChanged($unseen_approved, $room['unseen_approved'], 'Shop unseen/approved');
+    $changed[] = whatChanged($requested_sample, $room['requested_sample'], 'Shop Requested');
+    $changed[] = whatChanged($sample_reference, $room['sample_reference'], 'Shop Reference');
     //</editor-fold>
 
     //<editor-fold desc="Signature">
@@ -507,7 +503,7 @@ switch($_REQUEST['action']) {
     //<editor-fold desc="DB: Finishing Notes">
     if(!empty($formData['fin_sample_notes_id'])) {
       if($dbconn->query("UPDATE notes SET note = '$fin_sample_notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$fin_sample_notes_id'")) {
-        $changed[] = 'Finishing/Sample Notes Updated';
+        $changed[] = 'Finishing/Shop Notes Updated';
       } else {
         dbLogSQLErr($dbconn);
       }
@@ -515,9 +511,9 @@ switch($_REQUEST['action']) {
       if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
         $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$fin_sample_notes', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
-        $changed[] = 'Finishing/Sample Notes Created';
+        $changed[] = 'Finishing/Shop Notes Created';
       } else {
-        echo displayToast('warning', 'Finishing/Sample Note already exists. Please refresh your page and try again.', 'Finishing/Sample Note Exists');
+        echo displayToast('warning', 'Finishing/Shop Note already exists. Please refresh your page and try again.', 'Finishing/Shop Note Exists');
       }
     }
     //</editor-fold>
@@ -698,10 +694,10 @@ switch($_REQUEST['action']) {
     $changed[] = whatChanged($dealer_po, $room_info['dealer_po'], 'Dealer PO');
     $changed[] = whatChanged($room_name, $room_info['room_name'], 'Room Name');
     $changed[] = whatChanged($order_status, $room_info['order_status'], 'Order Status');
-    $changed[] = whatChanged($seen_approved, $room_info['seen_approved'], 'Sample seen/approved');
-    $changed[] = whatChanged($unseen_approved, $room_info['unseen_approved'], 'Sample unseen/approved');
-    $changed[] = whatChanged($requested_sample, $room_info['requested_sample'], 'Sample Requested');
-    $changed[] = whatChanged($sample_reference, $room_info['sample_reference'], 'Sample Reference');
+    $changed[] = whatChanged($seen_approved, $room_info['seen_approved'], 'Shop seen/approved');
+    $changed[] = whatChanged($unseen_approved, $room_info['unseen_approved'], 'Shop unseen/approved');
+    $changed[] = whatChanged($requested_sample, $room_info['requested_sample'], 'Shop Requested');
+    $changed[] = whatChanged($sample_reference, $room_info['sample_reference'], 'Shop Reference');
     $changed[] = whatChanged($multi_room_ship, $room_info['multi_room_ship'], 'Multi-room Shipping');
     $changed[] = whatChanged($jobsite_delivery, $room_info['jobsite_delivery'], 'Jobsite Delivery');
     //</editor-fold>
@@ -789,7 +785,7 @@ switch($_REQUEST['action']) {
 
     if(!empty($info['fin_sample_notes_id'])) {
       if($dbconn->query("UPDATE notes SET note = '$fin_sample_notes', timestamp = UNIX_TIMESTAMP() WHERE id = '$fin_sample_notes_id'")) {
-        $changed[] = 'Finishing/Sample Notes Updated';
+        $changed[] = 'Finishing/Shop Notes Updated';
       } else {
         dbLogSQLErr($dbconn);
       }
@@ -797,9 +793,9 @@ switch($_REQUEST['action']) {
       if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
         $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$fin_sample_notes', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
-        $changed[] = 'Finishing/Sample Notes Created';
+        $changed[] = 'Finishing/Shop Notes Created';
       } else {
-        echo displayToast('warning', 'Finishing/Sample Note already exists. Please refresh your page and try again.', 'Finishing/Sample Note Exists');
+        echo displayToast('warning', 'Finishing/Shop Note already exists. Please refresh your page and try again.', 'Finishing/Shop Note Exists');
       }
     }
     //</editor-fold>
@@ -1043,23 +1039,23 @@ HEREDOC;
 
     $individual_bracket = json_decode($room['individual_bracket_buildout']);
 
-    $sales_published = (bool)$room['sales_published'] ? 'checked' : NULL;
-    $sample_published = (bool)$room['sample_published'] ? 'checked' : NULL;
+    $sales_marketing_published = (bool)$room['sales_marketing_published'] ? 'checked' : NULL;
+    $shop_published = (bool)$room['shop_published'] ? 'checked' : NULL;
 
-    $sales_bracket = displayBracketOpsMgmt('Sales', $room, $individual_bracket);
-    $sample_bracket = displayBracketOpsMgmt('Sample', $room, $individual_bracket);
+    $sales_marketing_bracket = displayBracketOpsMgmt('Sales/Marketing', $room, $individual_bracket);
+    $shop_bracket = displayBracketOpsMgmt('Shop', $room, $individual_bracket);
 
     $preprod_published = (bool)$room['preproduction_published'] ? 'checked' : NULL;
-    $doordrawer_published = (bool)$room['doordrawer_published'] ? 'checked' : NULL;
+    $press_published = (bool)$room['press_published'] ? 'checked' : NULL;
 
     $preprod_bracket = displayBracketOpsMgmt('Pre-Production', $room, $individual_bracket);
-    $doordrawer_bracket = displayBracketOpsMgmt('Drawer & Doors', $room, $individual_bracket);
+    $press_bracket = displayBracketOpsMgmt('Press', $room, $individual_bracket);
 
-    $main_published = (bool)$room['main_published'] ? 'checked' : NULL;
-    $edgebanding_published = (bool)$room['edgebanding_published'] ? 'checked' : NULL;
+    $paint_published = (bool)$room['paint_published'] ? 'checked' : NULL;
+    $welding_published = (bool)$room['welding_published'] ? 'checked' : NULL;
 
-    $main_bracket = displayBracketOpsMgmt('Main', $room, $individual_bracket);
-    $edgebanding_bracket = displayBracketOpsMgmt('Edge Banding', $room, $individual_bracket);
+    $paint_bracket = displayBracketOpsMgmt('Paint', $room, $individual_bracket);
+    $welding_bracket = displayBracketOpsMgmt('Welding', $room, $individual_bracket);
 
     $custom_published = (bool)$room['custom_published'] ? 'checked' : NULL;
     $shipping_published = (bool)$room['shipping_published'] ? 'checked' : NULL;
@@ -1067,12 +1063,9 @@ HEREDOC;
     $custom_bracket = displayBracketOpsMgmt('Custom', $room, $individual_bracket);
     $shipping_bracket = displayBracketOpsMgmt('Shipping', $room, $individual_bracket);
 
-    $install_published = (bool)$room['install_bracket_published'] ? 'checked' : NULL;
-    $pickmat_published = (bool)$room['pick_materials_published'] ? 'checked' : NULL;
+    $assembly_published = (bool)$room['assembly_published'] ? 'checked' : NULL;
 
-    $install_bracket = displayBracketOpsMgmt('Installation', $room, $individual_bracket);
-    $pickmat_bracket = displayBracketOpsMgmt('Pick & Materials', $room, $individual_bracket);
-
+    $assembly_bracket = displayBracketOpsMgmt('Assembly', $room, $individual_bracket);
 
     echo /** @lang HTML */
     <<<HEREDOC
@@ -1095,25 +1088,25 @@ HEREDOC;
                   <tr>
                     <td style="width: 49.8%;" class="bracket-border-top">
                       <div class="row bracket-header-custom">
-                        <div class="col-md-8"><h5><label for="sales_bracket">Sales Bracket</label></h5></div>
-                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_published" value="1" id="sales_published" $sales_published> <span class="c-indicator"></span> Published</label> </div>
+                        <div class="col-md-8"><h5><label for="sales_marketing_bracket">Sales/Marketing Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sales_marketing_published" value="1" id="sales_marketing_published" $sales_marketing_published> <span class="c-indicator"></span> Published</label> </div>
                       </div>
                     </td>
                     <td style="background-color:#eceeef;"></td>
                     <td style="width: 49.8%;" class="bracket-border-top">
                       <div class="row bracket-header-custom">
-                        <div class="col-md-8"><h5><label for="sample_bracket">Sample Bracket</label></h5></div>
-                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="sample_published" value="1" id="sample_published" $sample_published> <span class="c-indicator"></span> Published</label> </div>
+                        <div class="col-md-8"><h5><label for="shop_bracket">Shop Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="shop_published" value="1" id="shop_published" $shop_published> <span class="c-indicator"></span> Published</label> </div>
                       </div>
                     </td>
                   </tr>
                   <tr>
                     <td class="bracket-border-bottom">
-                      $sales_bracket
+                      $sales_marketing_bracket
                     </td>
                     <td style="background-color: #eceeef;">&nbsp;</td>
                     <td class="bracket-border-bottom">
-                      $sample_bracket
+                      $shop_bracket
                     </td>
                   </tr>
                   <tr>
@@ -1126,8 +1119,8 @@ HEREDOC;
                     <td style="background-color: #eceeef;">&nbsp;</td>
                     <td class="bracket-border-top">
                       <div class="row bracket-header-custom">
-                        <div class="col-md-8"><h5><label for="door_drawer_bracket">Door/Drawer Bracket</label></h5></div>
-                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="doordrawer_published" value="1" id="doordrawer_published" $doordrawer_published> <span class="c-indicator"></span> Published</label> </div>
+                        <div class="col-md-8"><h5><label for="door_drawer_bracket">Press</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="press_published" value="1" id="press_published" $press_published> <span class="c-indicator"></span> Published</label> </div>
                       </div>
                     </td>
                   </tr>
@@ -1137,31 +1130,31 @@ HEREDOC;
                     </td>
                     <td style="background-color: #eceeef;">&nbsp;</td>
                     <td class="bracket-border-bottom">
-                      $doordrawer_bracket
+                      $press_bracket
                     </td>
                   </tr>
                   <tr>
                     <td class="bracket-border-top">
                       <div class="row bracket-header-custom">
-                        <div class="col-md-8"><h5><label for="main_bracket">Main Bracket</label></h5></div>
-                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="main_published" value="1" id="main_published" $main_published> <span class="c-indicator"></span> Published</label> </div>
+                        <div class="col-md-8"><h5><label for="paint_bracket">Paint Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="paint_published" value="1" id="paint_published" $paint_published> <span class="c-indicator"></span> Published</label> </div>
                       </div>
                     </td>
                     <td style="background-color: #eceeef;">&nbsp;</td>
                     <td class="bracket-border-top">
                       <div class="row bracket-header-custom">
-                        <div class="col-md-8"><h5><label for="edgebanding_bracket">Edge Banding Bracket</label></h5></div>
-                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="edgebanding_published" value="1" id="edgebanding_bracket" $edgebanding_published> <span class="c-indicator"></span> Published</label> </div>
+                        <div class="col-md-8"><h5><label for="welding_bracket">Welding Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="welding_published" value="1" id="welding_bracket" $welding_published> <span class="c-indicator"></span> Published</label> </div>
                       </div>
                     </td>
                   </tr>
                   <tr>
                     <td class="bracket-border-bottom">
-                      $main_bracket
+                      $paint_bracket
                     </td>
                     <td style="background-color: #eceeef;">&nbsp;</td>
                     <td class="bracket-border-bottom">
-                      $edgebanding_bracket
+                      $welding_bracket
                     </td>
                   </tr>
                   <tr>
@@ -1189,27 +1182,16 @@ HEREDOC;
                     </td>
                   </tr>
                   <tr>
-                    <td class="bracket-border-top">
+                    <td class="bracket-border-top" colspan="3">
                       <div class="row bracket-header-custom">
-                        <div class="col-md-8"><h5><label for="install_bracket">Install Bracket</label></h5></div>
-                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="install_published" value="1" id="install_published" $install_published> <span class="c-indicator"></span> Published</label> </div>
-                      </div>
-                    </td>
-                    <td style="background-color: #eceeef;">&nbsp;</td>
-                    <td class="bracket-border-top">
-                      <div class="row bracket-header-custom">
-                        <div class="col-md-8"><h5><label for="pickmat_bracket">Pick & Materials Bracket</label></h5></div>
-                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="pickmat_published" value="1" id="pickmat_bracket" $pickmat_published> <span class="c-indicator"></span> Published</label> </div>
+                        <div class="col-md-8"><h5><label for="assembly_bracket">Assembly Bracket</label></h5></div>
+                        <div class="col-md-4"><label class="c-input c-checkbox"><input type="checkbox" name="assembly_published" value="1" id="assembly_published" $assembly_published> <span class="c-indicator"></span> Published</label> </div>
                       </div>
                     </td>
                   </tr>
                   <tr>
-                    <td class="bracket-border-bottom">
-                      $install_bracket
-                    </td>
-                    <td style="background-color: #eceeef;">&nbsp;</td>
-                    <td class="bracket-border-bottom">
-                      $pickmat_bracket
+                    <td class="bracket-border-bottom" colspan="3">
+                      $assembly_bracket
                     </td>
                   </tr>
                 </table>
@@ -1235,73 +1217,68 @@ HEREDOC;
     $room = $room_qry->fetch_assoc();
 
     // grab the operation that each bracket is on
-    $sales_op = empty(sanitizeInput($bracket_info['sales_bracket'])) ? 0 : sanitizeInput($bracket_info['sales_bracket']);
-    $sample_op = empty(sanitizeInput($bracket_info['sample_bracket'])) ? 0 : sanitizeInput($bracket_info['sample_bracket']);
+    $sales_marketing_op = empty(sanitizeInput($bracket_info['sales_marketing_bracket'])) ? 0 : sanitizeInput($bracket_info['sales_marketing_bracket']);
+    $shop_op = empty(sanitizeInput($bracket_info['shop_bracket'])) ? 0 : sanitizeInput($bracket_info['shop_bracket']);
     $preprod_op = empty(sanitizeInput($bracket_info['preproduction_bracket'])) ? 0 : sanitizeInput($bracket_info['preproduction_bracket']);
-    $doordrawer_op = empty(sanitizeInput($bracket_info['doordrawer_bracket'])) ? 0 : sanitizeInput($bracket_info['doordrawer_bracket']);
-    $main_op = empty(sanitizeInput($bracket_info['main_bracket'])) ? 0 : sanitizeInput($bracket_info['main_bracket']);
+    $press_op = empty(sanitizeInput($bracket_info['press_bracket'])) ? 0 : sanitizeInput($bracket_info['press_bracket']);
+    $paint_op = empty(sanitizeInput($bracket_info['paint_bracket'])) ? 0 : sanitizeInput($bracket_info['paint_bracket']);
     $custom_op = empty(sanitizeInput($bracket_info['custom_bracket'])) ? 0 : sanitizeInput($bracket_info['custom_bracket']);
     $shipping_op = empty(sanitizeInput($bracket_info['shipping_bracket'])) ? 0 : sanitizeInput($bracket_info['shipping_bracket']);
-    $install_op = empty(sanitizeInput($bracket_info['install_bracket'])) ? 0 : sanitizeInput($bracket_info['install_bracket']);
-    $pickmat_op = empty(sanitizeInput($bracket_info['pick_materials_bracket'])) ? 0 : sanitizeInput($bracket_info['pick_materials_bracket']);
-    $edgebanding_op = empty(sanitizeInput($bracket_info['edgebanding_bracket'])) ? 0 : sanitizeInput($bracket_info['edgebanding_bracket']);
+    $assembly_op = empty(sanitizeInput($bracket_info['assembly_bracket'])) ? 0 : sanitizeInput($bracket_info['assembly_bracket']);
+    $welding_op = empty(sanitizeInput($bracket_info['welding_bracket'])) ? 0 : sanitizeInput($bracket_info['welding_bracket']);
     // end of grabbing the current operation for each bracket
 
     // determine if any of the above (current bracket operation) has changed
-    $changed[] = whatChanged($sales_op, $room['sales_bracket'], 'Sales Bracket', false, false, true);
-    $changed[] = whatChanged($sample_op, $room['sample_bracket'], 'Sample Bracket', false, false, true);
+    $changed[] = whatChanged($sales_marketing_op, $room['sales_marketing_bracket'], 'Sales/Marketing Bracket', false, false, true);
+    $changed[] = whatChanged($shop_op, $room['shop_bracket'], 'Shop Bracket', false, false, true);
     $changed[] = whatChanged($preprod_op, $room['preproduction_bracket'], 'Pre-Production Bracket', false, false, true);
-    $changed[] = whatChanged($doordrawer_op, $room['doordrawer_bracket'], 'Door/Drawer Bracket', false, false, true);
-    $changed[] = whatChanged($main_op, $room['main_bracket'], 'Main Bracket', false, false, true);
+    $changed[] = whatChanged($press_op, $room['press_bracket'], 'Press', false, false, true);
+    $changed[] = whatChanged($paint_op, $room['paint_bracket'], 'Paint Bracket', false, false, true);
     $changed[] = whatChanged($custom_op, $room['custom_bracket'], 'Custom Bracket', false, false, true);
     $changed[] = whatChanged($shipping_op, $room['shipping_bracket'], 'Shipping Bracket', false, false, true);
-    $changed[] = whatChanged($install_op, $room['install_bracket'], 'Install Bracket', false, false, true);
-    $changed[] = whatChanged($pickmat_op, $room['pick_materials_bracket'], 'Pick & Materials Bracket', false, false, true);
-    $changed[] = whatChanged($edgebanding_op, $room['edgebanding_bracket'], 'Edge Banding Bracket', false, false, true);
+    $changed[] = whatChanged($assembly_op, $room['assembly_bracket'], 'Assembly Bracket', false, false, true);
+    $changed[] = whatChanged($welding_op, $room['welding_bracket'], 'Welding Bracket', false, false, true);
     // end of the current bracket operation changes
 
     // grab the status of each bracket publish
-    $sales_pub = !empty($bracket_info['sales_published']) ? sanitizeInput($bracket_info['sales_published']) : 0;
-    $sample_pub = !empty($bracket_info['sample_published']) ? sanitizeInput($bracket_info['sample_published']) : 0;
+    $sales_marketing_pub = !empty($bracket_info['sales_marketing_published']) ? sanitizeInput($bracket_info['sales_marketing_published']) : 0;
+    $shop_pub = !empty($bracket_info['shop_published']) ? sanitizeInput($bracket_info['shop_published']) : 0;
     $preprod_pub = !empty($bracket_info['preprod_published']) ? sanitizeInput($bracket_info['preprod_published']) : 0;
-    $doordrawer_pub = !empty($bracket_info['doordrawer_published']) ? sanitizeInput($bracket_info['doordrawer_published']) : 0;
-    $main_pub = !empty($bracket_info['main_published']) ? sanitizeInput($bracket_info['main_published']) : 0;
+    $press_pub = !empty($bracket_info['press_published']) ? sanitizeInput($bracket_info['press_published']) : 0;
+    $paint_pub = !empty($bracket_info['paint_published']) ? sanitizeInput($bracket_info['paint_published']) : 0;
     $custom_pub = !empty($bracket_info['custom_published']) ? sanitizeInput($bracket_info['custom_published']) : 0;
     $shipping_pub = !empty($bracket_info['shipping_published']) ? sanitizeInput($bracket_info['shipping_published']) : 0;
-    $install_pub = !empty($bracket_info['install_published']) ? sanitizeInput($bracket_info['install_published']) : 0;
-    $pickmat_pub = !empty($bracket_info['pick_materials_published']) ? sanitizeInput($bracket_info['pickmat_published']) : 0;
-    $edgebanding_pub = !empty($bracket_info['edgebanding_published']) ? sanitizeInput($bracket_info['edgebanding_published']) : 0;
+    $assembly_pub = !empty($bracket_info['assembly_published']) ? sanitizeInput($bracket_info['assembly_published']) : 0;
+    $welding_pub = !empty($bracket_info['welding_published']) ? sanitizeInput($bracket_info['welding_published']) : 0;
     // end of the status of each bracket publish
 
     // record the changes for the status of each bracket publish
-    $changed[] = whatChanged($sales_pub, $room['sales_published'], 'Sales Bracket', false, true);
-    $changed[] = whatChanged($sample_pub, $room['sample_published'], 'Sample Bracket', false, true);
+    $changed[] = whatChanged($sales_marketing_pub, $room['sales_marketing_published'], 'Sales/Marketing Bracket', false, true);
+    $changed[] = whatChanged($shop_pub, $room['shop_published'], 'Shop Bracket', false, true);
     $changed[] = whatChanged($preprod_pub, $room['preproduction_published'], 'Pre-Production Bracket', false, true);
-    $changed[] = whatChanged($doordrawer_pub, $room['doordrawer_published'], 'Door/Drawer Bracket', false, true);
-    $changed[] = whatChanged($main_pub, $room['main_published'], 'Main Bracket', false, true);
+    $changed[] = whatChanged($press_pub, $room['press_published'], 'Press', false, true);
+    $changed[] = whatChanged($paint_pub, $room['paint_published'], 'Paint Bracket', false, true);
     $changed[] = whatChanged($custom_pub, $room['custom_published'], 'Custom Bracket', false, true);
     $changed[] = whatChanged($shipping_pub, $room['shipping_published'], 'Shipping Bracke', false, true);
-    $changed[] = whatChanged($install_pub, $room['install_bracket_published'], 'Install Bracket', false, true);
-    $changed[] = whatChanged($pickmat_pub, $room['pick_materials_published'], 'Pick & Materials Bracket', false, true);
-    $changed[] = whatChanged($edgebanding_pub, $room['edgebanding_published'], 'Edgebanding Bracket', false, true);
+    $changed[] = whatChanged($assembly_pub, $room['assembly_published'], 'Assembly Bracket', false, true);
+    $changed[] = whatChanged($welding_pub, $room['welding_published'], 'Edgebanding Bracket', false, true);
     $changed[] = whatChanged($ops, $room['individual_bracket_buildout'], 'Active Bracket Operations');
     // end of recording the changes for the status of each bracket publish
 
     if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
-      if($dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op', edgebanding_bracket = '$edgebanding_op',
-      custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
-      preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', edgebanding_published = '$edgebanding_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
-      install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub' WHERE id = '$room_id'")) {
-        createOpQueue($sales_pub, 'Sales', $sales_op, $room_id);
-        createOpQueue($sample_pub, 'Sample', $sample_op, $room_id);
+      if($dbconn->query("UPDATE rooms SET sales_marketing_bracket = '$sales_marketing_op', preproduction_bracket = '$preprod_op', shop_bracket = '$shop_op', press_bracket = '$press_op', welding_bracket = '$welding_op',
+      custom_bracket = '$custom_op', paint_bracket = '$paint_op', shipping_bracket = '$shipping_op', assembly_bracket = '$assembly_op', sales_marketing_published = '$sales_marketing_pub', shop_published = '$shop_pub',
+      preproduction_published = '$preprod_pub', press_published = '$press_pub', paint_published = '$paint_pub', welding_published = '$welding_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
+      assembly_published = '$assembly_pub' WHERE id = '$room_id'")) {
+        createOpQueue($sales_marketing_pub, 'Sales/Marketing', $sales_marketing_op, $room_id);
+        createOpQueue($shop_pub, 'Shop', $shop_op, $room_id);
         createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $room_id);
-        createOpQueue($doordrawer_pub, 'Drawer & Doors', $doordrawer_op, $room_id);
-        createOpQueue($main_pub, 'Main', $main_op, $room_id);
+        createOpQueue($press_pub, 'Press', $press_op, $room_id);
+        createOpQueue($paint_pub, 'Paint', $paint_op, $room_id);
         createOpQueue($custom_pub, 'Custom', $custom_op, $room_id);
         createOpQueue($shipping_pub, 'Shipping', $shipping_op, $room_id);
-        createOpQueue($install_pub, 'Installation', $install_op, $room_id);
-        createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $room_id);
-        createOpQueue($edgebanding_pub, 'Edge Banding', $edgebanding_op, $room_id);
+        createOpQueue($assembly_pub, 'Assembly', $assembly_op, $room_id);
+        createOpQueue($welding_pub, 'Welding', $welding_op, $room_id);
 
         if(!empty(array_values(array_filter($changed)))) {
           $c_note = '<strong>UPDATE PERFORMED</strong><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';

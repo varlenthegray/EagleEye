@@ -4,7 +4,7 @@ require '../../includes/header_start.php';
 $room_id = sanitizeInput($_REQUEST['room_id']);
 $so_id = sanitizeInput($_REQUEST['so_id']);
 
-$quote_qry = $dbconn->query("SELECT so.id AS soID, r.id AS rID, r.*, o.*, so.* FROM rooms r LEFT JOIN operations o ON r.sales_bracket = o.id LEFT JOIN sales_order so ON r.so_parent = so.so_num WHERE r.id = '$room_id';");
+$quote_qry = $dbconn->query("SELECT so.id AS soID, r.id AS rID, r.*, o.*, so.* FROM rooms r LEFT JOIN operations o ON r.sales_marketing_bracket = o.id LEFT JOIN sales_order so ON r.so_parent = so.so_num WHERE r.id = '$room_id';");
 $quote = $quote_qry->fetch_assoc();
 
 if($_REQUEST['type'] === 'quote') {

@@ -692,20 +692,20 @@ class queue {
 
       // time to auto-release brackets!
       switch($op_queue['operation_id']) {
-        /*case 9: // 150: Contract Signed > 205: Sample Door Request
-            $this->autoRelease($room, 'Sample', 'sample', $room_id);
+        /*case 9: // 150: Contract Signed > 205: Shop Door Request
+            $this->autoRelease($room, 'Shop', 'sample', $room_id);
 
             break;*/
 
-        /*case 109: // 300: SA Review Request for Quote > 205: Sample Door Request
-            $this->autoRelease($room, 'Sample', 'sample', $room_id);
+        /*case 109: // 300: SA Review Request for Quote > 205: Shop Door Request
+            $this->autoRelease($room, 'Shop', 'sample', $room_id);
 
             break;*/
 
         case 28: // 355: Place Orders > 505: Pick List for Box, 605: Pick List for Custom, 410: Door Quote
-          $this->autoRelease($room, 'Main', 'main', $room_id);
+          $this->autoRelease($room, 'Paint', 'main', $room_id);
           $this->autoRelease($room, 'Custom', 'custom', $room_id);
-          $this->autoRelease($room, 'Drawer & Doors', 'doordrawer', $room_id);
+          $this->autoRelease($room, 'Press', 'doordrawer', $room_id);
 
           break;
 
@@ -715,7 +715,7 @@ class queue {
           break;
 
         case 67: // 830: Load Inspection > 705: Manage Install
-          $this->autoRelease($room, 'Installation', 'install_bracket', $room_id);
+          $this->autoRelease($room, 'Assembly', 'assembly_bracket', $room_id);
 
           break;
 
@@ -732,41 +732,41 @@ class queue {
 
       // get the next operation's bracket
       switch($next_op_info['bracket']) {
-        case 'Sales':
-          $bracket = 'sales_bracket';
-          $published = 'sales_published';
+        case 'Sales/Marketing':
+          $bracket = 'sales_marketing_bracket';
+          $published = 'sales_marketing_published';
           break;
         case 'Pre-Production':
           $bracket = 'preproduction_bracket';
           $published = 'preproduction_published';
           break;
-        case 'Sample':
-          $bracket = 'sample_bracket';
-          $published = 'sample_published';
+        case 'Shop':
+          $bracket = 'shop_bracket';
+          $published = 'shop_published';
           break;
-        case 'Drawer & Doors':
-          $bracket = 'doordrawer_bracket';
-          $published = 'doordrawer_published';
+        case 'Press':
+          $bracket = 'press_bracket';
+          $published = 'press_published';
           break;
         case 'Custom':
           $bracket = 'custom_bracket';
           $published = 'custom_published';
           break;
-        case 'Main':
-          $bracket = 'main_bracket';
-          $published = 'main_published';
+        case 'Paint':
+          $bracket = 'paint_bracket';
+          $published = 'paint_published';
           break;
         case 'Shipping':
           $bracket = 'shipping_bracket';
           $published = 'shipping_published';
           break;
-        case 'Installation':
-          $bracket = 'install_bracket';
-          $published = 'install_bracket_published';
+        case 'Assembly':
+          $bracket = 'assembly_bracket';
+          $published = 'assembly_published';
           break;
         default:
-          $bracket = 'sales_bracket';
-          $published = 'sales_published';
+          $bracket = 'sales_marketing_bracket';
+          $published = 'sales_marketing_published';
           break;
       }
 

@@ -275,26 +275,24 @@ HEREDOC;
         $prev_sequence = null;
 
         while($room = $room_qry->fetch_assoc()) {
-          $output['sales_bracket'] = !empty($operations[$room['sales_bracket']]) ? $operations[$room['sales_bracket']] : array('job_title' => 'Unassigned');
-          $output['sample_bracket'] = !empty($operations[$room['sample_bracket']]) ? $operations[$room['sample_bracket']] : array('job_title' => 'Unassigned');
+          $output['sales_marketing_bracket'] = !empty($operations[$room['sales_marketing_bracket']]) ? $operations[$room['sales_marketing_bracket']] : array('job_title' => 'Unassigned');
+          $output['shop_bracket'] = !empty($operations[$room['shop_bracket']]) ? $operations[$room['shop_bracket']] : array('job_title' => 'Unassigned');
           $output['preproduction_bracket'] = !empty($operations[$room['preproduction_bracket']]) ? $operations[$room['preproduction_bracket']] : array('job_title' => 'Unassigned');
-          $output['doordrawer_bracket'] = !empty($operations[$room['doordrawer_bracket']]) ? $operations[$room['doordrawer_bracket']] : array('job_title' => 'Unassigned');
-          $output['main_bracket'] = !empty($operations[$room['main_bracket']]) ? $operations[$room['main_bracket']] : array('job_title' => 'Unassigned');
+          $output['press_bracket'] = !empty($operations[$room['press_bracket']]) ? $operations[$room['press_bracket']] : array('job_title' => 'Unassigned');
+          $output['paint_bracket'] = !empty($operations[$room['paint_bracket']]) ? $operations[$room['paint_bracket']] : array('job_title' => 'Unassigned');
           $output['custom_bracket'] = !empty($operations[$room['custom_bracket']]) ? $operations[$room['custom_bracket']] : array('job_title' => 'Unassigned');
           $output['shipping_bracket'] = !empty($operations[$room['shipping_bracket']]) ? $operations[$room['shipping_bracket']] : array('job_title' => 'Unassigned');
-          $output['install_bracket'] = !empty($operations[$room['install_bracket']]) ? $operations[$room['install_bracket']] : array('job_title' => 'Unassigned');
-          $output['pick_materials_bracket'] = !empty($operations[$room['pick_materials_bracket']]) ? $operations[$room['pick_materials_bracket']] : array('job_title' => 'Unassigned');
-          $output['edgebanding_bracket'] = !empty($operations[$room['edgebanding_bracket']]) ? $operations[$room['edgebanding_bracket']] : array('job_title' => 'Unassigned');
+          $output['assembly_bracket'] = !empty($operations[$room['assembly_bracket']]) ? $operations[$room['assembly_bracket']] : array('job_title' => 'Unassigned');
+          $output['welding_bracket'] = !empty($operations[$room['welding_bracket']]) ? $operations[$room['welding_bracket']] : array('job_title' => 'Unassigned');
 
-          $bstat_sales = getBracketStatus($room['sales_published']);
-          $bstat_sample = getBracketStatus($room['sample_published']);
+          $bstat_sales_marketing = getBracketStatus($room['sales_marketing_published']);
+          $bstat_shop = getBracketStatus($room['shop_published']);
           $bstat_preprod = getBracketStatus($room['preproduction_published']);
-          $bstat_main = getBracketStatus($room['main_published']);
+          $bstat_paint = getBracketStatus($room['paint_published']);
           $bstat_custom = getBracketStatus($room['custom_published']);
           $bstat_shipping = getBracketStatus($room['shipping_published']);
-          $bstat_install = getBracketStatus($room['install_bracket_published']);
-          $bstat_pick = getBracketStatus($room['pick_materials_published']);
-          $bstat_eb = getBracketStatus($room['edgebanding_published']);
+          $bstat_assembly = getBracketStatus($room['assembly_published']);
+          $bstat_welding = getBracketStatus($room['welding_published']);
 
           $seq_it = explode('.', $room['iteration']);
 
@@ -339,30 +337,30 @@ HEREDOC;
               </tr>
             </thead>
             <tbody>
-              <tr class="{$bstat_sales['class']}">
-                <td>Sales:</td>
-                <td>{$output['sales_bracket']['job_title']}</td>
-                <td>{$bstat_sales['text']}</td>
+              <tr class="{$bstat_sales_marketing['class']}">
+                <td>Sales/Marketing:</td>
+                <td>{$output['sales_marketing_bracket']['job_title']}</td>
+                <td>{$bstat_sales_marketing['text']}</td>
               </tr>
-              <tr class="{$bstat_sample['class']}">
-                <td>Sample:</td>
-                <td>{$output['sample_bracket']['job_title']}</td>
-                <td>{$bstat_sample['text']}</td>
+              <tr class="{$bstat_shop['class']}">
+                <td>Shop:</td>
+                <td>{$output['shop_bracket']['job_title']}</td>
+                <td>{$bstat_shop['text']}</td>
               </tr>
               <tr class="{$bstat_preprod['class']}">
                 <td>Pre-production:</td>
                 <td>{$output['preproduction_bracket']['job_title']}</td>
                 <td>{$bstat_preprod['text']}</td>
               </tr>
-              <tr class="{$bstat_sales['class']}">
-                <td>Door/Drawer:</td>
-                <td>{$output['doordrawer_bracket']['job_title']}</td>
-                <td>{$bstat_sales['text']}</td>
+              <tr class="{$bstat_sales_marketing['class']}">
+                <td>Press:</td>
+                <td>{$output['press_bracket']['job_title']}</td>
+                <td>{$bstat_sales_marketing['text']}</td>
               </tr>
-              <tr class="{$bstat_main['class']}">
-                <td>Main:</td>
-                <td>{$output['main_bracket']['job_title']}</td>
-                <td>{$bstat_main['text']}</td>
+              <tr class="{$bstat_paint['class']}">
+                <td>Paint:</td>
+                <td>{$output['paint_bracket']['job_title']}</td>
+                <td>{$bstat_paint['text']}</td>
               </tr>
               <tr class="{$bstat_custom['class']}">
                 <td>Custom:</td>
@@ -374,20 +372,15 @@ HEREDOC;
                 <td>{$output['shipping_bracket']['job_title']}</td>
                 <td>{$bstat_shipping['text']}</td>
               </tr>
-              <tr class="{$bstat_install['class']}">
-                <td>Installation:</td>
-                <td>{$output['install_bracket']['job_title']}</td>
-                <td>{$bstat_install['text']}</td>
+              <tr class="{$bstat_assembly['class']}">
+                <td>Assembly:</td>
+                <td>{$output['assembly_bracket']['job_title']}</td>
+                <td>{$bstat_assembly['text']}</td>
               </tr>
-              <tr class="{$bstat_pick['class']}">
-                <td>Pick/Materials:</td>
-                <td>{$output['pick_materials_bracket']['job_title']}</td>
-                <td>{$bstat_pick['text']}</td>
-              </tr>
-              <tr class="{$bstat_eb['class']}">
-                <td>Edgebanding:</td>
-                <td>{$output['edgebanding_bracket']['job_title']}</td>
-                <td>{$bstat_eb['text']}</td>
+              <tr class="{$bstat_welding['class']}">
+                <td>Welding:</td>
+                <td>{$output['welding_bracket']['job_title']}</td>
+                <td>{$bstat_welding['text']}</td>
               </tr>
             </tbody>
           </table>

@@ -33,14 +33,14 @@ function displayOrderQuote ($type) {
   if($room_qry->num_rows > 0) {
     while($room = $room_qry->fetch_assoc()) {
       if($type === '#') {
-        $bracket1 = 'sales_bracket';
-        $bracket2 = 'sample_bracket';
+        $bracket1 = 'sales_marketing_bracket';
+        $bracket2 = 'shop_bracket';
       } else {
         $bracket1 = 'preproduction_bracket';
-        $bracket2 = 'main_bracket';
+        $bracket2 = 'paint_bracket';
       }
 
-      if((bool)$room['sales_published']) {
+      if((bool)$room['sales_marketing_published']) {
         $sales_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room[$bracket1]}'");
         $sales_op = $sales_op_qry->fetch_assoc();
 
@@ -53,17 +53,17 @@ function displayOrderQuote ($type) {
         $sales_op_display = "";
       }
 
-      if((bool)$room['sample_published']) {
-        $sample_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room[$bracket2]}'");
-        $sample_op = $sample_op_qry->fetch_assoc();
+      if((bool)$room['shop_published']) {
+        $shop_op_qry = $dbconn->query("SELECT * FROM operations WHERE id = '{$room[$bracket2]}'");
+        $shop_op = $shop_op_qry->fetch_assoc();
 
         if($type === '$' && (bool)$_SESSION['userInfo']['dealer']) {
           $sales_op_display = 'In Production';
         } else {
-          $sample_op_display = !empty($sample_op) ? $sample_op['job_title'] : 'None';
+          $shop_op_display = !empty($shop_op) ? $shop_op['job_title'] : 'None';
         }
       } else {
-        $sample_op_display = '';
+        $shop_op_display = '';
       }
 
       $iteration = explode('.', number_format($room['iteration'], 2));
@@ -92,7 +92,7 @@ function displayOrderQuote ($type) {
       $output['data'][$i][] = $room['so_parent'];
       $output['data'][$i][] = "<span style='$indent'>$addl_room_info-{$room['product_type']}{$room['order_status']}{$room['days_to_ship']}-{$room['room_name']}</span>";
       $output['data'][$i][] = $sales_op_display;
-      $output['data'][$i][] = $sample_op_display;
+      $output['data'][$i][] = $shop_op_display;
       $output['data'][$i]['DT_RowId'] = $rowID;
       $output['data'][$i]['project_name'] = $room['project_name'];
 

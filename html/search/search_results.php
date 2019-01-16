@@ -166,16 +166,15 @@ $(function() {
         {data: 'room_actions'},
         {data: 'room_details'},
         {data: 'order_status'},
-        {data: 'sales_bracket.job_title'},
-        {data: 'sample_bracket.job_title'},
+        {data: 'sales_marketing_bracket.job_title'},
+        {data: 'shop_bracket.job_title'},
         {data: 'preproduction_bracket.job_title'},
-        {data: 'doordrawer_bracket.job_title'},
-        {data: 'main_bracket.job_title'},
+        {data: 'press_bracket.job_title'},
+        {data: 'paint_bracket.job_title'},
         {data: 'custom_bracket.job_title'},
         {data: 'shipping_bracket.job_title'},
-        {data: 'install_bracket.job_title'},
-        {data: 'pick_materials_bracket.job_title'},
-        {data: 'edgebanding_bracket.job_title'}
+        {data: 'assembly_bracket.job_title'},
+        {data: 'welding_bracket.job_title'}
       ],
       createdRow: function(row, data, index) {
         // determines all bracket coloring
@@ -187,16 +186,15 @@ $(function() {
           }
 
           // checks each column
-          checkCol('sales_bracket', 3);
-          checkCol('sample_bracket', 4);
+          checkCol('sales_marketing_bracket', 3);
+          checkCol('shop_bracket', 4);
           checkCol('preproduction_bracket', 5);
-          checkCol('doordrawer_bracket', 6);
-          checkCol('main_bracket', 7);
+          checkCol('press_bracket', 6);
+          checkCol('paint_bracket', 7);
           checkCol('custom_bracket', 8);
           checkCol('shipping_bracket', 9);
-          checkCol('install_bracket', 10);
-          checkCol('pick_materials_bracket', 11);
-          checkCol('edgebanding_bracket', 12);
+          checkCol('assembly_bracket', 10);
+          checkCol('welding_bracket', 11);
         }
 
         // for the order status, check and color based on that

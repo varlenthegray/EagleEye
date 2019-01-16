@@ -37,7 +37,7 @@ require '../includes/header_start.php';
                     }
                 }
 
-                $quote_qry = $dbconn->query("SELECT so.id AS soID, r.id AS rID, r.*, o.*, so.* FROM rooms r LEFT JOIN operations o ON r.sales_bracket = o.id LEFT JOIN sales_order so ON r.so_parent = so.so_num WHERE o.op_id LIKE 'QT%' AND responsible_dept = 'Engineering' AND sales_published = TRUE ORDER BY {$sort_order} ASC;");
+                $quote_qry = $dbconn->query("SELECT so.id AS soID, r.id AS rID, r.*, o.*, so.* FROM rooms r LEFT JOIN operations o ON r.sales_marketing_bracket = o.id LEFT JOIN sales_order so ON r.so_parent = so.so_num WHERE o.op_id LIKE 'QT%' AND responsible_dept = 'Engineering' AND sales_published = TRUE ORDER BY {$sort_order} ASC;");
 
                 if($quote_qry->num_rows > 0) {
                     while($quote = $quote_qry->fetch_assoc()) {

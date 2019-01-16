@@ -137,25 +137,23 @@ switch($_REQUEST['action']) {
 
     $ops = $_REQUEST['active_ops'];
 
-    $sales_op = sanitizeInput($editInfo['sales_bracket']);
-    $sample_op = sanitizeInput($editInfo['sample_bracket']);
+    $sales_marketing_op = sanitizeInput($editInfo['sales_marketing_bracket']);
+    $shop_op = sanitizeInput($editInfo['shop_bracket']);
     $preprod_op = sanitizeInput($editInfo['preproduction_bracket']);
-    $doordrawer_op = sanitizeInput($editInfo['doordrawer_bracket']);
-    $main_op = sanitizeInput($editInfo['main_bracket']);
+    $press_op = sanitizeInput($editInfo['press_bracket']);
+    $paint_op = sanitizeInput($editInfo['paint_bracket']);
     $custom_op = sanitizeInput($editInfo['custom_bracket']);
     $shipping_op = sanitizeInput($editInfo['shipping_bracket']);
-    $install_op = sanitizeInput($editInfo['install_bracket']);
-    $pickmat_op = sanitizeInput($editInfo['pick_materials_bracket']);
+    $assembly_op = sanitizeInput($editInfo['assembly_bracket']);
 
-    $sales_pub = !empty($editInfo['sales_published']) ? sanitizeInput($editInfo['sales_published']) : 0;
+    $sales_marketing_pub = !empty($editInfo['sales_marketing_published']) ? sanitizeInput($editInfo['sales_marketing_published']) : 0;
     $sample_pub = !empty($editInfo['sample_published']) ? sanitizeInput($editInfo['sample_published']) : 0;
     $preprod_pub = !empty($editInfo['preprod_published']) ? sanitizeInput($editInfo['preprod_published']) : 0;
-    $doordrawer_pub = !empty($editInfo['doordrawer_published']) ? sanitizeInput($editInfo['doordrawer_published']) : 0;
-    $main_pub = !empty($editInfo['main_published']) ? sanitizeInput($editInfo['main_published']) : 0;
+    $press_pub = !empty($editInfo['press_published']) ? sanitizeInput($editInfo['press_published']) : 0;
+    $paint_pub = !empty($editInfo['paint_published']) ? sanitizeInput($editInfo['paint_published']) : 0;
     $custom_pub = !empty($editInfo['custom_published']) ? sanitizeInput($editInfo['custom_published']) : 0;
     $shipping_pub = !empty($editInfo['shipping_published']) ? sanitizeInput($editInfo['shipping_published']) : 0;
-    $install_pub = !empty($editInfo['install_published']) ? sanitizeInput($editInfo['install_published']) : 0;
-    $pickmat_pub = !empty($editInfo['pickmat_published']) ? sanitizeInput($editInfo['pickmat_published']) : 0;
+    $assembly_pub = !empty($editInfo['assembly_published']) ? sanitizeInput($editInfo['assembly_published']) : 0;
 
     $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' AND room = '$room' AND iteration = '$iteration'");
 
@@ -167,22 +165,21 @@ switch($_REQUEST['action']) {
       }
 
       // first, create the room itself
-      if($dbconn->query("INSERT INTO rooms (so_parent, room, iteration, room_name, product_type, sales_bracket, preproduction_bracket, sample_bracket, 
-            doordrawer_bracket, custom_bracket, main_bracket, individual_bracket_buildout, order_status, shipping_bracket, install_bracket, delivery_date,
-            sales_published, preproduction_published, sample_published, doordrawer_published, custom_published, main_published, shipping_published,
-            install_bracket_published, pick_materials_published) VALUES  ('$so_num', '$room', '$iteration', '$room_name', '$product_type', '$sales_op', '$preprod_op', '$sample_op', 
-            '$doordrawer_op', '$custom_op', '$main_op', '$ops', '$order_status', '$shipping_op', '$install_op', $del_date_unix, '$sales_pub', 
-            '$preprod_pub', '$sample_pub', '$doordrawer_pub', '$custom_pub', '$main_pub', '$shipping_pub', '$install_pub', '$pickmat_pub')")) {
+      if($dbconn->query("INSERT INTO rooms (so_parent, room, iteration, room_name, product_type, sales_marketing_bracket, preproduction_bracket, shop_bracket, 
+            press_bracket, custom_bracket, paint_bracket, individual_bracket_buildout, order_status, shipping_bracket, assembly_bracket, delivery_date,
+            sales_marketing_published, preproduction_published, sample_published, press_published, custom_published, paint_published, shipping_published,
+            assembly_published) VALUES  ('$so_num', '$room', '$iteration', '$room_name', '$product_type', '$sales_marketing_op', '$preprod_op', '$shop_op', 
+            '$press_op', '$custom_op', '$paint_op', '$ops', '$order_status', '$shipping_op', '$assembly_op', $del_date_unix, '$sales_marketing_pub', 
+            '$preprod_pub', '$sample_pub', '$press_pub', '$custom_pub', '$paint_pub', '$shipping_pub', '$assembly_pub')")) {
         $new_room_id = $dbconn->insert_id;
-        createOpQueue($sales_pub, 'Sales', $sales_op, $new_room_id);
-        createOpQueue($sample_pub, 'Sample', $sample_op, $new_room_id);
+        createOpQueue($sales_marketing_pub, 'Sales/Marketing', $sales_marketing_op, $new_room_id);
+        createOpQueue($sample_pub, 'Shop', $shop_op, $new_room_id);
         createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $new_room_id);
-        createOpQueue($doordrawer_pub, 'Drawer & Doors', $doordrawer_op, $new_room_id);
-        createOpQueue($main_pub, 'Main', $main_op, $new_room_id);
+        createOpQueue($press_pub, 'Press', $press_op, $new_room_id);
+        createOpQueue($paint_pub, 'Paint', $paint_op, $new_room_id);
         createOpQueue($custom_pub, 'Custom', $custom_op, $new_room_id);
         createOpQueue($shipping_pub, 'Shipping', $shipping_op, $new_room_id);
-        createOpQueue($install_pub, 'Installation', $install_op, $new_room_id);
-        createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $new_room_id);
+        createOpQueue($assembly_pub, 'Assembly', $assembly_op, $new_room_id);
 
         if(!empty($sample_block_ordered) || !empty($door_only_ordered) || !empty($door_drawer_ordered) || !empty($inset_square_ordered) || !empty($inset_beaded_ordered)) {
           $now = time();
@@ -353,11 +350,11 @@ HEREDOC;
               if($dbconn->query("SELECT notes.* FROM notes LEFT JOIN rooms ON notes.type_id = rooms.id WHERE type_id = '{$room_info['id']}' AND note_type = 'room_note_fin_sample'")->num_rows === 0) {
                 $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('$notes', 'room_note_fin_sample', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
               } else {
-                echo displayToast("warning", "Finishing/Sample Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
+                echo displayToast("warning", "Finishing/Shop Note already exists. Please refresh your page and try again.", "Delivery Note Exists");
               }
             }
 
-            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Finishing/Sample Note: $notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
+            $dbconn->query("INSERT INTO notes (note, note_type, timestamp, user, type_id) VALUES ('Finishing/Shop Note: $notes', 'room_note', UNIX_TIMESTAMP(), {$_SESSION['userInfo']['id']}, '$room_id')");
 
             break;
 
@@ -476,9 +473,9 @@ HEREDOC;
       $changed[] = whatChanged($drawer_box_mount, $room_info['drawer_box_mount'], 'Drawer Box Mount');
       $changed[] = whatChanged($drawer_boxes, $room_info['drawer_boxes'], 'Drawer Boxes');
 
-      $changed[] = whatChanged($sample_block_ordered, $room_info['sample_block_ordered'], 'Sample Block Ordered');
+      $changed[] = whatChanged($sample_block_ordered, $room_info['sample_block_ordered'], 'Shop Block Ordered');
       $changed[] = whatChanged($door_only_ordered, $room_info['door_only_ordered'], 'Door Only Ordered');
-      $changed[] = whatChanged($door_drawer_ordered, $room_info['door_drawer_ordered'], 'Door/Drawer Ordered');
+      $changed[] = whatChanged($door_drawer_ordered, $room_info['door_drawer_ordered'], 'Press Ordered');
       $changed[] = whatChanged($inset_square_ordered, $room_info['inset_square_ordered'], 'Inset Square Ordered');
       $changed[] = whatChanged($inset_beaded_ordered, $room_info['inset_beaded_ordered'], 'Inset Beaded Ordered');
     } else {
@@ -515,69 +512,64 @@ HEREDOC;
 
     $ops = $_REQUEST['active_ops'];
 
-    $sales_op = empty(sanitizeInput($editInfo['sales_bracket'])) ? 0 : sanitizeInput($editInfo['sales_bracket']);
-    $sample_op = empty(sanitizeInput($editInfo['sample_bracket'])) ? 0 : sanitizeInput($editInfo['sample_bracket']);
+    $sales_marketing_op = empty(sanitizeInput($editInfo['sales_marketing_bracket'])) ? 0 : sanitizeInput($editInfo['sales_marketing_bracket']);
+    $shop_op = empty(sanitizeInput($editInfo['shop_bracket'])) ? 0 : sanitizeInput($editInfo['shop_bracket']);
     $preprod_op = empty(sanitizeInput($editInfo['preproduction_bracket'])) ? 0 : sanitizeInput($editInfo['preproduction_bracket']);
-    $doordrawer_op = empty(sanitizeInput($editInfo['doordrawer_bracket'])) ? 0 : sanitizeInput($editInfo['doordrawer_bracket']);
-    $main_op = empty(sanitizeInput($editInfo['main_bracket'])) ? 0 : sanitizeInput($editInfo['main_bracket']);
+    $press_op = empty(sanitizeInput($editInfo['press_bracket'])) ? 0 : sanitizeInput($editInfo['press_bracket']);
+    $paint_op = empty(sanitizeInput($editInfo['paint_bracket'])) ? 0 : sanitizeInput($editInfo['paint_bracket']);
     $custom_op = empty(sanitizeInput($editInfo['custom_bracket'])) ? 0 : sanitizeInput($editInfo['custom_bracket']);
     $shipping_op = empty(sanitizeInput($editInfo['shipping_bracket'])) ? 0 : sanitizeInput($editInfo['shipping_bracket']);
-    $install_op = empty(sanitizeInput($editInfo['install_bracket'])) ? 0 : sanitizeInput($editInfo['install_bracket']);
-    $pickmat_op = empty(sanitizeInput($editInfo['pick_materials_bracket'])) ? 0 : sanitizeInput($editInfo['pick_materials_bracket']);
-    $edgebanding_op = empty(sanitizeInput($editInfo['edgebanding_bracket'])) ? 0 : sanitizeInput($editInfo['edgebanding_bracket']);
+    $assembly_op = empty(sanitizeInput($editInfo['assembly_bracket'])) ? 0 : sanitizeInput($editInfo['assembly_bracket']);
+    $welding_op = empty(sanitizeInput($editInfo['welding_bracket'])) ? 0 : sanitizeInput($editInfo['welding_bracket']);
 
-    $changed[] = whatChanged($sales_op, $room_info['sales_bracket'], 'Sales Bracket', false, false, true);
-    $changed[] = whatChanged($sample_op, $room_info['sample_bracket'], 'Sample Bracket', false, false, true);
+    $changed[] = whatChanged($sales_marketing_op, $room_info['sales_marketing_bracket'], 'Sales/Marketing Bracket', false, false, true);
+    $changed[] = whatChanged($shop_op, $room_info['shop_bracket'], 'Shop Bracket', false, false, true);
     $changed[] = whatChanged($preprod_op, $room_info['preproduction_bracket'], 'Pre-Production Bracket', false, false, true);
-    $changed[] = whatChanged($doordrawer_op, $room_info['doordrawer_bracket'], 'Door/Drawer Bracket', false, false, true);
-    $changed[] = whatChanged($main_op, $room_info['main_bracket'], 'Main Bracket', false, false, true);
+    $changed[] = whatChanged($press_op, $room_info['press_bracket'], 'Press Bracket', false, false, true);
+    $changed[] = whatChanged($paint_op, $room_info['paint_bracket'], 'Paint Bracket', false, false, true);
     $changed[] = whatChanged($custom_op, $room_info['custom_bracket'], 'Custom Bracket', false, false, true);
     $changed[] = whatChanged($shipping_op, $room_info['shipping_bracket'], 'Shipping Bracket', false, false, true);
-    $changed[] = whatChanged($install_op, $room_info['install_bracket'], 'Install Bracket', false, false, true);
-    $changed[] = whatChanged($pickmat_op, $room_info['pick_materials_bracket'], 'Pick & Materials Bracket', false, false, true);
-    $changed[] = whatChanged($edgebanding_op, $room_info['edgebanding_bracket'], 'Edge Banding Bracket', false, false, true);
+    $changed[] = whatChanged($assembly_op, $room_info['assembly_bracket'], 'Install Bracket', false, false, true);
+    $changed[] = whatChanged($welding_op, $room_info['welding_bracket'], 'Welding Bracket', false, false, true);
 
-    $sales_pub = !empty($editInfo['sales_published']) ? sanitizeInput($editInfo['sales_published']) : 0;
+    $sales_marketing_pub = !empty($editInfo['sales_marketing_published']) ? sanitizeInput($editInfo['sales_marketing_published']) : 0;
     $sample_pub = !empty($editInfo['sample_published']) ? sanitizeInput($editInfo['sample_published']) : 0;
     $preprod_pub = !empty($editInfo['preprod_published']) ? sanitizeInput($editInfo['preprod_published']) : 0;
-    $doordrawer_pub = !empty($editInfo['doordrawer_published']) ? sanitizeInput($editInfo['doordrawer_published']) : 0;
-    $main_pub = !empty($editInfo['main_published']) ? sanitizeInput($editInfo['main_published']) : 0;
+    $press_pub = !empty($editInfo['press_published']) ? sanitizeInput($editInfo['press_published']) : 0;
+    $paint_pub = !empty($editInfo['paint_published']) ? sanitizeInput($editInfo['paint_published']) : 0;
     $custom_pub = !empty($editInfo['custom_published']) ? sanitizeInput($editInfo['custom_published']) : 0;
     $shipping_pub = !empty($editInfo['shipping_published']) ? sanitizeInput($editInfo['shipping_published']) : 0;
-    $install_pub = !empty($editInfo['install_published']) ? sanitizeInput($editInfo['install_published']) : 0;
-    $pickmat_pub = !empty($editInfo['pick_materials_published']) ? sanitizeInput($editInfo['pickmat_published']) : 0;
-    $edgebanding_pub = !empty($editInfo['edgebanding_published']) ? sanitizeInput($editInfo['edgebanding_published']) : 0;
+    $assembly_pub = !empty($editInfo['assembly_published']) ? sanitizeInput($editInfo['assembly_published']) : 0;
+    $welding_pub = !empty($editInfo['welding_published']) ? sanitizeInput($editInfo['welding_published']) : 0;
 
 
-    $changed[] = whatChanged($sales_pub, $room_info['sales_published'], 'Sales Bracket', false, true);
-    $changed[] = whatChanged($sample_pub, $room_info['sample_published'], 'Sample Bracket', false, true);
+    $changed[] = whatChanged($sales_marketing_pub, $room_info['sales_marketing_published'], 'Sales/Marketing Bracket', false, true);
+    $changed[] = whatChanged($sample_pub, $room_info['sample_published'], 'Shop Bracket', false, true);
     $changed[] = whatChanged($preprod_pub, $room_info['preproduction_published'], 'Pre-Production Bracket', false, true);
-    $changed[] = whatChanged($doordrawer_pub, $room_info['doordrawer_published'], 'Door/Drawer Bracket', false, true);
-    $changed[] = whatChanged($main_pub, $room_info['main_published'], 'Main Bracket', false, true);
+    $changed[] = whatChanged($press_pub, $room_info['press_published'], 'Press Bracket', false, true);
+    $changed[] = whatChanged($paint_pub, $room_info['paint_published'], 'Paint Bracket', false, true);
     $changed[] = whatChanged($custom_pub, $room_info['custom_published'], 'Custom Bracket', false, true);
     $changed[] = whatChanged($shipping_pub, $room_info['shipping_published'], 'Shipping Bracke', false, true);
-    $changed[] = whatChanged($install_pub, $room_info['install_bracket_published'], 'Install Bracket', false, true);
-    $changed[] = whatChanged($pickmat_pub, $room_info['pick_materials_published'], 'Pick & Materials Bracket', false, true);
-    $changed[] = whatChanged($edgebanding_pub, $room_info['edgebanding_published'], 'Edgebanding Bracket', false, true);
+    $changed[] = whatChanged($assembly_pub, $room_info['assembly_published'], 'Install Bracket', false, true);
+    $changed[] = whatChanged($welding_pub, $room_info['welding_published'], 'Edgebanding Bracket', false, true);
     $changed[] = whatChanged($ops, $room_info['individual_bracket_buildout'], 'Active Bracket Operations');
 
     if($dbconn->query("UPDATE rooms SET individual_bracket_buildout = '$ops' WHERE id = '$room_id'")) {
-      $update_result = $dbconn->query("UPDATE rooms SET sales_bracket = '$sales_op', preproduction_bracket = '$preprod_op', sample_bracket = '$sample_op', doordrawer_bracket = '$doordrawer_op', edgebanding_bracket = '$edgebanding_op',
-    custom_bracket = '$custom_op', main_bracket = '$main_op', shipping_bracket = '$shipping_op', install_bracket = '$install_op', sales_published = '$sales_pub', sample_published = '$sample_pub',
-    preproduction_published = '$preprod_pub', doordrawer_published = '$doordrawer_pub', main_published = '$main_pub', edgebanding_published = '$edgebanding_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
-    install_bracket_published = '$install_pub', pick_materials_bracket = '$pickmat_op', pick_materials_published = '$pickmat_pub', payment_deposit = '$deposit_received',
+      $update_result = $dbconn->query("UPDATE rooms SET sales_marketing_bracket = '$sales_marketing_op', preproduction_bracket = '$preprod_op', shop_bracket = '$shop_op', press_bracket = '$press_op', welding_bracket = '$welding_op',
+    custom_bracket = '$custom_op', paint_bracket = '$paint_op', shipping_bracket = '$shipping_op', assembly_bracket = '$assembly_op', sales_marketing_published = '$sales_marketing_pub', sample_published = '$sample_pub',
+    preproduction_published = '$preprod_pub', press_published = '$press_pub', paint_published = '$paint_pub', welding_published = '$welding_pub', custom_published = '$custom_pub', shipping_published = '$shipping_pub',
+    assembly_published = '$assembly_pub', payment_deposit = '$deposit_received',
     payment_final = '$final_payment', payment_del_ptl = '$ptl_del' WHERE id = '$room_id'");
 
-      createOpQueue($sales_pub, 'Sales', $sales_op, $room_id);
-      createOpQueue($sample_pub, 'Sample', $sample_op, $room_id);
+      createOpQueue($sales_marketing_pub, 'Sales/Marketing', $sales_marketing_op, $room_id);
+      createOpQueue($sample_pub, 'Shop', $shop_op, $room_id);
       createOpQueue($preprod_pub, 'Pre-Production', $preprod_op, $room_id);
-      createOpQueue($doordrawer_pub, 'Drawer & Doors', $doordrawer_op, $room_id);
-      createOpQueue($main_pub, 'Main', $main_op, $room_id);
+      createOpQueue($press_pub, 'Press', $press_op, $room_id);
+      createOpQueue($paint_pub, 'Paint', $paint_op, $room_id);
       createOpQueue($custom_pub, 'Custom', $custom_op, $room_id);
       createOpQueue($shipping_pub, 'Shipping', $shipping_op, $room_id);
-      createOpQueue($install_pub, 'Installation', $install_op, $room_id);
-      createOpQueue($pickmat_pub, 'Pick & Materials', $pickmat_op, $room_id);
-      createOpQueue($edgebanding_pub, 'Edge Banding', $edgebanding_op, $room_id);
+      createOpQueue($assembly_pub, 'Assembly', $assembly_op, $room_id);
+      createOpQueue($welding_pub, 'Welding', $welding_op, $room_id);
 
       echo displayToast('success', 'All operations have been refreshed and the bracket has been updated.', 'Updated & Refreshed');
     } else {

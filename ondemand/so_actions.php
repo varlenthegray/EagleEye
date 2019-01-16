@@ -12,7 +12,7 @@ function whatChanged($new, $old, $title, $date = false, $bool = false) {
     $new = (int)$new;
     $old = (int)$old;
   } else {
-    if($title === 'Sales Bracket' || $title === 'Sample Bracket' || $title === 'Pre-Production Bracket' || $title === 'Door/Drawer Bracket' || $title === 'Main Bracket' ||
+    if($title === 'Sales/Marketing Bracket' || $title === 'Shop Bracket' || $title === 'Pre-Production Bracket' || $title === 'Press Bracket' || $title === 'Paint Bracket' ||
       $title === 'Custom Bracket' || $title === 'Shipping Bracket' || $title === 'Install Bracket') {
 
       $op_qry = $dbconn->query("SELECT * FROM operations WHERE id = $new");
@@ -132,15 +132,15 @@ switch($_REQUEST['action']) {
 
       $ind_bracket_final = json_encode($ind_bracket);
 
-      $dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, individual_bracket_buildout, order_status, sales_bracket, sample_bracket,
-      preproduction_bracket, doordrawer_bracket, main_bracket, custom_bracket, install_bracket, shipping_bracket, sales_published) 
-      VALUES ('$so_num', 'A', 'Intake (Auto-Generated)', 'C', '$ind_bracket_final', '#', '{$starting_ops['Sales']}', '{$starting_ops['Sample']}', 
-      '{$starting_ops['Pre-Production']}', '{$starting_ops['Drawer & Doors']}', '{$starting_ops['Main']}', '{$starting_ops['Custom']}', 
-      '{$starting_ops['Installation']}', '{$starting_ops['Shipping']}', TRUE);");
+      $dbconn->query("INSERT INTO rooms (so_parent, room, room_name, product_type, individual_bracket_buildout, order_status, sales_marketing_bracket, shop_bracket,
+      preproduction_bracket, press_bracket, main_bracket, custom_bracket, assembly_bracket, shipping_bracket, welding_bracket, sales_marketing_published) 
+      VALUES ('$so_num', 'A', 'Intake (Auto-Generated)', 'C', '$ind_bracket_final', '#', '{$starting_ops['Sales/Marketing']}', '{$starting_ops['Shop']}', 
+      '{$starting_ops['Pre-Production']}', '{$starting_ops['Press']}', '{$starting_ops['Paint']}', '{$starting_ops['Custom']}', 
+      '{$starting_ops['Assembly']}', '{$starting_ops['Shipping']}', '{$starting_ops['Welding']}', TRUE);");
 
       $room_id = $dbconn->insert_id;
 
-      $dbconn->query("INSERT INTO op_queue (room_id, operation_id, notes, created) VALUES ('$room_id', '{$starting_ops['Sales']}', 'Auto-generated.', UNIX_TIMESTAMP())");
+      $dbconn->query("INSERT INTO op_queue (room_id, operation_id, notes, created) VALUES ('$room_id', '{$starting_ops['Sales/Marketing']}', 'Auto-generated.', UNIX_TIMESTAMP())");
 
       echo displayToast('success', 'Successfully created new project.', 'New Project Created');
     } else {
@@ -214,7 +214,7 @@ switch($_REQUEST['action']) {
         $stmt->close();
       }
 
-      echo displayToast('success', "Successfully updated Sales Order information for $so_num.", 'Updated Information');
+      echo displayToast('success', "Successfully updated Sales/Marketing Order information for $so_num.", 'Updated Information');
     } else {
       dbLogSQLErr($dbconn);
     }

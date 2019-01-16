@@ -33,10 +33,9 @@ while($op = $op_qry->fetch_assoc()) {
 $prev_room = null;
 $prev_sequence = null;
 
-if($room_qry = $dbconn->query("SELECT id, so_parent, room, iteration, product_type, order_status, days_to_ship, room_name, sales_bracket, sales_published,
-      sample_bracket, preproduction_bracket, preproduction_published, doordrawer_bracket, doordrawer_published, main_bracket, main_published, custom_bracket, 
-      custom_published, shipping_bracket, shipping_published, install_bracket_published, install_bracket, pick_materials_bracket, pick_materials_published, 
-      edgebanding_bracket, edgebanding_published
+if($room_qry = $dbconn->query("SELECT id, so_parent, room, iteration, product_type, order_status, days_to_ship, room_name, sales_marketing_bracket, sales_marketing_published,
+      shop_bracket, preproduction_bracket, preproduction_published, press_bracket, press_published, paint_bracket, paint_published, custom_bracket, 
+      custom_published, shipping_bracket, shipping_published, assembly_published, assembly_bracket, welding_bracket, welding_published
     FROM rooms WHERE so_parent = '$soID' ORDER BY room, iteration ASC")) {
   while($room = $room_qry->fetch_assoc()) {
     $iteration = number_format($room['iteration'], 2);
@@ -81,29 +80,27 @@ if($room_qry = $dbconn->query("SELECT id, so_parent, room, iteration, product_ty
     //</editor-fold>
 
     //<editor-fold desc="Bracket information">
-    $output[$i]['sales_bracket'] = !empty($operations[$room['sales_bracket']]) ? $operations[$room['sales_bracket']] : array('job_title' => 'Unassigned');
-    $output[$i]['sample_bracket'] = !empty($operations[$room['sample_bracket']]) ? $operations[$room['sample_bracket']] : array('job_title' => 'Unassigned');
+    $output[$i]['sales_marketing_bracket'] = !empty($operations[$room['sales_marketing_bracket']]) ? $operations[$room['sales_marketing_bracket']] : array('job_title' => 'Unassigned');
+    $output[$i]['shop_bracket'] = !empty($operations[$room['shop_bracket']]) ? $operations[$room['shop_bracket']] : array('job_title' => 'Unassigned');
     $output[$i]['preproduction_bracket'] = !empty($operations[$room['preproduction_bracket']]) ? $operations[$room['preproduction_bracket']] : array('job_title' => 'Unassigned');
-    $output[$i]['doordrawer_bracket'] = !empty($operations[$room['doordrawer_bracket']]) ? $operations[$room['doordrawer_bracket']] : array('job_title' => 'Unassigned');
-    $output[$i]['main_bracket'] = !empty($operations[$room['main_bracket']]) ? $operations[$room['main_bracket']] : array('job_title' => 'Unassigned');
+    $output[$i]['press_bracket'] = !empty($operations[$room['press_bracket']]) ? $operations[$room['press_bracket']] : array('job_title' => 'Unassigned');
+    $output[$i]['paint_bracket'] = !empty($operations[$room['paint_bracket']]) ? $operations[$room['paint_bracket']] : array('job_title' => 'Unassigned');
     $output[$i]['custom_bracket'] = !empty($operations[$room['custom_bracket']]) ? $operations[$room['custom_bracket']] : array('job_title' => 'Unassigned');
     $output[$i]['shipping_bracket'] = !empty($operations[$room['shipping_bracket']]) ? $operations[$room['shipping_bracket']] : array('job_title' => 'Unassigned');
-    $output[$i]['install_bracket'] = !empty($operations[$room['install_bracket']]) ? $operations[$room['install_bracket']] : array('job_title' => 'Unassigned');
-    $output[$i]['pick_materials_bracket'] = !empty($operations[$room['pick_materials_bracket']]) ? $operations[$room['pick_materials_bracket']] : array('job_title' => 'Unassigned');
-    $output[$i]['edgebanding_bracket'] = !empty($operations[$room['edgebanding_bracket']]) ? $operations[$room['edgebanding_bracket']] : array('job_title' => 'Unassigned');
+    $output[$i]['assembly_bracket'] = !empty($operations[$room['assembly_bracket']]) ? $operations[$room['assembly_bracket']] : array('job_title' => 'Unassigned');
+    $output[$i]['welding_bracket'] = !empty($operations[$room['welding_bracket']]) ? $operations[$room['welding_bracket']] : array('job_title' => 'Unassigned');
     //</editor-fold>
 
     //<editor-fold desc="Determining if published or not">
-    $output[$i]['sales_bracket']['published'] = (bool)$room['sales_published'];
-    $output[$i]['sample_bracket']['published'] = (bool)$room['sample_published'];
+    $output[$i]['sales_marketing_bracket']['published'] = (bool)$room['sales_marketing_published'];
+    $output[$i]['shop_bracket']['published'] = (bool)$room['sample_published'];
     $output[$i]['preproduction_bracket']['published'] = (bool)$room['preproduction_published'];
-    $output[$i]['doordrawer_bracket']['published'] = (bool)$room['doordrawer_published'];
-    $output[$i]['main_bracket']['published'] = (bool)$room['main_published'];
+    $output[$i]['press_bracket']['published'] = (bool)$room['press_published'];
+    $output[$i]['paint_bracket']['published'] = (bool)$room['paint_published'];
     $output[$i]['custom_bracket']['published'] = (bool)$room['custom_published'];
     $output[$i]['shipping_bracket']['published'] = (bool)$room['shipping_published'];
-    $output[$i]['install_bracket']['published'] = (bool)$room['install_bracket_published'];
-    $output[$i]['pick_materials_bracket']['published'] = (bool)$room['pick_materials_published'];
-    $output[$i]['edgebanding_bracket']['published'] = (bool)$room['edgebanding_published'];
+    $output[$i]['assembly_bracket']['published'] = (bool)$room['assembly_published'];
+    $output[$i]['welding_bracket']['published'] = (bool)$room['welding_published'];
     //</editor-fold>
 
     $i++;
