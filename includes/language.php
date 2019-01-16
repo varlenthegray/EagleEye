@@ -7,9 +7,9 @@ define('RELEASE_DATE', '1/14/18');
 define('VERSION', '2.6.027');
 
 // Global definitions
-define('LOGO_TEXT', 'EagleEye ERP'); // The logo text displayed
-define('TAB_TEXT', 'EagleEye ERP - The Shop Management Software'); // The text displayed in the title bar/tab
-define('FOOTER_TEXT', 'EagleEye'); // Footer copyright name specifically
+define('LOGO_TEXT', 'Stratis - EagleEye ERP'); // The logo text displayed
+define('TAB_TEXT', 'Stratis - EagleEye ERP'); // The text displayed in the title bar/tab
+define('FOOTER_TEXT', 'EagleEye ERP'); // Footer copyright name specifically
 define('DATE_TIME_DEFAULT', 'M jS Y g:i:s A T'); // the default date/time format to use
 define('DATE_DEFAULT', 'n/j/y'); // the default date format to use
 define('DATE_TIME_ABBRV', 'n/j/y g:i:s A'); // the abbreviated date/time format to use

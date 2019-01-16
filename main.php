@@ -232,12 +232,10 @@ require 'includes/header_start.php';
   <script>
     // Connect to the socket to begin transmission of data
     <?php
-    if($server[0] === 'dev') {
-      echo "var socket = io.connect('//dev.3erp.us:4000');";
-    } elseif($server[0] === 'eagleeye') {
-      echo "var socket = io.connect('//localhost:4000');";
+    if(SERVER_TYPE === 'local') {
+      echo "var socket = io.connect('//localhost:4001');";
     } else {
-      echo "var socket = io.connect('//3erp.us:4100');";
+      echo "var socket = io.connect('//stratis.3erp.us:4101');";
     }
 
     $usr_qry = $dbconn->query("SELECT * FROM user WHERE id = '{$_SESSION['userInfo']['id']}'");

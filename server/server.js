@@ -14,45 +14,30 @@ var server; // server connection object
 var port; // port for the server
 
 // if we're receiving the console command that we're launching dev environment
-if(scriptArgs[2] === 'dev') {
+if(scriptArgs[2] === 'localhost') {
   // set the SQL data for dev
-  sqlLoc = {host:'dev.3erp.us',user:'remote.3erp',password:'o4J4G91@uvw%&ptkMOwZ',database:'3erp_dev'};
-
-  // setup the dev server for HTTPS
-  server = https.createServer({
-    key: fs.readFileSync('/home/dev/ssl.key'),
-    cert: fs.readFileSync('/home/dev/ssl.cert'),
-    ca: fs.readFileSync('/home/dev/ssl.ca'),
-    requestCert: false,
-    rejectUnauthorized: false
-  }, sconn);
-
-  // port 4k is the dev server
-  port = 4000;
-} else if(scriptArgs[2] === 'localhost') {
-  // set the SQL data for dev
-  sqlLoc = {host:'localhost',user:'threeerp',password:'8h294et9hVaLvp0K*s!&',database:'3erp_dev'};
+  sqlLoc = {host:'localhost',user:'3erp_stratis',password:'zD8fBBsPbQczC6g9',database:'3erp_stratis'};
 
   // setup the dev server for HTTPS
   server = http.createServer(sconn);
 
-  // port 4k is the dev server
-  port = 4000;
+  // port 4001 is the dev server
+  port = 4001;
 } else {
   // set the SQL data for live
-  sqlLoc = {host:'3erp.us',user:'remote.3erp',password:'Gl^1k6LyteGpAJ0SoOcU',database:'3erp'};
+  sqlLoc = {host:'3erp.us',user:'remote@stratis.3erp.us',password:'J*%EyBgjVK96ee4r',database:'3erp_stratis'};
 
   // setup the live server for HTTPS
   server = https.createServer({
-    key: fs.readFileSync('/home/threeerp/ssl.key'),
-    cert: fs.readFileSync('/home/threeerp/ssl.cert'),
-    ca: fs.readFileSync('/home/threeerp/ssl.ca'),
+    key: fs.readFileSync('/home/threeerp/domains/stratis.3erp.us/ssl.key'),
+    cert: fs.readFileSync('/home/threeerp/domains/stratis.3erp.us/ssl.cert'),
+    ca: fs.readFileSync('/home/threeerp/domains/stratis.3erp.us/ssl.ca'),
     requestCert: false,
     rejectUnauthorized: false
   }, sconn);
 
-  // port 4100 is the live server
-  port = 4100;
+  // port 4101 is the live server for Stratis
+  port = 4101;
 }
 
 // connect to the database using the specific SQL details

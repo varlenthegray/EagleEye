@@ -9,34 +9,19 @@
 $server = explode('.', $_SERVER['HTTP_HOST']);
 
 define('DB_SERVER_NAME', 'localhost');
-define('DB_USERNAME', 'threeerp');
-define('DB_PASS', '8h294et9hVaLvp0K*s!&');
+define('DB_USERNAME', '3erp_stratis');
+define('DB_PASS', 'MWwYWn6eohulDSxL');
+define('DB_DATABASE', '3erp_stratis');
 
-// determination for type of server we're on and what connection to throw
-switch($server[0]) {
-  case 'dev':
-    define('DB_DATABASE', '3erp_dev');
-    define('SITE_ROOT', '/home/dev/public_html'); // Current Dev Site
-
-    break;
-
-  case 'eagleeye':
-//    define('DB_DATABASE', '3erp_old_pricing');
-    define('DB_DATABASE', '3erp_dev');
-
-    if(file_exists('C:/Users/Ben')) {
-      define('SITE_ROOT', 'C:/Users/Ben/OneDrive/SMCM/Eagle Eye/SMCDev'); // Server Site
-    } else {
-      define ('SITE_ROOT', 'C:/Users/subz3/OneDrive/SMCM/Eagle Eye/SMCDev'); // Desktop site
-    }
-
-    break;
-
-  default:
-    define('DB_DATABASE', '3erp');
-    define('SITE_ROOT', '/home/threeerp/public_html'); // Prod Site
-
-    break;
+if(file_exists('C:/Users/Ben')) {
+  define('SITE_ROOT', 'C:/Users/Ben/OneDrive/SMCM/Eagle Eye/stratis'); // Surface Site
+  define('SERVER_TYPE', 'local');
+} elseif(file_exists('C:/Users/subz3')) {
+  define ('SITE_ROOT', 'C:/Users/subz3/OneDrive/SMCM/Eagle Eye/stratis'); // Desktop site
+  define('SERVER_TYPE', 'local');
+} else {
+  define('SITE_ROOT', '/home/threeerp/domains/stratis.3erp.us/public_html/'); // Prod Site
+  define('SERVER_TYPE', 'prod');
 }
 
 // connect to the database
