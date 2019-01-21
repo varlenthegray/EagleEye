@@ -60,6 +60,10 @@ require '../../includes/header_start.php';
       $.each(crmMain.dataTableContainer, function(index, container) {
         container.draw(false);
       });
+
+      if(win['_idd'] === 'calendar') {
+        scheduler.updateView();
+      }
     });
 
     winMgr.getWins().attachEvent("onMaximize", function(win) {
