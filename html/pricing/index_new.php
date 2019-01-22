@@ -981,6 +981,10 @@ HEREDOC;
         },
         dragDrop: function(node, data) {
           data.otherNode.moveTo(node, data.hitMode);
+          cabinetList.fancytree("getTree").visit(function(node) {
+              var $tdList = $(node.tr).find(">td");
+              $tdList.eq(0).text(node.getIndexHier());
+          });
         }
       },
       table: {
