@@ -12,31 +12,20 @@ define('DB_SERVER_NAME', 'localhost');
 define('DB_USERNAME', 'threeerp');
 define('DB_PASS', '8h294et9hVaLvp0K*s!&');
 
-// determination for type of server we're on and what connection to throw
-switch($server[0]) {
-  case 'dev':
-    define('DB_DATABASE', '3erp_dev');
-    define('SITE_ROOT', '/home/dev/public_html'); // Current Dev Site
+// possible development paths
+$available_paths[] = ['path' => 'C:/Users/Ben/OneDrive/SMCM/Eagle Eye/SMCDev', 'db' => '3erp_dev'];
+$available_paths[] = ['path' => 'C:/Users/subz3/OneDrive/SMCM/Eagle Eye/SMCDev', 'db' => '3erp_dev'];
+$available_paths[] = ['path' => '/home/dev/public_html', 'db' => '3erp_dev'];
+$available_paths[] = ['path' => 'C:/wamp64/www_eagleeye', 'db' => '3erp_dev'];
 
-    break;
+// live server path
+$available_paths[] = ['path' => '/home/threeerp/public_html', 'db' => '3erp'];
 
-  case 'eagleeye':
-//    define('DB_DATABASE', '3erp_old_pricing');
-    define('DB_DATABASE', '3erp_dev');
-
-    if(file_exists('C:/Users/Ben')) {
-      define('SITE_ROOT', 'C:/Users/Ben/OneDrive/SMCM/Eagle Eye/SMCDev'); // Server Site
-    } else {
-      define ('SITE_ROOT', 'C:/Users/subz3/OneDrive/SMCM/Eagle Eye/SMCDev'); // Desktop site
-    }
-
-    break;
-
-  default:
-    define('DB_DATABASE', '3erp');
-    define('SITE_ROOT', '/home/threeerp/public_html'); // Prod Site
-
-    break;
+foreach($available_paths AS $ind_path) {
+  if(file_exists($ind_path['path'])) {
+    define('SITE_ROOT', $ind_path['path']);
+    define('DB_DATABASE', $ind_path['db']);
+  }
 }
 
 // connect to the database
