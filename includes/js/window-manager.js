@@ -183,6 +183,12 @@ var winMgr = {
         'windowTitle': 'Database Management',
         'attachObj': null,
         'ajaxURL': '/html/windows/database_mgmt.php'
+      },
+      'setup': {
+        // position skipped
+        'windowTitle': 'EagleEye Setup',
+        'attachObj': null,
+        'ajaxURL': '/html/setup/index.php'
       }
     };
 

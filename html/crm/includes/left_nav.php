@@ -19,7 +19,8 @@
         <div class="col-md-3 cursor-hand widget-item" data-window="feedback"><i class="fa fa-envelope-square fa-3x"></i><h5>Feedback</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="opl"><i class="fa fa-list fa-3x"></i><h5>OPL</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="dealers"><i class="fa fa-share-alt fa-3x"></i><h5>Dealers</h5></div>
-        <div class="col-md-3 cursor-hand widget-item" data-window="database"><i class="fa fa-server fa-3x"></i><h5>Database</h5></div>
+<!--        <div class="col-md-3 cursor-hand widget-item" data-window="database"><i class="fa fa-server fa-3x"></i><h5>Database</h5></div>-->
+<!--        <div class="col-md-3 cursor-hand widget-item" data-window="setup"><i class="fa fa-cogs fa-3x"></i><h5>Setup</h5></div>-->
 <!--        <div class="col-md-3 cursor-hand widget-item" data-window="documents"><i class="fa fa-file-pdf-o fa-3x"></i><h5>Documents</h5></div>-->
       </div>
     </div>
