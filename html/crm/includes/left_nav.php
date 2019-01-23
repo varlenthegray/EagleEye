@@ -33,7 +33,7 @@
       <div class="col-md-12">
         <nav class="vert-nav">
           <ul>
-            <li><a href="#" class="nav_add_company"><i class="fa fa-fw fa-user-plus"></i> Add Company</a></li>
+            <li><a href="#" class="nav_add_company"><i class="fa fa-fw fa-user-plus"></i> Add Bill To</a></li>
             <li><a href="#" class="nav_add_contact"><i class="fa fa-fw fa-plus-circle"></i> Add Contact</a></li>
 <!--            <li><a href="#" class="crm_view_company_list"><i class="fa fa-fw fa-building-o"></i> Company List</a></li>-->
           </ul>

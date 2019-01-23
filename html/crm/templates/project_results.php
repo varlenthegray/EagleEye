@@ -141,7 +141,7 @@ HEREDOC;
             <div class="col-md-12">
               <ul class="nav nav-tabs m-b-10 m-t-10" id="companyNotes" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link" id="p-company-tab" data-toggle="tab" href="#p_company" role="tab" aria-controls="p_company" aria-selected="false">Company Notes</a>
+                  <a class="nav-link" id="p-company-tab" data-toggle="tab" href="#p_company" role="tab" aria-controls="p_company" aria-selected="false">Bill To Notes</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link active show" id="p-project-tab" data-toggle="tab" href="#p_project" role="tab" aria-controls="p_company" aria-selected="false">Project Notes</a>

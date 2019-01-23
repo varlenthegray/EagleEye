@@ -149,7 +149,7 @@ $company = $company_qry->fetch_assoc();
             <div class="col-md-12">
               <ul class="nav nav-tabs m-b-10 m-t-10" id="companyNotes" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link" id="p-company-tab" data-toggle="tab" href="#b_company" role="tab" aria-controls="b_company" aria-selected="false">Company Notes</a>
+                  <a class="nav-link" id="p-company-tab" data-toggle="tab" href="#b_company" role="tab" aria-controls="b_company" aria-selected="false">Bill To Notes</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" id="p-project-tab" data-toggle="tab" href="#b_project" role="tab" aria-controls="b_project" aria-selected="false">Project Notes</a>

@@ -51,7 +51,7 @@ $room_disabled = empty($keys[2]) ? 'disabled' : null;
         <li class="nav-item m-r-5" style="font-size:1.2em;"><strong>View:</strong></li>
         <li class="nav-item">
           <a class="nav-link tab-ajax active" data-ajax="/html/crm/templates/company.php?company_id=<?php echo $company['id']; ?>" data-toggle="tab"
-             id="company-tab" href="#crmCompany" role="tab" aria-controls="home" aria-expanded="true"><i class="fa fa-building-o m-r-5"></i> Company</a>
+             id="company-tab" href="#crmCompany" role="tab" aria-controls="home" aria-expanded="true"><i class="fa fa-building-o m-r-5"></i> Bill To</a>
         </li>
         <li class="nav-item">
           <a class="nav-link tab-ajax <?php echo $project_disabled; ?>" data-ajax="/html/crm/templates/project_results.php?so_num=<?php echo $project['so_num']; ?>&company_id=<?php echo $company['id']; ?>" data-toggle="tab"
