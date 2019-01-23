@@ -75,7 +75,10 @@ $so = $so_qry->fetch_assoc();
           function getContactCard($contact) {
             return <<<HEREDOC
 <div class="contact-card">
-  <div style="float:right;"><i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact" data-id="{$contact['id']}" title="Remove Contact"></i></div>
+  <div style="float:right;">
+    <i class="fa fa-pencil-square primary-color cursor-hand edit_assigned_contact" data-id="{$contact['cID']}" title="Edit Contact"></i>
+    <i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact" data-id="{$contact['id']}" title="Remove Contact"></i>
+  </div>
   <h5><a href="#">{$contact['first_name']} {$contact['last_name']}</a></h5>
   <h6>{$contact['associated_as']}</h6>
 
@@ -116,7 +119,7 @@ HEREDOC;
                 </table>";
 
           // displaying existing contact relationships
-          $so_contacts_qry = $dbconn->query("SELECT c.*, a.id AS id, c2.description, a.associated_as FROM contact_associations a LEFT JOIN contact c ON a.contact_id = c.id LEFT JOIN contact_types c2 ON c.type = c2.id WHERE a.type_id = {$so['id']} AND a.type = 'project' ORDER BY c.first_name, c.last_name ASC");
+          $so_contacts_qry = $dbconn->query("SELECT c.*, a.id AS id, c.id AS cID, c2.description, a.associated_as FROM contact_associations a LEFT JOIN contact c ON a.contact_id = c.id LEFT JOIN contact_types c2 ON c.type = c2.id WHERE a.type_id = {$so['id']} AND a.type = 'project' ORDER BY c.first_name, c.last_name ASC");
 
           echo "<div class='contact-box'>";
 
@@ -141,7 +144,7 @@ HEREDOC;
             <div class="col-md-12">
               <ul class="nav nav-tabs m-b-10 m-t-10" id="companyNotes" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link" id="p-company-tab" data-toggle="tab" href="#p_company" role="tab" aria-controls="p_company" aria-selected="false">Bill To Notes</a>
+                  <a class="nav-link" id="p-company-tab" data-toggle="tab" href="#p_company" role="tab" aria-controls="p_company" aria-selected="false">Contact/Account Notes</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link active show" id="p-project-tab" data-toggle="tab" href="#p_project" role="tab" aria-controls="p_company" aria-selected="false">Project Notes</a>
