@@ -1338,7 +1338,7 @@ require 'includes/header_start.php';
   <script src="/assets/plugins/math.min.js"></script>
 
   <!-- Pricing program -->
-  <script src="/html/pricing/pricing.min.js?v=<?php echo VERSION; ?>"></script>
+  <script src="/html/pricing/pricing.js?v=<?php echo VERSION; ?>"></script>
 
   <!-- Fancytree -->
   <script src="/assets/plugins/fancytree/jquery.fancytree.js"></script>
