@@ -1107,3 +1107,8 @@ h5 {
 .dhtmlx_modal_box {
   z-index: 1000 !important;
 }
+
+// calendar date fix for small windows
+.dhx_cal_navline .dhx_cal_date {
+  padding: 0 50px 0 !important;
+}
