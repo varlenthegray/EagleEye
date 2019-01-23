@@ -1358,7 +1358,7 @@ require 'includes/header_start.php';
   <script src="//cdn.jsdelivr.net/npm/ui-contextmenu/jquery.ui-contextmenu.min.js"></script>
 
   <!-- Unsaved Changes -->
-  <script src="/assets/js/unsaved_alert.js?v=<?php echo VERSION; ?>"></script>
+  <script src="/assets/js/unsaved_alert.min.js?v=<?php echo VERSION; ?>"></script>
 
   <!-- Sticky table header -->
   <script src="https://cdn.datatables.net/fixedheader/3.1.3/js/dataTables.fixedHeader.min.js"></script>
