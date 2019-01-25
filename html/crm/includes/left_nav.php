@@ -1,3 +1,9 @@
+<style>
+  .searchBorderTopContact:first-of-type {
+    border-top: 1px solid #000;
+  }
+</style>
+
 <div class="col-md-2" id="left-nav" style="min-height:80vh;">
   <div class="card-box">
     <div class="row">

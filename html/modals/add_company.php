@@ -32,19 +32,19 @@ $dealer_display = ($type === '2') ? 'block' : 'none';
           <form id="add_edit_company_form">
             <table style="width:100%;margin-top:8px;" class="table table-custom-nb">
               <tr>
-                <td colspan="2"><u><b>Company</b></u></td>
+                <td colspan="2"><u><b>Contact/Account</b></u></td>
               </tr>
               <tr>
                 <td><label for="company_name">Name:</label></td>
-                <td><input type="text" value="<?php echo $so['company_name']; ?>" name="company_name" class="c_input" placeholder="Company Name" id="company_name" /></td>
+                <td><input type="text" value="<?php echo $so['company_name']; ?>" name="company_name" class="c_input" placeholder="Contact/Account Name" id="company_name" /></td>
               </tr>
               <tr>
                 <td><label for="company_addr">Address:</label></td>
-                <td><input type="text" value="<?php echo $so['company_addr']; ?>" name="company_addr" class="c_input " placeholder="Company Address" id="company_addr" /></td>
+                <td><input type="text" value="<?php echo $so['company_addr']; ?>" name="company_addr" class="c_input " placeholder="Contact/Account Address" id="company_addr" /></td>
               </tr>
               <tr>
                 <td><label for="company_city">City:</label></td>
-                <td><input type="text" value="<?php echo $so['company_city']; ?>" name="company_city" class="c_input" placeholder="Company City" id="company_city"></td>
+                <td><input type="text" value="<?php echo $so['company_city']; ?>" name="company_city" class="c_input" placeholder="Contact/Account City" id="company_city"></td>
               </tr>
               <tr>
                 <td><label for="company_state">State:</label></td>
@@ -52,15 +52,15 @@ $dealer_display = ($type === '2') ? 'block' : 'none';
               </tr>
               <tr>
                 <td><label for="company_zip">Zip:</label></td>
-                <td><input type="text" value="<?php echo $so['company_zip']; ?>" name="company_zip" class="c_input" placeholder="Company Zip" id="company_zip"></td>
+                <td><input type="text" value="<?php echo $so['company_zip']; ?>" name="company_zip" class="c_input" placeholder="Contact/Account Zip" id="company_zip"></td>
               </tr>
               <tr>
                 <td><label for="company_email">Email:</label></td>
-                <td><input type="text" value="<?php echo $so['company_zip']; ?>" name="company_email" class="c_input" placeholder="Company Email" id="company_email"></td>
+                <td><input type="text" value="<?php echo $so['company_zip']; ?>" name="company_email" class="c_input" placeholder="Contact/Account Email" id="company_email"></td>
               </tr>
               <tr>
                 <td><label for="company_landline">Landline:</label></td>
-                <td><input type="text" value="<?php echo $so['company_landline']; ?>" name="company_landline" class="c_input" placeholder="Company Landline" id="company_landline"></td>
+                <td><input type="text" value="<?php echo $so['company_landline']; ?>" name="company_landline" class="c_input" placeholder="Contact/Account Phone" id="company_landline"></td>
               </tr>
               <tr>
                 <td colspan="2"><b><u>Billing</u></b></td>

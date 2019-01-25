@@ -36,7 +36,8 @@ var crmProject = {
         }
       });
 
-      $("body").on("click", ".remove_assigned_contact_so", function() {
+      $("body")
+        .on("click", ".remove_assigned_contact_so", function() {
         let contact_id = $(this).attr('data-id');
         let thisClick = this;
 
@@ -51,7 +52,13 @@ var crmProject = {
 
           $("body").append(data);
         });
-      });
+      })
+        .on("click", ".edit_assigned_contact", function() {
+          $.post("/html/modals/add_contact.php?action=edit", {id: $(this).attr('data-id')}, function(data) {
+            $("#modalGlobal").html(data).modal('show');
+          });
+        })
+      ;
     },
     contactAssociation: function() {
       $("#custom_association").change(function() {

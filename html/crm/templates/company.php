@@ -3,22 +3,24 @@ require '../../../includes/header_start.php';
 
 //outputPHPErrs();
 
-$company_id = sanitizeInput($_REQUEST['company_id']);
+$contact_id = sanitizeInput($_REQUEST['company_id']);
 
-$company_qry = $dbconn->query("SELECT * FROM contact_company WHERE id = $company_id");
-$company = $company_qry->fetch_assoc();
+//$contact_qry = $dbconn->query("SELECT * FROM contact WHERE id = $contact_id");
+$contact_qry = $dbconn->query("SELECT * FROM contact_company WHERE id = $contact_id");
+$contact = $contact_qry->fetch_assoc();
 ?>
 
 <div class="container-fluid">
   <div class="row sticky no-print" style="background-color:#FFF;z-index:3;top:21px;padding:4px;">
     <div class="col-md-4">
-      <button class="btn waves-effect btn-primary-outline save_company" title="Save Changes" data-id="<?php echo $company['id']; ?>"> <i class="fa fa-save fa-2x"></i> </button>
-      <button class="btn waves-effect btn-primary-outline add_project" title="Add Project" data-id="<?php echo $company['id']; ?>"> <i class="fa fa-plus-circle fa-2x"></i> </button>
+      <button class="btn waves-effect btn-primary-outline save_company" title="Save Changes" data-id="<?php echo $contact['id']; ?>"> <i class="fa fa-save fa-2x"></i> </button>
+      <button type="button" class="btn waves-effect btn-primary-outline add_project" title="Add Project" data-id="<?php echo $contact['id']; ?>"><span class="btn-label"><i class="fa fa-plus-circle"></i> </span>Add Project</button>
+<!--      <button class="btn waves-effect btn-primary-outline add_project" title="Add Project" data-id="--><?php //echo $contact['id']; ?><!--"> <i class="fa fa-plus-circle fa-2x"></i> </button>-->
     </div>
   </div>
 
   <form id="company_information">
-    <input type="hidden" name="company_id" value="<?php echo $company_id; ?>" />
+    <input type="hidden" name="company_id" value="<?php echo $contact_id; ?>" />
 
     <div class="row">
       <div class="col-md-3">
@@ -28,31 +30,31 @@ $company = $company_qry->fetch_assoc();
           </tr>
           <tr>
             <td style="width:165px;"><label for="company_name">Name:</label></td>
-            <td><input type="text" value="<?php echo $company['name']; ?>" name="company_name" class="c_input" placeholder="Company Name" id="company_name" /></td>
+            <td><input type="text" value="<?php echo $contact['name']; ?>" name="company_name" class="c_input" placeholder="Contact/Account Name" id="company_name" /></td>
           </tr>
           <tr>
             <td><label for="company_address">Address:</label></td>
-            <td><input type="text" value="<?php echo $company['address']; ?>" name="company_address" class="c_input " placeholder="Company Address" id="company_address" /></td>
+            <td><input type="text" value="<?php echo $contact['address']; ?>" name="company_address" class="c_input " placeholder="Contact/Account Address" id="company_address" /></td>
           </tr>
           <tr>
             <td><label for="company_city">City:</label></td>
-            <td><input type="text" value="<?php echo $company['city']; ?>" name="company_city" class="c_input" placeholder="Company City" id="company_city"></td>
+            <td><input type="text" value="<?php echo $contact['city']; ?>" name="company_city" class="c_input" placeholder="Contact/Account City" id="company_city"></td>
           </tr>
           <tr>
             <td><label for="company_state">State:</label></td>
-            <td><select class="c_input" id="company_state" name="company_state"><?php echo getStateOpts($company['state']); ?></select></td>
+            <td><select class="c_input" id="company_state" name="company_state"><?php echo getStateOpts($contact['state']); ?></select></td>
           </tr>
           <tr>
             <td><label for="company_zip">Zip:</label></td>
-            <td><input type="text" value="<?php echo $company['zip']; ?>" name="company_zip" class="c_input" placeholder="Company Zip" id="company_zip"></td>
+            <td><input type="text" value="<?php echo $contact['zip']; ?>" name="company_zip" class="c_input" placeholder="Contact/Account Zip" id="company_zip"></td>
           </tr>
           <tr>
             <td><label for="company_email">Email:</label></td>
-            <td><input type="text" value="<?php echo $company['email']; ?>" name="company_email" class="c_input" placeholder="Company Email" id="company_email"></td>
+            <td><input type="text" value="<?php echo $contact['email']; ?>" name="company_email" class="c_input" placeholder="Contact/Account Email" id="company_email"></td>
           </tr>
           <tr>
             <td><label for="company_landline">Landline:</label></td>
-            <td><input type="text" value="<?php echo $company['landline']; ?>" name="company_landline" class="c_input" placeholder="Company Landline" id="company_landline"></td>
+            <td><input type="text" value="<?php echo $contact['landline']; ?>" name="company_landline" class="c_input" placeholder="Contact/Account Phone" id="company_landline"></td>
           </tr>
           <tr>
             <td colspan="2"><b><u>Billing</u></b></td>
@@ -68,19 +70,19 @@ $company = $company_qry->fetch_assoc();
           </tr>
           <tr class="shipping_empty_hide">
             <td><label for="company_ship_addr">Address:</label></td>
-            <td><input type="text" value="<?php echo $company['shipping_address']; ?>" name="company_ship_addr" class="c_input" placeholder="Shipping Address" id="company_ship_addr"></td>
+            <td><input type="text" value="<?php echo $contact['shipping_address']; ?>" name="company_ship_addr" class="c_input" placeholder="Shipping Address" id="company_ship_addr"></td>
           </tr>
           <tr class="shipping_empty_hide">
             <td><label for="company_ship_city">City:</label></td>
-            <td><input type="text" value="<?php echo $company['shipping_city']; ?>" name="company_ship_city" class="c_input" placeholder="Shipping City" id="company_ship_city"></td>
+            <td><input type="text" value="<?php echo $contact['shipping_city']; ?>" name="company_ship_city" class="c_input" placeholder="Shipping City" id="company_ship_city"></td>
           </tr>
           <tr class="shipping_empty_hide">
             <td><label for="company_ship_state">State:</label></td>
-            <td><select class="c_input" id="company_ship_state" name="company_ship_state"><?php echo getStateOpts($company['shipping_state']); ?></select></td>
+            <td><select class="c_input" id="company_ship_state" name="company_ship_state"><?php echo getStateOpts($contact['shipping_state']); ?></select></td>
           </tr>
           <tr class="shipping_empty_hide">
             <td><label for="company_ship_zip">Zip:</label></td>
-            <td><input type="text" value="<?php echo $company['shipping_zip']; ?>" name="company_ship_zip" class="c_input" placeholder="Shipping Zip" id="company_ship_zip"></td>
+            <td><input type="text" value="<?php echo $contact['shipping_zip']; ?>" name="company_ship_zip" class="c_input" placeholder="Shipping Zip" id="company_ship_zip"></td>
           </tr>
           <tr class="shipping_empty_hide">
             <td colspan="3"><div style="width:100%;height:3px;border:2px solid #BBB;margin:5px 0;border-radius:5px;"></div></td>
@@ -132,19 +134,19 @@ $company = $company_qry->fetch_assoc();
           </tr>
           <tr class="billing_empty_hide">
             <td><label for="company_billing_addr">Address:</label></td>
-            <td><input type="text" value="<?php echo $company['billing_address']; ?>" name="company_billing_addr" class="c_input" placeholder="Billing Address" id="company_billing_addr"></td>
+            <td><input type="text" value="<?php echo $contact['billing_address']; ?>" name="company_billing_addr" class="c_input" placeholder="Billing Address" id="company_billing_addr"></td>
           </tr>
           <tr class="billing_empty_hide">
             <td><label for="company_billing_city">City:</label></td>
-            <td><input type="text" value="<?php echo $company['billing_city']; ?>" name="company_billing_city" class="c_input" placeholder="Billing City" id="company_billing_city"></td>
+            <td><input type="text" value="<?php echo $contact['billing_city']; ?>" name="company_billing_city" class="c_input" placeholder="Billing City" id="company_billing_city"></td>
           </tr>
           <tr class="billing_empty_hide">
             <td><label for="company_billing_state">State:</label></td>
-            <td><select class="c_input" id="company_billing_state" name="company_billing_state"><?php echo getStateOpts($company['billing_state']); ?></select></td>
+            <td><select class="c_input" id="company_billing_state" name="company_billing_state"><?php echo getStateOpts($contact['billing_state']); ?></select></td>
           </tr>
           <tr class="billing_empty_hide">
             <td><label for="company_billing_zip">Zip:</label></td>
-            <td><input type="text" value="<?php echo $company['billing_zip']; ?>" name="company_billing_zip" class="c_input" placeholder="Billing Zip" id="company_billing_zip"></td>
+            <td><input type="text" value="<?php echo $contact['billing_zip']; ?>" name="company_billing_zip" class="c_input" placeholder="Billing Zip" id="company_billing_zip"></td>
           </tr>
           <tr>
             <td colspan="3"><div style="width:100%;height:3px;border:2px solid #BBB;margin:5px 0;border-radius:5px;"></div></td>
@@ -194,12 +196,12 @@ HEREDOC;
                       <tr>
                         <td width='90px'><label for='add_contact'>Add Association</label></td>
                         <td>$contact_dropdown</td>
-                        <td width='20px'><i class='fa fa-plus-square assign_contact primary-color cursor-hand' data-type-id='{$company['id']}'></i></td>
+                        <td width='20px'><i class='fa fa-plus-square assign_contact primary-color cursor-hand' data-type-id='{$contact['id']}'></i></td>
                       </tr>
                     </table>";
 
               // displaying existing contact relationships
-              $so_contacts_qry = $dbconn->query("SELECT c.*, a.id AS id, c2.description, a.associated_as FROM contact_associations a LEFT JOIN contact c ON a.contact_id = c.id LEFT JOIN contact_types c2 ON c.type = c2.id WHERE a.type_id = '{$company['id']}' AND a.type = 'company' ORDER BY c.first_name, c.last_name ASC");
+              $so_contacts_qry = $dbconn->query("SELECT c.*, a.id AS id, c2.description, a.associated_as FROM contact_associations a LEFT JOIN contact c ON a.contact_id = c.id LEFT JOIN contact_types c2 ON c.type = c2.id WHERE a.type_id = '{$contact['id']}' AND a.type = 'company' ORDER BY c.first_name, c.last_name ASC");
 
               echo "<div class='contact-box'>";
 
@@ -262,7 +264,7 @@ HEREDOC;
                         </thead>
                         <tbody>
                         <?php
-                        $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'company_note' AND type_id = $company_id ORDER BY timestamp DESC;");
+                        $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'company_note' AND type_id = $contact_id ORDER BY timestamp DESC;");
 
                         if($note_qry->num_rows > 0) {
                           while($note = $note_qry->fetch_assoc()) {
