@@ -234,6 +234,11 @@ switch($_REQUEST['action']) {
       case 'library':
         break;
       default:
+        $image_path = $nom['image_path'];
+        $perspective_image = $nom['image_perspective'];
+        $plan_image = $nom['image_plan'];
+        $side_image = $nom['image_side'];
+
         break;
     }
 

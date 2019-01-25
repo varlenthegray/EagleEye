@@ -924,38 +924,38 @@ $("body")
     catalog.fancytree('getTree').reload(catalogData);
   })
 
-.on("change",".item_hinge", function() {
-  let node = cabinetList.fancytree("getActiveNode");
+  .on("change",".item_hinge", function() {
+    let node = cabinetList.fancytree("getActiveNode");
 
-  node.data.hinge = $(this).find(":selected").val();
-})
-.on("keyup", ".itm_width", function() {
-  let id = $(this).attr("data-id");
-  let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+    node.data.hinge = $(this).find(":selected").val();
+  })
+  .on("keyup", ".itm_width", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-  node.data.width = $(this).val();
-  node.data.price = pricingFunction.footCalc(node);
+    node.data.width = $(this).val();
+    node.data.price = pricingFunction.footCalc(node);
 
-  pricingFunction.recalcSummary();
-})
-.on("keyup", ".itm_height", function() {
-  let id = $(this).attr("data-id");
-  let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+    pricingFunction.recalcSummary();
+  })
+  .on("keyup", ".itm_height", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-  node.data.height = $(this).val();
-  node.data.price = pricingFunction.footCalc(node);
+    node.data.height = $(this).val();
+    node.data.price = pricingFunction.footCalc(node);
 
-  pricingFunction.recalcSummary();
-})
-.on("keyup", ".itm_depth", function() {
-  let id = $(this).attr("data-id");
-  let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+    pricingFunction.recalcSummary();
+  })
+  .on("keyup", ".itm_depth", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-  node.data.depth = $(this).val();
-  node.data.price = pricingFunction.footCalc(node);
+    node.data.depth = $(this).val();
+    node.data.price = pricingFunction.footCalc(node);
 
-  pricingFunction.recalcSummary();
-})
+    pricingFunction.recalcSummary();
+  })
   .on("keyup", "#modificationsFilter", function() { // filters per keystroke on search catalog
     // grab this value and filter it down to the node needed
     itemModifications.fancytree("getTree").filterNodes($(this).val());
@@ -1275,11 +1275,13 @@ $("body")
     switch($(this).val()) {
       case 'current':
         display.hide();
-        container.find('#displayCurrentImage').show();
+        container.find('.displayCurrentImage').show();
+
         break;
       case 'new':
         display.hide();
         container.find('.displayNewImageUpload').show();
+
         break;
     }
   })

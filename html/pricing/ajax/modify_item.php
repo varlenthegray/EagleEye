@@ -18,7 +18,7 @@ if(!empty($id)) {
       $price_groups[$pg['price_group_id']] = $pg['price'];
     }
 
-    $info_qry = $dbconn->query("SELECT pn.*, pnd.description, pnd.image_path, pnd.title FROM pricing_nomenclature pn LEFT JOIN pricing_nomenclature_details pnd on pn.description_id = pnd.id WHERE pn.id = $id");
+    $info_qry = $dbconn->query("SELECT pn.*, pnd.description, pnd.image_path, pnd.image_perspective, pnd.image_side, pnd.image_plan, pnd.title FROM pricing_nomenclature pn LEFT JOIN pricing_nomenclature_details pnd on pn.description_id = pnd.id WHERE pn.id = $id");
   }
 }
 
@@ -33,6 +33,7 @@ if($info_qry && $info_qry->num_rows > 0) {
   $add_modify = 'Add';
   $current_img = 'disabled';
   $recent_img = 'checked';
+  $new_img = 'checked';
 }
 
 $title = $type === 'folder' || $type === 'newSameFolder' || $type === 'newSubFolder' ? 'Category' : 'Item';
@@ -138,13 +139,35 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                   <tr>
                     <td><label>Default Hinge:</label></td>
                     <td>
+                      <?php
+                      $dh_checked = [];
+
+                      switch($info['default_hinge']) {
+                        case 'tbd':
+                          $dh_checked['tbd'] = 'checked';
+                          break;
+                        case 'left':
+                          $dh_checked['left'] = 'checked';
+                          break;
+                        case 'right':
+                          $dh_checked['right'] = 'checked';
+                          break;
+                        case 'pair':
+                          $dh_checked['pair'] = 'checked';
+                          break;
+                        case 'none':
+                          $dh_checked['none'] = 'checked';
+                          break;
+                      }
+                      ?>
+
                       <table>
                         <tr>
-                          <td><input class="c_input" id="default_hinge_tbd" value="tbd" name="default_hinge" type="radio" checked><label for="default_hinge_tbd">&nbsp; TBD</label></td>
-                          <td><input class="c_input" id="default_hinge_left" value="left" name="default_hinge" type="radio"><label for="default_hinge_left">&nbsp; Left</label></td>
-                          <td><input class="c_input" id="default_hinge_right" value="right" name="default_hinge" type="radio"><label for="default_hinge_right">&nbsp; Right</label></td>
-                          <td><input class="c_input" id="default_hinge_pair" value="pair" name="default_hinge" type="radio"><label for="default_hinge_pair">&nbsp; Pair</label></td>
-                          <td><input class="c_input" id="default_hinge_none" value="none" name="default_hinge" type="radio"><label for="default_hinge_none">&nbsp; None</label></td>
+                          <td><input class="c_input" id="default_hinge_tbd" value="tbd" name="default_hinge" type="radio" <?php echo $dh_checked['tbd']; ?>><label for="default_hinge_tbd">&nbsp; TBD</label></td>
+                          <td><input class="c_input" id="default_hinge_left" value="left" name="default_hinge" type="radio" <?php echo $dh_checked['left']; ?>><label for="default_hinge_left">&nbsp; Left</label></td>
+                          <td><input class="c_input" id="default_hinge_right" value="right" name="default_hinge" type="radio" <?php echo $dh_checked['right']; ?>><label for="default_hinge_right">&nbsp; Right</label></td>
+                          <td><input class="c_input" id="default_hinge_pair" value="pair" name="default_hinge" type="radio" <?php echo $dh_checked['pair']; ?>><label for="default_hinge_pair">&nbsp; Pair</label></td>
+                          <td><input class="c_input" id="default_hinge_none" value="none" name="default_hinge" type="radio" <?php echo $dh_checked['none']; ?>><label for="default_hinge_none">&nbsp; None</label></td>
                         </tr>
                       </table>
                     </td>
@@ -152,13 +175,25 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                   <tr>
                     <td><label>Hinging Available:</label></td>
                     <td>
+                      <?php
+                      $hinge_available = null;
+
+                      if(false !== strpos($info['hinge'], '[')) {
+                        $hinge_available = json_decode($info['hinge'], true);
+
+                        foreach($hinge_available AS $key => $line) {
+                          $hinge_available[$line] = 'checked';
+                        }
+                      }
+                      ?>
+
                       <table>
                         <tr>
-                          <td><input class="c_input" id="can_hinge_tbd" value="tbd" name="hinge_available[]" type="checkbox" checked><label for="can_hinge_tbd">&nbsp; TBD</label></td>
-                          <td><input class="c_input" id="can_hinge_left" value="left" name="hinge_available[]" type="checkbox"><label for="can_hinge_left">&nbsp; Left</label></td>
-                          <td><input class="c_input" id="can_hinge_right" value="right" name="hinge_available[]" type="checkbox"><label for="can_hinge_right">&nbsp; Right</label></td>
-                          <td><input class="c_input" id="can_hinge_pair" value="pair" name="hinge_available[]" type="checkbox"><label for="can_hinge_pair">&nbsp; Pair</label></td>
-                          <td><input class="c_input" id="can_hinge_none" value="none" name="hinge_available[]" type="checkbox"><label for="can_hinge_none">&nbsp; None</label></td>
+                          <td><input class="c_input" id="can_hinge_tbd" value="tbd" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['tbd']; ?>><label for="can_hinge_tbd">&nbsp; TBD</label></td>
+                          <td><input class="c_input" id="can_hinge_left" value="left" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['left']; ?>><label for="can_hinge_left">&nbsp; Left</label></td>
+                          <td><input class="c_input" id="can_hinge_right" value="right" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['right']; ?>><label for="can_hinge_right">&nbsp; Right</label></td>
+                          <td><input class="c_input" id="can_hinge_pair" value="pair" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['pair']; ?>><label for="can_hinge_pair">&nbsp; Pair</label></td>
+                          <td><input class="c_input" id="can_hinge_none" value="none" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['none']; ?>><label for="can_hinge_none">&nbsp; None</label></td>
                         </tr>
                       </table>
                     </td>
@@ -167,16 +202,26 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                     <td><label>Image:</label></td>
                     <td>
                       <input class="c_input" id="item_current_image" value="current" name="image_type" type="radio" <?php echo $current_img; ?>> <label for="item_current_image"> Use Current Images</label>
-                      <input class="c_input" id="item_new_image" value="new" name="image_type" type="radio" checked> <label for="item_new_image"> Upload New Images</label>
+                      <input class="c_input" id="item_new_image" value="new" name="image_type" type="radio" <?php echo $new_img; ?>> <label for="item_new_image"> Upload New Images</label>
                     </td>
                   </tr>
                   <tr style="height:5px;">
                     <td colspan="2"></td>
                   </tr>
-                  <tr class="displayImage" id="displayCurrentImage">
-                    <td><label>Current Image:</label></td>
-                    <td><img style="max-width:100px;max-height:100px;" src="/html/pricing/images/<?php echo $info['image_path'] ?>" /></td>
+
+                  <tr class="displayImage displayCurrentImage">
+                    <td><label>Perspective Image:</label></td>
+                    <td><img style="max-width:100px;max-height:100px;" src="/html/pricing/images/<?php echo $info['image_perspective'] ?>" /></td>
                   </tr>
+                  <tr class="displayImage displayCurrentImage">
+                    <td><label>Plan Image:</label></td>
+                    <td><?php echo !empty($info['image_plan']) ? "<img style='max-width:100px;max-height:100px;' src='/html/pricing/images/{$info['image_plan']}' />" : 'None'; ?></td>
+                  </tr>
+                  <tr class="displayImage displayCurrentImage">
+                    <td><label>Side/Front Image:</label></td>
+                    <td><?php echo !empty($info['image_side']) ? "<img style='max-width:100px;max-height:100px;' src='/html/pricing/images/{$info['image_side']}' />" : 'None'; ?></td>
+                  </tr>
+
                   <tr class="displayImage displayNewImageUpload">
                     <td><label>Perspective Image:</label></td>
                     <td><input type="file" id="perspective_image" class="c_input" style="border:none;" name="perspective_image" /></td>
