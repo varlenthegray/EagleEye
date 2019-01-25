@@ -28,6 +28,7 @@ $so = $so_qry->fetch_assoc();
   <div class="row sticky no-print" style="background-color:#FFF;z-index:3;top:21px;padding:4px;">
     <div class="col-md-4">
       <button class="btn waves-effect btn-primary-outline save_so" title="Save Changes" data-sonum="<?php echo $so['so_num']; ?>"> <i class="fa fa-save fa-2x"></i> </button>
+      <button type="button" class="btn waves-effect btn-primary-outline add_room_trigger" data-sonum="<?php echo $so['so_num']; ?>"><span class="btn-label"><i class="fa fa-plus-circle"></i> </span>Add Room</button>
     </div>
   </div>
 
@@ -296,7 +297,7 @@ HEREDOC;
 
       <!--<editor-fold desc="Bracket Info">-->
       <div class="col-md-4 bracket_info m-t-10">
-        <button type="button" class="btn btn-secondary waves-effect waves-light no-print add_room_trigger" data-sonum="<?php echo $so['so_num']; ?>"><span class="btn-label"><i class="fa fa-plus-square"></i> </span>Add Room</button>
+        <button type="button" class="btn btn-secondary waves-effect waves-light no-print add_room_trigger" data-sonum="<?php echo $so['so_num']; ?>"><span class="btn-label"><i class="fa fa-plus-circle"></i> </span>Add Room</button>
 
         <?php
         $room_qry = $dbconn->query("SELECT * FROM rooms WHERE so_parent = '$so_num' ORDER BY room, iteration ASC");

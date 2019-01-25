@@ -37,8 +37,6 @@ var association = {
       });
     })
       .on("click", ".edit_assigned_contact", function() {
-        console.log($(this).attr('data-id'));
-
         $.post("/html/modals/add_contact.php?action=edit", {id: $(this).attr('data-id')}, function(data) {
           $("#modalGlobal").html(data).modal('show');
         });
