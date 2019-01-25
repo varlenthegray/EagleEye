@@ -1,6 +1,8 @@
 <?php
 require '../../../includes/header_start.php';
 
+//outputPHPErrs();
+
 $type = sanitizeInput($_REQUEST['type']);
 $id = sanitizeInput($_REQUEST['id']);
 
@@ -20,7 +22,7 @@ if(!empty($id)) {
   }
 }
 
-if($info_qry->num_rows > 0) {
+if($info_qry && $info_qry->num_rows > 0) {
   $info = $info_qry->fetch_assoc();
   $btnSave = 'Save';
   $add_modify = 'Modify';
@@ -78,32 +80,34 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                 FROM (SELECT @r := $catID, @l := 0) vars, pricing_categories h WHERE @r <> 0) T1 
                 JOIN pricing_categories T2 ON T1._id = T2.id ORDER BY T1.lvl DESC");
 
-                while($cat = $cat_qry->fetch_assoc()) {
-                  if(!empty($cat['description_id'])) {
-                    $desc_id = $dbconn->query("SELECT * FROM pricing_nomenclature_details WHERE id = {$cat['description_id']}");
-                    $desc = $desc_id->fetch_assoc();
-                  } else {
-                    $desc['description'] = '<i>None Specified</i>';
-                  }
-
-                  if($cat['id'] !== $info['id']) {
-                    $description = nl2br($desc['description']);
-
-                    if($type === 'item') {
-                      $checked = in_array($cat['id'], $desc_available, true) ? 'checked' : null;
-
-                      $checkbox = "<div class='checkbox checkbox-primary'><input id=\"desc_enabled_{$cat['id']}\" name=\"desc_enabled[]\" type='checkbox' value=\"{$cat['id']}\" $checked><label for=\"desc_enabled_{$cat['id']}\"> Enabled</label></div>";
+                if($cat_qry) {
+                  while($cat = $cat_qry->fetch_assoc()) {
+                    if(!empty($cat['description_id'])) {
+                      $desc_id = $dbconn->query("SELECT * FROM pricing_nomenclature_details WHERE id = {$cat['description_id']}");
+                      $desc = $desc_id->fetch_assoc();
                     } else {
-                      $checkbox = null;
+                      $desc['description'] = '<i>None Specified</i>';
                     }
 
-                    echo "<tr>
+                    if($cat['id'] !== $info['id']) {
+                      $description = nl2br($desc['description']);
+
+                      if($type === 'item') {
+                        $checked = in_array($cat['id'], $desc_available, true) ? 'checked' : null;
+
+                        $checkbox = "<div class='checkbox checkbox-primary'><input id=\"desc_enabled_{$cat['id']}\" name=\"desc_enabled[]\" type='checkbox' value=\"{$cat['id']}\" $checked><label for=\"desc_enabled_{$cat['id']}\"> Enabled</label></div>";
+                      } else {
+                        $checkbox = null;
+                      }
+
+                      echo "<tr>
                     <td>
                       <label>'{$cat['name']}' Description:</label>
                       $checkbox
                     </td>
                     <td><div style='min-height:91px;'>$description</div></td>
                   </tr>";
+                    }
                   }
                 }
                 ?>

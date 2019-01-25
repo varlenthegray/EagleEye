@@ -26,8 +26,7 @@ $qry = $dbconn->query("SELECT
     LEFT JOIN dealers d ON so.dealer_code = d.dealer_id
     LEFT JOIN contact_company cc on so.company_id = cc.id
   WHERE (so.so_num LIKE '%$find%' OR LOWER(so.dealer_code) LIKE LOWER('%$find%') OR LOWER(so.project_name) LIKE LOWER('%$find%') 
-    OR LOWER(so.project_mgr) LIKE LOWER('%$find%') OR LOWER(so.name_1) LIKE LOWER('%$find%') OR LOWER(so.name_2) LIKE LOWER('%$find%') 
-    OR LOWER(d.dealer_name) LIKE LOWER('%$find%')) OR LOWER(cc.name) LIKE LOWER('%$find%')
+    OR LOWER(so.project_mgr) LIKE LOWER('%$find%') OR LOWER(d.dealer_name) LIKE LOWER('%$find%')) OR LOWER(cc.name) LIKE LOWER('%$find%')
   ORDER BY d.dealer_name, so.so_num, r.room, r.iteration ASC;");
 
 $so_count_qry = $dbconn->query("SELECT id FROM sales_order WHERE so_num = '$find'");

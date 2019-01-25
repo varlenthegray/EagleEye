@@ -19,7 +19,8 @@
         <div class="col-md-3 cursor-hand widget-item" data-window="feedback"><i class="fa fa-envelope-square fa-3x"></i><h5>Feedback</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="opl"><i class="fa fa-list fa-3x"></i><h5>OPL</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="dealers"><i class="fa fa-share-alt fa-3x"></i><h5>Dealers</h5></div>
-        <div class="col-md-3 cursor-hand widget-item" data-window="database"><i class="fa fa-server fa-3x"></i><h5>Database</h5></div>
+<!--        <div class="col-md-3 cursor-hand widget-item" data-window="database"><i class="fa fa-server fa-3x"></i><h5>Database</h5></div>-->
+<!--        <div class="col-md-3 cursor-hand widget-item" data-window="setup"><i class="fa fa-cogs fa-3x"></i><h5>Setup</h5></div>-->
 <!--        <div class="col-md-3 cursor-hand widget-item" data-window="documents"><i class="fa fa-file-pdf-o fa-3x"></i><h5>Documents</h5></div>-->
       </div>
     </div>
@@ -33,8 +34,8 @@
       <div class="col-md-12">
         <nav class="vert-nav">
           <ul>
-            <li><a href="#" class="nav_add_company"><i class="fa fa-fw fa-user-plus"></i> Add Company</a></li>
-            <li><a href="#" class="nav_add_contact"><i class="fa fa-fw fa-plus-circle"></i> Add Contact</a></li>
+            <li><a href="#" class="nav_add_company"><i class="fa fa-fw fa-user-plus"></i> Add New Contact/Account</a></li>
+<!--            <li><a href="#" class="nav_add_contact"><i class="fa fa-fw fa-plus-circle"></i> Add Contact</a></li>-->
 <!--            <li><a href="#" class="crm_view_company_list"><i class="fa fa-fw fa-building-o"></i> Company List</a></li>-->
           </ul>
         </nav>

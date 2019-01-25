@@ -179,8 +179,12 @@ $dealer_display = ($type === '2') ? 'block' : 'none';
                 
                 if($so_contact_qry->num_rows > 0) {
                   while($so_contact = $so_contact_qry->fetch_assoc()) {
-                    echo "<tr><td colspan='3'><a href='#' id='{$so_contact['so_num']}' class='view_so_info'>{$so_contact['so_num']}</a></td></tr>";
+                    $so_list .= "<a href='#' id='{$so_contact['so_num']}' class='view_so_info'>{$so_contact['so_num']}</a>, ";
                   }
+
+                  $so_list = rtrim($so_list, ', ');
+
+                  echo "<tr><td colspan='3'>$so_list</td></tr>";
                 } else {
                   echo "<tr><td colspan='3'><em>None Assigned</em></td></tr>";
                 }

@@ -149,7 +149,7 @@ $company = $company_qry->fetch_assoc();
             <div class="col-md-12">
               <ul class="nav nav-tabs m-b-10 m-t-10" id="companyNotes" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link" id="p-company-tab" data-toggle="tab" href="#b_company" role="tab" aria-controls="b_company" aria-selected="false">Company Notes</a>
+                  <a class="nav-link" id="p-company-tab" data-toggle="tab" href="#b_company" role="tab" aria-controls="b_company" aria-selected="false">Contact/Account Notes</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" id="p-project-tab" data-toggle="tab" href="#b_project" role="tab" aria-controls="b_project" aria-selected="false">Project Notes</a>
@@ -981,6 +981,10 @@ HEREDOC;
         },
         dragDrop: function(node, data) {
           data.otherNode.moveTo(node, data.hitMode);
+          cabinetList.fancytree("getTree").visit(function(node) {
+              var $tdList = $(node.tr).find(">td");
+              $tdList.eq(0).text(node.getIndexHier());
+          });
         }
       },
       table: {
@@ -1021,7 +1025,7 @@ HEREDOC;
         // Index #4 => Width
         // $tdList.eq(5).text(node.data.width);
         $tdList.eq(5).find("input").attr("data-id", node.key).val(node.data.width);
-
+        console.log(node.data.width);
         // Index #6 => Height
         // $tdList.eq(6).text(node.data.height);
         $tdList.eq(6).find("input").attr("data-id", node.key).val(node.data.height);
