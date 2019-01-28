@@ -1,9 +1,12 @@
 <?php
 require '../../../includes/header_start.php';
+require '../../../includes/classes/associations.php';
 
 $so_num = sanitizeInput($_REQUEST['so_num']);
 
 $vin_schema = getVINSchema();
+
+use associations\associations;
 
 $operations = []; // operation information
 
@@ -70,69 +73,12 @@ $so = $so_qry->fetch_assoc();
         </table>
 
         <div class="contact-box-main">
-          <h5>Contacts</h5>
+          <h5>Associations</h5>
 
           <?php
-          function getContactCard($contact) {
-            return <<<HEREDOC
-<div class="contact-card">
-  <div style="float:right;">
-    <i class="fa fa-pencil-square primary-color cursor-hand edit_assigned_contact" data-id="{$contact['cID']}" title="Edit Contact"></i>
-    <i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact" data-id="{$contact['id']}" title="Remove Contact"></i>
-  </div>
-  <h5><a href="#">{$contact['first_name']} {$contact['last_name']}</a></h5>
-  <h6>{$contact['associated_as']}</h6>
+          $association = new \associations\associations();
 
-  <p>{$contact['cell']}<br>{$contact['email']}</p>
-</div>
-HEREDOC;
-          }
-          
-          $contact_dropdown = null;
-
-          $contact_qry = $dbconn->query('SELECT c.id, c.first_name, c.last_name, c.company_name, c2.description FROM contact c LEFT JOIN contact_types c2 ON c.type = c2.id LEFT JOIN user u ON c.created_by = u.id LEFT JOIN dealers d ON u.dealer_id = d.id ORDER BY c2.description, c.first_name, c.last_name ASC');
-
-          if($contact_qry->num_rows > 0) {
-            $contact_dropdown = "<select class='c_input pull-left contact_id ignoreSaveAlert' style='width:100%;' name='add_contact'><option value='' disabled selected>Select</option>";
-
-            $last_group = null;
-
-            while($contact = $contact_qry->fetch_assoc()) {
-              if($contact['description'] !== $last_group) {
-                $contact_dropdown .= "</optgroup><optgroup label='{$contact['description']}'>";
-                $last_group = $contact['description'];
-              }
-
-              $name = !empty($contact['first_name']) ? "{$contact['first_name']} {$contact['last_name']}" : $contact['company_name'];
-
-              $contact_dropdown .= "<option value='{$contact['id']}'>$name</option>";
-            }
-
-            $contact_dropdown .= '</optgroup></select>';
-          }
-
-          echo "<table class='m-b-10' width='100%'>
-                  <tr>
-                    <td width='90px'><label for='add_contact'>Add Association</label></td>
-                    <td>$contact_dropdown</td>
-                    <td width='20px'><i class='fa fa-plus-square assign_contact primary-color cursor-hand' data-type-id='{$so['id']}'></i></td>
-                  </tr>
-                </table>";
-
-          // displaying existing contact relationships
-          $so_contacts_qry = $dbconn->query("SELECT c.*, a.id AS id, c.id AS cID, c2.description, a.associated_as FROM contact_associations a LEFT JOIN contact c ON a.contact_id = c.id LEFT JOIN contact_types c2 ON c.type = c2.id WHERE a.type_id = {$so['id']} AND a.type = 'project' ORDER BY c.first_name, c.last_name ASC");
-
-          echo "<div class='contact-box'>";
-
-          if($so_contacts_qry->num_rows > 0) {
-            while($so_contacts = $so_contacts_qry->fetch_assoc()) {
-              echo getContactCard($so_contacts);
-            }
-          } else {
-            echo '<strong>No Contacts</strong>';
-          }
-
-          echo '</div>';
+          $association->displayContactAssociations($so['id'], 'project');
           ?>
         </div>
       </div>
@@ -145,7 +91,7 @@ HEREDOC;
             <div class="col-md-12">
               <ul class="nav nav-tabs m-b-10 m-t-10" id="companyNotes" role="tablist">
                 <li class="nav-item">
-                  <a class="nav-link" id="p-company-tab" data-toggle="tab" href="#p_company" role="tab" aria-controls="p_company" aria-selected="false">Contact/Account Notes</a>
+                  <a class="nav-link" id="p-company-tab" data-toggle="tab" href="#p_company" role="tab" aria-controls="p_company" aria-selected="false">Account Notes</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link active show" id="p-project-tab" data-toggle="tab" href="#p_project" role="tab" aria-controls="p_company" aria-selected="false">Project Notes</a>

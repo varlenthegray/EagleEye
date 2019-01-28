@@ -1180,20 +1180,13 @@ require 'includes/header_start.php';
       .on("click", "#submit_new_contact", function() {
         var contactData = $("#contact_form").serialize();
 
-        $.post('/ondemand/contact_actions.php?action=save_contact&' + contactData, function(data) {
+        $.post('/ondemand/contact_actions.php?action=save_contact', {formInfo: contactData} , function(data) {
           $("body").append(data);
 
           $("#modalGlobal").modal('hide');
         });
 
         unsaved = false;
-      })
-      .on("change", "#contact_type", function() {
-        if($(this).find("option:selected").text() === 'Dealer') {
-          $("#dealer_code").show();
-        } else {
-          $("#dealer_code").hide();
-        }
       })
       .on("click", "#update_contact", function() {
         var contactData = $("#contact_form").serialize();

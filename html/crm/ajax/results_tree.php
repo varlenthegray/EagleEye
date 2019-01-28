@@ -8,26 +8,39 @@ $strip = $_REQUEST['strip'];
 $find = sanitizeInput($_REQUEST['search']);
 
 $qry = $dbconn->query("SELECT
-    so.id AS soID,
-    r.id as rID,
-    cc.id as cID,
-    d.id as dID,
-    d.dealer_name,
-    cc.name AS companyName,
-    so.so_num,
-    so.project_name,
-    r.room,
-    r.iteration,
-    r.room_name,
-    r.order_status,
-    d.dealer_id
-  FROM sales_order so
-    LEFT JOIN rooms r ON so.so_num = r.so_parent
-    LEFT JOIN dealers d ON so.dealer_code = d.dealer_id
-    LEFT JOIN contact_company cc on so.company_id = cc.id
-  WHERE (so.so_num LIKE '%$find%' OR LOWER(so.dealer_code) LIKE LOWER('%$find%') OR LOWER(so.project_name) LIKE LOWER('%$find%') 
-    OR LOWER(so.project_mgr) LIKE LOWER('%$find%') OR LOWER(d.dealer_name) LIKE LOWER('%$find%')) OR LOWER(cc.name) LIKE LOWER('%$find%')
-  ORDER BY d.dealer_name, so.so_num, r.room, r.iteration ASC;");
+  CONCAT(r.so_parent, r.room, r.iteration) AS roomSOInfo,
+  so.id AS soID,
+  r.id AS rID,
+  cc.id AS cID,
+  cc.name AS companyName,
+  so.so_num,
+  so.project_name,
+  r.room,
+  r.iteration,
+  r.room_name,
+  r.order_status
+FROM sales_order so
+      LEFT JOIN rooms r ON so.so_num = r.so_parent
+      LEFT JOIN contact_company cc ON so.company_id = cc.id
+      LEFT JOIN contact_associations assocAct ON assocAct.type_id = cc.id
+      LEFT JOIN contact cAct ON assocAct.contact_id = cAct.id
+      LEFT JOIN contact_associations assocSO ON assocSO.type_id = so.id
+      LEFT JOIN contact cSO ON assocSO.contact_id = cSO.id
+WHERE
+      so.so_num LIKE '%$find%' OR
+      LOWER(so.dealer_code) LIKE LOWER('%$find%') OR
+      LOWER(so.project_name) LIKE LOWER('%$find%') OR
+      LOWER(so.project_landline) LIKE LOWER('%$find%') OR
+      LOWER(cc.name) LIKE LOWER('%$find%') OR
+      LOWER(cc.landline) LIKE LOWER('%$find%') OR
+    ((LOWER(cAct.first_name) LIKE LOWER('%$find%') OR LOWER(cAct.last_name) LIKE LOWER('%$find%')) AND assocAct.type = 'account') OR
+    ((LOWER(cSO.first_name) LIKE LOWER('%$find%') OR LOWER(cSO.last_name) LIKE LOWER('%$find%')) AND assocSO.type = 'project') OR
+      LOWER(cAct.email) LIKE LOWER('%$find%') OR
+      LOWER(cSO.email) LIKE LOWER('%$find%') OR
+      LOWER(cAct.cell) LIKE LOWER('%$find%') OR
+      LOWER(cSO.cell) LIKE LOWER('%$find%')
+GROUP BY roomSOInfo
+ORDER BY so.so_num, r.room, r.iteration ASC;");
 
 $so_count_qry = $dbconn->query("SELECT id FROM sales_order WHERE so_num = '$find'");
 $so_expanded = $so_count_qry->num_rows === 1;
@@ -97,7 +110,7 @@ foreach($result AS $ans) {
       break;
   }
 
-  $altData = "{$ans['dealer_name']}, {$ans['project_name']}, {$ans['so_num']}, {$ans['room']}, {$ans['room_name']}, {$ans['so_num']}{$ans['room']}{$ans['iteration']}, $altOStatus, {$ans['dealer_id']}";
+//  $altData = "{$ans['dealer_name']}, {$ans['project_name']}, {$ans['so_num']}, {$ans['room']}, {$ans['room_name']}, {$ans['so_num']}{$ans['room']}{$ans['iteration']}, $altOStatus, {$ans['dealer_id']}";
 
   $ans['iteration'] = number_format((float)$ans['iteration'], 2);
 
