@@ -23,9 +23,6 @@ $room_qry = $dbconn->query("SELECT r.*, so.dealer_code, so.company_id, so.projec
   FROM rooms r LEFT JOIN sales_order so on r.so_parent = so.so_num WHERE r.id = $room_id ORDER BY room, iteration ASC;");
 $room = $room_qry->fetch_assoc();
 
-$company_qry = $dbconn->query("SELECT cc.*, d.*, d.id AS dealerID FROM contact_company cc LEFT JOIN dealers d on cc.dealer_id = d.id WHERE cc.id = {$room['company_id']}");
-$company = $company_qry->fetch_assoc();
-
 //<editor-fold desc="Disable submit buttons (if submitted)">
 $existing_quote_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
 
@@ -34,6 +31,25 @@ if($existing_quote_qry->num_rows === 1) {
 } else {
   $existing_quote = null;
 }
+
+$company_qry = $dbconn->query("SELECT
+       so.id AS soID,
+       cc.id AS cID,
+       d.account_type,
+       cc.address AS companyAddr,
+       cc.city AS companyCity,
+       cc.state AS companyState,
+       cc.zip AS companyZip,
+       d.shipping_address AS dealerAddress,
+       d.shipping_city AS dealerCity,
+       d.shipping_state AS dealerState,
+       d.shipping_zip AS dealerZip,
+       d.multiplier
+FROM sales_order so
+  LEFT JOIN contact_company cc on so.company_id = cc.id
+  LEFT JOIN dealers d ON cc.dealer_id = d.id
+WHERE so.so_num = '{$room['so_parent']}';");
+$company = $company_qry->fetch_assoc();
 
 if(!empty($existing_quote['quote_submission'])) {
   $submit_disabled = 'disabled';
@@ -54,7 +70,7 @@ if($notes_qry->num_rows > 0) {
   }
 }
 
-$shipZIP = !empty($room['ship_zip']) ? $room['ship_zip'] : $company['shipping_zip'];
+$shipZIP = !empty($room['ship_zip']) ? $room['ship_zip'] : $company['dealerZip'];
 $ship_zone_info = calcShipZone($shipZIP);
 
 if($room['ship_cost'] === null) {
@@ -87,9 +103,6 @@ if($pg_qry->num_rows > 0) {
   $price_group = '0';
 }
 //</editor-fold>
-
-$company_qry = $dbconn->query("SELECT so.id AS soID, cc.id AS cID FROM sales_order so LEFT JOIN contact_company cc on so.company_id = cc.id WHERE so.so_num = '{$room['so_parent']}'");
-$company = $company_qry->fetch_assoc();
 ?>
 
 <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
@@ -444,17 +457,10 @@ $company = $company_qry->fetch_assoc();
             $ship_zip = $room['project_zip'];
           } else {
             if(empty($room['ship_addr'])) { // batch doesn't have an address, so lets move up to company
-              if(empty($company['shipping_address'])) { // company doesn't have a shipping address, default to company address
-                $ship_addr = $company['address'];
-                $ship_city = $company['city'];
-                $ship_state = $company['state'];
-                $ship_zip = $company['zip'];
-              } else { // company has a shipping address
-                $ship_addr = $company['shipping_address'];
-                $ship_city = $company['shipping_city'];
-                $ship_state = $company['shipping_state'];
-                $ship_zip = $company['shipping_zip'];
-              }
+              $ship_addr = $company['companyAddr'];
+              $ship_city = $company['companyCity'];
+              $ship_state = $company['companyState'];
+              $ship_zip = $company['companyZip'];
             } else { // batch has an address
               $ship_addr = $room['ship_addr'];
               $ship_city = $room['ship_city'];
@@ -906,13 +912,13 @@ $company = $company_qry->fetch_assoc();
   pricingVars.shipCost = <?php echo $ship_cost; ?>;
 
   <?php
-  $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $company['shipping_zip'];
+  $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $company['dealerZip'];
   $ship_zone_info = calcShipZone($shipZone);
   $shipInfo = json_encode($ship_zone_info, true);
 
   echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
   echo "var calcShipZip = '{$room['ship_zip']}';";
-  echo "var calcDealerShipZip = '{$company['shipping_zip']}';";
+  echo "var calcDealerShipZip = '{$company['dealerZip']}';";
   echo "var calcShipInfo = '$shipInfo';";
   ?>
 
