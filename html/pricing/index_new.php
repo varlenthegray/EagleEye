@@ -40,11 +40,11 @@ $company_qry = $dbconn->query("SELECT
        cc.city AS companyCity,
        cc.state AS companyState,
        cc.zip AS companyZip,
-       d.shipping_address AS dealerAddress,
-       d.shipping_city AS dealerCity,
-       d.shipping_state AS dealerState,
-       d.shipping_zip AS dealerZip,
-       d.multiplier
+       cc.shipping_address AS dealerAddress,
+       cc.shipping_city AS dealerCity,
+       cc.shipping_state AS dealerState,
+       cc.shipping_zip AS dealerZip,
+       cc.multiplier
 FROM sales_order so
   LEFT JOIN contact_company cc on so.company_id = cc.id
   LEFT JOIN dealers d ON cc.dealer_id = d.id
