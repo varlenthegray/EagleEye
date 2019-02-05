@@ -784,7 +784,7 @@ $("body")
 
     pricingFunction.recalcSummary();
   })
-  .on("mouseover", ".view_item_info, .info-popup", function(e) {
+  .on("mouseenter", ".view_item_info, .info-popup", function(e) {
     // FIXME: Change this so the data isn't loaded on hover, should be able to JSON this data into memory quite easily
     e.stopPropagation();
 
@@ -793,7 +793,7 @@ $("body")
     let position = thisEle.offset();
 
     $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: thisEle.data('id'), room_id: active_room_id}, function(data) {
-      if(data !== '') {
+      if(data !== "") {
         let result = JSON.parse(data);
 
         if(result['image_perspective'] !== '' && result['image_perspective'] !== null) {
@@ -817,23 +817,23 @@ $("body")
         infoPopup.find('.header').html('<h4>' + result['title'] + '</h4>');
         infoPopup.find('.description').html(result['description']);
       }
-    }).done(function() {
-      let infoHeight = infoPopup.height();
-      let infoTop = position.top - 85;
-      let windowOverflow = $(window).scrollTop() + $(window).height();
+    }).done(function(data) {
+      if(data !== "") {
+        let infoHeight = infoPopup.height();
+        let infoTop = position.top - 85;
+        let windowOverflow = $(window).scrollTop() + $(window).height();
 
-      if((infoHeight + infoTop + 100) > windowOverflow) {
-        infoPopup.css({"bottom": 0, "top": "inherit", "left": (position.left + 20)});
-      } else {
-        infoPopup.css({"top": infoTop, "bottom": "inherit", "left": position.left});
+        if ((infoHeight + infoTop + 100) > windowOverflow) {
+          infoPopup.css({"bottom": 0, "top": "inherit", "left": (position.left + 20)});
+        } else {
+          infoPopup.css({"top": infoTop, "bottom": "inherit", "left": position.left});
+        }
+        infoPopup.show();
       }
-
-      // infoPopup.fadeIn(250).html(info);
-      infoPopup.fadeIn(250);
     });
   })
   .on("mouseleave", ".view_item_info, .info-popup", function() {
-    $(".info-popup").fadeOut(250);
+    $(".info-popup").hide();
   })
   .on("click", ".add_item_mod", function() {
     $.post("/html/modals/item_list_add_modification.php", function(data) {
