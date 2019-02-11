@@ -1,5 +1,4 @@
-/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*/
-
+/*global globalFunctions*//*global math*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*/
 jQuery.expr.filters.offscreen = function(el) {
   var rect = el.getBoundingClientRect();
   return ((rect.x + rect.width) < 0 || (rect.y + rect.height) < 0 || (rect.x > window.innerWidth || rect.y > window.innerHeight));
@@ -9,7 +8,8 @@ var pricingVars = {
   nameOfUser: null,
   roomQry: null,
   vinInfo: null,
-  shipCost: null
+  shipCost: null,
+  outPut: null
 };
 
 var pricingFunction = {
@@ -486,6 +486,36 @@ var pricingFunction = {
       $("#crmBatch").find("input, select").prop("disabled", true);
       productionLock.show();
     }
+  },
+  fraction: function(value) {
+
+    if(value !== null) {
+      if(value.indexOf(".") >= 0) {
+        var broken = value.split(".");
+        var fraction;
+
+        if(broken[1] !== undefined) {
+          fraction = math.format(math.fraction("." + broken[1]), {fraction: 'ratio'});
+
+          return broken[0] + " " + fraction;
+        }
+        return value;
+      }
+      return value;
+    }
+    return value;
+  },
+  decimal: function (calcVar) {
+
+        let splitNum = calcVar.split(" ");
+        console.log(splitNum);
+        let fract = splitNum[1].split("/");
+        console.log(fract);
+        let decimal = fract[0] / fract[1];
+        console.log(decimal);
+        pricingVars.outPut =  (parseInt(splitNum[0]) + parseFloat(decimal));
+        console.log(pricingVars.outPut);
+
   }
 };
 
@@ -929,29 +959,35 @@ $("body")
 
     node.data.hinge = $(this).find(":selected").val();
   })
-  .on("keyup", ".itm_width", function() {
+  .on("change", ".itm_width", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    node.data.width = $(this).val();
+    $(this).val(pricingFunction.fraction($(this).val()));
+    node.data.width = pricingFunction.fraction($(this).val());
+
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
   })
-  .on("keyup", ".itm_height", function() {
+  .on("change", ".itm_height", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    node.data.height = $(this).val();
+    $(this).val(pricingFunction.fraction($(this).val()));
+
+    node.data.height = pricingFunction.fraction($(this).val());
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
   })
-  .on("keyup", ".itm_depth", function() {
+  .on("change", ".itm_depth", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    node.data.depth = $(this).val();
+    $(this).val(pricingFunction.fraction($(this).val()));
+
+    node.data.depth = pricingFunction.fraction($(this).val());
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
