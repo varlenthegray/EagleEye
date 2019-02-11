@@ -66,6 +66,10 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                 <col width="*">
               </colgroup>
               <tbody>
+              <tr>
+                <td><label>Nomenclature:</label></td>
+                <td><input type="text" class="c_input" name="sku" placeholder='<?php echo $info['sku']; ?> Name' value='<?php echo $info['sku']; ?>' /> </td>
+              </tr>
                 <tr>
                   <td><label><?php echo $title; ?> Name:</label></td>
                   <td><input type="text" class="c_input" name="name" placeholder='<?php echo $title; ?> Name' value='<?php echo $nameValue; ?>' /> </td>
@@ -103,7 +107,7 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
 
                       echo "<tr>
                     <td>
-                      <label>'{$cat['name']}' Description:</label>
+                      <label>'{$cat['name']}' Note:</label>
                       $checkbox
                     </td>
                     <td><div style='min-height:91px;'>$description</div></td>
@@ -114,14 +118,10 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                 ?>
 
                 <tr>
-                  <td><label>This Description:</label></td>
+                  <td><label>Current Item Notes:</label></td>
                   <td><textarea class="c_input" name="description" placeholder="Description" style="min-height:91px;"><?php echo $info['description']; ?></textarea></td>
                 </tr>
                 <?php if($type === 'item' || $type === 'addItem') { ?>
-                  <tr>
-                    <td><label>Nomenclature:</label></td>
-                    <td><input type="text" class="c_input" name="sku" placeholder='<?php echo $info['sku']; ?> Name' value='<?php echo $info['sku']; ?>' /> </td>
-                  </tr>
                   <tr>
                     <td colspan="2" style="padding:0;">
                       <table width="100%">
@@ -156,7 +156,7 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                           $dh_checked['pair'] = 'checked';
                           break;
                         case 'none':
-                          $dh_checked['none'] = 'checked';
+                          $dh_checked['None N/A'] = 'checked';
                           break;
                       }
                       ?>
@@ -167,7 +167,7 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                           <td><input class="c_input" id="default_hinge_left" value="left" name="default_hinge" type="radio" <?php echo $dh_checked['left']; ?>><label for="default_hinge_left">&nbsp; Left</label></td>
                           <td><input class="c_input" id="default_hinge_right" value="right" name="default_hinge" type="radio" <?php echo $dh_checked['right']; ?>><label for="default_hinge_right">&nbsp; Right</label></td>
                           <td><input class="c_input" id="default_hinge_pair" value="pair" name="default_hinge" type="radio" <?php echo $dh_checked['pair']; ?>><label for="default_hinge_pair">&nbsp; Pair</label></td>
-                          <td><input class="c_input" id="default_hinge_none" value="none" name="default_hinge" type="radio" <?php echo $dh_checked['none']; ?>><label for="default_hinge_none">&nbsp; None</label></td>
+                          <td><input class="c_input" id="default_hinge_none" value="none" name="default_hinge" type="radio" <?php echo $dh_checked['None N/A']; ?>><label for="default_hinge_none">&nbsp; None N/A</label></td>
                         </tr>
                       </table>
                     </td>
@@ -193,7 +193,7 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                           <td><input class="c_input" id="can_hinge_left" value="left" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['left']; ?>><label for="can_hinge_left">&nbsp; Left</label></td>
                           <td><input class="c_input" id="can_hinge_right" value="right" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['right']; ?>><label for="can_hinge_right">&nbsp; Right</label></td>
                           <td><input class="c_input" id="can_hinge_pair" value="pair" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['pair']; ?>><label for="can_hinge_pair">&nbsp; Pair</label></td>
-                          <td><input class="c_input" id="can_hinge_none" value="none" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['none']; ?>><label for="can_hinge_none">&nbsp; None</label></td>
+                          <td><input class="c_input" id="can_hinge_none" value="none" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['None N/A']; ?>><label for="can_hinge_none">&nbsp; None N/A</label></td>
                         </tr>
                       </table>
                     </td>
