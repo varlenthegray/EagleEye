@@ -487,16 +487,19 @@ var pricingFunction = {
       productionLock.show();
     }
   },
-  fraction: function(value) {
+  decimalToFraction: function(value) {
+    //using math.js taking the value of inputs (if decimal) and changing it to a fraction.
+    let stringValue = String(value);
 
-    if(value !== null) {
-      if(value.indexOf(".") >= 0) {
-        var broken = value.split(".");
+    if (stringValue !== null) {
+      if (stringValue.indexOf(".") >= 0) {
+        var broken = stringValue.split(".");
         var fraction;
 
-        if(broken[1] !== undefined) {
-          fraction = math.format(math.fraction("." + broken[1]), {fraction: 'ratio'});
-
+        if (broken[1] !== undefined) {
+          fraction = math.format(math.fraction("." + broken[1]), {
+            fraction: 'ratio'
+          });
           return broken[0] + " " + fraction;
         }
         return value;
@@ -505,17 +508,17 @@ var pricingFunction = {
     }
     return value;
   },
-  decimal: function (calcVar) {
-
-        let splitNum = calcVar.split(" ");
-        console.log(splitNum);
-        let fract = splitNum[1].split("/");
-        console.log(fract);
-        let decimal = fract[0] / fract[1];
-        console.log(decimal);
-        pricingVars.outPut =  (parseInt(splitNum[0]) + parseFloat(decimal));
-        console.log(pricingVars.outPut);
-
+  fractToDecimal: function(calcVar) {
+    //using the remainder operator to return a whole number.
+    if ((calcVar) % 1 !== 0) {
+      let splitNum = calcVar.split(" ");
+      let fract = splitNum[1].split("/");
+      let decimal = fract[0] / fract[1];
+      pricingVars.outPut = (parseInt(splitNum[0]) + parseFloat(decimal));
+      return pricingVars.outPut;
+    } else {
+      return calcVar;
+    }
   }
 };
 
@@ -962,10 +965,9 @@ $("body")
   .on("change", ".itm_width", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
-
-    $(this).val(pricingFunction.fraction($(this).val()));
-    node.data.width = pricingFunction.fraction($(this).val());
-
+    //takes the value and change it from decimal to fraction.
+    $(this).val(pricingFunction.decimalToFraction($(this).val()));
+    node.data.width = pricingFunction.fractToDecimal($(this).val());
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
@@ -974,9 +976,8 @@ $("body")
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    $(this).val(pricingFunction.fraction($(this).val()));
-
-    node.data.height = pricingFunction.fraction($(this).val());
+    $(this).val(pricingFunction.decimalToFraction($(this).val()));
+    node.data.height = pricingFunction.fractToDecimal($(this).val());
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
@@ -985,9 +986,8 @@ $("body")
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    $(this).val(pricingFunction.fraction($(this).val()));
-
-    node.data.depth = pricingFunction.fraction($(this).val());
+    $(this).val(pricingFunction.decimalToFraction($(this).val()));
+    node.data.depth = pricingFunction.fractToDecimal($(this).val());
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
