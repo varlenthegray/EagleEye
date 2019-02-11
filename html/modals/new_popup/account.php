@@ -1,5 +1,9 @@
 <?php
 require_once '../../../includes/header_start.php';
+require_once '../../../includes/classes/dropdown_options.php';
+
+use DropdownOpts\dropdown_options;
+$drop_opts = new dropdown_options();
 ?>
 
 <div class="col-md-12">
@@ -22,7 +26,7 @@ require_once '../../../includes/header_start.php';
       </tr>
       <tr>
         <td><label for="company_state">State:</label></td>
-        <td><select class="c_input" id="company_state" name="company_state"><?php echo getStateOpts('NC'); ?></select></td>
+        <td><select class="c_input" id="company_state" name="company_state"><?php echo $drop_opts->getStateOpts('NC'); ?></select></td>
       </tr>
       <tr>
         <td><label for="company_zip">Zip:</label></td>
@@ -111,7 +115,7 @@ require_once '../../../includes/header_start.php';
       </tr>
       <tr class="shipping_empty_hide">
         <td><label for="company_shipping_state">State:</label></td>
-        <td><select class="c_input" id="company_shipping_state" name="company_shipping_state"><?php echo getStateOpts('NC'); ?></select></td>
+        <td><select class="c_input" id="company_shipping_state" name="company_shipping_state"><?php echo $drop_opts->getStateOpts('NC'); ?></select></td>
       </tr>
       <tr class="shipping_empty_hide">
         <td><label for="company_shipping_zip">Zip:</label></td>
@@ -133,7 +137,7 @@ require_once '../../../includes/header_start.php';
       </tr>
       <tr class="billing_empty_hide">
         <td><label for="company_billing_state">State:</label></td>
-        <td><select class="c_input" id="company_billing_state" name="company_billing_state"><?php echo getStateOpts('NC'); ?></select></td>
+        <td><select class="c_input" id="company_billing_state" name="company_billing_state"><?php echo $drop_opts->getStateOpts('NC'); ?></select></td>
       </tr>
       <tr class="billing_empty_hide">
         <td><label for="company_billing_zip">Zip:</label></td>

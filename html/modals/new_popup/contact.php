@@ -1,5 +1,9 @@
 <?php
 require_once '../../../includes/header_start.php';
+require_once '../../../includes/classes/dropdown_options.php';
+
+use DropdownOpts\dropdown_options;
+$drop_opts = new dropdown_options();
 ?>
 
 <div class="col-md-12">
@@ -44,7 +48,7 @@ require_once '../../../includes/header_start.php';
       </tr>
       <tr>
         <td><label for="shipping_state">State:</label></td>
-        <td><select class="c_input" id="shipping_state" name="shipping_state"><?php echo getStateOpts('NC'); ?></select></td>
+        <td><select class="c_input" id="shipping_state" name="shipping_state"><?php echo $drop_opts->getStateOpts('NC'); ?></select></td>
       </tr>
       <tr>
         <td><label for="shipping_zip">Zip:</label></td>
@@ -66,7 +70,7 @@ require_once '../../../includes/header_start.php';
       </tr>
       <tr>
         <td><label for="billing_state">State:</label></td>
-        <td><select class="c_input" id="billing_state" name="billing_state"><?php echo getStateOpts('NC'); ?></select></td>
+        <td><select class="c_input" id="billing_state" name="billing_state"><?php echo $drop_opts->getStateOpts('NC'); ?></select></td>
       </tr>
       <tr>
         <td><label for="billing_zip">Zip:</label></td>

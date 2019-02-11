@@ -1,4 +1,4 @@
-/*global active_room_id:true*//*global active_so_num:true*/
+/*global active_room_id:true*//*global active_so_num:true*//*global unsaved:true*/
 
 var crmNav = {
   tree: $("#searchResultTree"),
@@ -93,7 +93,7 @@ var crmNav = {
         crmNav.navKeys = keys;
 
         setTimeout(function() {
-          $.post("/html/crm/templates/crm_view.php", {'keys': JSON.stringify(keys)}, function(data) { // pull the data for the main tab of the CRM
+          $.post("/html/crm/templates/crm_view.php", {'keys': JSON.stringify(keys), 'type': crmNav.activatedType}, function(data) { // pull the data for the main tab of the CRM
             crmMain.body.html(data); // insert it into the body
           });
         }, 50);
@@ -185,6 +185,12 @@ var crmNav = {
 
     $("#searchFilter").change(function() {
       crmNav.checkFilters();
+    });
+
+    $(".nav_add_new").click(function() {
+      $.post("/html/crm/modal/add_new.php", function(data) {
+        $("#modalGlobal").html(data).modal('show');
+      });
     });
   },
   showHideCheckbox: function(checkbox, element) {

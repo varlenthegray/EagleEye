@@ -1,12 +1,16 @@
 <?php
 require '../../../includes/header_start.php';
 require '../../../includes/classes/associations.php';
+require '../../../includes/classes/dropdown_options.php';
 
-$so_num = sanitizeInput($_REQUEST['so_num']);
+$so_id = sanitizeInput($_REQUEST['so_id']);
 
 $vin_schema = getVINSchema();
 
 use associations\associations;
+
+use DropdownOpts\dropdown_options;
+$drop_opts = new dropdown_options();
 
 $operations = []; // operation information
 
@@ -17,8 +21,10 @@ while($op = $op_qry->fetch_assoc()) {
   $operations[$op['id']] = $op;
 }
 
-$so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '$so_num'");
+$so_qry = $dbconn->query("SELECT * FROM sales_order WHERE id = '$so_id'");
 $so = $so_qry->fetch_assoc();
+
+$so_num = $so['so_num'];
 ?>
 
 <style>
@@ -57,7 +63,7 @@ $so = $so_qry->fetch_assoc();
           </tr>
           <tr>
             <td><label for="project_state">State:</label></td>
-            <td><select class="c_input" id="project_state" name="project_state"><?php echo getStateOpts($so['project_state']); ?></select></td>
+            <td><select class="c_input" id="project_state" name="project_state"><?php echo $drop_opts->getStateOpts($so['project_state']); ?></select></td>
           </tr>
           <tr>
             <td><label for="project_zip">Zip:</label></td>

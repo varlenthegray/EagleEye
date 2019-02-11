@@ -139,20 +139,33 @@ switch($_REQUEST['action']) {
 
     parse_str($_REQUEST['formInfo'], $info);
 
-    $contact_role = !empty($info['custom_association']) ? sanitizeInput($info['custom_contact_role']) : sanitizeInput($info['contact_role']);
+    $contact_role = !empty($info['custom_association']) ? sanitizeInput(ucwords($info['custom_contact_role'])) : sanitizeInput($info['contact_role']);
 
     if(!empty($con_id)) {
-      $so_contact_qry = $dbconn->query("SELECT * FROM contact_associations WHERE contact_id = $con_id AND associated_as = '$contact_role' AND type = '$type' AND type_id = $type_id");
+      if($type === 'organization') {
+        $assoc_qry = $dbconn->query("SELECT * FROM contact_to_contact ctc WHERE ctc.contact_from = $type_id AND ctc.contact_to = $con_id AND associated_as = '$contact_role'");
+      } elseif($type === 'project') {
+        $assoc_qry = $dbconn->query("SELECT * FROM contact_to_sales_order ctso WHERE sales_order_id = $type_id AND contact_id = $con_id AND associated_as = '$contact_role'");
+      }
 
-      if($so_contact_qry->num_rows === 0) {
-        if($dbconn->query("INSERT INTO contact_associations (type, type_id, contact_id, assigned_by, created_on, associated_as) VALUES ('$type', '$type_id', '$con_id', {$_SESSION['userInfo']['id']}, UNIX_TIMESTAMP(), '$contact_role')")) {
-          $contact_qry = $dbconn->query("SELECT c.*, a.associated_as FROM contact c LEFT JOIN contact_associations a on c.id = a.contact_id WHERE c.id = $con_id");
-          $contact = $contact_qry->fetch_assoc();
+      if($assoc_qry->num_rows === 0) {
+        $contact_qry = $dbconn->query("SELECT * FROM contact WHERE id = $con_id");
+        $contact = $contact_qry->fetch_assoc();
 
+        $contact['associated_as'] = $contact_role;
+
+        if($type === 'organization') {
+          $dbconn->query("INSERT INTO contact_to_contact (created_by, contact_from, contact_to, associated_as, created_on) 
+                        VALUES ({$_SESSION['userInfo']['id']}, $type_id, $con_id, '$contact_role', UNIX_TIMESTAMP())");
+        } elseif($type === 'project') {
+          $dbconn->query("INSERT INTO contact_to_sales_order (created_by, contact_id, sales_order_id, associated_as, created_on) 
+                        VALUES ({$_SESSION['userInfo']['id']}, $con_id, $type_id, '$contact_role', UNIX_TIMESTAMP())");
+        }
+
+        if(empty($dbconn->error)) {
           echo json_encode($contact);
         } else {
           http_response_code(400);
-
           dbLogSQLErr($dbconn);
         }
       } else {

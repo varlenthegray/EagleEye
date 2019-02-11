@@ -1,5 +1,8 @@
 <?php
 require '../../../includes/header_start.php';
+require '../../../includes/classes/dropdown_options.php';
+
+$drop_opts = new \DropdownOpts\dropdown_options();
 
 $so_num = sanitizeInput($_REQUEST['so_num']);
 
@@ -65,7 +68,7 @@ $so = $so_qry->fetch_assoc();
           </tr>
           <tr>
             <td><label for="project_state">Project State:</label></td>
-            <td><select class="c_input" id="project_state" name="project_state"><?php echo getStateOpts($so['project_state']); ?></select></td>
+            <td><select class="c_input" id="project_state" name="project_state"><?php echo $drop_opts->getStateOpts($so['project_state']); ?></select></td>
           </tr>
           <tr>
             <td><label for="project_zip">Project Zip:</label></td>
@@ -88,7 +91,7 @@ $so = $so_qry->fetch_assoc();
           </tr>
           <tr>
             <td><label for="secondary_state">Shipping State:</label></td>
-            <td><select class="c_input" id="secondary_state" name="secondary_state"><?php echo getStateOpts($so['secondary_state']); ?></select></td>
+            <td><select class="c_input" id="secondary_state" name="secondary_state"><?php echo $drop_opts->getStateOpts($so['secondary_state']); ?></select></td>
           </tr>
           <tr>
             <td><label for="secondary_zip">Shipping Zip:</label></td>

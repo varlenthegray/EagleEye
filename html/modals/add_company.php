@@ -16,8 +16,8 @@ require_once '../../includes/header_start.php';
               <td><label for="new_type">New:</label></td>
               <td>
                 <select class="c_input" id="new_type">
-                  <option>Account</option>
-                  <option>Contact</option>
+                  <option>Organization</option>
+                  <option>Individual</option>
                 </select>
               </td>
             </tr>
@@ -40,7 +40,7 @@ require_once '../../includes/header_start.php';
     let saveBtn = $(".new_save_button");
 
     switch(selected) {
-      case 'Account':
+      case 'Organization':
         saveBtn.attr("id", "add_new_company");
 
         $.get("/html/modals/new_popup/account.php", function(data) {
@@ -55,7 +55,7 @@ require_once '../../includes/header_start.php';
         });
 
         break;
-      case 'Contact':
+      case 'Individual':
         saveBtn.attr("id", "submit_new_contact");
 
         $.get("/html/modals/new_popup/contact.php", function(data) {

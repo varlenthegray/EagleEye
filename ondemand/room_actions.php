@@ -758,7 +758,7 @@ HEREDOC;
 
       $message = "A new quote has been submitted through EagleEye.";
 
-      $mail->sendMessage("orders@smcm.us", $_SESSION['userInfo']['email'], "New Quote Submission: {$so_num}{$room_letter}-{$iteration}", $message, true);
+      $mail->sendMessage("orders@smcm.us", $_SESSION['userInfo']['email'], "New Quote Submission: {$so_num}{$room_letter}-{$iteration}", $message, false);
 
       echo displayToast("success", "Submitted quote for review.", "Quote Submitted");
     } else {

@@ -230,3 +230,15 @@
   }
   //</editor-fold>
 }
+
+//<editor-fold desc="Used inside of 'Add New' and 'Organization' when searching">
+.table-indented {
+  width: calc(100% - 15px);
+  margin: 8px 0 0 15px;
+}
+
+.cust_ship_different, .vend_payment_contact, .add_new_individual, .vend_receive_different, .emp_emergency_contact, .emp_personal_different, .employee_info_checkbox,
+.generate_pin_pw_field {
+  display: none;
+}
+//</editor-fold>

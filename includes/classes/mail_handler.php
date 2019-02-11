@@ -14,7 +14,7 @@ require SITE_ROOT . '/vendor/autoload.php';
 
 
 class mail_handler {
-  public function sendMessage($to, $from, $subject, $message, $null) {
+  public function sendMessage($to, $from, $subject, $message, $sendText) {
     $mail = new PHPMailer(true);
 
     global $dbconn;
@@ -81,20 +81,22 @@ HEADER;
 BODY;
 
     // TODO: Fix this so it's based on user ID of the person sent, some people have phones but no email
-    $sms_qry = $dbconn->query("SELECT * FROM user WHERE email = '$to'");
-    $sms = $sms_qry->fetch_assoc();
+    if($sendText) {
+      $sms_qry = $dbconn->query("SELECT * FROM user WHERE email = '$to'");
+      $sms = $sms_qry->fetch_assoc();
 
-    $origin_qry = $dbconn->query("SELECT * FROM user WHERE email = '$from'");
-    $origin = $origin_qry->fetch_assoc();
+      $origin_qry = $dbconn->query("SELECT * FROM user WHERE email = '$from'");
+      $origin = $origin_qry->fetch_assoc();
 
-    $smsMsg = strip_tags($message);
-    $smsSubject = strip_tags($subject);
+      $smsMsg = strip_tags($message);
+      $smsSubject = strip_tags($subject);
 
-    sendText($sms['phone'], "$smsSubject
+      sendText($sms['phone'], "$smsSubject
     
     $smsMsg 
      
 Reply To {$origin['phone']}");
+    }
 
     try {
       //Server settings
@@ -122,8 +124,5 @@ Reply To {$origin['phone']}");
     } catch (Exception $e) {
       return 'Message could not be sent. Mailer Error: ' . $mail->ErrorInfo;
     }
-
-
-//    return mail($to, $subject, $message_out, $headers);
   }
 }

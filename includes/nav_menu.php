@@ -1,8 +1,8 @@
 <ul class="navigation-menu">
     <?php
-    $nav_out = '';
+    $nav_out = '<li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>';
 
-    if($bouncer->validate('search')) {
+    /*if($bouncer->validate('search')) {
         $nav_out .= <<<HEREDOC
 <div role="search" class="navbar-left app-search pull-left hidden-xs" _lpchecked="1">
     <input type="text" placeholder="Search..." class="form-control ignoreSaveAlert" id="global_search" name="global_search_2" autocomplete="off"><a id="global_search_button"><i class="fa fa-search"></i></a>
@@ -25,9 +25,10 @@ HEREDOC;
     $nav_out .= <<<HEREDOC
             </ul>
         </li>
-HEREDOC;
+HEREDOC;*/
 
-    $nav_out .= "<li class='nav-separator'></li><li id='nav_dashboard'><a href='/main.php'><i class='zmdi zmdi-view-dashboard m-r-5'></i><span>Dashboard</span></a></li>";
+    // <li class='nav-separator'></li> (AT START OF NEXT STRING)
+    $nav_out .= "<li class='navbar-left' id='nav_dashboard'><a href='/main.php'><i class='zmdi zmdi-view-dashboard m-r-5'></i><span>Dashboard</span></a></li>";
 
     if($bouncer->validate('clock_out')) {
         $nav_out .= <<<HEREDOC
