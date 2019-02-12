@@ -48,6 +48,17 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
   .add_item_table td {
     padding: 1px 4px;
   }
+
+  .copyPaste {
+    border: solid 1px #aaa;
+    min-height: 150px;
+    width: 200%;
+    margin-top: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 300ms all;
+    position: relative;
+  }
 </style>
 
 <div class="modal-dialog" role="document">
@@ -234,6 +245,11 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                     <td><label>Side/Front Image:</label></td>
                     <td><input type="file" id="side_image" class="c_input" style="border:none;" name="side_image" /></td>
                   </tr>
+                  <tr class="displayImage displayNewImageUpload">
+                    <td>
+                      <div class="span4 copyPaste" type="file" name="image" ></div>
+                    </td>
+                  </tr>
                   <tr style="height:5px;">
                     <td colspan="2"><input type="hidden" id="image_description_id" name="image_description_id" value="<?php echo $info['description_id']; ?>" /></td>
                   </tr>
@@ -334,4 +350,5 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
   $(function() {
     $("#catalogAddEditItem input[name='image_type']:checked").trigger("change"); // show/hide based on what's currently selected
   });
+  pricingFunction.pasteImage();
 </script>

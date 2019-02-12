@@ -19,11 +19,6 @@ function uploadImage($image, $image_name) {
 
     $img_check = getimagesize($image['tmp_name']);
 
-    if($img_check === false) {
-      http_response_code(400);
-
-      echo displayToast('error', 'File attachment is not an image.', 'File Not Image');
-    } else { // it is an image
       // must be less than 1MB
       if ($image['size'] > 1000000) {
         $upload = false;
@@ -32,7 +27,7 @@ function uploadImage($image, $image_name) {
         echo displayToast('error', 'Image is too large, must be less than 1MB.', 'Image Too Large');
       }
 
-      if($file_type !== 'jpg' && $file_type !== 'png' && $file_type !== 'jpeg' && $file_type !== 'gif') {
+      if(($_FILES["image"]["type"] === "image/png") || ($_FILES["image"]["type"] === "image/jpg") || ($_FILES["image"]["type"] === "image/jpeg")) {
         $upload = false;
         http_response_code(400);
 
@@ -40,15 +35,17 @@ function uploadImage($image, $image_name) {
       }
 
       if($upload) {
-        if (!move_uploaded_file($image['tmp_name'], "../images/uploaded/{$image_name}.{$file_type}")) {
+        $upload_result = move_uploaded_file($image['tmp_name'], "../images/uploaded/test.png");
+
+        if ($upload_result !== 0) {
           echo displayToast('error', 'Unable to upload file. Contact IT.', 'File Not Uploaded');
+          echo "<script>console.log('ERROR: $upload_result');</script>";
           return null;
         }
 
         return "uploaded/{$image_name}.{$file_type}";
       }
     }
-  }
 }
 
 switch($_REQUEST['action']) {
@@ -229,6 +226,7 @@ switch($_REQUEST['action']) {
         $perspective_image = uploadImage($_FILES['perspective_image'], "{$sku}_perspective");
         $plan_image = uploadImage($_FILES['plan_image'], "{$sku}_plan");
         $side_image = uploadImage($_FILES['side_image'], "{$sku}_side");
+        $wtfever = uploadImage($_FILES['image'], $_FILES['image']['name']);
 
         break;
       case 'library':
