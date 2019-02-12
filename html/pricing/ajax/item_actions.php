@@ -12,40 +12,35 @@ function uploadImage($image, $image_name) {
   if($image['error'] !== 4) {
     $upload = true; // by default, we should upload
 
-    $file_name = basename($image['name']);
+    // must be less than 1.5MB
+    if ($image['size'] > 1500000) {
+      $upload = false;
+      http_response_code(400);
 
-    $target_file = "../images/uploaded/$file_name";
-    $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-    $img_check = getimagesize($image['tmp_name']);
-
-      // must be less than 1MB
-      if ($image['size'] > 1000000) {
-        $upload = false;
-        http_response_code(400);
-
-        echo displayToast('error', 'Image is too large, must be less than 1MB.', 'Image Too Large');
-      }
-
-      if(($_FILES["image"]["type"] === "image/png") || ($_FILES["image"]["type"] === "image/jpg") || ($_FILES["image"]["type"] === "image/jpeg")) {
-        $upload = false;
-        http_response_code(400);
-
-        echo displayToast('error', 'Image must be JPG, PNG, JPEG or GIF.', 'Image Extension Mismatch');
-      }
-
-      if($upload) {
-        $upload_result = move_uploaded_file($image['tmp_name'], "../images/uploaded/test.png");
-
-        if ($upload_result !== 0) {
-          echo displayToast('error', 'Unable to upload file. Contact IT.', 'File Not Uploaded');
-          echo "<script>console.log('ERROR: $upload_result');</script>";
-          return null;
-        }
-
-        return "uploaded/{$image_name}.{$file_type}";
-      }
+      echo displayToast('error', 'Image is too large, must be less than 1.5MB.', 'Image Too Large');
     }
+
+    $file_type_upload = array('image/gif', 'image/png', 'image/jpg', 'image/jpeg');
+
+    if(!in_array($_FILES['image']['type'], $file_type_upload, true)) {
+      $upload = false;
+      http_response_code(400);
+
+      echo displayToast('error', 'Image must be JPG, PNG, JPEG or GIF.', 'Image Extension Mismatch');
+    }
+
+    if($upload) {
+      $upload_result = move_uploaded_file($image['tmp_name'], "../images/uploaded/{$image_name}");
+
+      if ((int)$upload_result !== 0 && (int)$upload_result !== 1) {
+        echo displayToast('error', 'Unable to upload file. Contact IT.', 'File Not Uploaded');
+        echo "<script>console.log('ERROR: $upload_result');</script>";
+        return null;
+      }
+
+      return "uploaded/{$image_name}";
+    }
+  }
 }
 
 switch($_REQUEST['action']) {

@@ -13,7 +13,8 @@ var pricingVars = {
   nameOfUser: null,
   roomQry: null,
   vinInfo: null,
-  shipCost: null
+  shipCost: null,
+  pasteBlob: null
 };
 
 var pricingFunction = {
@@ -494,43 +495,51 @@ var pricingFunction = {
   pasteImage: function () {
     (function($) {
       var defaults;
+
       $.event.fix = (function(originalFix) {
         return function(event) {
           event = originalFix.apply(this, arguments);
+
           if (event.type.indexOf("copy") === 0 || event.type.indexOf("paste") === 0) {
             event.clipboardData = event.originalEvent.clipboardData;
           }
+
           return event;
         };
       })($.event.fix);
+
       defaults = {
         callback: $.noop,
         matchType: /image.*/
       };
+
       return ($.fn.pasteImageReader = function(options) {
         if (typeof options === "function") {
           options = {
             callback: options
           };
         }
+
         options = $.extend({}, defaults, options);
+
         return this.each(function() {
           var $this, element;
           element = this;
           $this = $(this);
+
           return $this.bind("paste", function(event) {
             var clipboardData, found;
             found = false;
             clipboardData = event.clipboardData;
+
             return Array.prototype.forEach.call(clipboardData.types, function(type, i) {
               var file, reader;
+
               if (found) {
                 return;
               }
-              if (
-                type.match(options.matchType) ||
-                clipboardData.items[i].type.match(options.matchType)
-              ) {
+
+              if (type.match(options.matchType) || clipboardData.items[i].type.match(options.matchType)) {
                 file = clipboardData.items[i].getAsFile();
                 reader = new FileReader();
                 reader.onload = function(evt) {
@@ -541,6 +550,7 @@ var pricingFunction = {
                     name: file.name
                   });
                 };
+
                 reader.readAsDataURL(file);
                 return (found = true);
               }
@@ -561,6 +571,7 @@ var pricingFunction = {
         var slice = byteCharacters.slice(offset, offset + sliceSize);
 
         var byteNumbers = new Array(slice.length);
+
         for (var i = 0; i < slice.length; i++) {
           byteNumbers[i] = slice.charCodeAt(i);
         }
@@ -596,10 +607,15 @@ var pricingFunction = {
       var h = img.height;
       $width.val(w);
       $height.val(h);
+
       formDataToUpload = new FormData();
       formDataToUpload.append("image", blob, "image.png");
+
+      pricingVars.pasteBlob = blob;
+
       console.log(img);
       console.log(blob);
+
       return $(".activeImage")
         .css({
           backgroundImage: "url(" + dataURL + ")"
@@ -616,9 +632,11 @@ var pricingFunction = {
       $type = $(".type");
       $width = $("#width");
       $height = $("#height");
+
       $("body").on("click",".copyPaste", function() {
         var $this = $(this);
         var bi = $this.css("background-image");
+
         if (bi !== "none") {
           $data.text(bi.substr(4, bi.length - 6));
         }
@@ -630,6 +648,7 @@ var pricingFunction = {
 
         $width.val($this.data("width"));
         $height.val($this.data("height"));
+
         if ($this.hasClass("contain")) {
           $this.css({
             width: $this.data("width"),
@@ -1316,8 +1335,8 @@ $("body")
     fieldData.append("key", node.key);
     // noinspection JSCheckFunctionSignatures
     fieldData.append("folder", node.folder);
-    fieldData.append("image", formDataToUpload);
-
+    // fieldData.append("image", formDataToUpload);
+    fieldData.append("image", pricingVars.pasteBlob, "image.png");
     $.ajax({
       url: "/html/pricing/ajax/item_actions.php?action=updateItem",
       data: fieldData,
