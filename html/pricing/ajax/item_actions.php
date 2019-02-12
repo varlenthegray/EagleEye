@@ -9,8 +9,11 @@ use catalog\catalog as Catalog;
 $cat = new Catalog;
 
 function uploadImage($image, $image_name) {
-  if($image['error'] !== 4) {
+  if((int)$image['error'] !== 4) {
     $upload = true; // by default, we should upload
+    $file_name = basename($image['name']);
+    $target_file = "../images/uploaded/$file_name";
+    $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
     // must be less than 1.5MB
     if ($image['size'] > 1500000) {
@@ -22,7 +25,7 @@ function uploadImage($image, $image_name) {
 
     $file_type_upload = array('image/gif', 'image/png', 'image/jpg', 'image/jpeg');
 
-    if(!in_array($_FILES['image']['type'], $file_type_upload, true)) {
+    if(!in_array($image['type'], $file_type_upload, true)) {
       $upload = false;
       http_response_code(400);
 
@@ -30,7 +33,7 @@ function uploadImage($image, $image_name) {
     }
 
     if($upload) {
-      $upload_result = move_uploaded_file($image['tmp_name'], "../images/uploaded/{$image_name}");
+      $upload_result = move_uploaded_file($image['tmp_name'], "../images/uploaded/{$image_name}.{$file_type}");
 
       if ((int)$upload_result !== 0 && (int)$upload_result !== 1) {
         echo displayToast('error', 'Unable to upload file. Contact IT.', 'File Not Uploaded');
@@ -38,7 +41,7 @@ function uploadImage($image, $image_name) {
         return null;
       }
 
-      return "uploaded/{$image_name}";
+      return "uploaded/{$image_name}.{$file_type}";
     }
   }
 }
@@ -51,7 +54,9 @@ switch($_REQUEST['action']) {
     $item_qry = $dbconn->query("SELECT 
       pn.sku, pn.category_id, pn.width, pn.height, pn.depth, pn.id, catalog.name AS catalog, detail.image_path AS image, 
       detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.fixed_price, pn.kit_id, pn.desc_available,
-       detail.image_perspective, detail.image_plan, detail.image_side
+       IF(detail.image_perspective != '', CONCAT(detail.image_perspective, '?', UUID_SHORT()), '') AS image_perspective,
+       IF(detail.image_plan != '', CONCAT(detail.image_plan, '?', UUID_SHORT()), '') AS image_plan,
+       IF(detail.image_side != '', CONCAT(detail.image_side, '?', UUID_SHORT()), '') AS image_side 
     FROM pricing_nomenclature pn
       LEFT JOIN pricing_catalog catalog on pn.catalog_id = catalog.id
       LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -218,10 +223,9 @@ switch($_REQUEST['action']) {
 
     switch($image_type) {
       case 'new':
-        $perspective_image = uploadImage($_FILES['perspective_image'], "{$sku}_perspective");
-        $plan_image = uploadImage($_FILES['plan_image'], "{$sku}_plan");
-        $side_image = uploadImage($_FILES['side_image'], "{$sku}_side");
-        $wtfever = uploadImage($_FILES['image'], $_FILES['image']['name']);
+        $perspective_image = !empty($_FILES['perspective_image']) ? uploadImage($_FILES['perspective_image'], "{$sku}_perspective") : $nom['image_perspective'];
+        $plan_image = !empty($_FILES['plan_image']) ? uploadImage($_FILES['plan_image'], "{$sku}_plan") : $nom['image_plan'];
+        $side_image = !empty($_FILES['side_image']) ? uploadImage($_FILES['side_image'], "{$sku}_side") : $nom['image_side'];
 
         break;
       case 'library':

@@ -1,6 +1,5 @@
-/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*/
+/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*//*global FileReader*//*global atob*//*global Blob*//*global URL*/
 
-var formDataToUpload;
 var contentType = 'image/png';
 var b64Data = '';
 
@@ -14,7 +13,7 @@ var pricingVars = {
   roomQry: null,
   vinInfo: null,
   shipCost: null,
-  pasteBlob: null
+  pasteBlob: []
 };
 
 var pricingFunction = {
@@ -493,6 +492,43 @@ var pricingFunction = {
     }
   },
   pasteImage: function () {
+    let pasteInto, $data, $width, $height, dataURL, $size, $type;
+    pricingVars.pasteBlob = [];
+
+    $("body").on("click",".copyPaste", function() {
+      var $this = $(this);
+      var bi = $this.css("background-image");
+      pasteInto = $this.attr("name");
+
+      // @bi = background image, grab the css of it
+      if(bi !== "none") {
+        $data.text(bi.substr(4, bi.length - 6));
+      }
+
+      $(".activeImage").removeClass("activeImage");
+
+      $this.addClass("activeImage");
+      $this.toggleClass("contain");
+
+      $width.val($this.data("width"));
+      $height.val($this.data("height"));
+
+      if ($this.hasClass("contain")) {
+        $this.css({
+          width: $this.data("width"),
+          height: $this.data("height"),
+          "z-index": "10"
+        });
+      } else {
+        $this.css({
+          width: "",
+          height: "",
+          "z-index": ""
+        });
+      }
+    });
+
+    // ref: https://codepen.io/netsi1964/pen/IoJbg
     (function($) {
       var defaults;
 
@@ -542,6 +578,7 @@ var pricingFunction = {
               if (type.match(options.matchType) || clipboardData.items[i].type.match(options.matchType)) {
                 file = clipboardData.items[i].getAsFile();
                 reader = new FileReader();
+
                 reader.onload = function(evt) {
                   return options.callback.call(element, {
                     dataURL: evt.target.result,
@@ -585,36 +622,27 @@ var pricingFunction = {
       return blob;
     }
 
-    var dataURL, filename;
-    var $data, $size, $type, $width, $height;
-
-
     $("html").pasteImageReader(function(results) {
-      filename = results.filename, dataURL = results.dataURL;
+      dataURL = results.dataURL;
 
       let t1 = dataURL.split(",");
-      b64Data = t1[1];
+      let b64Data = t1[1];
 
       var blob = b64toBlob(b64Data, contentType);
       var blobUrl = URL.createObjectURL(blob);
 
+      var img = document.createElement("img");
+      var w = img.width;
+      var h = img.height;
+
       $data.text(dataURL);
       $size.val(results.file.size);
       $type.val(results.file.type);
-      var img = document.createElement("img");
       img.src = blobUrl;
-      var w = img.width;
-      var h = img.height;
       $width.val(w);
       $height.val(h);
 
-      formDataToUpload = new FormData();
-      formDataToUpload.append("image", blob, "image.png");
-
-      pricingVars.pasteBlob = blob;
-
-      console.log(img);
-      console.log(blob);
+      pricingVars.pasteBlob[pasteInto] = blob;
 
       return $(".activeImage")
         .css({
@@ -626,44 +654,12 @@ var pricingFunction = {
         });
     });
 
-    $(function() {
-      $data = $(".data");
-      $size = $(".size");
-      $type = $(".type");
-      $width = $("#width");
-      $height = $("#height");
-
-      $("body").on("click",".copyPaste", function() {
-        var $this = $(this);
-        var bi = $this.css("background-image");
-
-        if (bi !== "none") {
-          $data.text(bi.substr(4, bi.length - 6));
-        }
-
-        $(".activeImage").removeClass("activeImage");
-        $this.addClass("activeImage");
-
-        $this.toggleClass("contain");
-
-        $width.val($this.data("width"));
-        $height.val($this.data("height"));
-
-        if ($this.hasClass("contain")) {
-          $this.css({
-            width: $this.data("width"),
-            height: $this.data("height"),
-            "z-index": "10"
-          });
-        } else {
-          $this.css({
-            width: "",
-            height: "",
-            "z-index": ""
-          });
-        }
-      });
-    });
+    // defined for use on paste (function at the top)
+    $data = $(".data");
+    $size = $(".size");
+    $type = $(".type");
+    $width = $("#width");
+    $height = $("#height");
   }
 };
 
@@ -1335,8 +1331,19 @@ $("body")
     fieldData.append("key", node.key);
     // noinspection JSCheckFunctionSignatures
     fieldData.append("folder", node.folder);
-    // fieldData.append("image", formDataToUpload);
-    fieldData.append("image", pricingVars.pasteBlob, "image.png");
+
+    if(pricingVars.pasteBlob['perspective_image'] !== undefined) {
+      fieldData.append("perspective_image", pricingVars.pasteBlob['perspective_image'], '1.png'); // filename is only used to determine the type of file in PHP
+    }
+
+    if(pricingVars.pasteBlob['plan_image'] !== undefined) {
+      fieldData.append("plan_image", pricingVars.pasteBlob['plan_image'], '2.png'); // filename is only used to determine the type of file in PHP
+    }
+
+    if(pricingVars.pasteBlob['side_image'] !== undefined) {
+      fieldData.append("side_image", pricingVars.pasteBlob['side_image'], '3.png'); // filename is only used to determine the type of file in PHP
+    }
+
     $.ajax({
       url: "/html/pricing/ajax/item_actions.php?action=updateItem",
       data: fieldData,

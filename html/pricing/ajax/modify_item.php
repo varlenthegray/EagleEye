@@ -18,7 +18,9 @@ if(!empty($id)) {
       $price_groups[$pg['price_group_id']] = $pg['price'];
     }
 
-    $info_qry = $dbconn->query("SELECT pn.*, pnd.description, pnd.image_path, pnd.image_perspective, pnd.image_side, pnd.image_plan, pnd.title FROM pricing_nomenclature pn LEFT JOIN pricing_nomenclature_details pnd on pn.description_id = pnd.id WHERE pn.id = $id");
+    $info_qry = $dbconn->query("SELECT pn.*, pnd.description, pnd.image_path, CONCAT(pnd.image_perspective, '?', UUID_SHORT()) AS image_perspective, 
+       CONCAT(pnd.image_side, '?', UUID_SHORT()) AS image_side, CONCAT(pnd.image_plan, '?', UUID_SHORT()) AS image_plan, pnd.title 
+    FROM pricing_nomenclature pn LEFT JOIN pricing_nomenclature_details pnd on pn.description_id = pnd.id WHERE pn.id = $id");
   }
 }
 
@@ -51,13 +53,20 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
 
   .copyPaste {
     border: solid 1px #aaa;
-    min-height: 150px;
-    width: 200%;
+    width: 100px;
+    height: 100px;
     margin-top: 1em;
     border-radius: 5px;
     cursor: pointer;
     transition: 300ms all;
     position: relative;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 95%;
+  }
+
+  .activeImage {
+    box-shadow: 0 0 20px #0a6aa1;
   }
 </style>
 
@@ -221,34 +230,45 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                   </tr>
 
                   <tr class="displayImage displayCurrentImage">
-                    <td><label>Perspective Image:</label></td>
+                    <td><label>Image 1:</label></td>
                     <td><img style="max-width:100px;max-height:100px;" src="/html/pricing/images/<?php echo $info['image_perspective'] ?>" /></td>
                   </tr>
                   <tr class="displayImage displayCurrentImage">
-                    <td><label>Plan Image:</label></td>
+                    <td><label>Image 2:</label></td>
                     <td><?php echo !empty($info['image_plan']) ? "<img style='max-width:100px;max-height:100px;' src='/html/pricing/images/{$info['image_plan']}' />" : 'None'; ?></td>
                   </tr>
                   <tr class="displayImage displayCurrentImage">
-                    <td><label>Side/Front Image:</label></td>
+                    <td><label>Image 3:</label></td>
                     <td><?php echo !empty($info['image_side']) ? "<img style='max-width:100px;max-height:100px;' src='/html/pricing/images/{$info['image_side']}' />" : 'None'; ?></td>
                   </tr>
 
-                  <tr class="displayImage displayNewImageUpload">
+                  <!--<tr class="displayImage displayNewImageUpload">
                     <td><label>Perspective Image:</label></td>
-                    <td><input type="file" id="perspective_image" class="c_input" style="border:none;" name="perspective_image" /></td>
+                    <td><input type="file" id="perspective_image" class="c_input" style="border:none;" name="perspective_image1" /></td>
                   </tr>
                   <tr class="displayImage displayNewImageUpload">
                     <td><label>Plan Image:</label></td>
-                    <td><input type="file" id="plan_image" class="c_input" style="border:none;" name="plan_image" /></td>
+                    <td><input type="file" id="plan_image" class="c_input" style="border:none;" name="plan_image1" /></td>
                   </tr>
                   <tr class="displayImage displayNewImageUpload">
                     <td><label>Side/Front Image:</label></td>
-                    <td><input type="file" id="side_image" class="c_input" style="border:none;" name="side_image" /></td>
+                    <td><input type="file" id="side_image" class="c_input" style="border:none;" name="side_image1" /></td>
+                  </tr>-->
+                  <tr class="displayImage displayNewImageUpload">
+                    <td>&nbsp;</td>
+                    <td>Click an image box, then CTRL/CMD-V to paste an image.</td>
                   </tr>
                   <tr class="displayImage displayNewImageUpload">
-                    <td>
-                      <div class="span4 copyPaste" type="file" name="image" ></div>
-                    </td>
+                    <td><label>Image 1:</label></td>
+                    <td><div class="span4 copyPaste" type="file" name="perspective_image" ></div></td>
+                  </tr>
+                  <tr class="displayImage displayNewImageUpload">
+                    <td><label>Image 2:</label></td>
+                    <td><div class="span4 copyPaste" type="file" name="plan_image" ></div></td>
+                  </tr>
+                  <tr class="displayImage displayNewImageUpload">
+                    <td><label>Image 3:</label></td>
+                    <td><div class="span4 copyPaste" type="file" name="side_image" ></div></td>
                   </tr>
                   <tr style="height:5px;">
                     <td colspan="2"><input type="hidden" id="image_description_id" name="image_description_id" value="<?php echo $info['description_id']; ?>" /></td>
@@ -350,5 +370,6 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
   $(function() {
     $("#catalogAddEditItem input[name='image_type']:checked").trigger("change"); // show/hide based on what's currently selected
   });
+
   pricingFunction.pasteImage();
 </script>
