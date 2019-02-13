@@ -351,38 +351,53 @@ switch($_REQUEST['action']) {
     }
     
     // initial variable definitions set to true (in case they don't run)
-    $ins_contact = true; $ins_customer = true; $ins_vendor = true; $ins_emp = true;
+    $update_contact = true; $ins_customer = true; $ins_vendor = true; $ins_emp = true;
 
-    $contact_stmt = $dbconn->prepare('UPDATE contact SET company_name = ?, first_name = ?, last_name = ?, title = ?, address = ?, city = ?, state = ?, zip = ?, country = ?, email = ?, 
-                   primary_phone = ?, secondary_phone = ?, other_phone = ?, fax = ? WHERE id = ?');
+    $contact_stmt = $dbconn->prepare('UPDATE contact SET company_name = ?, first_name = ?, last_name = ?, title = ?, address = ?, city = ?, state = ?, zip = ?, 
+                   country = ?, email = ?, primary_phone = ?, secondary_phone = ?, other_phone = ?, fax = ? WHERE id = ?');
 
     $contact_stmt->bind_param('ssssssssssssssi', $info['org_name'], $info['first_name'], $info['last_name'], $info['title'], $info['address'], 
       $info['city'], $info['state'], $info['zip'], $info['country'], $info['email'], $info['primary_phone'], $info['secondary_phone'], $info['other_phone'], 
       $info['fax'], $info['contactID']);
 
-    $contact_stmt->execute();
+    $update_contact = $contact_stmt->execute();
 
-    if($ins_contact) {
+    if($update_contact) {
       // now it's time to figure out if we need to enter customer information in
       if(!empty($info['add_customer_checked'])) {
         $established_date = strtotime($info['cust_established_date']);
 
-        // TODO: Figure out why customer established date is not saving
-        // TODO: Notes... saving notes...?
+        $cust_exist_qry = $dbconn->query("SELECT * FROM contact_customer WHERE contact_id = {$info['contactID']};");
 
-        $cust_stmt = $dbconn->prepare('UPDATE contact_customer SET established_date = ?, status = ?, `group` = ?, max_commission = ?, salesman_commission_id = ?, 
+        if($cust_exist_qry->num_rows > 0) {
+          $cust_stmt = $dbconn->prepare('UPDATE contact_customer SET established_date = ?, status = ?, `group` = ?, max_commission = ?, salesman_commission_id = ?, 
                             salesman_commission_percent = ?, referral_commission_id = ?, referral_commission_percent = ?, sales_group_commission_id = ?, 
                             sales_group_commission_percent = ?, other_commission_id = ?, other_commission_percent = ?, ship_method = ?, ship_bill_to = ?, ship_account = ?, 
                             residential_delivery = ?, ship_address = ?, ship_city = ?, ship_state = ?, ship_zip = ?, ship_country = ?, billing_type = ?, multiplier = ?, 
                             payment_method = ?, payment_terms = ?, federal_id = ?, federal_exempt_reason = ? WHERE contact_id = ?');
 
-        $cust_stmt->bind_param('iiiiiiiiiiiiiisisssssiiiissi', $established_date, $info['cust_status'], $info['cust_group'], $info['cust_max_commission'],
-          $info['cust_salesman_commission_user'], $info['cust_salesman_commission'], $info['cust_referral_commission_user'], $info['cust_referral_commission'],
-          $info['cust_sales_group_commission_user'], $info['cust_sales_group_commission'], $info['cust_other_commission_user'], $info['cust_other_commission'],
-          $info['cust_ship_method'], $info['cust_ship_billto'], $info['cust_ship_account_num'], $info['cust_residential_delivery'],
-          $info['cust_ship_address'], $info['cust_ship_city'], $info['cust_ship_state'], $info['cust_ship_zip'],
-          $info['cust_ship_country'], $info['cust_billing_type'], $info['cust_multiplier'], $info['cust_payment_method'],
-          $info['cust_payment_terms'], $info['cust_fed_id'], $info['cust_fed_exempt_reason'], $info['contactID']);
+          $cust_stmt->bind_param('iiiiiiiiiiiiiisisssssiiiissi', $established_date, $info['cust_status'], $info['cust_group'], $info['cust_max_commission'],
+            $info['cust_salesman_commission_user'], $info['cust_salesman_commission'], $info['cust_referral_commission_user'], $info['cust_referral_commission'],
+            $info['cust_sales_group_commission_user'], $info['cust_sales_group_commission'], $info['cust_other_commission_user'], $info['cust_other_commission'],
+            $info['cust_ship_method'], $info['cust_ship_billto'], $info['cust_ship_account_num'], $info['cust_residential_delivery'],
+            $info['cust_ship_address'], $info['cust_ship_city'], $info['cust_ship_state'], $info['cust_ship_zip'],
+            $info['cust_ship_country'], $info['cust_billing_type'], $info['cust_multiplier'], $info['cust_payment_method'],
+            $info['cust_payment_terms'], $info['cust_fed_id'], $info['cust_fed_exempt_reason'], $info['contactID']);
+        } else {
+          $cust_stmt = $dbconn->prepare("INSERT INTO contact_customer (contact_id, created_by, established_date, status, `group`, max_commission, salesman_commission_id, 
+                              salesman_commission_percent, referral_commission_id, referral_commission_percent, sales_group_commission_id, sales_group_commission_percent, 
+                              other_commission_id, other_commission_percent, ship_method, ship_bill_to, ship_account, residential_delivery, ship_address, ship_city, 
+                              ship_state, ship_zip, ship_country, billing_type, multiplier, payment_method, payment_terms, federal_id, federal_exempt_reason, created) 
+                              VALUES ({$info['contactID']}, {$_SESSION['userInfo']['id']}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP())");
+
+          $cust_stmt->bind_param('iiiiiiiiiiiiiisisssssiiiisi', $established_date, $info['cust_status'], $info['cust_group'], $info['cust_max_commission'],
+            $info['cust_salesman_commission_user'], $info['cust_salesman_commission'], $info['cust_referral_commission_user'], $info['cust_referral_commission'],
+            $info['cust_sales_group_commission_user'], $info['cust_sales_group_commission'], $info['cust_other_commission_user'], $info['cust_other_commission'],
+            $info['cust_ship_method'], $info['cust_ship_billto'], $info['cust_ship_account_num'], $info['cust_residential_delivery'],
+            $info['cust_ship_address'], $info['cust_ship_city'], $info['cust_ship_state'], $info['cust_ship_zip'],
+            $info['cust_ship_country'], $info['cust_billing_type'], $info['cust_multiplier'], $info['cust_payment_method'],
+            $info['cust_payment_terms'], $info['cust_fed_id'], $info['cust_fed_exempt_reason']);
+        }
 
         $ins_customer = $cust_stmt->execute();
 
@@ -395,17 +410,33 @@ switch($_REQUEST['action']) {
       if(!empty($info['add_vendor_check'])) {
         $established_date = strtotime($info['vend_established_date']);
 
-        $vend_stmt = $dbconn->prepare('UPDATE contact_vendor SET established_date = ?, status = ?, receive_method = ?, receive_country = ?, receive_address = ?, 
+        $vendor_exist_qry = $dbconn->query("SELECT * FROM contact_vendor WHERE contact_id = {$info['contactID']}");
+
+        if($vendor_exist_qry->num_rows > 0) {
+          $vend_stmt = $dbconn->prepare('UPDATE contact_vendor SET established_date = ?, status = ?, receive_method = ?, receive_country = ?, receive_address = ?, 
                           receive_city = ?, receive_state = ?, receive_zip = ?, payment_terms = ?, federal_id = ?, payment_contact = ?, payment_country = ?, 
                           payment_address = ?, payment_city = ?, payment_state = ?, payment_zip = ?, payment_primary_phone = ?, payment_secondary_phone = ?, 
                           payment_other_phone = ?, payment_fax = ? WHERE contact_id = ?');
 
-        $vend_stmt->bind_param('iiisssssisssssssssssi', $established_date, $info['vend_status'], $info['vend_receive_method'],
-          $info['vend_receive_country'], $info['vend_receive_address'], $info['vend_receive_city'], $info['vend_receive_state'],
-          $info['vend_receive_zip'], $info['vend_payment_terms'], $info['vend_fed_id'], $info['vend_payment_contact_name'],
-          $info['vend_payment_contact_country'], $info['vend_payment_contact_address'], $info['vend_payment_contact_city'],
-          $info['vend_payment_contact_state'], $info['vend_payment_contact_zip'], $info['vend_payment_primary_phone'],
-          $info['vend_payment_secondary_phone'], $info['vend_payment_other_phone'], $info['vend_payment_fax'], $info['contactID']);
+          $vend_stmt->bind_param('iiisssssisssssssssssi', $established_date, $info['vend_status'], $info['vend_receive_method'],
+            $info['vend_receive_country'], $info['vend_receive_address'], $info['vend_receive_city'], $info['vend_receive_state'],
+            $info['vend_receive_zip'], $info['vend_payment_terms'], $info['vend_fed_id'], $info['vend_payment_contact_name'],
+            $info['vend_payment_contact_country'], $info['vend_payment_contact_address'], $info['vend_payment_contact_city'],
+            $info['vend_payment_contact_state'], $info['vend_payment_contact_zip'], $info['vend_payment_primary_phone'],
+            $info['vend_payment_secondary_phone'], $info['vend_payment_other_phone'], $info['vend_payment_fax'], $info['contactID']);
+        } else {
+          $vend_stmt = $dbconn->prepare("INSERT INTO contact_vendor (contact_id, created_by, established_date, status, receive_method, receive_country, receive_address, 
+                            receive_city, receive_state, receive_zip, payment_terms, federal_id, payment_contact, payment_country, payment_address, payment_city,
+                            payment_state, payment_zip, payment_primary_phone, payment_secondary_phone, payment_other_phone, payment_fax, created) 
+                            VALUES ({$info['contactID']}, {$_SESSION['userInfo']['id']}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP())");
+
+          $vend_stmt->bind_param('iiisssssisssssssssss', $info['vend_established_date'], $info['vend_status'], $info['vend_receive_method'],
+            $info['vend_receive_country'], $info['vend_receive_address'], $info['vend_receive_city'], $info['vend_receive_state'],
+            $info['vend_receive_zip'], $info['vend_payment_terms'], $info['vend_fed_id'], $info['vend_payment_contact_name'],
+            $info['vend_payment_contact_country'], $info['vend_payment_contact_address'], $info['vend_payment_contact_city'],
+            $info['vend_payment_contact_state'], $info['vend_payment_contact_zip'], $info['vend_payment_primary_phone'],
+            $info['vend_payment_secondary_phone'], $info['vend_payment_other_phone'], $info['vend_payment_fax']);
+        }
 
         $ins_vendor = $vend_stmt->execute();
 
@@ -432,21 +463,41 @@ switch($_REQUEST['action']) {
           $pw = $info['emp_password'];
         }
 
-        $emp_stmt = $dbconn->prepare('UPDATE contact_employee SET hire_date = ?, languages = ?, timezone = ?, shift = ?, facility = ?, department = ?, 
+        $emp_exist_qry = $dbconn->query("SELECT * FROM contact_employee WHERE contact_id = {$info['contactID']}");
+
+        if($emp_exist_qry->num_rows > 0) {
+          $emp_stmt = $dbconn->prepare('UPDATE contact_employee SET hire_date = ?, languages = ?, timezone = ?, shift = ?, facility = ?, department = ?, 
                             employee_status = ?, user_access = ?, username = ?, pin = ?, password = ?, pay_schedule = ?, federal_id = ?, personal_country = ?, 
                             personal_address = ?, personal_city = ?, personal_state = ?, personal_zip = ?,  personal_email = ?, personal_phone = ?, personal_birthday = ?, 
                             emergency_name = ?, emergency_relationship = ?, emergency_country = ?, emergency_address = ?,  emergency_city = ?, emergency_state = ?, 
                             emergency_zip = ?, emergency_pri_phone = ?, emergency_secondary_phone = ?, emergency_other_phone = ?, emergency_email = ? WHERE contact_id = ?');
 
-        $emp_stmt->bind_param('issiisiisssissssssssisssssssssssi', $hire_date, $info['emp_languages'], $info['emp_timezone'], $info['emp_shift'],
-          $info['emp_facility'], $info['emp_department'], $info['emp_status'], $info['emp_user_access'], $info['emp_username'],
-          $pin, $pw, $info['emp_pay_schedule'], $info['emp_federal_id'], $info['emp_personal_country'],
-          $info['emp_personal_address'], $info['emp_personal_city'], $info['emp_personal_state'], $info['emp_personal_zip'],
-          $info['emp_personal_email'], $info['emp_personal_phone'], $personal_birthday, $info['emp_emergency_contact_name'],
-          $info['emp_emergency_relationship'], $info['emp_emergency_contact_country'], $info['emp_emergency_contact_address'],
-          $info['emp_emergency_contact_city'], $info['emp_emergency_contact_state'], $info['emp_emergency_contact_zip'],
-          $info['emp_emergency_primary_phone'], $info['emp_emergency_secondary_phone'], $info['emp_emergency_other_phone'],
-          $info['emp_emergency_email'], $info['contactID']);
+          $emp_stmt->bind_param('issiisiisssissssssssisssssssssssi', $hire_date, $info['emp_languages'], $info['emp_timezone'], $info['emp_shift'],
+            $info['emp_facility'], $info['emp_department'], $info['emp_status'], $info['emp_user_access'], $info['emp_username'],
+            $pin, $pw, $info['emp_pay_schedule'], $info['emp_federal_id'], $info['emp_personal_country'],
+            $info['emp_personal_address'], $info['emp_personal_city'], $info['emp_personal_state'], $info['emp_personal_zip'],
+            $info['emp_personal_email'], $info['emp_personal_phone'], $personal_birthday, $info['emp_emergency_contact_name'],
+            $info['emp_emergency_relationship'], $info['emp_emergency_contact_country'], $info['emp_emergency_contact_address'],
+            $info['emp_emergency_contact_city'], $info['emp_emergency_contact_state'], $info['emp_emergency_contact_zip'],
+            $info['emp_emergency_primary_phone'], $info['emp_emergency_secondary_phone'], $info['emp_emergency_other_phone'],
+            $info['emp_emergency_email'], $info['contactID']);
+        } else {
+          $emp_stmt = $dbconn->prepare("INSERT INTO contact_employee (contact_id, created_by, hire_date, languages, timezone, shift, facility, department, employee_status, user_access, 
+                              username, pin, password, pay_schedule, federal_id, personal_country, personal_address, personal_city, personal_state, personal_zip, 
+                              personal_email, personal_phone, personal_birthday, emergency_name, emergency_relationship, emergency_country, emergency_address, 
+                              emergency_city, emergency_state, emergency_zip, emergency_pri_phone, emergency_secondary_phone, emergency_other_phone, emergency_email, created) 
+                              VALUES ({$info['contactID']}, {$_SESSION['userInfo']['id']}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP())");
+
+          $emp_stmt->bind_param('issiisiisssissssssssisssssssssss', $hire_date, $info['emp_languages'], $info['emp_timezone'], $info['emp_shift'],
+            $info['emp_facility'], $info['emp_department'], $info['emp_status'], $info['emp_user_access'], $info['emp_username'],
+            $pin, $pw, $info['emp_pay_schedule'], $info['emp_federal_id'], $info['emp_personal_country'],
+            $info['emp_personal_address'], $info['emp_personal_city'], $info['emp_personal_state'], $info['emp_personal_zip'],
+            $info['emp_personal_email'], $info['emp_personal_phone'], $personal_birthday, $info['emp_emergency_contact_name'],
+            $info['emp_emergency_relationship'], $info['emp_emergency_contact_country'], $info['emp_emergency_contact_address'],
+            $info['emp_emergency_contact_city'], $info['emp_emergency_contact_state'], $info['emp_emergency_contact_zip'],
+            $info['emp_emergency_primary_phone'], $info['emp_emergency_secondary_phone'], $info['emp_emergency_other_phone'],
+            $info['emp_emergency_email']);
+        }
 
         $ins_emp = $emp_stmt->execute();
 
@@ -465,7 +516,7 @@ switch($_REQUEST['action']) {
         }
       }
 
-      if($ins_contact && $ins_customer && $ins_vendor && $ins_emp) {
+      if($update_contact && $ins_customer && $ins_vendor && $ins_emp) {
         if(!empty($info['company_notes'])) {
           $followup_date = sanitizeInput($notes['company_followup_date']);
           $followup_individual = sanitizeInput($notes['requested_of']);
@@ -484,7 +535,7 @@ switch($_REQUEST['action']) {
         echo displayToast('success', 'Successfully saved contact.', 'Contact Saved');
       } else {
         header('error: true');
-        echo displayToast('error', 'Unable to create contact, please try again.', 'Contact Error');
+        dbLogSQLErr($dbconn);
       }
     } else {
       dbLogSQLErr($dbconn);

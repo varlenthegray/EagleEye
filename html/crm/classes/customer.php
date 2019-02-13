@@ -125,6 +125,8 @@ HEREDOC;
           $contact['personal_phone'], $contact['personal_birthday']])) ? 'checked' : null;
         $emp_emergency_different = !empty(array_filter([$contact['emergency_name'], $contact['emergency_relationship'], $contact['emergency_address'], $contact['emergency_city'],
           $contact['emergency_zip'], $contact['emergency_pri_phone'], $contact['emergency_secondary_phone'], $contact['emergency_other_phone'], $contact['emergency_email']])) ? 'checked' : null;
+
+        $contact_type = !empty(trim($contact['company_name'])) ? 'organization' : 'individual';
       }
     } else {
       $type = "<tr><td><label for='{$rnum}_new_type'>Type:</label></td><td><select class='c_input new_type' name='new_type' id='{$rnum}_new_type'><option>Organization</option><option>Individual</option></select></td></tr>";
@@ -169,7 +171,7 @@ HEREDOC;
     echo /** @lang HTML */
     <<<HEREDOC
       <!--<editor-fold desc="Global information">-->
-      <input type="hidden" name="contactType" class="contactType" />
+      <input type="hidden" name="contactType" class="contactType" value="$contact_type" />
       <input type="hidden" name="contactID" class="contactID" />
       
       <table style="width:100%;margin-top:8px;" class="table table-custom-nb">

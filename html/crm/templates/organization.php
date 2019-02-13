@@ -149,7 +149,7 @@ $contact = $contact_qry->fetch_assoc();
 
     editDiv.find('.identifier').prop("disabled", true);
     editDiv.find(".contactType").attr("value", activeNode.data.contactType);
-    editDiv.find(".contactID").attr("value", activeNode.key);
+    editDiv.find(".contactID").attr("value", crmNav.navKeys[0]);
 
     if(activeNode.data.contactType === 'individual') {
       editDiv.find(".add_new_org").hide();
