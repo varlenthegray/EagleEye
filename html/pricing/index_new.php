@@ -1027,17 +1027,15 @@ HEREDOC;
         } else {
           $tdList.eq(4).text(node.data.name);
         }
-
-        // Index #4 => Width
+        // Index #5 => Width
         // $tdList.eq(5).text(node.data.width);
-        $tdList.eq(5).find("input").attr("data-id", node.key).val(node.data.width);
+        $tdList.eq(5).find("input").attr("data-id", node.key).val(pricingFunction.decimalToFraction(node.data.width));
         // Index #6 => Height
         // $tdList.eq(6).text(node.data.height);
-        $tdList.eq(6).find("input").attr("data-id", node.key).val(node.data.height);
-
+        $tdList.eq(6).find("input").attr("data-id", node.key).val(pricingFunction.decimalToFraction(node.data.height));
         // Index #7 => Depth
         // $tdList.eq(7).text(node.data.depth);
-        $tdList.eq(7).find("input").attr("data-id", node.key).val(node.data.depth);
+        $tdList.eq(7).find("input").attr("data-id", node.key).val(pricingFunction.decimalToFraction(node.data.depth));
 
         // Index #8 => Hinge
         if(node.data.hinge !== undefined) {

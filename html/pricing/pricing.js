@@ -1,7 +1,6 @@
-/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*//*global FileReader*//*global atob*//*global Blob*//*global URL*/
+/*global globalFunctions*//*global math*//*globalgetMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*//*global FileReader*//*global atob*//*global Blob*//*global URL*//*global getMiniTree*/
 
 var contentType = 'image/png';
-var b64Data = '';
 
 jQuery.expr.filters.offscreen = function(el) {
   var rect = el.getBoundingClientRect();
@@ -13,7 +12,8 @@ var pricingVars = {
   roomQry: null,
   vinInfo: null,
   shipCost: null,
-  pasteBlob: []
+  pasteBlob: [],
+  outPut: null
 };
 
 var pricingFunction = {
@@ -660,6 +660,39 @@ var pricingFunction = {
     $type = $(".type");
     $width = $("#width");
     $height = $("#height");
+  },
+  decimalToFraction: function(value) {
+    //using math.js taking the value of inputs (if decimal) and changing it to a fraction.
+    let stringValue = String(value);
+
+    if (stringValue !== null) {
+      if (stringValue.indexOf(".") >= 0) {
+        var broken = stringValue.split(".");
+        var fraction;
+
+        if (broken[1] !== undefined) {
+          fraction = math.format(math.fraction("." + broken[1]), {
+            fraction: 'ratio'
+          });
+          return broken[0] + " " + fraction;
+        }
+        return value;
+      }
+      return value;
+    }
+    return value;
+  },
+  fractToDecimal: function(calcVar) {
+    //using the remainder operator to return a whole number.
+    if ((calcVar) % 1 !== 0) {
+      let splitNum = calcVar.split(" ");
+      let fract = splitNum[1].split("/");
+      let decimal = fract[0] / fract[1];
+      pricingVars.outPut = (parseInt(splitNum[0]) + parseFloat(decimal));
+      return pricingVars.outPut;
+    } else {
+      return calcVar;
+    }
   }
 };
 
@@ -967,7 +1000,7 @@ $("body")
     let position = thisEle.offset();
 
     $.post("/html/pricing/ajax/item_actions.php?action=getItemInfo", {id: thisEle.data('id'), room_id: active_room_id}, function(data) {
-      if(data !== "") {
+      if(data !== '') {
         let result = JSON.parse(data);
 
         if(result['image_perspective'] !== '' && result['image_perspective'] !== null) {
@@ -1103,29 +1136,32 @@ $("body")
 
     node.data.hinge = $(this).find(":selected").val();
   })
-  .on("keyup", ".itm_width", function() {
+  .on("change", ".itm_width", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
-
-    node.data.width = $(this).val();
+    //takes the value and change it from decimal to fraction.
+    $(this).val(pricingFunction.decimalToFraction($(this).val()));
+    node.data.width = pricingFunction.fractToDecimal($(this).val());
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
   })
-  .on("keyup", ".itm_height", function() {
+  .on("change", ".itm_height", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    node.data.height = $(this).val();
+    $(this).val(pricingFunction.decimalToFraction($(this).val()));
+    node.data.height = pricingFunction.fractToDecimal($(this).val());
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
   })
-  .on("keyup", ".itm_depth", function() {
+  .on("change", ".itm_depth", function() {
     let id = $(this).attr("data-id");
     let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-    node.data.depth = $(this).val();
+    $(this).val(pricingFunction.decimalToFraction($(this).val()));
+    node.data.depth = pricingFunction.fractToDecimal($(this).val());
     node.data.price = pricingFunction.footCalc(node);
 
     pricingFunction.recalcSummary();
