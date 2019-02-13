@@ -233,7 +233,7 @@ switch($_REQUEST['action']) {
                               ship_state, ship_zip, ship_country, billing_type, multiplier, payment_method, payment_terms, federal_id, federal_exempt_reason, created) 
                               VALUES ($contact_id, {$_SESSION['userInfo']['id']}, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP())");
 
-          $cust_stmt->bind_param('iiiiiiiiiiiiiisisssssiiiisi', $established_date, $info['cust_status'], $info['cust_group'], $info['cust_max_commission'],
+          $cust_stmt->bind_param('iiiiiiiiiiiiiisisssssidiisi', $established_date, $info['cust_status'], $info['cust_group'], $info['cust_max_commission'],
             $info['cust_salesman_commission_user'], $info['cust_salesman_commission'], $info['cust_referral_commission_user'], $info['cust_referral_commission'],
             $info['cust_sales_group_commission_user'], $info['cust_sales_group_commission'], $info['cust_other_commission_user'], $info['cust_other_commission'],
             $info['cust_ship_method'], $info['cust_ship_billto'], $info['cust_ship_account_num'], $info['cust_residential_delivery'],
@@ -376,7 +376,7 @@ switch($_REQUEST['action']) {
                             residential_delivery = ?, ship_address = ?, ship_city = ?, ship_state = ?, ship_zip = ?, ship_country = ?, billing_type = ?, multiplier = ?, 
                             payment_method = ?, payment_terms = ?, federal_id = ?, federal_exempt_reason = ? WHERE contact_id = ?');
 
-          $cust_stmt->bind_param('iiiiiiiiiiiiiisisssssiiiissi', $established_date, $info['cust_status'], $info['cust_group'], $info['cust_max_commission'],
+          $cust_stmt->bind_param('iiiiiiiiiiiiiisisssssidiissi', $established_date, $info['cust_status'], $info['cust_group'], $info['cust_max_commission'],
             $info['cust_salesman_commission_user'], $info['cust_salesman_commission'], $info['cust_referral_commission_user'], $info['cust_referral_commission'],
             $info['cust_sales_group_commission_user'], $info['cust_sales_group_commission'], $info['cust_other_commission_user'], $info['cust_other_commission'],
             $info['cust_ship_method'], $info['cust_ship_billto'], $info['cust_ship_account_num'], $info['cust_residential_delivery'],
