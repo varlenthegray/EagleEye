@@ -68,6 +68,10 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
   .activeImage {
     box-shadow: 0 0 20px #0a6aa1;
   }
+
+  .subtable {
+    padding: 0 !important;
+  }
 </style>
 
 <div class="modal-dialog" role="document">
@@ -143,7 +147,7 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                     <td><input type="text" class="c_input" name="sku" placeholder='<?php echo $info['sku']; ?> Name' value='<?php echo $info['sku']; ?>' /> </td>
                   </tr>
                   <tr>
-                    <td colspan="2" style="padding:0;">
+                    <td colspan="2" class="subtable">
                       <table width="100%">
                         <tr>
                           <td><label>Width:</label></td>
@@ -274,8 +278,34 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                     <td colspan="2"><input type="hidden" id="image_description_id" name="image_description_id" value="<?php echo $info['description_id']; ?>" /></td>
                   </tr>
                   <tr>
+                    <td colspan="2" style="height:5px;"></td>
+                  </tr>
+                  <tr>
                     <td colspan="2">
-                      <table style="width:75%;">
+                      <table width="100%" class="subtable">
+                        <tr>
+                          <td><label for="install_points">Install Points:</label></td>
+                          <td><input type="text" class="c_input" name="install_points" placeholder="0" value="<?php echo $info['install_points']; ?>" style="width:25px;" /></td>
+                          <td><label for="assembly_points">Assembly Points:</label></td>
+                          <td><input type="text" class="c_input" name="assembly_points" placeholder="0" value="<?php echo $info['assembly_points']; ?>" style="width:25px;" /></td>
+                          <td><label for="box_points">Box Points:</label></td>
+                          <td><input type="text" class="c_input" name="box_points" placeholder="0" value="<?php echo $info['box_points']; ?>" style="width:25px;" /></td>
+                          <td><label for="drawer_box_count">Drawer Box Count:</label></td>
+                          <td><input type="text" class="c_input" name="drawer_box_count" placeholder="0" value="<?php echo $info['drawer_box_count']; ?>" style="width:25px;" /></td>
+                        </tr>
+                        <tr>
+                          <td><label for="w_melamine_price">White Melamine Price:</label></td>
+                          <td><input type="text" class="c_input" name="w_melamine_price" placeholder="0" value="<?php echo $info['w_melamine_price']; ?>" style="width:25px;" /></td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="height:5px;"></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2">
+                      <table width="75%" class="subtable">
                         <colgroup>
                           <col width="5%">
                           <col width="16%">
@@ -342,13 +372,6 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                         </tbody>
                       </table>
                     </td>
-                  </tr>
-                  <tr>
-                    <td colspan="2" style="height:5px;"></td>
-                  </tr>
-                  <tr>
-                    <td><label for="drawer_box_count">Drawer Box Count:</label></td>
-                    <td><input type="text" class="c_input" name="drawer_box_count" placeholder="0" value="<?php echo $info['drawer_box_count']; ?>" style="width:25px;" /></td>
                   </tr>
                 <?php } ?>
               </tbody>
