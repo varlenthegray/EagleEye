@@ -16,6 +16,8 @@ var crmProject = {
 
         $.post("/html/pricing/ajax/global_actions.php?action=modalBracketMgmt&roomID=" + room_id, function(data) {
           $("#modalGlobal").html(data).modal("show");
+        }).done(function() {
+          $("#modalBracketSave").attr('data-roomid', room_id);
         });
 
         return false;
