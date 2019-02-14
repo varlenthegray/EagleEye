@@ -233,6 +233,7 @@ foreach($result AS $ans) {
       $output[$pd]['children'][$ps]['keyType'] = 'soID';
       $output[$pd]['children'][$ps]['altData'] = $altData;
       $output[$pd]['children'][$ps]['expanded'] = $so_expanded;
+      $output[$pd]['children'][$ps]['icon'] = 'fa fa-file-text-o';
     }
 
     $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
