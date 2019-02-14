@@ -181,10 +181,21 @@ switch($_REQUEST['action']) {
     $default_hinge = sanitizeInput($_REQUEST['default_hinge']);
     $image_type = sanitizeInput($_REQUEST['image_type']);
     $recent_image = sanitizeInput($_REQUEST['recent_image']);
+
     $drawer_box_count = sanitizeInput($_REQUEST['drawer_box_count']);
+    $assembly_points = sanitizeInput($_REQUEST['assembly_points']);
+    $delivery_points = sanitizeInput($_REQUEST['delivery_points']);
+    $install_points = sanitizeInput($_REQUEST['install_points']);
+
+    $pricing_method = sanitizeInput($_REQUEST['pricing_method']);
+    $single_price =  sanitizeInput($_REQUEST['single_price']);
 
     for($i = 1; $i <= 14; $i++) {
-      $pg[$i] = sanitizeInput($_REQUEST['pg'. $i]);
+      if($pricing_method === 'pg') {
+        $pg[$i] = sanitizeInput($_REQUEST['pg'. $i]);
+      } else {
+        $pg[$i] = $single_price;
+      }
     }
 
     $description_id = sanitizeInput($_REQUEST['image_description_id']);
@@ -264,7 +275,8 @@ switch($_REQUEST['action']) {
     } else {
       // now we're working on an item
       if($dbconn->query("UPDATE pricing_nomenclature SET sku = '$sku', width = '$width', height = '$height', depth = '$depth', default_hinge = '$default_hinge',
-      hinge = '$hinge_available', description_id = $description_id, drawer_box_count = $drawer_box_count, desc_available = '$desc_enabled' WHERE id = $id")) {
+      hinge = '$hinge_available', description_id = $description_id, drawer_box_count = $drawer_box_count, assembly_points = $assembly_points, delivery_points = $delivery_points,
+      install_points = $install_points, desc_available = '$desc_enabled' WHERE id = $id")) {
         $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_map WHERE nomenclature_id = $id;");
 
         if($price_group_qry->num_rows > 0) {

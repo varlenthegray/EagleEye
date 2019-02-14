@@ -284,18 +284,14 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                     <td colspan="2">
                       <table width="100%" class="subtable">
                         <tr>
-                          <td><label for="install_points">Install Points:</label></td>
-                          <td><input type="text" class="c_input" name="install_points" placeholder="0" value="<?php echo $info['install_points']; ?>" style="width:25px;" /></td>
-                          <td><label for="assembly_points">Assembly Points:</label></td>
-                          <td><input type="text" class="c_input" name="assembly_points" placeholder="0" value="<?php echo $info['assembly_points']; ?>" style="width:25px;" /></td>
-                          <td><label for="box_points">Box Points:</label></td>
-                          <td><input type="text" class="c_input" name="box_points" placeholder="0" value="<?php echo $info['box_points']; ?>" style="width:25px;" /></td>
                           <td><label for="drawer_box_count">Drawer Box Count:</label></td>
                           <td><input type="text" class="c_input" name="drawer_box_count" placeholder="0" value="<?php echo $info['drawer_box_count']; ?>" style="width:25px;" /></td>
-                        </tr>
-                        <tr>
-                          <td><label for="w_melamine_price">White Melamine Price:</label></td>
-                          <td><input type="text" class="c_input" name="w_melamine_price" placeholder="0" value="<?php echo $info['w_melamine_price']; ?>" style="width:25px;" /></td>
+                          <td><label for="assembly_points">Assembly Points:</label></td>
+                          <td><input type="text" class="c_input" name="assembly_points" placeholder="0" value="<?php echo $info['assembly_points']; ?>" style="width:25px;" /></td>
+                          <td><label for="delivery_points">Delivery Points:</label></td>
+                          <td><input type="text" class="c_input" name="delivery_points" placeholder="0" value="<?php echo $info['delivery_points']; ?>" style="width:25px;" /></td>
+                          <td><label for="install_points">Install Points:</label></td>
+                          <td><input type="text" class="c_input" name="install_points" placeholder="0" value="<?php echo $info['install_points']; ?>" style="width:25px;" /></td>
                         </tr>
                       </table>
                     </td>
@@ -304,6 +300,9 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                     <td colspan="2" style="height:5px;"></td>
                   </tr>
                   <tr>
+                    <td colspan="2"><input type="radio" name="pricing_method" id="pg_pricing_method" value="pg" class="c_input price_table" checked /> <label for="pg_pricing_method"><u>Price Groups: Enter Net Price into PG4 (Remaining PG's auto-calculated)</u></label></td>
+                  </tr>
+                  <tr id="price_group_table">
                     <td colspan="2">
                       <table width="75%" class="subtable">
                         <colgroup>
@@ -320,9 +319,6 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                           <col width="16%">
                         </colgroup>
                         <tbody>
-                        <tr>
-                          <td colspan="11"><b><u>Price Groups: Enter Net Price into PG4 (Remaining PG's auto-calculated)</u></b></td>
-                        </tr>
                         <tr>
                           <td><label for="ai_pg_1">PG1:</label></td>
                           <td><input type="text" id="pg1" placeholder="0.00" class="c_input price_group_input" name="pg1" value="<?php echo $price_groups[1]; ?>" disabled /> </td>
@@ -373,6 +369,19 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                       </table>
                     </td>
                   </tr>
+                  <tr>
+                    <td colspan="2"><input type="radio" name="pricing_method" id="single_pricing_method" value="single" class="c_input price_table" /> <label for="single_pricing_method"><u>Single base price</u></label></td>
+                  </tr>
+                  <tr id="single_price_table" style="display:none;">
+                    <td colspan="2">
+                      <table width="25%" class="subtable">
+                        <tr>
+                          <td><label for="single_price">Price:</label></td>
+                          <td><input type="text" id="single_price" placeholder="0.00" class="c_input" name="single_price" value="<?php echo $info['single_price']; ?>" /> </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
                 <?php } ?>
               </tbody>
             </table>
@@ -388,10 +397,19 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
 </div>
 
 <script>
-  // TODO: Paste image in - https://codepen.io/netsi1964/pen/IoJbg
   // TODO: Image picker - https://rvera.github.io/image-picker/
   $(function() {
     $("#catalogAddEditItem input[name='image_type']:checked").trigger("change"); // show/hide based on what's currently selected
+  });
+
+  $(".price_table").on("change", function() {
+    if($("input[name='pricing_method']:checked").val() === 'pg') {
+      $("#price_group_table").show();
+      $("#single_price_table").hide();
+    } else {
+      $("#price_group_table").hide();
+      $("#single_price_table").show();
+    }
   });
 
   pricingFunction.pasteImage();
