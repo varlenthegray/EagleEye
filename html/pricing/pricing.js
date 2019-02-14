@@ -119,6 +119,24 @@ var pricingFunction = {
       cabinetList.fancytree("getTree").getNodeByKey('-1').remove();
     }
   },
+  calcGlobalMarkup: function(vinSegment, lineTotal) {
+    let markup, cost, formatMoney, formatPct, pvInfo;
+
+    pvInfo = pricingVars.vinInfo[vinSegment][pricingVars.roomQry[vinSegment]];
+
+    markup = pvInfo.markup;
+
+    if(pvInfo['markup_calculator'] === '*') {
+      cost = lineTotal * markup;
+    } else if(pvInfo['markup_calculator'] === '+') {
+      cost = parseFloat(markup);
+    }
+
+    formatMoney = cost.formatMoney();
+    formatPct = (markup * 100).toFixed(2) + "%";
+
+    return {'cost': cost, 'markup': markup, 'markupType': pvInfo['markup_calculator'], 'formatMoney': formatMoney, 'formatPct': formatPct};
+  },
   recalcSummary: function() {
     let global_room_charges = 0.00, // global room charges
       global_cab_charges = 0.00, // global cabinet charges total
@@ -213,39 +231,33 @@ var pricingFunction = {
     let fcode_pct = $("#fc_pct"), fcode_amt = $("#fc_amt");
     let sheen_pct = $("#sheen_pct"), sheen_amt = $("#sheen_amt");
 
-    // gets the markup of Glaze Technique based on the room glaze technique variable
-    let gt_markup = pricingVars.vinInfo['glaze_technique'][pricingVars.roomQry['glaze_technique']].markup;
-    let ggard_markup = pricingVars.vinInfo['green_gard'][pricingVars.roomQry['green_gard']].markup;
-    let fcode_markup = pricingVars.vinInfo['finish_code'][pricingVars.roomQry['finish_code']].markup;
-    let sheen_markup = pricingVars.vinInfo['sheen'][pricingVars.roomQry['sheen']].markup;
-
-    // calculate out the cost of the glaze technique
-    let gt_cost = line_total * gt_markup;
-    let ggard_cost = line_total * ggard_markup;
-    let fcode_cost = line_total * fcode_markup;
-    let sheen_cost = line_total * sheen_markup;
+    // get the global markup for each line item that has one
+    let gt_global = pricingFunction.calcGlobalMarkup('glaze_technique', line_total);
+    let gg_global = pricingFunction.calcGlobalMarkup('green_gard', line_total);
+    let fcode_global = pricingFunction.calcGlobalMarkup('finish_code', line_total);
+    let sheen_global = pricingFunction.calcGlobalMarkup('sheen', line_total);
 
     // Glaze Technique fields
-    gt_amt.text(gt_cost.formatMoney());
-    gt_pct.text((gt_markup * 100).toFixed(2) + "%");
+    gt_amt.text(gt_global['formatMoney']);
+    gt_pct.text(gt_global['formatPct']);
 
     // Green Gard fields
-    ggard_amt.text(ggard_cost.formatMoney());
-    ggard_pct.text((ggard_markup * 100).toFixed(2) + "%");
+    ggard_amt.text(gg_global['formatMoney']);
+    ggard_pct.text(gg_global['formatPct']);
 
     // Finish Code fields
-    fcode_amt.text(fcode_cost.formatMoney());
-    fcode_pct.text((fcode_markup * 100).toFixed(2) + "%");
+    fcode_amt.text(fcode_global['formatMoney']);
+    fcode_pct.text(fcode_global['formatPct']);
 
     // Sheen fields
-    sheen_amt.text(sheen_cost.formatMoney());
-    sheen_pct.text((sheen_markup * 100).toFixed(2) + "%");
+    sheen_amt.text(sheen_global['formatMoney']);
+    sheen_pct.text(sheen_global['formatPct']);
 
     // add the glaze technique to the total amount of global upcharges
-    global_cab_charges += gt_cost;
-    global_cab_charges += ggard_cost;
-    global_cab_charges += fcode_cost;
-    global_cab_charges += sheen_cost;
+    global_cab_charges += gt_global['cost'];
+    global_cab_charges += gg_global['cost'];
+    global_cab_charges += fcode_global['cost'];
+    global_cab_charges += sheen_global['cost'];
 
     // Grab the shipping price IF it's not pickup
     if(shipVia !== '4') {
@@ -325,17 +337,17 @@ var pricingFunction = {
       $("#calcShipZoneTotal").text('$0.00');
     }
 
-    $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') * Glaze Markup (' + gt_markup + ')');
-    $("#calcGlazeTechTotal").html(gt_cost.formatMoney());
+    $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') ' + gt_global['markupType'] + ' Glaze Markup (' + gt_global['markup'] + ')');
+    $("#calcGlazeTechTotal").html(gt_global['formatMoney']);
 
-    $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') * Green Gard Markup (' + ggard_markup + ')');
-    $("#calcGreenGardTotal").html(ggard_cost.formatMoney());
+    $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') ' + gg_global['markupType'] + ' Green Gard Markup (' + gg_global['markup'] + ')');
+    $("#calcGreenGardTotal").html(gg_global['formatMoney']);
 
-    $("#calcSheen").html('Total (' + line_total.toFixed(2) + ') * Sheen Markup (' + sheen_markup + ')');
-    $("#calcSheenTotal").html(sheen_cost.formatMoney());
+    $("#calcSheen").html('Total (' + line_total.toFixed(2) + ') ' + sheen_global['markupType'] + ' Sheen Markup (' + sheen_global['markup'] + ')');
+    $("#calcSheenTotal").html(sheen_global['formatMoney']);
 
-    $("#calcFinishCode").html('Total (' + line_total.toFixed(2) + ') * Finish Markup (' + fcode_markup + ')');
-    $("#calcFinishCodeTotal").html(fcode_cost.formatMoney());
+    $("#calcFinishCode").html('Total (' + line_total.toFixed(2) + ') ' + fcode_global['markupType'] + ' Finish Markup (' + fcode_global['markup'] + ')');
+    $("#calcFinishCodeTotal").html(fcode_global['formatMoney']);
 
     $("#calcCabinetLines").html('Cabinets: ' + cabinet_only_skus);
     $("#calcCabinetLinesTotal").html(cabinet_only_total.formatMoney());
