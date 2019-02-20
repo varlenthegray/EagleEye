@@ -1,4 +1,4 @@
-/*global globalFunctions*//*global math*//*globalgetMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*//*global FileReader*//*global atob*//*global Blob*//*global URL*//*global getMiniTree*/
+/* global crmProject *//*global globalFunctions*//*global math*//*globalgetMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*//*global FileReader*//*global atob*//*global Blob*//*global URL*//*global getMiniTree*/
 
 var contentType = 'image/png';
 
@@ -809,12 +809,19 @@ $("body")
     }
   })
   .on("click", "#modalBracketSave", function() {
-    var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
+
+    var bracket_id = $(this).attr('data-roomid');
+    var active_ops = $(".active_ops_" + bracket_id).map(function() {
+      return $(this).data("opid");
+    }).get();
     var bracket_status = $("#bracketAdjustments").serialize();
 
     active_ops = JSON.stringify(active_ops);
 
-    $.post("/html/pricing/ajax/global_actions.php?action=updateBracket&roomID=" + active_room_id, {active_ops: active_ops, bracket_status: bracket_status}, function(data) {
+    $.post("/html/pricing/ajax/global_actions.php?action=updateBracket&roomID=" + bracket_id, {
+      active_ops: active_ops,
+      bracket_status: bracket_status
+    }, function(data) {
       $('body').append(data);
     });
 
