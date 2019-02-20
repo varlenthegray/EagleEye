@@ -161,28 +161,6 @@ var crmCompany = {
       crmMain.body.html(data);
     });
   },
-  getCompanyList: function() {
-    // get the company list
-    $.post("/html/crm/templates/view_company_list.php", function(data) {
-      crmMain.body.html(data); // load it into the container
-    }).done(function() {
-      $('.crmCompanies').DataTable( { // init datatables
-        "ajax": "/html/crm/ajax/company.php?action=getCompanyList",
-        "columns": [
-          { "data": "name" },
-          { "data": "phone_number" },
-          { "data": "annual_revenue" },
-          { "data": "industry" },
-          { "data": "last_contact"},
-          { "data": "created"}
-        ],
-        "pageLength": 25,
-        "createdRow": function(row,data) {
-          $(row).addClass("cursor-hand get-company").attr("data-id", data.id);
-        }
-      });
-    });
-  },
   startListening: function() {
     // bindings
     $('body')

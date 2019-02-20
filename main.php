@@ -1282,7 +1282,6 @@ require 'includes/header_start.php';
 
   <!-- Toastr setup -->
   <script src="/assets/plugins/toastr/toastr.min.js"></script>
-  <link href="/assets/plugins/toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
 
   <!-- Datatables -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>

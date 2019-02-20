@@ -45,25 +45,6 @@ $so = $so_qry->fetch_assoc();
 /*$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$so['dealer_code']}'");
 $dealer = $dealer_qry->fetch_assoc();*/
 
-$dealer_qry = $dbconn->query("SELECT
-       so.id AS soID,
-       cc.id AS cID,
-       d.account_type,
-       cc.address AS companyAddr,
-       cc.city AS companyCity,
-       cc.state AS companyState,
-       cc.zip AS companyZip,
-       cc.shipping_address AS dealerAddress,
-       cc.shipping_city AS dealerCity,
-       cc.shipping_state AS dealerState,
-       cc.shipping_zip AS dealerZip,
-       cc.multiplier
-FROM sales_order so
-  LEFT JOIN contact_company cc on so.company_id = cc.id
-  LEFT JOIN dealers d ON cc.dealer_id = d.id
-WHERE so.so_num = '{$room['so_parent']}';");
-$dealer = $dealer_qry->fetch_assoc();
-
 $contact_qry = $dbconn->query("SELECT
        so.id AS soID,
        c.id AS cID,
