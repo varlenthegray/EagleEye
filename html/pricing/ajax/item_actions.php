@@ -180,7 +180,6 @@ switch($_REQUEST['action']) {
     $depth = sanitizeInput($_REQUEST['depth']);
     $default_hinge = sanitizeInput($_REQUEST['default_hinge']);
     $image_type = sanitizeInput($_REQUEST['image_type']);
-    $recent_image = sanitizeInput($_REQUEST['recent_image']);
 
     $drawer_box_count = sanitizeInput($_REQUEST['drawer_box_count']);
     $assembly_points = sanitizeInput($_REQUEST['assembly_points']);
@@ -265,6 +264,8 @@ switch($_REQUEST['action']) {
     }
 
     if($folder === 'true') {
+      $description_id = !empty($description_id) ? $description_id : 'null';
+
       if($dbconn->query("UPDATE pricing_categories SET name = '$name', description_id = $description_id WHERE id = $id")) {
         http_response_code(200);
         echo displayToast('success', 'Successfully updated category.', "Updated $name");
@@ -292,7 +293,7 @@ switch($_REQUEST['action']) {
         http_response_code(200);
         echo displayToast('success', 'Successfully updated item.', "Updated $sku");
       } else {
-        http_response_code(400);
+        http_response_code(401);
         dbLogSQLErr($dbconn);
       }
     }
@@ -313,8 +314,14 @@ switch($_REQUEST['action']) {
     $depth = sanitizeInput($_REQUEST['depth']);
     $default_hinge = sanitizeInput($_REQUEST['default_hinge']);
     $image_type = sanitizeInput($_REQUEST['image_type']);
-    $recent_image = sanitizeInput($_REQUEST['recent_image']);
+
     $drawer_box_count = sanitizeInput($_REQUEST['drawer_box_count']);
+    $assembly_points = sanitizeInput($_REQUEST['assembly_points']);
+    $delivery_points = sanitizeInput($_REQUEST['delivery_points']);
+    $install_points = sanitizeInput($_REQUEST['install_points']);
+
+    $pricing_method = sanitizeInput($_REQUEST['pricing_method']);
+    $single_price =  sanitizeInput($_REQUEST['single_price']);
 
     for($i = 1; $i <= 14; $i++) {
       $pg[$i] = sanitizeInput($_REQUEST['pg'. $i]);
@@ -333,56 +340,16 @@ switch($_REQUEST['action']) {
       //<editor-fold desc="Image Upload">
       $upload = true; // by default, we should upload
 
-      $file_name = basename($_FILES['image']['name']);
-
-      $target_file = "../images/uploaded/$file_name";
-      $file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-      $img_check = getimagesize($_FILES['image']['tmp_name']);
-
-      if($img_check === false) {
-        $upload = false; // it's not an image, we're not uploading
-        http_response_code(400);
-
-        echo displayToast('error', 'File attachment is not an image.', 'File Not Image');
-      } else { // it is an image
-        if(file_exists($target_file)) {
-          $upload = false;
-          http_response_code(400);
-
-          echo displayToast('error', 'Image name already exists.', 'Image Name Exists');
-        }
-
-        // must be less than 1MB
-        if ($_FILES['image']['size'] > 1000000) {
-          $upload = false;
-          http_response_code(400);
-
-          echo displayToast('error', 'Image is too large, must be less than 1MB.', 'Image Too Large');
-        }
-
-        if($file_type !== 'jpg' && $file_type !== 'png' && $file_type !== 'jpeg' && $file_type !== 'gif') {
-          $upload = false;
-          http_response_code(400);
-
-          echo displayToast('error', 'Image must be JPG, PNG, JPEG or GIF.', 'Image Extension Mismatch');
-        }
-
-        // confusing, but if we're able to upload AND there's no upload error, don't display anything (we're using the response of "ID" in JQuery)
-        if($upload && !move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-          http_response_code(400);
-          echo displayToast('error', 'Unable to upload file. Contact IT.', 'File Not Uploaded');
-        }
-      }
-
-      $image_path = "uploaded/$file_name";
+      $perspective_image = !empty($_FILES['perspective_image']) ? uploadImage($_FILES['perspective_image'], "{$sku}_perspective") : $nom['image_perspective'];
+      $plan_image = !empty($_FILES['plan_image']) ? uploadImage($_FILES['plan_image'], "{$sku}_plan") : $nom['image_plan'];
+      $side_image = !empty($_FILES['side_image']) ? uploadImage($_FILES['side_image'], "{$sku}_side") : $nom['image_side'];
       //</editor-fold>
     } // TODO: Implement recent/library images
 
     $parentID = null;
     $result = array();
 
-    $dbconn->query("INSERT INTO pricing_nomenclature_details (description, title, image_path) VALUES ('$description', '$name', '$image_path');");
+    $dbconn->query("INSERT INTO pricing_nomenclature_details (description, title, image_perspective, image_plan, image_side) VALUES ('$description', '$name', '$perspective_image', '$plan_image', '$side_image');");
     $description_id = $dbconn->insert_id;
 
     // time to determine if the description has been created or not
@@ -410,18 +377,22 @@ switch($_REQUEST['action']) {
         http_response_code(200);
         echo $dbconn->insert_id;
       } else {
-        http_response_code(400);
+        http_response_code(401);
         dbLogSQLErr($dbconn);
       }
     } else {
       $width = !empty($width) ? $width : 0;
       $height = !empty($height) ? $height : 0;
       $depth = !empty($depth) ? $depth : 0;
+      $drawer_box_count = !empty($drawer_box_count) ? $drawer_box_count : 0;
+      $assembly_points = !empty($assembly_points) ? $assembly_points : 0;
+      $delivery_points = !empty($delivery_points) ? $delivery_points : 0;
+      $install_points = !empty($install_points) ? $install_points : 0;
 
       // now we're working on an item
       if($dbconn->query("INSERT INTO pricing_nomenclature (catalog_id, category_id, description_id, sku, width, height, depth, default_hinge, hinge, modification, 
-      cabinet, sqft, linft, fixed_price, percent, drawer_box_count) VALUES (1, $id, $description_id, '$sku', $width, $height, $depth, '$default_hinge', '$hinge_available', 
-      0, 1, 0, 0, 0, 0, $drawer_box_count)")) {
+      cabinet, sqft, linft, fixed_price, percent, drawer_box_count, assembly_points, delivery_points, install_points) VALUES (1, $id, $description_id, '$sku', $width, $height, 
+      $depth, '$default_hinge', '$hinge_available', 0, 1, 0, 0, 0, 0, $drawer_box_count, $assembly_points, $delivery_points, $install_points)")) {
         $item_id = $dbconn->insert_id;
 
         foreach($pg AS $key => $value) {
