@@ -1424,7 +1424,6 @@ $("body")
   })
   .on("click", "#modalAddCatItemSubmit", function() {
     let node = catalog.fancytree("getTree").getActiveNode(); // current node (where are we adding this?)
-    // let fields = $("#catalogAddEditItem").serialize(); // get all of the form information
     let formInfo = document.querySelector("#catalogAddEditItem");
 
     let disabled = $("#catalogAddEditItem").find(":input:disabled").removeAttr("disabled");
@@ -1448,6 +1447,18 @@ $("body")
 
     if(!node.isFolder()) { // if the current selection is an item
       catID = node.parent.key; // get the current parent for category ID
+    }
+
+    if(pricingVars.pasteBlob['perspective_image'] !== undefined) {
+      fieldData.append("perspective_image", pricingVars.pasteBlob['perspective_image'], '1.png'); // filename is only used to determine the type of file in PHP
+    }
+
+    if(pricingVars.pasteBlob['plan_image'] !== undefined) {
+      fieldData.append("plan_image", pricingVars.pasteBlob['plan_image'], '2.png'); // filename is only used to determine the type of file in PHP
+    }
+
+    if(pricingVars.pasteBlob['side_image'] !== undefined) {
+      fieldData.append("side_image", pricingVars.pasteBlob['side_image'], '3.png'); // filename is only used to determine the type of file in PHP
     }
 
     fieldData.append("key", catID);

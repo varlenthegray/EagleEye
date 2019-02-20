@@ -9,7 +9,9 @@ use catalog\catalog as Catalog;
 $cat = new Catalog;
 
 function uploadImage($image, $image_name) {
-  if((int)$image['error'] !== 4) {
+  if(($image_name !== null) && ((int)$image['error'] !== 4)) {
+    dbLogDebug('Uploading image.');
+
     $upload = true; // by default, we should upload
     $file_name = basename($image['name']);
     $target_file = "../images/uploaded/$file_name";
@@ -43,6 +45,10 @@ function uploadImage($image, $image_name) {
 
       return "uploaded/{$image_name}.{$file_type}";
     }
+  } else {
+//    echo "<script>console.log('Not uploading image.');</script>";
+    dbLogDebug('Not uploading image.');
+    return '';
   }
 }
 
@@ -336,15 +342,10 @@ switch($_REQUEST['action']) {
     $hinge_available = json_encode($hinge_available);
 
     // if it's a new image, we're going to upload a file
-    if($image_type === 'new') {
-      //<editor-fold desc="Image Upload">
-      $upload = true; // by default, we should upload
-
-      $perspective_image = !empty($_FILES['perspective_image']) ? uploadImage($_FILES['perspective_image'], "{$sku}_perspective") : $nom['image_perspective'];
-      $plan_image = !empty($_FILES['plan_image']) ? uploadImage($_FILES['plan_image'], "{$sku}_plan") : $nom['image_plan'];
-      $side_image = !empty($_FILES['side_image']) ? uploadImage($_FILES['side_image'], "{$sku}_side") : $nom['image_side'];
-      //</editor-fold>
-    } // TODO: Implement recent/library images
+    $perspective_image = !empty($_FILES['perspective_image']) ? uploadImage($_FILES['perspective_image'], "{$sku}_perspective") : null;
+    $plan_image = !empty($_FILES['plan_image']) ? uploadImage($_FILES['plan_image'], "{$sku}_plan") : null;
+    $side_image = !empty($_FILES['side_image']) ? uploadImage($_FILES['side_image'], "{$sku}_side") : null;
+    // TODO: Implement recent/library images
 
     $parentID = null;
     $result = array();

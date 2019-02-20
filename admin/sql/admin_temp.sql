@@ -222,3 +222,5 @@ alter table batch_global add show_as varchar(20) null;
 
 UPDATE batch_global SET show_as = 'checkbox' WHERE category_id = 34 OR category_id = 12 OR category_id = 15 OR category_id = 35;
 UPDATE batch_global SET show_as = 'select' WHERE category_id != 34 AND category_id != 12 AND category_id != 15 AND category_id != 35;
+
+TRUNCATE log_debug;
