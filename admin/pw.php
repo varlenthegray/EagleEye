@@ -4,4 +4,4 @@
 //echo password_hash("2147", PASSWORD_DEFAULT);
 //echo password_hash("CB2018!!", PASSWORD_DEFAULT);
 //echo password_hash('105DParks9633', PASSWORD_DEFAULT);
-echo password_hash('Red14132', PASSWORD_DEFAULT);
+echo password_hash('bread-hunting-ahead-4', PASSWORD_DEFAULT);
