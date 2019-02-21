@@ -1,5 +1,9 @@
 <?php
 require_once '../../../includes/header_start.php';
+require_once '../../../includes/classes/dropdown_options.php';
+
+use DropdownOpts\dropdown_options;
+$drop_opts = new dropdown_options();
 
 $so_num = sanitizeInput($_REQUEST['so_num']);
 
@@ -28,7 +32,7 @@ $so = $so_qry->fetch_assoc();
                 <table style="width: 100%;">
                   <tr>
                     <td style="width: 33.3%;"><input type="text" name="project_city" class="form-control" placeholder="Job Site City" value="<?php echo $so['project_city']; ?>" id="project_city"></td>
-                    <td style="width: 33.3%;"><select class="form-control" id="project_state" name="project_state"><?php echo getStateOpts($so['project_state']); ?></select></td>
+                    <td style="width: 33.3%;"><select class="form-control" id="project_state" name="project_state"><?php echo $drop_opts->getStateOpts($so['project_state']); ?></select></td>
                     <td style="width: 33.3%;"><input type="text" value="<?php echo $so['project_zip']; ?>" name="project_zip" class="form-control" placeholder="Job Site Zip" id="project_zip"></td>
                   </tr>
                 </table>
@@ -117,7 +121,7 @@ $so = $so_qry->fetch_assoc();
                 <table style="width: 100%;">
                   <tr>
                     <td style="width: 33.3%;"><input type="text" value="<?php echo $so['project_city']; ?>" name="project_city" class="form-control" placeholder="Project City" id="project_city"></td>
-                    <td style="width: 33.3%;"><select class="form-control" id="project_state" name="project_state"><?php echo getStateOpts($so['project_state']); ?></select></td>
+                    <td style="width: 33.3%;"><select class="form-control" id="project_state" name="project_state"><?php echo $drop_opts->getStateOpts($so['project_state']); ?></select></td>
                     <td style="width: 33.3%;"><input type="text" value="<?php echo $so['project_zip']; ?>" name="project_zip" class="form-control" placeholder="Project Zip" id="project_zip"></td>
                   </tr>
                 </table>
@@ -180,7 +184,7 @@ $so = $so_qry->fetch_assoc();
                 <table style="width: 100%;">
                   <tr>
                     <td style="width: 33.3%;"><input type="text" value="<?php echo $so['secondary_city']; ?>" name="secondary_city" class="form-control" placeholder="Secondary City" id="secondary_city"></td>
-                    <td style="width: 33.3%;"><select class="form-control" id="secondary_state" name="secondary_state"><?php echo getStateOpts($so['secondary_state']); ?></select></td>
+                    <td style="width: 33.3%;"><select class="form-control" id="secondary_state" name="secondary_state"><?php echo $drop_opts->getStateOpts($so['secondary_state']); ?></select></td>
                     <td style="width: 33.3%;"><input type="text" value="<?php echo $so['secondary_zip']; ?>" name="secondary_zip" class="form-control" placeholder="Secondary Zip" id="secondary_zip"></td>
                   </tr>
                 </table>
@@ -220,7 +224,7 @@ $so = $so_qry->fetch_assoc();
                 <table style="width: 100%;">
                   <tr>
                     <td style="width: 33.3%;"><input type="text" value="<?php echo $so['contractor_city']; ?>" name="contractor_city" class="form-control" placeholder="Contractor City" id="contractor_city"></td>
-                    <td style="width: 33.3%;"><select class="form-control" id="contractor_state" name="contractor_state"><?php echo getStateOpts($so['contractor_state']); ?></select></td>
+                    <td style="width: 33.3%;"><select class="form-control" id="contractor_state" name="contractor_state"><?php echo $drop_opts->getStateOpts($so['contractor_state']); ?></select></td>
                     <td style="width: 33.3%;"><input type="text" value="<?php echo $so['contractor_zip']; ?>" name="contractor_zip" class="form-control" placeholder="Contractor Zip" id="contractor_zip"></td>
                   </tr>
                 </table>
@@ -282,7 +286,7 @@ $so = $so_qry->fetch_assoc();
                 <table style="width: 100%;">
                   <tr>
                     <td style="width: 33.3%;"><input type="text" value="<?php echo $so['billing_city']; ?>" name="billing_city" class="form-control" placeholder="Billing City" id="billing_city"></td>
-                    <td style="width: 33.3%;"><select class="form-control" id="billing_state" name="billing_state"><?php echo getStateOpts($so['billing_state']); ?></select></td>
+                    <td style="width: 33.3%;"><select class="form-control" id="billing_state" name="billing_state"><?php echo $drop_opts->getStateOpts($so['billing_state']); ?></select></td>
                     <td style="width: 33.3%;"><input type="text" value="<?php echo $so['billing_zip']; ?>" name="billing_zip" class="form-control" placeholder="Billing Zip" id="billing_zip"></td>
                   </tr>
                 </table>

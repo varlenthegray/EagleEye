@@ -73,14 +73,10 @@ function makeTree($parent_id) {
         }
 
         // if the image isn't empty, update the image
-        if(!empty($item['image_path'])) {
-          $img = "/html/pricing/images/{$item['image_path']}";
-        } else{
-          if(!empty($item['image_perspective'])) {
-            $img = "/html/pricing/images/{$item['image_perspective']}";
-          } else {
-            $img = 'fa fa-magic';
-          }
+        if(!empty($item['image_perspective'])) {
+          $img = "/html/pricing/images/{$item['image_perspective']}";
+        } else {
+          $img = 'fa fa-magic';
         }
 
         // add this item to the children of that array

@@ -18,7 +18,9 @@ if(!empty($id)) {
       $price_groups[$pg['price_group_id']] = $pg['price'];
     }
 
-    $info_qry = $dbconn->query("SELECT pn.*, pnd.description, pnd.image_path, pnd.title FROM pricing_nomenclature pn LEFT JOIN pricing_nomenclature_details pnd on pn.description_id = pnd.id WHERE pn.id = $id");
+    $info_qry = $dbconn->query("SELECT pn.*, pnd.description, pnd.image_path, CONCAT(pnd.image_perspective, '?', UUID_SHORT()) AS image_perspective, 
+       CONCAT(pnd.image_side, '?', UUID_SHORT()) AS image_side, CONCAT(pnd.image_plan, '?', UUID_SHORT()) AS image_plan, pnd.title 
+    FROM pricing_nomenclature pn LEFT JOIN pricing_nomenclature_details pnd on pn.description_id = pnd.id WHERE pn.id = $id");
   }
 }
 
@@ -33,6 +35,7 @@ if($info_qry && $info_qry->num_rows > 0) {
   $add_modify = 'Add';
   $current_img = 'disabled';
   $recent_img = 'checked';
+  $new_img = 'checked';
 }
 
 $title = $type === 'folder' || $type === 'newSameFolder' || $type === 'newSubFolder' ? 'Category' : 'Item';
@@ -46,6 +49,28 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
 
   .add_item_table td {
     padding: 1px 4px;
+  }
+
+  .copyPaste {
+    border: solid 1px #aaa;
+    width: 100px;
+    height: 100px;
+    margin-top: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 300ms all;
+    position: relative;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 95%;
+  }
+
+  .activeImage {
+    box-shadow: 0 0 20px #0a6aa1;
+  }
+
+  .subtable {
+    padding: 0 !important;
   }
 </style>
 
@@ -122,7 +147,7 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                     <td><input type="text" class="c_input" name="sku" placeholder='<?php echo $info['sku']; ?> Name' value='<?php echo $info['sku']; ?>' /> </td>
                   </tr>
                   <tr>
-                    <td colspan="2" style="padding:0;">
+                    <td colspan="2" class="subtable">
                       <table width="100%">
                         <tr>
                           <td><label>Width:</label></td>
@@ -138,13 +163,35 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                   <tr>
                     <td><label>Default Hinge:</label></td>
                     <td>
+                      <?php
+                      $dh_checked = [];
+
+                      switch($info['default_hinge']) {
+                        case 'tbd':
+                          $dh_checked['tbd'] = 'checked';
+                          break;
+                        case 'left':
+                          $dh_checked['left'] = 'checked';
+                          break;
+                        case 'right':
+                          $dh_checked['right'] = 'checked';
+                          break;
+                        case 'pair':
+                          $dh_checked['pair'] = 'checked';
+                          break;
+                        case 'none':
+                          $dh_checked['none'] = 'checked';
+                          break;
+                      }
+                      ?>
+
                       <table>
                         <tr>
-                          <td><input class="c_input" id="default_hinge_tbd" value="tbd" name="default_hinge" type="radio" checked><label for="default_hinge_tbd">&nbsp; TBD</label></td>
-                          <td><input class="c_input" id="default_hinge_left" value="left" name="default_hinge" type="radio"><label for="default_hinge_left">&nbsp; Left</label></td>
-                          <td><input class="c_input" id="default_hinge_right" value="right" name="default_hinge" type="radio"><label for="default_hinge_right">&nbsp; Right</label></td>
-                          <td><input class="c_input" id="default_hinge_pair" value="pair" name="default_hinge" type="radio"><label for="default_hinge_pair">&nbsp; Pair</label></td>
-                          <td><input class="c_input" id="default_hinge_none" value="none" name="default_hinge" type="radio"><label for="default_hinge_none">&nbsp; None</label></td>
+                          <td><input class="c_input" id="default_hinge_tbd" value="tbd" name="default_hinge" type="radio" <?php echo $dh_checked['tbd']; ?>><label for="default_hinge_tbd">&nbsp; TBD</label></td>
+                          <td><input class="c_input" id="default_hinge_left" value="left" name="default_hinge" type="radio" <?php echo $dh_checked['left']; ?>><label for="default_hinge_left">&nbsp; Left</label></td>
+                          <td><input class="c_input" id="default_hinge_right" value="right" name="default_hinge" type="radio" <?php echo $dh_checked['right']; ?>><label for="default_hinge_right">&nbsp; Right</label></td>
+                          <td><input class="c_input" id="default_hinge_pair" value="pair" name="default_hinge" type="radio" <?php echo $dh_checked['pair']; ?>><label for="default_hinge_pair">&nbsp; Pair</label></td>
+                          <td><input class="c_input" id="default_hinge_none" value="none" name="default_hinge" type="radio" <?php echo $dh_checked['none']; ?>><label for="default_hinge_none">&nbsp; None</label></td>
                         </tr>
                       </table>
                     </td>
@@ -152,13 +199,25 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                   <tr>
                     <td><label>Hinging Available:</label></td>
                     <td>
+                      <?php
+                      $hinge_available = null;
+
+                      if(false !== strpos($info['hinge'], '[')) {
+                        $hinge_available = json_decode($info['hinge'], true);
+
+                        foreach($hinge_available AS $key => $line) {
+                          $hinge_available[$line] = 'checked';
+                        }
+                      }
+                      ?>
+
                       <table>
                         <tr>
-                          <td><input class="c_input" id="can_hinge_tbd" value="tbd" name="hinge_available[]" type="checkbox" checked><label for="can_hinge_tbd">&nbsp; TBD</label></td>
-                          <td><input class="c_input" id="can_hinge_left" value="left" name="hinge_available[]" type="checkbox"><label for="can_hinge_left">&nbsp; Left</label></td>
-                          <td><input class="c_input" id="can_hinge_right" value="right" name="hinge_available[]" type="checkbox"><label for="can_hinge_right">&nbsp; Right</label></td>
-                          <td><input class="c_input" id="can_hinge_pair" value="pair" name="hinge_available[]" type="checkbox"><label for="can_hinge_pair">&nbsp; Pair</label></td>
-                          <td><input class="c_input" id="can_hinge_none" value="none" name="hinge_available[]" type="checkbox"><label for="can_hinge_none">&nbsp; None</label></td>
+                          <td><input class="c_input" id="can_hinge_tbd" value="tbd" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['tbd']; ?>><label for="can_hinge_tbd">&nbsp; TBD</label></td>
+                          <td><input class="c_input" id="can_hinge_left" value="left" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['left']; ?>><label for="can_hinge_left">&nbsp; Left</label></td>
+                          <td><input class="c_input" id="can_hinge_right" value="right" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['right']; ?>><label for="can_hinge_right">&nbsp; Right</label></td>
+                          <td><input class="c_input" id="can_hinge_pair" value="pair" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['pair']; ?>><label for="can_hinge_pair">&nbsp; Pair</label></td>
+                          <td><input class="c_input" id="can_hinge_none" value="none" name="hinge_available[]" type="checkbox" <?php echo $hinge_available['none']; ?>><label for="can_hinge_none">&nbsp; None</label></td>
                         </tr>
                       </table>
                     </td>
@@ -167,34 +226,85 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                     <td><label>Image:</label></td>
                     <td>
                       <input class="c_input" id="item_current_image" value="current" name="image_type" type="radio" <?php echo $current_img; ?>> <label for="item_current_image"> Use Current Images</label>
-                      <input class="c_input" id="item_new_image" value="new" name="image_type" type="radio" checked> <label for="item_new_image"> Upload New Images</label>
+                      <input class="c_input" id="item_new_image" value="new" name="image_type" type="radio" <?php echo $new_img; ?>> <label for="item_new_image"> Upload New Images</label>
                     </td>
                   </tr>
                   <tr style="height:5px;">
                     <td colspan="2"></td>
                   </tr>
-                  <tr class="displayImage" id="displayCurrentImage">
-                    <td><label>Current Image:</label></td>
-                    <td><img style="max-width:100px;max-height:100px;" src="/html/pricing/images/<?php echo $info['image_path'] ?>" /></td>
+
+                  <tr class="displayImage displayCurrentImage">
+                    <td><label>Image 1:</label></td>
+                    <td><img style="max-width:100px;max-height:100px;" src="/html/pricing/images/<?php echo $info['image_perspective'] ?>" /></td>
                   </tr>
-                  <tr class="displayImage displayNewImageUpload">
+                  <tr class="displayImage displayCurrentImage">
+                    <td><label>Image 2:</label></td>
+                    <td><?php echo !empty($info['image_plan']) ? "<img style='max-width:100px;max-height:100px;' src='/html/pricing/images/{$info['image_plan']}' />" : 'None'; ?></td>
+                  </tr>
+                  <tr class="displayImage displayCurrentImage">
+                    <td><label>Image 3:</label></td>
+                    <td><?php echo !empty($info['image_side']) ? "<img style='max-width:100px;max-height:100px;' src='/html/pricing/images/{$info['image_side']}' />" : 'None'; ?></td>
+                  </tr>
+
+                  <!--<tr class="displayImage displayNewImageUpload">
                     <td><label>Perspective Image:</label></td>
-                    <td><input type="file" id="perspective_image" class="c_input" style="border:none;" name="perspective_image" /></td>
+                    <td><input type="file" id="perspective_image" class="c_input" style="border:none;" name="perspective_image1" /></td>
                   </tr>
                   <tr class="displayImage displayNewImageUpload">
                     <td><label>Plan Image:</label></td>
-                    <td><input type="file" id="plan_image" class="c_input" style="border:none;" name="plan_image" /></td>
+                    <td><input type="file" id="plan_image" class="c_input" style="border:none;" name="plan_image1" /></td>
                   </tr>
                   <tr class="displayImage displayNewImageUpload">
                     <td><label>Side/Front Image:</label></td>
-                    <td><input type="file" id="side_image" class="c_input" style="border:none;" name="side_image" /></td>
+                    <td><input type="file" id="side_image" class="c_input" style="border:none;" name="side_image1" /></td>
+                  </tr>-->
+                  <tr class="displayImage displayNewImageUpload">
+                    <td>&nbsp;</td>
+                    <td>Click an image box, then CTRL/CMD-V to paste an image.</td>
+                  </tr>
+                  <tr class="displayImage displayNewImageUpload">
+                    <td><label>Image 1:</label></td>
+                    <td><div class="span4 copyPaste" type="file" name="perspective_image" ></div></td>
+                  </tr>
+                  <tr class="displayImage displayNewImageUpload">
+                    <td><label>Image 2:</label></td>
+                    <td><div class="span4 copyPaste" type="file" name="plan_image" ></div></td>
+                  </tr>
+                  <tr class="displayImage displayNewImageUpload">
+                    <td><label>Image 3:</label></td>
+                    <td><div class="span4 copyPaste" type="file" name="side_image" ></div></td>
                   </tr>
                   <tr style="height:5px;">
                     <td colspan="2"><input type="hidden" id="image_description_id" name="image_description_id" value="<?php echo $info['description_id']; ?>" /></td>
                   </tr>
                   <tr>
+                    <td colspan="2" style="height:5px;"></td>
+                  </tr>
+                  <tr>
                     <td colspan="2">
-                      <table style="width:75%;">
+                      <table width="100%" class="subtable">
+                        <tr>
+                          <td><label for="drawer_box_count">Drawer Box Count:</label></td>
+                          <td><input type="text" class="c_input" name="drawer_box_count" placeholder="0" value="<?php echo $info['drawer_box_count']; ?>" style="width:25px;" /></td>
+                          <td><label for="assembly_points">Assembly Points:</label></td>
+                          <td><input type="text" class="c_input" name="assembly_points" placeholder="0" value="<?php echo $info['assembly_points']; ?>" style="width:25px;" /></td>
+                          <td><label for="delivery_points">Delivery Points:</label></td>
+                          <td><input type="text" class="c_input" name="delivery_points" placeholder="0" value="<?php echo $info['delivery_points']; ?>" style="width:25px;" /></td>
+                          <td><label for="install_points">Install Points:</label></td>
+                          <td><input type="text" class="c_input" name="install_points" placeholder="0" value="<?php echo $info['install_points']; ?>" style="width:25px;" /></td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="2" style="height:5px;"></td>
+                  </tr>
+                  <tr>
+                    <td colspan="2"><input type="radio" name="pricing_method" id="pg_pricing_method" value="pg" class="c_input price_table" checked /> <label for="pg_pricing_method"><u>Price Groups: Enter Net Price into PG4 (Remaining PG's auto-calculated)</u></label></td>
+                  </tr>
+                  <tr id="price_group_table">
+                    <td colspan="2">
+                      <table width="75%" class="subtable">
                         <colgroup>
                           <col width="5%">
                           <col width="16%">
@@ -209,9 +319,6 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                           <col width="16%">
                         </colgroup>
                         <tbody>
-                        <tr>
-                          <td colspan="11"><b><u>Price Groups: Enter Net Price into PG4 (Remaining PG's auto-calculated)</u></b></td>
-                        </tr>
                         <tr>
                           <td><label for="ai_pg_1">PG1:</label></td>
                           <td><input type="text" id="pg1" placeholder="0.00" class="c_input price_group_input" name="pg1" value="<?php echo $price_groups[1]; ?>" disabled /> </td>
@@ -263,11 +370,17 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                     </td>
                   </tr>
                   <tr>
-                    <td colspan="2" style="height:5px;"></td>
+                    <td colspan="2"><input type="radio" name="pricing_method" id="single_pricing_method" value="single" class="c_input price_table" /> <label for="single_pricing_method"><u>Single base price</u></label></td>
                   </tr>
-                  <tr>
-                    <td><label for="drawer_box_count">Drawer Box Count:</label></td>
-                    <td><input type="text" class="c_input" name="drawer_box_count" placeholder="0" value="<?php echo $info['drawer_box_count']; ?>" style="width:25px;" /></td>
+                  <tr id="single_price_table" style="display:none;">
+                    <td colspan="2">
+                      <table width="25%" class="subtable">
+                        <tr>
+                          <td><label for="single_price">Price:</label></td>
+                          <td><input type="text" id="single_price" placeholder="0.00" class="c_input" name="single_price" value="<?php echo $info['single_price']; ?>" /> </td>
+                        </tr>
+                      </table>
+                    </td>
                   </tr>
                 <?php } ?>
               </tbody>
@@ -284,9 +397,20 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
 </div>
 
 <script>
-  // TODO: Paste image in - https://codepen.io/netsi1964/pen/IoJbg
   // TODO: Image picker - https://rvera.github.io/image-picker/
   $(function() {
     $("#catalogAddEditItem input[name='image_type']:checked").trigger("change"); // show/hide based on what's currently selected
   });
+
+  $(".price_table").on("change", function() {
+    if($("input[name='pricing_method']:checked").val() === 'pg') {
+      $("#price_group_table").show();
+      $("#single_price_table").hide();
+    } else {
+      $("#price_group_table").hide();
+      $("#single_price_table").show();
+    }
+  });
+
+  pricingFunction.pasteImage();
 </script>

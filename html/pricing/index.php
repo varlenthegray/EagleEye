@@ -42,8 +42,32 @@ $room = $room_qry->fetch_assoc();
 $so_qry = $dbconn->query("SELECT * FROM sales_order WHERE so_num = '{$room['so_parent']}'");
 $so = $so_qry->fetch_assoc();
 
-$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$so['dealer_code']}'");
-$dealer = $dealer_qry->fetch_assoc();
+/*$dealer_qry = $dbconn->query("SELECT d.*, c.first_name, c.last_name, c.company_name FROM dealers d LEFT JOIN contact c ON d.id = c.dealer_id WHERE d.dealer_id = '{$so['dealer_code']}'");
+$dealer = $dealer_qry->fetch_assoc();*/
+
+$contact_qry = $dbconn->query("SELECT
+       so.id AS soID,
+       c.id AS cID,
+       r.id AS rID,
+       cao.`option` AS billing_type,
+       c.address AS contactAddress, c.city AS contactCity, c.state AS contactState, c.zip AS contactZip, c.unique_id,
+       so.project_addr AS projectAddress, so.project_city AS projectCity, so.project_state AS projectState, so.project_zip AS projectZip,
+       cc.ship_address AS shipAddress, cc.ship_city AS shipCity, cc.ship_state AS shipState, cc.ship_zip AS shipZip, cc.multiplier,
+       r.ship_address AS batchAddress, r.ship_city AS batchCity, r.ship_state AS batchState, r.ship_zip AS batchZip,
+       r.multi_room_ship, r.ship_cost, r.individual_bracket_buildout, r.payment_deposit, r.payment_del_ptl, r.payment_final, r.room_name,
+       r.order_status, r.ship_date, r.delivery_date, r.ship_name, r.sample_seen_approved, r.sample_unseen_approved, r.sample_requested,
+       r.sample_reference, r.esig, r.esig_ip, r.esig_time, r.custom_vin_info, r.product_type, r.days_to_ship, r.ship_via, r.payment_method,
+       r.construction_method, r.species_grade, r.carcass_material, r.door_design, r.panel_raise_door, r.panel_raise_sd, r.panel_raise_td,
+       r.style_rail_width, r.edge_profile, r.framing_bead, r.framing_options, r.drawer_boxes, r.drawer_guide, r.finish_code, r.sheen,
+       r.glaze, r.glaze_technique, r.antiquing, r.worn_edges, r.distress_level, r.green_gard
+FROM rooms r
+  LEFT JOIN sales_order so on r.so_parent = so.so_num
+  LEFT JOIN contact c ON so.contact_id = c.id
+  LEFT JOIN contact_customer cc on c.id = cc.contact_id
+  LEFT JOIN contact_add_options cao on cc.billing_type = cao.id
+WHERE r.id = $room_id;");
+
+$contact = $contact_qry->fetch_assoc();
 
 // This section refers to the submit buttons and disabling of them
 $existing_quote_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
@@ -159,7 +183,7 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <td width="25%">Dealer:</td>
-                <td class="text-bold"><?php echo "{$dealer['dealer_id']}_{$dealer['dealer_name']} - {$dealer['contact']}"; ?></td>
+                <td class="text-bold"><?php echo "{$contact['unique_id']}_{$contact['company_name']} - {$contact['first_name']} {$contact['last_name']}"; ?></td>
               </tr>
               <tr>
                 <td>Project Name:</td>
@@ -219,7 +243,7 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <td>Billing Type:</td>
-                <td colspan="2"><strong><?php echo $dealer['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
+                <td colspan="2"><strong><?php echo $contact['account_type']; ?></strong></td>
               </tr>
               <tr>
                 <td>Order Type:</td>
@@ -265,7 +289,7 @@ if($pg_qry->num_rows > 0) {
               </tr>
               <tr>
                 <?php
-                $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $dealer['shipping_zip'];
+                $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $contact['contactZip'];
                 $ship_zone_info = calcShipZone($shipZone);
 
                 if($room['ship_cost'] === null) {
@@ -633,7 +657,7 @@ if($pg_qry->num_rows > 0) {
             <tr class="border_thin_bottom">
               <td class="total_text">Multiplier:</td>
               <td class="total_text">&nbsp;</td>
-              <td class="text-md-right total_text" id="itemListMultiplier"><?php echo $dealer['multiplier']; ?></td>
+              <td class="text-md-right total_text" id="itemListMultiplier"><?php echo $contact['multiplier']; ?></td>
             </tr>
             <tr class="border_thin_bottom">
               <td class="total_text">NET:</td>
@@ -945,12 +969,12 @@ if($pg_qry->num_rows > 0) {
   echo "active_room_id = $room_id;";
   echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
 
-  $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $dealer['shipping_zip'];
+  $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $contact['contactZip'];
   $ship_zone_info = calcShipZone($shipZone);
   $shipInfo = json_encode($ship_zone_info, true);
 
   echo "var calcShipZip = '{$room['ship_zip']}';";
-  echo "var calcDealerShipZip = '{$dealer['shipping_zip']}';";
+  echo "var calcDealerShipZip = '{$contact['contactZip']}';";
   echo "var calcShipInfo = '$shipInfo';";
   echo "var customFieldInfo = JSON.parse('{$room['custom_vin_info']}');";
   ?>

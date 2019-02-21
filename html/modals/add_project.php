@@ -1,10 +1,14 @@
 <?php
 require_once '../../includes/header_start.php';
+require_once '../../includes/classes/dropdown_options.php';
 
-$company_id = sanitizeInput($_REQUEST['id']);
+use DropdownOpts\dropdown_options;
+$drop_opts = new dropdown_options();
 
-$company_qry = $dbconn->query("SELECT * FROM contact_company WHERE id = $company_id");
-$company = $company_qry->fetch_assoc();
+$contact_id = sanitizeInput($_REQUEST['id']);
+
+$contact_qry = $dbconn->query("SELECT * FROM contact WHERE id = $contact_id");
+$contact = $contact_qry->fetch_assoc();
 
 if(!(bool)$_SESSION['userInfo']['dealer']) {
   $qry = $dbconn->query("SELECT DISTINCT so_num FROM sales_order WHERE so_num REGEXP '^[0-9]+$' ORDER BY so_num DESC LIMIT 0,1");
@@ -22,13 +26,15 @@ if(!(bool)$_SESSION['userInfo']['dealer']) {
 
   $next_so = 'D' . ($result['id'] + 1);
 }
+
+$project_name = !empty($contact['company_name']) ? $contact['company_name'] : "{$contact['first_name']} {$contact['last_name']}";
 ?>
 
 <div class="modal-dialog" role="document">
   <div class="modal-content">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h4 class="modal-title">Add Project to <?php echo $company['name'] ?></h4>
+      <h4 class="modal-title">Add Project to <?php echo $project_name; ?></h4>
     </div>
     <div class="modal-body">
       <div class="row">
@@ -56,7 +62,7 @@ if(!(bool)$_SESSION['userInfo']['dealer']) {
               </tr>
               <tr>
                 <td><label for="project_state">State:</label></td>
-                <td><select class="c_input" id="project_state" name="project_state"><?php echo getStateOpts(null); ?></select></td>
+                <td><select class="c_input" id="project_state" name="project_state"><?php echo $drop_opts->getStateOpts(null); ?></select></td>
               </tr>
               <tr>
                 <td><label for="project_zip">Zip:</label></td>
@@ -68,7 +74,7 @@ if(!(bool)$_SESSION['userInfo']['dealer']) {
               </tr>
             </table>
 
-            <input type="hidden" name="company_id" value="<?php echo $company_id; ?>">
+            <input type="hidden" name="contact_id" value="<?php echo $contact_id; ?>">
           </form>
         </div>
       </div>

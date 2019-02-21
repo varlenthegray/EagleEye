@@ -1,5 +1,9 @@
 <?php
 require_once '../../includes/header_start.php';
+require_once '../../includes/classes/dropdown_options.php';
+
+use DropdownOpts\dropdown_options;
+$drop_opts = new dropdown_options();
 
 $title = 'Add';
 $submit_btn = 'submit_new_contact';
@@ -138,7 +142,7 @@ $dealer_display = ($type === '2') ? 'block' : 'none';
               </tr>
               <tr>
                 <td><label for="shipping_state">Shipping State:</label></td>
-                <td><select class="c_input" id="shipping_state" name="shipping_state"><?php echo getStateOpts($shipping_state); ?></select></td>
+                <td><select class="c_input" id="shipping_state" name="shipping_state"><?php echo $drop_opts->getStateOpts($shipping_state); ?></select></td>
               </tr>
               <tr>
                 <td><label for="shipping_zip">Shipping Zip:</label></td>
@@ -165,7 +169,7 @@ $dealer_display = ($type === '2') ? 'block' : 'none';
               </tr>
               <tr>
                 <td><label for="billing_state">Billing State:</label></td>
-                <td><select class="c_input" id="billing_state" name="billing_state"><?php echo getStateOpts($shipping_state); ?></select></td>
+                <td><select class="c_input" id="billing_state" name="billing_state"><?php echo $drop_opts->getStateOpts($shipping_state); ?></select></td>
               </tr>
               <tr>
                 <td><label for="billing_zip">Billing Zip:</label></td>

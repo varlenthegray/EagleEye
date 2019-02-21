@@ -1,4 +1,4 @@
-/*global active_room_id:true*//*global active_so_num:true*/
+/*global active_room_id:true*//*global active_so_num:true*//*global unsaved:true*/
 
 var crmNav = {
   tree: $("#searchResultTree"),
@@ -9,7 +9,8 @@ var crmNav = {
   companyID: null, // company id # (if available)
   projectID: null, // project id # (if available)
   batchID: null, // batch id # (if available)
-  navKeys: null,
+  navKeys: null, // all keys for the navigation tree going up
+  searchTimer: null, // the timer for searching based on keyup
 
   initTree: function() {
     this.tree.fancytree({
@@ -92,7 +93,7 @@ var crmNav = {
         crmNav.navKeys = keys;
 
         setTimeout(function() {
-          $.post("/html/crm/templates/crm_view.php", {'keys': JSON.stringify(keys)}, function(data) { // pull the data for the main tab of the CRM
+          $.post("/html/crm/templates/crm_view.php", {'keys': JSON.stringify(keys), 'type': crmNav.activatedType}, function(data) { // pull the data for the main tab of the CRM
             crmMain.body.html(data); // insert it into the body
           });
         }, 50);
@@ -131,43 +132,51 @@ var crmNav = {
   },
   startListening: function() {
     $("#crm_search").keyup(function() {
-      let search = $(this).val();
+      let $this = $(this);
 
-      if(search.length > 0) {
-        crmNav.getTree.clear();
-
-        $(".crm_search_results").show();
-
-        crmNav.searchAjax = $.ajax({
-          type: 'POST',
-          data: 'search=' + search,
-          url: '/html/crm/ajax/results_tree.php',
-          beforeSend: function() {
-            if(crmNav.searchAjax !== null) {
-              crmNav.searchAjax.abort();
-            }
-          },
-          success: function(data) {
-            crmNav.getTree.reload(JSON.parse(data));
-
-            crmNav.searchAjax = null;
-          }
-        });
-
-        /*// begin custom match for FancyTree data based on altData
-        let cSearch = new RegExp($(this).val(), 'i'); // create a new insensitive regex on the search value
-
-        // filter the nodes with a custom function
-        crmNav.getTree.filterNodes(function(node) {
-          return cSearch.test(node.data.altData); // return the match
-        });*/
-      } else {
-        $(".crm_search_results").hide();
-        crmNav.search = null;
-        crmNav.getTree.clearFilter();
+      if(crmNav.searchTimer !== null) {
+        window.clearTimeout(crmNav.searchTimer);
       }
 
-      crmNav.clearMain();
+      crmNav.searchTimer = setTimeout(function() {
+        let search = $this.val();
+
+        if(search.length > 0) {
+          crmNav.getTree.clear();
+
+          $(".crm_search_results").show();
+
+          crmNav.searchAjax = $.ajax({
+            type: 'POST',
+            data: 'search=' + search,
+            url: '/html/crm/ajax/results_tree.php',
+            beforeSend: function() {
+              if(crmNav.searchAjax !== null) {
+                crmNav.searchAjax.abort();
+              }
+            },
+            success: function(data) {
+              crmNav.getTree.reload(JSON.parse(data));
+
+              crmNav.searchAjax = null;
+            }
+          });
+
+          /*// begin custom match for FancyTree data based on altData
+          let cSearch = new RegExp($(this).val(), 'i'); // create a new insensitive regex on the search value
+
+          // filter the nodes with a custom function
+          crmNav.getTree.filterNodes(function(node) {
+            return cSearch.test(node.data.altData); // return the match
+          });*/
+        } else {
+          $(".crm_search_results").hide();
+          crmNav.search = null;
+          crmNav.getTree.clearFilter();
+        }
+
+        crmNav.clearMain();
+      }, 500);
     });
 
     $("#display_widgets").click(function() {
@@ -176,6 +185,12 @@ var crmNav = {
 
     $("#searchFilter").change(function() {
       crmNav.checkFilters();
+    });
+
+    $(".nav_add_new").click(function() {
+      $.post("/html/crm/modal/add_new.php", function(data) {
+        $("#modalGlobal").html(data).modal('show');
+      });
     });
   },
   showHideCheckbox: function(checkbox, element) {

@@ -24,17 +24,14 @@ require '../../includes/header_start.php';
 <div class='info-popup'>
   <div class="image">
     <div class="img-container img-perspective">
-      <h5>Perspective</h5>
       <img src='' />
     </div>
 
     <div class="img-container img-plan">
-      <h5>Plan</h5>
       <img src='' />
     </div>
 
     <div class="img-container img-side">
-      <h5>Side/Front</h5>
       <img src='' />
     </div>
   </div>

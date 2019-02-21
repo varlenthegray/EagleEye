@@ -28,7 +28,7 @@ $contact_id = sanitizeInput($_REQUEST['contact_id']);
   <div class="modal-content">
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-      <h4 class="modal-title">Add Contact Association</h4>
+      <h4 class="modal-title">Add Association</h4>
     </div>
     <div class="modal-body">
       <form id="contactAssociationForm" method="post" action="#">
@@ -36,13 +36,13 @@ $contact_id = sanitizeInput($_REQUEST['contact_id']);
           <div class="col-md-4 col-md-offset-4 text-md-center">
             <table width="100%">
               <tr>
-                <td><label for="contact_role">What role is this contact?</label></td>
+                <td><label for="contact_role">How are they associated?</label></td>
               </tr>
               <tr>
                 <td id="displayStdRole">
                   <select class="c_input" name="contact_role" id="contact_role">
                     <?php
-                    $contact_ass_qry = $dbconn->query('SELECT DISTINCT(associated_as) FROM contact_associations WHERE associated_as IS NOT NULL;');
+                    $contact_ass_qry = $dbconn->query('SELECT ctc.associated_as FROM contact_to_contact ctc UNION SELECT ctso.associated_as FROM contact_to_sales_order ctso;');
 
                     if($contact_ass_qry->num_rows > 0) {
                       while($assoc = $contact_ass_qry->fetch_assoc()) {

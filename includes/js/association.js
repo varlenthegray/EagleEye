@@ -61,18 +61,23 @@ var association = {
     $("#modalAddContactAssociation").click(function() {
       let formInfo = $("#contactAssociationForm").serialize();
       let contact_id = $(this).attr('data-contact-id');
-      let type = $.trim($("#crmViewGlobal").find(".active").text().toLowerCase());
+      let type = $.trim($("#crmViewGlobal").find(".active").text().toLowerCase()); // type = active tab
       let typeID = $(this).attr('data-type-id');
 
       if($("#contact_role :selected").val() !== 'none' || $("#custom_association").is(":checked")) {
         $.post("/ondemand/contact_actions.php?action=add_contact_project", {contact_id: contact_id, type_id: typeID, formInfo: formInfo, type: type}, function(data) {
           let info = JSON.parse(data);
 
+          //<editor-fold desc="Adding new card">
           info['cell'] = (info['cell'] !== null) ? info['cell'] : '';
           info['email'] = (info['email'] !== null) ? info['email'] : '';
 
           let newCard = '<div class="contact-card">' +
-            '<div style="float:right;"><i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact" data-id="' + info['id'] + '" title="Remove Contact"></i></div>' +
+            '<div style="float:right;">' +
+            '<i class="fa fa-bank primary-color cursor-hand assoc_set_commission" data-id="' + info['id'] + '" title="Commission Schedule"></i>' +
+            '<i class="fa fa-pencil-square primary-color cursor-hand edit_assigned_contact" data-id="' + contact_id + '" title="Edit Contact"></i>' +
+            '<i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact" data-id="' + info['id'] + '" title="Remove Contact"></i>' +
+            '</div>' +
             '  <h5><a href="#">' + info['first_name'] + ' ' + info['last_name'] + '</a></h5>' +
             '  <h6>' + info['associated_as'] + '</h6>' +
             '  <p>' + info['cell'] + '<br>' + info['email'] + '</p>' +
@@ -84,8 +89,7 @@ var association = {
           }
 
           association.addBox.append(newCard);
-
-          // $(".contact-box").append(newCard);
+          //</editor-fold>
 
           displayToast('success', 'Successfully added contact to project.', 'Added Contact');
 

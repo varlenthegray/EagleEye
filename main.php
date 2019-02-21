@@ -670,18 +670,6 @@ require 'includes/header_start.php';
       })
       // end of OPL functions
 
-      .on("click", "#add_new_company", function() {
-        var contactData = $("#add_edit_company_form").serialize();
-
-        $.post('/html/crm/ajax/company.php?action=newCompany', {formInfo: contactData}, function(data) {
-          $("body").append(data);
-
-          $("#modalGlobal").modal('hide');
-        });
-
-        unsaved = false;
-      })
-
       <?php if($bouncer->validate('view_timecards')) { ?>
     // -- Navigation --
       .on("click", "#nav_timecard", function() {
@@ -1178,20 +1166,13 @@ require 'includes/header_start.php';
       .on("click", "#submit_new_contact", function() {
         var contactData = $("#contact_form").serialize();
 
-        $.post('/ondemand/contact_actions.php?action=save_contact&' + contactData, function(data) {
+        $.post('/ondemand/contact_actions.php?action=save_contact', {formInfo: contactData} , function(data) {
           $("body").append(data);
 
           $("#modalGlobal").modal('hide');
         });
 
         unsaved = false;
-      })
-      .on("change", "#contact_type", function() {
-        if($(this).find("option:selected").text() === 'Dealer') {
-          $("#dealer_code").show();
-        } else {
-          $("#dealer_code").hide();
-        }
       })
       .on("click", "#update_contact", function() {
         var contactData = $("#contact_form").serialize();
@@ -1229,12 +1210,6 @@ require 'includes/header_start.php';
 
         // stops it from posting to the URL in the browser
         e.preventDefault().stopPropagation();
-      })
-
-      .on("click", ".nav_add_company", function() {
-        $.post("/html/modals/add_company.php", function(data) {
-          $("#modalGlobal").html(data).modal('show');
-        });
       })
       <?php } ?>
 
@@ -1305,7 +1280,6 @@ require 'includes/header_start.php';
 
   <!-- Toastr setup -->
   <script src="/assets/plugins/toastr/toastr.min.js"></script>
-  <link href="/assets/plugins/toastr/toastr.min.css" rel="stylesheet" type="text/css"/>
 
   <!-- Datatables -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>

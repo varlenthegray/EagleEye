@@ -1,4 +1,6 @@
-/*global globalFunctions*//*global getMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*/
+/* global crmProject *//*global globalFunctions*//*global math*//*globalgetMiniTree*//*global jQuery*//*global document*//*global cabinetList*//*global calcShipInfo*//*global displayToast*//*global active_room_id*//*global catalog*//*global unsaved:true*//*global itemModifications*//*global priceGroup:true*//*global FormData*//*global crmNav*//*global FileReader*//*global atob*//*global Blob*//*global URL*//*global getMiniTree*/
+
+var contentType = 'image/png';
 
 jQuery.expr.filters.offscreen = function(el) {
   var rect = el.getBoundingClientRect();
@@ -9,7 +11,9 @@ var pricingVars = {
   nameOfUser: null,
   roomQry: null,
   vinInfo: null,
-  shipCost: null
+  shipCost: null,
+  pasteBlob: [],
+  outPut: null
 };
 
 var pricingFunction = {
@@ -115,6 +119,24 @@ var pricingFunction = {
       cabinetList.fancytree("getTree").getNodeByKey('-1').remove();
     }
   },
+  calcGlobalMarkup: function(vinSegment, lineTotal) {
+    let markup, cost, formatMoney, formatPct, pvInfo;
+
+    pvInfo = pricingVars.vinInfo[vinSegment][pricingVars.roomQry[vinSegment]];
+
+    markup = pvInfo.markup;
+
+    if(pvInfo['markup_calculator'] === '*') {
+      cost = lineTotal * markup;
+    } else if(pvInfo['markup_calculator'] === '+') {
+      cost = parseFloat(markup);
+    }
+
+    formatMoney = cost.formatMoney();
+    formatPct = (markup * 100).toFixed(2) + "%";
+
+    return {'cost': cost, 'markup': markup, 'markupType': pvInfo['markup_calculator'], 'formatMoney': formatMoney, 'formatPct': formatPct};
+  },
   recalcSummary: function() {
     let global_room_charges = 0.00, // global room charges
       global_cab_charges = 0.00, // global cabinet charges total
@@ -209,39 +231,33 @@ var pricingFunction = {
     let fcode_pct = $("#fc_pct"), fcode_amt = $("#fc_amt");
     let sheen_pct = $("#sheen_pct"), sheen_amt = $("#sheen_amt");
 
-    // gets the markup of Glaze Technique based on the room glaze technique variable
-    let gt_markup = pricingVars.vinInfo['glaze_technique'][pricingVars.roomQry['glaze_technique']].markup;
-    let ggard_markup = pricingVars.vinInfo['green_gard'][pricingVars.roomQry['green_gard']].markup;
-    let fcode_markup = pricingVars.vinInfo['finish_code'][pricingVars.roomQry['finish_code']].markup;
-    let sheen_markup = pricingVars.vinInfo['sheen'][pricingVars.roomQry['sheen']].markup;
-
-    // calculate out the cost of the glaze technique
-    let gt_cost = line_total * gt_markup;
-    let ggard_cost = line_total * ggard_markup;
-    let fcode_cost = line_total * fcode_markup;
-    let sheen_cost = line_total * sheen_markup;
+    // get the global markup for each line item that has one
+    let gt_global = pricingFunction.calcGlobalMarkup('glaze_technique', line_total);
+    let gg_global = pricingFunction.calcGlobalMarkup('green_gard', line_total);
+    let fcode_global = pricingFunction.calcGlobalMarkup('finish_code', line_total);
+    let sheen_global = pricingFunction.calcGlobalMarkup('sheen', line_total);
 
     // Glaze Technique fields
-    gt_amt.text(gt_cost.formatMoney());
-    gt_pct.text((gt_markup * 100).toFixed(2) + "%");
+    gt_amt.text(gt_global['formatMoney']);
+    gt_pct.text(gt_global['formatPct']);
 
     // Green Gard fields
-    ggard_amt.text(ggard_cost.formatMoney());
-    ggard_pct.text((ggard_markup * 100).toFixed(2) + "%");
+    ggard_amt.text(gg_global['formatMoney']);
+    ggard_pct.text(gg_global['formatPct']);
 
     // Finish Code fields
-    fcode_amt.text(fcode_cost.formatMoney());
-    fcode_pct.text((fcode_markup * 100).toFixed(2) + "%");
+    fcode_amt.text(fcode_global['formatMoney']);
+    fcode_pct.text(fcode_global['formatPct']);
 
     // Sheen fields
-    sheen_amt.text(sheen_cost.formatMoney());
-    sheen_pct.text((sheen_markup * 100).toFixed(2) + "%");
+    sheen_amt.text(sheen_global['formatMoney']);
+    sheen_pct.text(sheen_global['formatPct']);
 
     // add the glaze technique to the total amount of global upcharges
-    global_cab_charges += gt_cost;
-    global_cab_charges += ggard_cost;
-    global_cab_charges += fcode_cost;
-    global_cab_charges += sheen_cost;
+    global_cab_charges += gt_global['cost'];
+    global_cab_charges += gg_global['cost'];
+    global_cab_charges += fcode_global['cost'];
+    global_cab_charges += sheen_global['cost'];
 
     // Grab the shipping price IF it's not pickup
     if(shipVia !== '4') {
@@ -321,17 +337,17 @@ var pricingFunction = {
       $("#calcShipZoneTotal").text('$0.00');
     }
 
-    $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') * Glaze Markup (' + gt_markup + ')');
-    $("#calcGlazeTechTotal").html(gt_cost.formatMoney());
+    $("#calcGlazeTech").html('Total (' + line_total.toFixed(2) + ') ' + gt_global['markupType'] + ' Glaze Markup (' + gt_global['markup'] + ')');
+    $("#calcGlazeTechTotal").html(gt_global['formatMoney']);
 
-    $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') * Green Gard Markup (' + ggard_markup + ')');
-    $("#calcGreenGardTotal").html(ggard_cost.formatMoney());
+    $("#calcGreenGard").html('Total (' + line_total.toFixed(2) + ') ' + gg_global['markupType'] + ' Green Gard Markup (' + gg_global['markup'] + ')');
+    $("#calcGreenGardTotal").html(gg_global['formatMoney']);
 
-    $("#calcSheen").html('Total (' + line_total.toFixed(2) + ') * Sheen Markup (' + sheen_markup + ')');
-    $("#calcSheenTotal").html(sheen_cost.formatMoney());
+    $("#calcSheen").html('Total (' + line_total.toFixed(2) + ') ' + sheen_global['markupType'] + ' Sheen Markup (' + sheen_global['markup'] + ')');
+    $("#calcSheenTotal").html(sheen_global['formatMoney']);
 
-    $("#calcFinishCode").html('Total (' + line_total.toFixed(2) + ') * Finish Markup (' + fcode_markup + ')');
-    $("#calcFinishCodeTotal").html(fcode_cost.formatMoney());
+    $("#calcFinishCode").html('Total (' + line_total.toFixed(2) + ') ' + fcode_global['markupType'] + ' Finish Markup (' + fcode_global['markup'] + ')');
+    $("#calcFinishCodeTotal").html(fcode_global['formatMoney']);
 
     $("#calcCabinetLines").html('Cabinets: ' + cabinet_only_skus);
     $("#calcCabinetLinesTotal").html(cabinet_only_total.formatMoney());
@@ -486,6 +502,209 @@ var pricingFunction = {
       $("#crmBatch").find("input, select").prop("disabled", true);
       productionLock.show();
     }
+  },
+  pasteImage: function () {
+    let pasteInto, $data, $width, $height, dataURL, $size, $type;
+    pricingVars.pasteBlob = [];
+
+    $("body").on("click",".copyPaste", function() {
+      var $this = $(this);
+      var bi = $this.css("background-image");
+      pasteInto = $this.attr("name");
+
+      // @bi = background image, grab the css of it
+      if(bi !== "none") {
+        $data.text(bi.substr(4, bi.length - 6));
+      }
+
+      $(".activeImage").removeClass("activeImage");
+
+      $this.addClass("activeImage");
+      $this.toggleClass("contain");
+
+      $width.val($this.data("width"));
+      $height.val($this.data("height"));
+
+      if ($this.hasClass("contain")) {
+        $this.css({
+          width: $this.data("width"),
+          height: $this.data("height"),
+          "z-index": "10"
+        });
+      } else {
+        $this.css({
+          width: "",
+          height: "",
+          "z-index": ""
+        });
+      }
+    });
+
+    // ref: https://codepen.io/netsi1964/pen/IoJbg
+    (function($) {
+      var defaults;
+
+      $.event.fix = (function(originalFix) {
+        return function(event) {
+          event = originalFix.apply(this, arguments);
+
+          if (event.type.indexOf("copy") === 0 || event.type.indexOf("paste") === 0) {
+            event.clipboardData = event.originalEvent.clipboardData;
+          }
+
+          return event;
+        };
+      })($.event.fix);
+
+      defaults = {
+        callback: $.noop,
+        matchType: /image.*/
+      };
+
+      return ($.fn.pasteImageReader = function(options) {
+        if (typeof options === "function") {
+          options = {
+            callback: options
+          };
+        }
+
+        options = $.extend({}, defaults, options);
+
+        return this.each(function() {
+          var $this, element;
+          element = this;
+          $this = $(this);
+
+          return $this.bind("paste", function(event) {
+            var clipboardData, found;
+            found = false;
+            clipboardData = event.clipboardData;
+
+            return Array.prototype.forEach.call(clipboardData.types, function(type, i) {
+              var file, reader;
+
+              if (found) {
+                return;
+              }
+
+              if (type.match(options.matchType) || clipboardData.items[i].type.match(options.matchType)) {
+                file = clipboardData.items[i].getAsFile();
+                reader = new FileReader();
+
+                reader.onload = function(evt) {
+                  return options.callback.call(element, {
+                    dataURL: evt.target.result,
+                    event: evt,
+                    file: file,
+                    name: file.name
+                  });
+                };
+
+                reader.readAsDataURL(file);
+                return (found = true);
+              }
+            });
+          });
+        });
+      });
+    })(jQuery);
+
+    function b64toBlob(b64Data, contentType, sliceSize) {
+      contentType = contentType || '';
+      sliceSize = sliceSize || 512;
+
+      var byteCharacters = atob(b64Data);
+      var byteArrays = [];
+
+      for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        var byteNumbers = new Array(slice.length);
+
+        for (var i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        var byteArray = new Uint8Array(byteNumbers);
+
+        byteArrays.push(byteArray);
+      }
+
+      var blob = new Blob(byteArrays, {type: contentType});
+      return blob;
+    }
+
+    $("html").pasteImageReader(function(results) {
+      dataURL = results.dataURL;
+
+      let t1 = dataURL.split(",");
+      let b64Data = t1[1];
+
+      var blob = b64toBlob(b64Data, contentType);
+      var blobUrl = URL.createObjectURL(blob);
+
+      var img = document.createElement("img");
+      var w = img.width;
+      var h = img.height;
+
+      $data.text(dataURL);
+      $size.val(results.file.size);
+      $type.val(results.file.type);
+      img.src = blobUrl;
+      $width.val(w);
+      $height.val(h);
+
+      pricingVars.pasteBlob[pasteInto] = blob;
+
+      return $(".activeImage")
+        .css({
+          backgroundImage: "url(" + dataURL + ")"
+        })
+        .data({
+          width: w,
+          height: h
+        });
+    });
+
+    // defined for use on paste (function at the top)
+    $data = $(".data");
+    $size = $(".size");
+    $type = $(".type");
+    $width = $("#width");
+    $height = $("#height");
+  },
+  decimalToFraction: function(value) {
+    //using math.js taking the value of inputs (if decimal) and changing it to a fraction.
+    let stringValue = String(value);
+
+    if (stringValue !== null) {
+      if (stringValue.indexOf(".") >= 0) {
+        var broken = stringValue.split(".");
+        var fraction;
+
+        if (broken[1] !== undefined) {
+          fraction = math.format(math.fraction("." + broken[1]), {
+            fraction: 'ratio'
+          });
+          return broken[0] + " " + fraction;
+        }
+        return value;
+      }
+      return value;
+    }
+    return value;
+  },
+  fractToDecimal: function(calcVar) {
+    //using the remainder operator to return a whole number.
+    if ((calcVar) % 1 !== 0) {
+      let splitNum = calcVar.split(" ");
+      let fract = splitNum[1].split("/");
+      let decimal = fract[0] / fract[1];
+      pricingVars.outPut = (parseInt(splitNum[0]) + parseFloat(decimal));
+      return pricingVars.outPut;
+    } else {
+      return calcVar;
+    }
   }
 };
 
@@ -590,12 +809,19 @@ $("body")
     }
   })
   .on("click", "#modalBracketSave", function() {
-    var active_ops = $(".active_ops_" + active_room_id).map(function() { return $(this).data("opid"); }).get();
+
+    var bracket_id = $(this).attr('data-roomid');
+    var active_ops = $(".active_ops_" + bracket_id).map(function() {
+      return $(this).data("opid");
+    }).get();
     var bracket_status = $("#bracketAdjustments").serialize();
 
     active_ops = JSON.stringify(active_ops);
 
-    $.post("/html/pricing/ajax/global_actions.php?action=updateBracket&roomID=" + active_room_id, {active_ops: active_ops, bracket_status: bracket_status}, function(data) {
+    $.post("/html/pricing/ajax/global_actions.php?action=updateBracket&roomID=" + bracket_id, {
+      active_ops: active_ops,
+      bracket_status: bracket_status
+    }, function(data) {
       $('body').append(data);
     });
 
@@ -784,7 +1010,7 @@ $("body")
 
     pricingFunction.recalcSummary();
   })
-  .on("mouseover", ".view_item_info, .info-popup", function(e) {
+  .on("mouseenter", ".view_item_info, .info-popup", function(e) {
     // FIXME: Change this so the data isn't loaded on hover, should be able to JSON this data into memory quite easily
     e.stopPropagation();
 
@@ -817,23 +1043,23 @@ $("body")
         infoPopup.find('.header').html('<h4>' + result['title'] + '</h4>');
         infoPopup.find('.description').html(result['description']);
       }
-    }).done(function() {
-      let infoHeight = infoPopup.height();
-      let infoTop = position.top - 85;
-      let windowOverflow = $(window).scrollTop() + $(window).height();
+    }).done(function(data) {
+      if(data !== "") {
+        let infoHeight = infoPopup.height();
+        let infoTop = position.top - 85;
+        let windowOverflow = $(window).scrollTop() + $(window).height();
 
-      if((infoHeight + infoTop + 100) > windowOverflow) {
-        infoPopup.css({"bottom": 0, "top": "inherit", "left": (position.left + 20)});
-      } else {
-        infoPopup.css({"top": infoTop, "bottom": "inherit", "left": position.left});
+        if ((infoHeight + infoTop + 100) > windowOverflow) {
+          infoPopup.css({"bottom": 0, "top": "inherit", "left": (position.left + 20)});
+        } else {
+          infoPopup.css({"top": infoTop, "bottom": "inherit", "left": position.left});
+        }
+        infoPopup.show();
       }
-
-      // infoPopup.fadeIn(250).html(info);
-      infoPopup.fadeIn(250);
     });
   })
   .on("mouseleave", ".view_item_info, .info-popup", function() {
-    $(".info-popup").fadeOut(250);
+    $(".info-popup").hide();
   })
   .on("click", ".add_item_mod", function() {
     $.post("/html/modals/item_list_add_modification.php", function(data) {
@@ -924,38 +1150,41 @@ $("body")
     catalog.fancytree('getTree').reload(catalogData);
   })
 
-.on("change",".item_hinge", function() {
-  let node = cabinetList.fancytree("getActiveNode");
+  .on("change",".item_hinge", function() {
+    let node = cabinetList.fancytree("getActiveNode");
 
-  node.data.hinge = $(this).find(":selected").val();
-})
-.on("keyup", ".itm_width", function() {
-  let id = $(this).attr("data-id");
-  let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+    node.data.hinge = $(this).find(":selected").val();
+  })
+  .on("change", ".itm_width", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+    //takes the value and change it from decimal to fraction.
+    $(this).val(pricingFunction.decimalToFraction($(this).val()));
+    node.data.width = pricingFunction.fractToDecimal($(this).val());
+    node.data.price = pricingFunction.footCalc(node);
 
-  node.data.width = $(this).val();
-  node.data.price = pricingFunction.footCalc(node);
+    pricingFunction.recalcSummary();
+  })
+  .on("change", ".itm_height", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-  pricingFunction.recalcSummary();
-})
-.on("keyup", ".itm_height", function() {
-  let id = $(this).attr("data-id");
-  let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+    $(this).val(pricingFunction.decimalToFraction($(this).val()));
+    node.data.height = pricingFunction.fractToDecimal($(this).val());
+    node.data.price = pricingFunction.footCalc(node);
 
-  node.data.height = $(this).val();
-  node.data.price = pricingFunction.footCalc(node);
+    pricingFunction.recalcSummary();
+  })
+  .on("change", ".itm_depth", function() {
+    let id = $(this).attr("data-id");
+    let node = cabinetList.fancytree("getTree").getNodeByKey(id);
 
-  pricingFunction.recalcSummary();
-})
-.on("keyup", ".itm_depth", function() {
-  let id = $(this).attr("data-id");
-  let node = cabinetList.fancytree("getTree").getNodeByKey(id);
+    $(this).val(pricingFunction.decimalToFraction($(this).val()));
+    node.data.depth = pricingFunction.fractToDecimal($(this).val());
+    node.data.price = pricingFunction.footCalc(node);
 
-  node.data.depth = $(this).val();
-  node.data.price = pricingFunction.footCalc(node);
-
-  pricingFunction.recalcSummary();
-})
+    pricingFunction.recalcSummary();
+  })
   .on("keyup", "#modificationsFilter", function() { // filters per keystroke on search catalog
     // grab this value and filter it down to the node needed
     itemModifications.fancytree("getTree").filterNodes($(this).val());
@@ -1158,6 +1387,18 @@ $("body")
     // noinspection JSCheckFunctionSignatures
     fieldData.append("folder", node.folder);
 
+    if(pricingVars.pasteBlob['perspective_image'] !== undefined) {
+      fieldData.append("perspective_image", pricingVars.pasteBlob['perspective_image'], '1.png'); // filename is only used to determine the type of file in PHP
+    }
+
+    if(pricingVars.pasteBlob['plan_image'] !== undefined) {
+      fieldData.append("plan_image", pricingVars.pasteBlob['plan_image'], '2.png'); // filename is only used to determine the type of file in PHP
+    }
+
+    if(pricingVars.pasteBlob['side_image'] !== undefined) {
+      fieldData.append("side_image", pricingVars.pasteBlob['side_image'], '3.png'); // filename is only used to determine the type of file in PHP
+    }
+
     $.ajax({
       url: "/html/pricing/ajax/item_actions.php?action=updateItem",
       data: fieldData,
@@ -1190,7 +1431,6 @@ $("body")
   })
   .on("click", "#modalAddCatItemSubmit", function() {
     let node = catalog.fancytree("getTree").getActiveNode(); // current node (where are we adding this?)
-    // let fields = $("#catalogAddEditItem").serialize(); // get all of the form information
     let formInfo = document.querySelector("#catalogAddEditItem");
 
     let disabled = $("#catalogAddEditItem").find(":input:disabled").removeAttr("disabled");
@@ -1214,6 +1454,18 @@ $("body")
 
     if(!node.isFolder()) { // if the current selection is an item
       catID = node.parent.key; // get the current parent for category ID
+    }
+
+    if(pricingVars.pasteBlob['perspective_image'] !== undefined) {
+      fieldData.append("perspective_image", pricingVars.pasteBlob['perspective_image'], '1.png'); // filename is only used to determine the type of file in PHP
+    }
+
+    if(pricingVars.pasteBlob['plan_image'] !== undefined) {
+      fieldData.append("plan_image", pricingVars.pasteBlob['plan_image'], '2.png'); // filename is only used to determine the type of file in PHP
+    }
+
+    if(pricingVars.pasteBlob['side_image'] !== undefined) {
+      fieldData.append("side_image", pricingVars.pasteBlob['side_image'], '3.png'); // filename is only used to determine the type of file in PHP
     }
 
     fieldData.append("key", catID);
@@ -1275,11 +1527,13 @@ $("body")
     switch($(this).val()) {
       case 'current':
         display.hide();
-        container.find('#displayCurrentImage').show();
+        container.find('.displayCurrentImage').show();
+
         break;
       case 'new':
         display.hide();
         container.find('.displayNewImageUpload').show();
+
         break;
     }
   })

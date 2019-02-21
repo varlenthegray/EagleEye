@@ -1,6 +1,47 @@
 <?php
 require '../../includes/header_start.php';
 
+// replaces displayVINOpts and displayFinishOpts
+function getGlobal($segment, $dbName = null) {
+  global $vin_schema;
+  global $contact;
+
+  $room_val = !empty($dbName) ? $dbName : $segment;
+
+  $nsy = empty($contact[$room_val]) ? 'selected' : null;
+
+  $option = "<optgroup label='Empty'><option value='' $nsy disabled>Not Selected Yet</option>";
+  $prev_group = null;
+  $addl_html = null;
+
+  foreach($vin_schema[$segment] AS $element) {
+    if((bool)$element['visible']) {
+      if($prev_group !== $element['group']) {
+        $option .= "</optgroup><optgroup label='{$element['group']}'>";
+        $prev_group = $element['group'];
+      }
+
+      $selected = $contact[$room_val] === $element['key'] ? 'selected' : null;
+
+      $val = strip_tags($element['value']);
+
+      $option .= "<option value='{$element['key']}' $selected>$val</option>";
+
+      $addl_html[$element['key']] = $element['addl_html'];
+    }
+  }
+
+  $html_addl_out = null;
+
+  foreach($addl_html AS $key => $html) {
+    if(!empty($html)) {
+      $html_addl_out .= "<div class='addl_select_html'>$html</div>";
+    }
+  }
+
+  return "<select name='$room_val' id='$room_val' class='c_input' style='border:none;margin-left:-4px;font-weight:bold;'>$option</select> $html_addl_out";
+}
+
 //outputPHPErrs();
 
 $room_id = sanitizeInput($_REQUEST['room_id']);
@@ -19,13 +60,6 @@ while($vin = $vin_qry->fetch_assoc()) {
 }
 //</editor-fold>
 
-$room_qry = $dbconn->query("SELECT r.*, so.dealer_code, so.company_id, so.project_addr, so.project_city, so.project_state, so.project_zip
-  FROM rooms r LEFT JOIN sales_order so on r.so_parent = so.so_num WHERE r.id = $room_id ORDER BY room, iteration ASC;");
-$room = $room_qry->fetch_assoc();
-
-$company_qry = $dbconn->query("SELECT cc.*, d.*, d.id AS dealerID FROM contact_company cc LEFT JOIN dealers d on cc.dealer_id = d.id WHERE cc.id = {$room['company_id']}");
-$company = $company_qry->fetch_assoc();
-
 //<editor-fold desc="Disable submit buttons (if submitted)">
 $existing_quote_qry = $dbconn->query("SELECT * FROM pricing_cabinet_list WHERE room_id = $room_id");
 
@@ -34,6 +68,30 @@ if($existing_quote_qry->num_rows === 1) {
 } else {
   $existing_quote = null;
 }
+
+$contact_qry = $dbconn->query("SELECT
+       so.id AS soID,
+       c.id AS cID,
+       r.id AS rID,
+       cao.`option` AS billing_type,
+       c.address AS contactAddress, c.city AS contactCity, c.state AS contactState, c.zip AS contactZip, 
+       so.project_addr AS projectAddress, so.project_city AS projectCity, so.project_state AS projectState, so.project_zip AS projectZip,
+       cc.ship_address AS shipAddress, cc.ship_city AS shipCity, cc.ship_state AS shipState, cc.ship_zip AS shipZip, cc.multiplier,
+       r.ship_address AS batchAddress, r.ship_city AS batchCity, r.ship_state AS batchState, r.ship_zip AS batchZip,
+       r.multi_room_ship, r.ship_cost, r.individual_bracket_buildout, r.payment_deposit, r.payment_del_ptl, r.payment_final, r.room_name,
+       r.order_status, r.ship_date, r.delivery_date, r.ship_name, r.sample_seen_approved, r.sample_unseen_approved, r.sample_requested,
+       r.sample_reference, r.esig, r.esig_ip, r.esig_time, r.custom_vin_info, r.product_type, r.days_to_ship, r.ship_via, r.payment_method,
+       r.construction_method, r.species_grade, r.carcass_material, r.door_design, r.panel_raise_door, r.panel_raise_sd, r.panel_raise_td,
+       r.style_rail_width, r.edge_profile, r.framing_bead, r.framing_options, r.drawer_boxes, r.drawer_guide, r.finish_code, r.sheen,
+       r.glaze, r.glaze_technique, r.antiquing, r.worn_edges, r.distress_level, r.green_gard
+FROM rooms r
+  LEFT JOIN sales_order so on r.so_parent = so.so_num
+  LEFT JOIN contact c ON so.contact_id = c.id
+  LEFT JOIN contact_customer cc on c.id = cc.contact_id
+  LEFT JOIN contact_add_options cao on cc.billing_type = cao.id
+WHERE r.id = $room_id;");
+
+$contact = $contact_qry->fetch_assoc();
 
 if(!empty($existing_quote['quote_submission'])) {
   $submit_disabled = 'disabled';
@@ -54,18 +112,18 @@ if($notes_qry->num_rows > 0) {
   }
 }
 
-$shipZIP = !empty($room['ship_zip']) ? $room['ship_zip'] : $company['shipping_zip'];
+$shipZIP = !empty($contact['batchZip']) ? $contact['batchZip'] : $contact['contactZip'];
 $ship_zone_info = calcShipZone($shipZIP);
 
-if($room['ship_cost'] === null) {
-  $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $ship_zone_info['cost'];
+if($contact['ship_cost'] === null) {
+  $ship_cost = (bool)$contact['multi_room_ship'] ? 0 : $ship_zone_info['cost'];
 } else {
-  $ship_cost = (bool)$room['multi_room_ship'] ? 0 : $room['ship_cost'];
+  $ship_cost = (bool)$contact['multi_room_ship'] ? 0 : $contact['ship_cost'];
 }
 
 $ship_cost = number_format($ship_cost, 2);
 
-$room['individual_bracket_buildout'] = null;
+$contact['individual_bracket_buildout'] = null;
 
 //<editor-fold desc="Determining the price group (for JavaScript)">
 $pg_qry = $dbconn->query("SELECT vs1.id AS species_grade_id, vs2.id AS door_design_id FROM rooms r
@@ -87,9 +145,6 @@ if($pg_qry->num_rows > 0) {
   $price_group = '0';
 }
 //</editor-fold>
-
-$company_qry = $dbconn->query("SELECT so.id AS soID, cc.id AS cID FROM sales_order so LEFT JOIN contact_company cc on so.company_id = cc.id WHERE so.so_num = '{$room['so_parent']}'");
-$company = $company_qry->fetch_assoc();
 ?>
 
 <link href="/assets/css/pricing.min.css?v=<?php echo VERSION; ?>" rel="stylesheet" type="text/css" />
@@ -122,18 +177,18 @@ $company = $company_qry->fetch_assoc();
         <div class="dropdown-menu" x-placement="bottom-start" style="position:absolute;transform:translate3d(0,38px,0);top:0;left:0;will-change:transform;">
           <a class="dropdown-item" href="/main.php?page=pricing/index?room_id=<?php echo $room_id; ?>&print=true" target="_blank" title="Print this page specifically">Print Item List</a>
           <?php
-          echo $bouncer->validate('print_sample') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}&action=sample_req' target='_blank' class='dropdown-item'>Print Sample Request</a>" : null;
-          //          echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Coversheet</a>" : null;
+          echo $bouncer->validate('print_sample') ? "<a href='/print/e_coversheet.php?room_id={$room_id}&action=sample_req' target='_blank' class='dropdown-item'>Print Sample Request</a>" : null;
+          //          echo $bouncer->validate('print_coversheet') ? "<a href='/print/e_coversheet.php?room_id={$room_id}' target='_blank' class='dropdown-item'>Print Coversheet</a>" : null;
           echo $bouncer->validate('print_shop_coversheet') ? "<a href='/main.php?page=pricing/index?room_id=$room_id&print=true&hidePrice=true' target='_blank' class='dropdown-item'>Print Shop Item List</a>" : null;
-          echo $bouncer->validate('print_sample_label') ? "<a href='/print/sample_label.php?room_id={$room['id']}' target='_blank' class='dropdown-item'>Print Sample Label</a>" : null;
+          echo $bouncer->validate('print_sample_label') ? "<a href='/print/sample_label.php?room_id={$room_id}' target='_blank' class='dropdown-item'>Print Sample Label</a>" : null;
           ?>
         </div>
       </div>
       <button class="btn waves-effect btn-secondary" title="Room Attachments" id="add_attachment"> <i class="fa fa-paperclip fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Copy Room" id="copy_room"> <i class="fa fa-copy fa-2x"></i> </button>
       <!--      <button class="btn waves-effect btn-secondary" title="Bracket Management" id="bracket_management"> <i class="fa fa-code-fork fa-2x"></i> </button>-->
-      <button class="btn waves-effect btn-secondary" title="Door Sizing" onclick="window.open('/html/inset_sizing.php?room_id=<?php echo $room['id']; ?>','_blank')"> <i class="fa fa-arrows-alt fa-2x"></i> </button>
-      <button class="btn waves-effect btn-secondary" title="Appliance Worksheets" id='appliance_ws' data-roomid='<?php echo $room['id']; ?>'> <i class="fa fa-cubes fa-2x"></i> </button>
+      <button class="btn waves-effect btn-secondary" title="Door Sizing" onclick="window.open('/html/inset_sizing.php?room_id=<?php echo $room_id; ?>','_blank')"> <i class="fa fa-arrows-alt fa-2x"></i> </button>
+      <button class="btn waves-effect btn-secondary" title="Appliance Worksheets" id='appliance_ws' data-roomid='<?php echo $room_id; ?>'> <i class="fa fa-cubes fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Recalculate Pricing" id="catalog_recalculate"> <i class="fa fa-retweet fa-2x"></i> </button>
       <button class="btn waves-effect btn-secondary" title="Download ORD File" id="dl_ord_file"><i class="fa fa-file-text-o fa-2x"></i></button>
       <button class="btn waves-effect btn-secondary" style="display:none;" title="Override Production Lock" id="production_lock"><i class="fa fa-lock fa-2x"></i></button>
@@ -189,7 +244,7 @@ $company = $company_qry->fetch_assoc();
                       </thead>
                       <tbody>
                       <?php
-                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'company_note' AND type_id = {$company['cID']}");
+                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'company_note' AND type_id = {$contact['cID']}");
 
                       if($note_qry->num_rows > 0) {
                         while($note = $note_qry->fetch_assoc()) {
@@ -252,7 +307,7 @@ $company = $company_qry->fetch_assoc();
                       </thead>
                       <tbody>
                       <?php
-                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'so_inquiry' AND type_id = {$company['soID']}");
+                      $note_qry = $dbconn->query("SELECT n.*, u.name FROM notes n LEFT JOIN user u ON n.user = u.id WHERE note_type = 'so_inquiry' AND type_id = {$contact['soID']}");
 
                       if($note_qry->num_rows > 0) {
                         while($note = $note_qry->fetch_assoc()) {
@@ -364,9 +419,9 @@ $company = $company_qry->fetch_assoc();
           <table>
           <tr>
             <td colspan="2">
-              <label class="c-input c-checkbox">Deposit Received <input type="checkbox" name="deposit_received" value="1" <?php echo ((bool)$room['payment_deposit']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
-              <label class="c-input c-checkbox">Prior to Loading: Distribution - Final Payment<br/><span style="margin-left:110px;">Retail - On Delivery/Payment</span> <input type="checkbox" name="ptl_del" value="1" <?php echo ((bool)$room['payment_del_ptl']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
-              <label class="c-input c-checkbox">Retail - Final Payment <input type="checkbox" name="final_payment" value="1" <?php echo ((bool)$room['payment_final']) ? 'checked' :null; ?>><span class="c-indicator"></span></label>
+              <label class="c-input c-checkbox">Deposit Received <input type="checkbox" name="deposit_received" value="1" <?php echo ((bool)$contact['payment_deposit']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
+              <label class="c-input c-checkbox">Prior to Loading: Distribution - Final Payment<br/><span style="margin-left:110px;">Retail - On Delivery/Payment</span> <input type="checkbox" name="ptl_del" value="1" <?php echo ((bool)$contact['payment_del_ptl']) ? 'checked' :null; ?>><span class="c-indicator"></span></label><br />
+              <label class="c-input c-checkbox">Retail - Final Payment <input type="checkbox" name="final_payment" value="1" <?php echo ((bool)$contact['payment_final']) ? 'checked' :null; ?>><span class="c-indicator"></span></label>
             </td>
           </tr>
           </table>
@@ -398,68 +453,61 @@ $company = $company_qry->fetch_assoc();
           </tr>
           <tr>
             <td>Dealer PO/Batch:</td>
-            <td colspan="2"><input type="text" class="c_input border_thin_bottom" id="room_name" name="room_name" placeholder="Room Name" value="<?php echo $room['room_name']; ?>"></td>
+            <td colspan="2"><input type="text" class="c_input border_thin_bottom" id="room_name" name="room_name" placeholder="Room Name" value="<?php echo $contact['room_name']; ?>"></td>
           </tr>
           <tr>
             <td>Billing Type:</td>
-            <td colspan="2"><strong><?php echo $company['account_type'] === 'R' ? 'Retail' : 'Distribution'; ?></strong></td>
+            <td colspan="2"><strong><?php echo $contact['billing_type']; ?></strong></td>
           </tr>
           <tr>
             <td>Order Type:</td>
-            <td><?php echo getSelect('product_type'); ?></td>
+            <td><?php echo getGlobal('product_type'); ?></td>
             <td></td>
           </tr>
           <tr>
             <td><span id="leadTimeDef">Lead Time:</span></td>
-            <td><?php echo getSelect('days_to_ship'); ?></td>
+            <td><?php echo getGlobal('days_to_ship'); ?></td>
             <td></td>
           </tr>
           <tr>
             <td>Order Status:</td>
-            <td><?php echo getSelect('order_status'); ?></td>
+            <td><?php echo getGlobal('order_status'); ?></td>
             <td></td>
           </tr>
           <tr>
-            <td><span class="estimated"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?></span>Ship Date (*):</td>
-            <td><strong id="calcd_ship_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['ship_date']) : 'TBD'; ?></strong></td>
-            <td style="font-size:1.25em;white-space:nowrap;"><i class="fa fa-truck cursor-hand no-print" title="Calculate Ship Date" id='ship_date_recalc' data-roomid='<?php echo $room['id']; ?>'></i> &nbsp;<i class="fa fa-pencil-square no-print cursor-hand" id="overrideShipDate" title="Edit/Override Ship Date"></i></td>
+            <td><span class="estimated"><?php echo $contact['order_status'] === '#' ? 'Est. ' : null; ?></span>Ship Date (*):</td>
+            <td><strong id="calcd_ship_date"><?php echo !empty($contact['ship_date']) ? date(DATE_DEFAULT, $contact['ship_date']) : 'TBD'; ?></strong></td>
+            <td style="font-size:1.25em;white-space:nowrap;"><i class="fa fa-truck cursor-hand no-print" title="Calculate Ship Date" id='ship_date_recalc' data-roomid='<?php echo $contact['rID']; ?>'></i> &nbsp;<i class="fa fa-pencil-square no-print cursor-hand" id="overrideShipDate" title="Edit/Override Ship Date"></i></td>
           </tr>
           <tr>
-            <td><span class="estimated"><?php echo $room['order_status'] === '#' ? 'Est. ' : null; ?></span>Delivery Date (*):</td>
-            <td><strong id="calcd_del_date"><?php echo !empty($room['ship_date']) ? date(DATE_DEFAULT, $room['delivery_date']) : 'TBD'; ?></strong></td>
+            <td><span class="estimated"><?php echo $contact['order_status'] === '#' ? 'Est. ' : null; ?></span>Delivery Date (*):</td>
+            <td><strong id="calcd_del_date"><?php echo !empty($contact['ship_date']) ? date(DATE_DEFAULT, $contact['delivery_date']) : 'TBD'; ?></strong></td>
             <td></td>
           </tr>
           <tr>
             <td>Ship VIA:</td>
-            <td><?php echo getSelect('ship_via'); ?></td>
+            <td><?php echo getGlobal('ship_via'); ?></td>
             <td></td>
           </tr>
 
           <?php
           // determine ship to address
-          if($room['jobsite_delivery']) {
-            $ship_addr = $room['project_addr'];
-            $ship_city = $room['project_city'];
-            $ship_state = $room['project_state'];
-            $ship_zip = $room['project_zip'];
+          if($contact['jobsite_delivery']) {
+            $ship_addr = $contact['projectAddr'];
+            $ship_city = $contact['projectCity'];
+            $ship_state = $contact['projectState'];
+            $ship_zip = $contact['projectZip'];
           } else {
-            if(empty($room['ship_addr'])) { // batch doesn't have an address, so lets move up to company
-              if(empty($company['shipping_address'])) { // company doesn't have a shipping address, default to company address
-                $ship_addr = $company['address'];
-                $ship_city = $company['city'];
-                $ship_state = $company['state'];
-                $ship_zip = $company['zip'];
-              } else { // company has a shipping address
-                $ship_addr = $company['shipping_address'];
-                $ship_city = $company['shipping_city'];
-                $ship_state = $company['shipping_state'];
-                $ship_zip = $company['shipping_zip'];
-              }
+            if(empty($contact['batchAddress'])) { // batch doesn't have an address, so lets move up to company
+              $ship_addr = $contact['contactAddress'];
+              $ship_city = $contact['contactCity'];
+              $ship_state = $contact['contactState'];
+              $ship_zip = $contact['contactZip'];
             } else { // batch has an address
-              $ship_addr = $room['ship_addr'];
-              $ship_city = $room['ship_city'];
-              $ship_state = $room['ship_state'];
-              $ship_zip = $room['ship_zip'];
+              $ship_addr = $contact['batchAddress'];
+              $ship_city = $contact['batchCity'];
+              $ship_state = $contact['batchState'];
+              $ship_zip = $contact['batchZip'];
             }
           }
           ?>
@@ -467,18 +515,18 @@ $company = $company_qry->fetch_assoc();
           <tr rowspan="3">
             <td style="vertical-align:top !important;">Ship To:</td>
             <td colspan="2">
-              <input type="text" style="width:75%;" class="c_input static_width align_left" placeholder="Name" name="ship_to_name" value="<?php echo $room['ship_name']; ?>">
+              <input type="text" style="width:75%;" class="c_input static_width align_left" placeholder="Name" name="ship_to_name" value="<?php echo $contact['ship_name']; ?>">
               <input type="text" style="width:75%;" class="c_input static_width align_left" placeholder="Address" name="ship_to_address" value="<?php echo $ship_addr; ?>">
               <input type="text" style="width:50%;" class="c_input static_width align_left pull-left" placeholder="City" name="ship_to_city" value="<?php echo $ship_city; ?>"> <input type="text" style="width:15px;margin-left:10px;" class="static_width align_left c_input pull-left" name="ship_to_state" value="<?php echo $ship_state; ?>"> <input type="text" style="width:51px;margin-left:10px;" class="static_width align_left c_input pull-left" placeholder="ZIP" name="ship_to_zip" value="<?php echo $ship_zip; ?>">
             </td>
           </tr>
           <tr>
             <td>&nbsp;</td>
-            <td colspan="2"><input type="checkbox" value="1" name="jobsite_delivery" id="jobsite_delivery" <?php echo $room['jobsite_delivery'] ? 'checked' : null; ?>> <label for="jobsite_delivery">Jobsite Delivery</label></td>
+            <td colspan="2"><input type="checkbox" value="1" name="jobsite_delivery" id="jobsite_delivery" <?php echo $contact['jobsite_delivery'] ? 'checked' : null; ?>> <label for="jobsite_delivery">Jobsite Delivery</label></td>
           </tr>
           <tr>
             <td>&nbsp;</td>
-            <td colspan="2"><input type="checkbox" value="1" name="multi_room_ship" id="multi_room_ship" <?php echo $room['multi_room_ship'] ? 'checked' : null; ?>> <label for="multi_room_ship">Multi-room shipping</label></td>
+            <td colspan="2"><input type="checkbox" value="1" name="multi_room_ship" id="multi_room_ship" <?php echo $contact['multi_room_ship'] ? 'checked' : null; ?>> <label for="multi_room_ship">Multi-room shipping</label></td>
           </tr>
           <tr>
             <td>Shipping Zone:</td>
@@ -490,7 +538,7 @@ $company = $company_qry->fetch_assoc();
           </tr>
           <tr>
             <td>Payment Method:</td>
-            <td><?php echo getSelect('payment_method'); ?></td>
+            <td><?php echo getGlobal('payment_method'); ?></td>
             <td></td>
           </tr>
           <tr>
@@ -500,16 +548,16 @@ $company = $company_qry->fetch_assoc();
             <td colspan="3">Finish/Sample:</td>
           </tr>
           <tr>
-            <td colspan="3"><input type="checkbox" value="1" name="seen_approved" class="sample_checkbox" id="seen_approved" <?php echo $room['sample_seen_approved'] ? 'checked' : null; ?>> <label for="seen_approved">I have seen the door style with finish and it is approved.</label></td>
+            <td colspan="3"><input type="checkbox" value="1" name="seen_approved" class="sample_checkbox" id="seen_approved" <?php echo $contact['sample_seen_approved'] ? 'checked' : null; ?>> <label for="seen_approved">I have seen the door style with finish and it is approved.</label></td>
           </tr>
           <tr>
-            <td colspan="3"><input type="checkbox" value="1" name="unseen_approved" class="sample_checkbox" id="unseen_approved" <?php echo $room['sample_unseen_approved'] ? 'checked' : null; ?>> <label for="unseen_approved">I approve the finish and door style without seeing a sample.</label></td>
+            <td colspan="3"><input type="checkbox" value="1" name="unseen_approved" class="sample_checkbox" id="unseen_approved" <?php echo $contact['sample_unseen_approved'] ? 'checked' : null; ?>> <label for="unseen_approved">I approve the finish and door style without seeing a sample.</label></td>
           </tr>
           <tr>
-            <td colspan="3"><input type="checkbox" value="1" name="requested_sample" class="sample_checkbox" id="requested_sample" <?php echo $room['sample_requested'] ? 'checked' : null; ?>> <label for="requested_sample">I have requested a sample for approval, reference:</label></td>
+            <td colspan="3"><input type="checkbox" value="1" name="requested_sample" class="sample_checkbox" id="requested_sample" <?php echo $contact['sample_requested'] ? 'checked' : null; ?>> <label for="requested_sample">I have requested a sample for approval, reference:</label></td>
           </tr>
           <tr>
-            <td colspan="3"><input type="text" name="sample_reference" class="form-control border_thin_bottom sample_reference" placeholder="Sample Reference" value="<?php echo $room['sample_reference']; ?>" /></td>
+            <td colspan="3"><input type="text" name="sample_reference" class="form-control border_thin_bottom sample_reference" placeholder="Sample Reference" value="<?php echo $contact['sample_reference']; ?>" /></td>
           </tr>
           <tr>
             <td colspan="3">
@@ -539,56 +587,56 @@ $company = $company_qry->fetch_assoc();
             </tr>
             <tr class="border_top">
               <td width="35%" class="border_thin_bottom">Construction Method:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('construction_method'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('construction_method'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Species/Grade:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('species_grade'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('species_grade'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Carcass Material:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('carcass_material'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('carcass_material'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Door Design:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('door_design'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('door_design'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom"><div>Door Panel Raise:</div></td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_door'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('panel_raise', 'panel_raise_door'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Short Drawer Raise:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_sd'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('panel_raise', 'panel_raise_sd'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Tall Drawer Raise:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getSelect('panel_raise', 'panel_raise_td'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('panel_raise', 'panel_raise_td'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Style/Rail Width:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getSelect('style_rail_width'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('style_rail_width'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Edge Profile:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getSelect('edge_profile'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('edge_profile'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Framing Bead:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getSelect('framing_bead'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('framing_bead'); ?></div></td>
               <td class="border_thin_bottom"></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Frame Option:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getSelect('framing_options'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('framing_options'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Drawer Box:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('drawer_boxes'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('drawer_boxes'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Drawer Guide:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('drawer_guide'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('drawer_guide'); ?></div></td>
             </tr>
             <tr>
               <td colspan="2" style="height:117px;"></td>
@@ -615,35 +663,35 @@ $company = $company_qry->fetch_assoc();
             <tr><th colspan="2" style="padding-left:5px;" class="th_17">Finish</th></tr>
             <tr class="border_top">
               <td class="border_thin_bottom" width="30%">Finish Code:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('finish_code'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('finish_code'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Sheen:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('sheen'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('sheen'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Glaze Color:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('glaze'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('glaze'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Glaze Technique:</td>
-              <td class="border_thin_bottom pricing_value"><div class="cab_specifications_desc"><?php echo getSelect('glaze_technique'); ?></div></td>
+              <td class="border_thin_bottom pricing_value"><div class="cab_specifications_desc"><?php echo getGlobal('glaze_technique'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Antiquing:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('antiquing'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('antiquing'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Worn Edges:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('worn_edges'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('worn_edges'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Distressing:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('distress_level'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('distress_level'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Enviro-finish:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getSelect('green_gard'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('green_gard'); ?></div></td>
             </tr>
             <tr>
               <td colspan="2" style="height:212px;"></td>
@@ -810,7 +858,7 @@ $company = $company_qry->fetch_assoc();
             <tr class="border_thin_bottom">
               <td class="total_text">Multiplier:</td>
               <td class="total_text">&nbsp;</td>
-              <td class="text-md-right total_text" id="itemListMultiplier"><?php echo $company['multiplier']; ?></td>
+              <td class="text-md-right total_text" id="itemListMultiplier"><?php echo $contact['multiplier']; ?></td>
             </tr>
             <tr class="border_thin_bottom">
               <td class="total_text">NET:</td>
@@ -822,7 +870,7 @@ $company = $company_qry->fetch_assoc();
               <td class="total_text">&nbsp;</td>
               <td class="text-md-right total_text" id="itemListGlobalRoomDetails">$0.00</td>
             </tr>
-            <tr class="border_thin_bottom" style="<?php echo $room['jobsite_delivery'] ? null : 'display:none;' ?>">
+            <tr class="border_thin_bottom" style="<?php echo $contact['jobsite_delivery'] ? null : 'display:none;' ?>">
               <td class="total_text">Jobsite Delivery:</td>
               <td class="total_text">&nbsp;</td>
               <td class="text-md-right total_text" id="itemListJobsiteDelivery">$150.00</td>
@@ -853,14 +901,14 @@ $company = $company_qry->fetch_assoc();
               <td colspan="3" style="vertical-align:top !important;">Signature:</td>
             </tr>
             <tr class="white-right-border">
-              <td colspan="3"><input type="text" class="esig" name="signature" placeholder="(Digital signature affirms the following:)" style="width:100%;border:1px dashed #000;padding:3px;" value="<?php echo $room['esig']; ?>" <?php echo !empty($room['esig']) ? "disabled" : null;  ?> /></td>
+              <td colspan="3"><input type="text" class="esig" name="signature" placeholder="(Digital signature affirms the following:)" style="width:100%;border:1px dashed #000;padding:3px;" value="<?php echo $contact['esig']; ?>" <?php echo !empty($contact['esig']) ? "disabled" : null;  ?> /></td>
             </tr>
             <tr class="white-right-border">
               <td colspan="3" class="esig_id">
                 <?php
-                if(!empty($room['esig'])) {
-                  $ip = $room['esig_ip'];
-                  $time = date(DATE_TIME_ABBRV, $room['esig_time']);
+                if(!empty($contact['esig'])) {
+                  $ip = $contact['esig_ip'];
+                  $time = date(DATE_TIME_ABBRV, $contact['esig_time']);
                 } else {
                   $ip = $_SERVER['REMOTE_ADDR'];
                   $time = date(DATE_TIME_ABBRV);
@@ -906,13 +954,13 @@ $company = $company_qry->fetch_assoc();
   pricingVars.shipCost = <?php echo $ship_cost; ?>;
 
   <?php
-  $shipZone = !empty($room['ship_zip']) ? $room['ship_zip'] : $company['shipping_zip'];
+  $shipZone = !empty($contact['batchZip']) ? $contact['batchZip'] : $contact['contactZip'];
   $ship_zone_info = calcShipZone($shipZone);
   $shipInfo = json_encode($ship_zone_info, true);
 
   echo !empty($price_group) ? "var priceGroup = $price_group;" : null;
-  echo "var calcShipZip = '{$room['ship_zip']}';";
-  echo "var calcDealerShipZip = '{$company['shipping_zip']}';";
+  echo "var calcShipZip = '{$contact['batchZip']}';";
+  echo "var calcDealerShipZip = '{$contact['contactZip']}';";
   echo "var calcShipInfo = '$shipInfo';";
   ?>
 
@@ -928,7 +976,7 @@ $company = $company_qry->fetch_assoc();
 
     globalFunctions.checkDropdown();
 
-    <?php if($room['order_status'] === '$') { ?>
+    <?php if($contact['order_status'] === '$') { ?>
     pricingFunction.disableInput();
     <?php }?>
 
@@ -946,9 +994,9 @@ $company = $company_qry->fetch_assoc();
 
     //<editor-fold desc="Custom select field display">
     <?php
-    echo !empty($room['custom_vin_info']) ? "let customFieldInfo = JSON.parse('{$room['custom_vin_info']}');": null;
+    echo !empty($contact['custom_vin_info']) ? "let customFieldInfo = JSON.parse('{$contact['custom_vin_info']}');": null;
 
-    if (!empty($room['custom_vin_info'])) {
+    if (!empty($contact['custom_vin_info'])) {
       echo /** @lang JavaScript */
       <<<HEREDOC
       $.each(customFieldInfo, function(mainID, value) {
@@ -1021,18 +1069,15 @@ HEREDOC;
         } else {
           $tdList.eq(4).text(node.data.name);
         }
-
-        // Index #4 => Width
+        // Index #5 => Width
         // $tdList.eq(5).text(node.data.width);
-        $tdList.eq(5).find("input").attr("data-id", node.key).val(node.data.width);
-        console.log(node.data.width);
+        $tdList.eq(5).find("input").attr("data-id", node.key).val(pricingFunction.decimalToFraction(node.data.width));
         // Index #6 => Height
         // $tdList.eq(6).text(node.data.height);
-        $tdList.eq(6).find("input").attr("data-id", node.key).val(node.data.height);
-
+        $tdList.eq(6).find("input").attr("data-id", node.key).val(pricingFunction.decimalToFraction(node.data.height));
         // Index #7 => Depth
         // $tdList.eq(7).text(node.data.depth);
-        $tdList.eq(7).find("input").attr("data-id", node.key).val(node.data.depth);
+        $tdList.eq(7).find("input").attr("data-id", node.key).val(pricingFunction.decimalToFraction(node.data.depth));
 
         // Index #8 => Hinge
         if(node.data.hinge !== undefined) {
@@ -1611,5 +1656,5 @@ HEREDOC;
     }
   });
 
-  pricingVars.roomQry = JSON.parse('<?php $room['custom_vin_info'] = null; echo json_encode($room); ?>');
+  pricingVars.roomQry = JSON.parse('<?php $contact['custom_vin_info'] = null; echo json_encode($contact); ?>');
 </script>

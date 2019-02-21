@@ -13,80 +13,43 @@ function dbOrQry($post_field, $col) {
 
 switch($_REQUEST['action']) {
   case 'save_contact':
-    $errors = null;
-    $dealer_entry_id = 'NULL';
+    parse_str($_REQUEST['formInfo'], $info);
 
-    $type = sanitizeInput($_REQUEST['contact_type']);
-    $dealer_code = sanitizeInput($_REQUEST['dealer_code']);
-    $first_name = sanitizeInput($_REQUEST['first_name']);
-    $last_name = sanitizeInput($_REQUEST['last_name']);
-    $company_name = sanitizeInput($_REQUEST['company_name']);
-    $email = sanitizeInput($_REQUEST['email']);
-    $cell = sanitizeInput($_REQUEST['cell']);
-    $phone_2 = sanitizeInput($_REQUEST['phone_2']);
-    $shipping_first_name = sanitizeInput($_REQUEST['shipping_first_name']);
-    $shipping_last_name = sanitizeInput($_REQUEST['shipping_last_name']);
-    $shipping_addr = sanitizeInput($_REQUEST['shipping_addr']);
-    $shipping_city = sanitizeInput($_REQUEST['shipping_city']);
-    $shipping_state = sanitizeInput($_REQUEST['shipping_state']);
-    $shipping_zip = sanitizeInput($_REQUEST['shipping_zip']);
-    $billing_first_name = sanitizeInput($_REQUEST['billing_first_name']);
-    $billing_last_name = sanitizeInput($_REQUEST['billing_last_name']);
-    $billing_addr = sanitizeInput($_REQUEST['billing_addr']);
-    $billing_city = sanitizeInput($_REQUEST['billing_city']);
-    $billing_state = sanitizeInput($_REQUEST['billing_state']);
-    $billing_zip = sanitizeInput($_REQUEST['billing_zip']);
+    foreach($info AS $key => $value) {
+      $info[$key] = sanitizeInput($value);
+    }
 
-    $search_multiple = dbOrQry($first_name, 'first_name');
-    $search_multiple .= dbOrQry($last_name, 'last_name');
-    $search_multiple .= dbOrQry($company_name, 'company_name');
-    $search_multiple .= dbOrQry($phone_2, 'cell');
-    $search_multiple .= dbOrQry($email, 'email');
+    $sql_search = null;
 
-    $search_multiple = ltrim($search_multiple, ' AND ');
+    if(!empty(trim($info['email']))) {
+      $sql_search .= "OR LOWER(email) = 'LOWER('{$info['email']}')'";
+    }
 
-    $insert_SQL = "INSERT INTO contact (type, created_by, company_name, first_name, last_name, email, cell, line_2, shipping_first_name, shipping_last_name,
-        shipping_addr, shipping_city, shipping_state, shipping_zip, billing_first_name, billing_last_name, billing_addr, billing_city, billing_state, billing_zip, creation, dealer_id) 
-        VALUES ('$type', '{$_SESSION['userInfo']['id']}', '$company_name', '$first_name', '$last_name', '$email', '$cell', '$phone_2', '$shipping_first_name', '$shipping_last_name', '$shipping_addr',
-        '$shipping_city', '$shipping_state', '$shipping_zip', '$billing_first_name', '$billing_last_name', '$billing_addr', '$billing_city', '$billing_state',
-        '$billing_zip', UNIX_TIMESTAMP(), $dealer_entry_id)";
+    if(!empty(trim($info['cell']))) {
+      $sql_search .= " OR cell = '{$info['cell']}'";
+    }
 
-    if(!empty($search_multiple)) {
-      $personal_filter = ((int)$type === 8) ? "AND created_by = '{$_SESSION['userInfo']['id']}'" : null;
+    $existing_qry = $dbconn->query("SELECT * FROM contact WHERE 
+                            (LOWER(first_name) = LOWER('{$info['first_name']}') AND LOWER(last_name) = LOWER('{$info['last_name']}')) $sql_search");
 
-      $contact_qry = $dbconn->query("SELECT * FROM contact WHERE ($search_multiple) AND type = '$type' $personal_filter");
+    if($existing_qry->num_rows === 0) {
+      if(!empty(trim($info['first_name'])) && !empty(trim($info['last_name']))) {
+        $insert_success = $dbconn->query("INSERT INTO contact (created_by, first_name, last_name, email, cell, line_2, shipping_addr, shipping_city, shipping_state, 
+                     shipping_zip, billing_addr, billing_city, billing_state, billing_zip, creation) 
+                     VALUES ({$_SESSION['userInfo']['id']}, '{$info['first_name']}', '{$info['last_name']}', '{$info['email']}', '{$info['cell']}',
+                             '{$info['phone_2']}', '{$info['shipping_addr']}', '{$info['shipping_city']}', '{$info['shipping_state']}', '{$info['shipping_zip']}', 
+                             '{$info['billing_addr']}', '{$info['billing_city']}', '{$info['billing_state']}', '{$info['billing_zip']}', UNIX_TIMESTAMP())");
 
-      if($contact_qry->num_rows === 0) {
-        if(!empty($dealer_code)) {
-          $dealer_qry = $dbconn->query("SELECT * FROM dealers WHERE dealer_id LIKE '%$dealer_code%'");
-
-          if($dealer_qry->num_rows > 0) {
-            echo displayToast('error', 'Dealer code already exists in the system.', 'Dealer Exists');
-          } else {
-            if($dbconn->query($insert_SQL)) {
-              $contact_id = $dbconn->insert_id;
-
-              $dbconn->query("INSERT INTO dealers (dealer_id, multiplier, contact_id) VALUES ('$dealer_code', '0.419', $contact_id");
-
-              $dealer_entry_id = $dbconn->insert_id;
-
-              $dbconn->query("UPDATE contact SET dealer_id = $dealer_entry_id");
-
-              echo displayToast('success', 'Successfully created dealer.', 'Dealer Created');
-            }
-          }
+        if($insert_success) {
+          echo displayToast('success', 'Successfully created contact.', 'Contact Created');
         } else {
-          if($dbconn->query($insert_SQL)) {
-            echo displayToast('success', 'Successfully created contact.', 'Contact Created');
-          } else {
-            dbLogSQLErr($dbconn);
-          }
+          dbLogSQLErr($dbconn);
         }
       } else {
-        echo displayToast('error', 'Contact already exists in the system.', 'Contact Exists');
+        echo displayToast('error', 'Contact must have both a first name and a last initial.', 'Unable to Create');
       }
     } else {
-      echo displayToast('error', 'Unable to create empty contact.', 'Unable to Create');
+      echo displayToast('error', 'Unable to create contact. One already exists.', 'Contact Exists');
     }
 
     break;
@@ -176,20 +139,33 @@ switch($_REQUEST['action']) {
 
     parse_str($_REQUEST['formInfo'], $info);
 
-    $contact_role = !empty($info['custom_association']) ? sanitizeInput($info['custom_contact_role']) : sanitizeInput($info['contact_role']);
+    $contact_role = !empty($info['custom_association']) ? sanitizeInput(ucwords($info['custom_contact_role'])) : sanitizeInput($info['contact_role']);
 
     if(!empty($con_id)) {
-      $so_contact_qry = $dbconn->query("SELECT * FROM contact_associations WHERE contact_id = $con_id AND associated_as = '$contact_role' AND type = '$type' AND type_id = $type_id");
+      if($type === 'organization') {
+        $assoc_qry = $dbconn->query("SELECT * FROM contact_to_contact ctc WHERE ctc.contact_from = $type_id AND ctc.contact_to = $con_id AND associated_as = '$contact_role'");
+      } elseif($type === 'project') {
+        $assoc_qry = $dbconn->query("SELECT * FROM contact_to_sales_order ctso WHERE sales_order_id = $type_id AND contact_id = $con_id AND associated_as = '$contact_role'");
+      }
 
-      if($so_contact_qry->num_rows === 0) {
-        if($dbconn->query("INSERT INTO contact_associations (type, type_id, contact_id, assigned_by, created_on, associated_as) VALUES ('$type', '$type_id', '$con_id', {$_SESSION['userInfo']['id']}, UNIX_TIMESTAMP(), '$contact_role')")) {
-          $contact_qry = $dbconn->query("SELECT c.*, a.associated_as FROM contact c LEFT JOIN contact_associations a on c.id = a.contact_id WHERE c.id = $con_id");
-          $contact = $contact_qry->fetch_assoc();
+      if($assoc_qry->num_rows === 0) {
+        $contact_qry = $dbconn->query("SELECT * FROM contact WHERE id = $con_id");
+        $contact = $contact_qry->fetch_assoc();
 
+        $contact['associated_as'] = $contact_role;
+
+        if($type === 'organization') {
+          $dbconn->query("INSERT INTO contact_to_contact (created_by, contact_from, contact_to, associated_as, created_on) 
+                        VALUES ({$_SESSION['userInfo']['id']}, $type_id, $con_id, '$contact_role', UNIX_TIMESTAMP())");
+        } elseif($type === 'project') {
+          $dbconn->query("INSERT INTO contact_to_sales_order (created_by, contact_id, sales_order_id, associated_as, created_on) 
+                        VALUES ({$_SESSION['userInfo']['id']}, $con_id, $type_id, '$contact_role', UNIX_TIMESTAMP())");
+        }
+
+        if(empty($dbconn->error)) {
           echo json_encode($contact);
         } else {
           http_response_code(400);
-
           dbLogSQLErr($dbconn);
         }
       } else {

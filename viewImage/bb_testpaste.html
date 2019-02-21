@@ -1,0 +1,36 @@
+<html>
+<head>
+  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script>
+    document.onpaste = function (e) {
+      var items = e.clipboardData.items;
+      for (var i = 0; i < items.length; ++i) {
+        // uploads image on a server
+        var img = items[i].getAsFile();
+
+        var oData = new FormData();
+        oData.append('file', img);
+
+        var req = new XMLHttpRequest();
+        req.open("POST", "test-pastup.php");
+
+        req.onreadystatechange = function() {
+          setTimeout(function() {
+            var img = $('img').clone();
+            $('img').remove();
+            $('body').prepend(img);
+          }, 100);
+        }
+
+        req.send(oData);
+
+        return;
+      }
+    }
+  </script>
+</head>
+<body>
+<img src="aaa.png" />
+<input/>
+</body>
+</html>

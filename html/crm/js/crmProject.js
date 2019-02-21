@@ -16,6 +16,8 @@ var crmProject = {
 
         $.post("/html/pricing/ajax/global_actions.php?action=modalBracketMgmt&roomID=" + room_id, function(data) {
           $("#modalGlobal").html(data).modal("show");
+        }).done(function() {
+          $("#modalBracketSave").attr('data-roomid', room_id);
         });
 
         return false;
@@ -77,8 +79,6 @@ var crmProject = {
       $("#modalAddContactAssociation").click(function() {
         let formInfo = $("#contactAssociationForm").serialize();
         let contact_id = $(".add_contact_id :selected").val();
-
-        console.log("Old code runnin.");
 
         if($("#contact_role :selected").val() !== 'none' || $("#custom_association").is(":checked")) {
           $.post("/ondemand/contact_actions.php?action=add_contact_project", {contact_id: contact_id, so: active_so_num, formInfo: formInfo}, function(data) {
