@@ -62,7 +62,8 @@ switch($_REQUEST['action']) {
       detail.title, detail.description, pn.sqft, pn.linft, pn.cabinet, pn.addl_markup, pn.fixed_price, pn.kit_id, pn.desc_available,
        IF(detail.image_perspective != '', CONCAT(detail.image_perspective, '?', UUID_SHORT()), '') AS image_perspective,
        IF(detail.image_plan != '', CONCAT(detail.image_plan, '?', UUID_SHORT()), '') AS image_plan,
-       IF(detail.image_side != '', CONCAT(detail.image_side, '?', UUID_SHORT()), '') AS image_side 
+       IF(detail.image_side != '', CONCAT(detail.image_side, '?', UUID_SHORT()), '') AS image_side,
+       pn.modification
     FROM pricing_nomenclature pn
       LEFT JOIN pricing_catalog catalog on pn.catalog_id = catalog.id
       LEFT JOIN pricing_nomenclature_details detail on pn.description_id = detail.id
@@ -72,11 +73,14 @@ switch($_REQUEST['action']) {
     $price = 'N/A';
     $img = null;
 
+    $item = $item_qry->num_rows === 1 ? $item_qry->fetch_assoc() : null;
+
     if($room_qry = $dbconn->query("SELECT vs1.id AS species_grade_id, vs2.id AS door_design_id FROM rooms r LEFT JOIN vin_schema vs1 ON r.species_grade = vs1.key LEFT JOIN vin_schema vs2 ON r.door_design = vs2.key WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_design'")) {
       $room = $room_qry->fetch_assoc();
 
       //****************************************************************************
       // Calculate price group
+      // TODO: WTF does fixed price do in this situation? item array was defined below this point until recalculate bug
       if($room['door_design_id'] !== '1544' && $room['species_grade_id'] !== '11') {
         if($price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$room['door_design_id']} AND species_id = {$room['species_grade_id']}")) {
           $price_group = $price_group_qry->fetch_assoc();
@@ -97,8 +101,6 @@ switch($_REQUEST['action']) {
       }
       //****************************************************************************
     }
-
-    $item = $item_qry->num_rows === 1 ? $item_qry->fetch_assoc() : null;
 
     if(!empty($item_qry)) {
       if(!empty($item['image'])) {
@@ -133,6 +135,11 @@ switch($_REQUEST['action']) {
       }
 
       $item['description'] = $description;
+
+      if(empty($item['price']) && (bool)$item['modification']) {
+        $price = 0.00;
+      }
+
       $item['price'] = $price;
 
       echo json_encode($item, true);
