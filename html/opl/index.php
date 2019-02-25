@@ -16,12 +16,12 @@ outputPHPErrs();
       <table id="opl" class="pricing_table_format">
       <colgroup>
         <col width="20px" class="no-print">
-        <col width="50px">
-        <col width="50px" class="no-print">
-        <col width="50px">
+        <col width="40px">
+        <col width="75px" class="no-print">
+        <col width="60px">
         <col width="*">
-        <col width="150px" class="no-print">
-        <col width="80px">
+        <col width="175px" class="no-print">
+        <col width="90px">
         <col width="80px">
         <!--<col width="80px">
         <col width="80px">-->
@@ -331,7 +331,7 @@ outputPHPErrs();
         // Set column #1 info from node data:
 
         // (Index #1 is the index heir level)
-        $tdList.eq(1).text(node.getIndexHier());
+        // $tdList.eq(1).text(node.getIndexHier());
 
         // (Index #2 is the priority textbox)
         let priorityTextbox = $tdList.eq(3).find("input");
@@ -468,14 +468,15 @@ outputPHPErrs();
           if(!disabled) {
             $.confirm({
               title: "Are you sure you want to complete this task?",
-              content: "You are about to remove task " + node.getIndexHier() + ": " + node.title + ". Are you sure?",
+              content: "You are about to remove task " + node.title + ". Are you sure?",
               type: 'red',
               buttons: {
                 yes: function() {
                   node.remove();
 
                   // re-render the tree deeply so that we can recalculate the line item numbers
-                  opl.fancytree("getRootNode").render(true,true);
+                  // NOTE: RE-RENDERING SEEMS TO LOCK UP WITH GC FROM CHROME WITH LOTS OF ROWS!
+                  // opl.fancytree("getRootNode").render(true,true);
                 },
                 no: function() {}
               }

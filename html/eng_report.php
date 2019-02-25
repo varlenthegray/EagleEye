@@ -27,7 +27,7 @@ require '../includes/header_start.php';
                             $sort_order .= "$card,";
                         }
 
-                        $sort_order = rtrim($sort_order, ",");
+                        $sort_order = rtrim($sort_order, ',');
 
                         $sort_order = "field(r.id, $sort_order)";
                     }
@@ -209,7 +209,7 @@ require '../includes/header_start.php';
                             echo "<div style='padding-top:5px;'><i class='zmdi zmdi-comments'></i> $comment_count</div>";
                         }
 
-                        echo "</div></div>";
+                        echo '</div></div>';
                     }
                 }
                 ?>

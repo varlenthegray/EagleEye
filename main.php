@@ -567,26 +567,8 @@ require 'includes/header_start.php';
         }
       })
       .on("click", ".complete_task", function() {
-        let node = opl.fancytree("getActiveNode");
-
-        if(!disabled) {
-          $.confirm({
-            title: "Are you sure you want to complete this task?",
-            content: "You are about to remove task " + node.getIndexHier() + ": " + node.title + ". Are you sure?",
-            type: 'red',
-            buttons: {
-              yes: function() {
-                node.remove();
-
-                // re-render the tree deeply so that we can recalculate the line item numbers
-                opl.fancytree("getRootNode").render(true,true);
-
-                sendOPLEdit();
-              },
-              no: function() {}
-            }
-          });
-        }
+        $(this).trigger("nodeCommand", {cmd: 'completeTask'});
+        return false;
       })
       .on("click", ".view_task_info", function() {
         let unique_id = $(this).attr("data-uid");
@@ -1315,14 +1297,14 @@ require 'includes/header_start.php';
   <script src="/html/pricing/pricing.js?v=<?php echo VERSION; ?>"></script>
 
   <!-- Fancytree -->
-  <script src="/assets/plugins/fancytree/jquery.fancytree.js"></script>
-  <script src="/assets/plugins/fancytree/jquery.fancytree.filter.js"></script>
-  <script src="/assets/plugins/fancytree/jquery.fancytree.dnd.js"></script>
-  <script src="/assets/plugins/fancytree/jquery.fancytree.edit.js"></script>
-  <script src="/assets/plugins/fancytree/jquery.fancytree.gridnav.js"></script>
-  <script src="/assets/plugins/fancytree/jquery.fancytree.table.js"></script>
-  <script src="/assets/plugins/fancytree/jquery.fancytree.persist.js"></script>
-  <script src="/assets/plugins/fancytree/jquery.fancytree.fixed.js"></script>
+  <script src="/assets/plugins/fancytree/jquery.fancytree-all.min.js"></script>
+  <script src="/assets/plugins/fancytree/modules/jquery.fancytree.filter.min.js"></script>
+  <script src="/assets/plugins/fancytree/modules/jquery.fancytree.dnd.min.js"></script>
+  <script src="/assets/plugins/fancytree/modules/jquery.fancytree.edit.js"></script>
+  <script src="/assets/plugins/fancytree/modules/jquery.fancytree.gridnav.min.js"></script>
+  <script src="/assets/plugins/fancytree/modules/jquery.fancytree.table.min.js"></script>
+  <script src="/assets/plugins/fancytree/modules/jquery.fancytree.persist.min.js"></script>
+  <script src="/assets/plugins/fancytree/modules/jquery.fancytree.fixed.min.js"></script>
 
   <!-- MapHilight - for Area Maps on images, dashboard circle display mostly -->
   <script src="/assets/plugins/maphilight/jquery.maphilight.min.js"></script>
