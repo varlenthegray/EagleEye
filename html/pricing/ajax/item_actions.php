@@ -80,8 +80,7 @@ switch($_REQUEST['action']) {
 
       //****************************************************************************
       // Calculate price group
-      // TODO: WTF does fixed price do in this situation? item array was defined below this point until recalculate bug
-      if($room['door_design_id'] !== '1544' && $room['species_grade_id'] !== '11') {
+      // TODO: Removed fixed price, does this change anything?
         if($price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$room['door_design_id']} AND species_id = {$room['species_grade_id']}")) {
           $price_group = $price_group_qry->fetch_assoc();
           $price_group = $price_group['price_group_id'];
@@ -92,13 +91,6 @@ switch($_REQUEST['action']) {
             $price = $price['price'];
           }
         }
-      } else if((bool)$item['fixed_price']) {
-        if($price_qry = $dbconn->query("SELECT price FROM pricing_price_map map WHERE map.price_group_id = 1 AND map.nomenclature_id = $id;")) {
-          $price = $price_qry->fetch_assoc();
-
-          $price = $price['price'];
-        }
-      }
       //****************************************************************************
     }
 

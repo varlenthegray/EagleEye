@@ -134,13 +134,11 @@ WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_
 if($pg_qry->num_rows > 0) {
   $pg = $pg_qry->fetch_assoc();
 
-  if ($pg['door_design_id'] !== '1544' && $pg['species_grade_id'] !== '11') {
-    $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$pg['door_design_id']} AND species_id = {$pg['species_grade_id']}");
-    $price_group = $price_group_qry->fetch_assoc();
-    $price_group = $price_group['price_group_id'];
-  } else {
-    $price_group = '0';
-  }
+  // TODO: This friggin query is executed multiple times, why!
+
+  $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$pg['door_design_id']} AND species_id = {$pg['species_grade_id']}");
+  $price_group = $price_group_qry->fetch_assoc();
+  $price_group = $price_group['price_group_id'];
 } else {
   $price_group = '0';
 }
