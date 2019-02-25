@@ -654,6 +654,106 @@ require 'includes/header_start.php';
       })
       // end of OPL functions
 
+      // start card view functions
+      .on("click", "#quote_lock_unlock", function() {
+        if($(this).attr("data-status") === 'locked') {
+          $(this).attr("data-status", "unlocked");
+          $(this).children("i").removeClass("zmdi-lock").addClass("zmdi-lock-open");
+          $(".quote_hide_card, .quote_show_card").show();
+          $(".quote_card_hidden").show();
+
+          $(".room_sort").sortable("option", "disabled", false);
+        } else {
+          $(this).attr("data-status", "locked");
+          $(this).children("i").removeClass("zmdi-lock-open").addClass("zmdi-lock");
+          $(".quote_hide_card, .quote_show_card").hide();
+          $(".quote_card_hidden").hide();
+
+          $(".room_sort").sortable("option", "disabled", true);
+        }
+      })
+      .on("click", "#fineng_lock_unlock", function() {
+        if($(this).attr("data-status") === 'locked') {
+          $(this).attr("data-status", "unlocked");
+          $(this).children("i").removeClass("zmdi-lock").addClass("zmdi-lock-open");
+          $(".fineng_hide_card, .fineng_show_card").show();
+          $(".fineng_card_hidden").show();
+
+          $(".room_sort").sortable("option", "disabled", false);
+        } else {
+          $(this).attr("data-status", "locked");
+          $(this).children("i").removeClass("zmdi-lock-open").addClass("zmdi-lock");
+          $(".fineng_hide_card, .quote_show_card").hide();
+          $(".fineng_card_hidden").hide();
+
+          $(".room_sort").sortable("option", "disabled", true);
+        }
+      })
+      .on("click", ".card", function(e) {
+        if($("#quote_lock_unlock").attr("data-status") === 'locked' && $("#fineng_lock_unlock").attr("data-status") === 'locked') {
+          e.stopPropagation();
+
+          console.log("Click");
+
+          $.post("/html/modals/view_card.php", {room_id: $(this).data("room-id"), so_id: $(this).data("so-id"), type: $(this).data("type")}, function(data) {
+            $("#modalViewCard").html(data).modal("show");
+          });
+        }
+      })
+      .on("click", ".quote_hide_card", function(e) {
+        e.stopPropagation();
+
+        var room_id = $(this).parents(".card").attr("data-room-id");
+
+        $.post("/ondemand/display_actions.php?action=hide_eng_card", {room_id: room_id, type: 'quote'}, function(data) {
+          $("body").append(data);
+        });
+
+        $(this).parents('.card').addClass('quote_card_hidden').find('.card_body').addClass('hidden-section');
+        $(this).children('i').removeClass('zmdi-eye-off').addClass('zmdi-eye text-secondary');
+        $(this).removeClass('quote_hide_card').addClass('quote_show_card');
+      })
+      .on("click", ".fineng_hide_card", function(e) {
+        e.stopPropagation();
+
+        var room_id = $(this).parents(".card").attr("data-room-id");
+
+        $.post("/ondemand/display_actions.php?action=hide_eng_card", {room_id: room_id, type: 'fineng'}, function(data) {
+          $("body").append(data);
+        });
+
+        $(this).parents('.card').addClass('fineng_card_hidden').find('.card_body').addClass('hidden-section');
+        $(this).children('i').removeClass('zmdi-eye-off').addClass('zmdi-eye text-secondary');
+        $(this).removeClass('fineng_hide_card').addClass('fineng_show_card');
+      })
+      .on("click", ".quote_show_card", function(e) {
+        e.stopPropagation();
+
+        var room_id = $(this).parents(".card").attr("data-room-id");
+
+        $.post("/ondemand/display_actions.php?action=show_eng_card", {room_id: room_id, type: 'quote'}, function(data) {
+          $("body").append(data);
+        });
+
+        $(this).parents('.card').removeClass('quote_card_hidden').find('.card_body').removeClass('hidden-section');
+        $(this).children('i').removeClass('zmdi-eye text-secondary').addClass('zmdi-eye-off');
+        $(this).removeClass('quote_show_card').addClass('quote_hide_card');
+      })
+      .on("click", ".fineng_show_card", function(e) {
+        e.stopPropagation();
+
+        var room_id = $(this).parents(".card").attr("data-room-id");
+
+        $.post("/ondemand/display_actions.php?action=show_eng_card", {room_id: room_id, type: 'fineng'}, function(data) {
+          $("body").append(data);
+        });
+
+        $(this).parents('.card').removeClass('fineng_card_hidden').find('.card_body').removeClass('hidden-section');
+        $(this).children('i').removeClass('zmdi-eye text-secondary').addClass('zmdi-eye-off');
+        $(this).removeClass('fineng_show_card').addClass('fineng_hide_card');
+      })
+      // end card view functions
+
       <?php if($bouncer->validate('view_timecards')) { ?>
     // -- Navigation --
       .on("click", "#nav_timecard", function() {
