@@ -124,7 +124,7 @@ outputPHPErrs();
       </div>
 
 
-    <div class="col-md-2 col-md-offset-1 no-print">
+    <div class="col-md-3 col-md-offset-1 no-print">
       <h4>History</h4>
 
       <table id="opl_history" class="pricing_table_format">
