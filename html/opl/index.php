@@ -12,14 +12,14 @@ outputPHPErrs();
 
     <h1>Open Point List</h1>
 
-    <div class="col-md-8">
+    <div class="col-md-9">
       <table id="opl" class="pricing_table_format">
       <colgroup>
         <col width="20px" class="no-print">
         <col width="50px">
         <col width="50px" class="no-print">
         <col width="50px">
-        <col width="450px">
+        <col width="*">
         <col width="150px" class="no-print">
         <col width="80px">
         <col width="80px">
@@ -124,7 +124,7 @@ outputPHPErrs();
       </div>
 
 
-    <div class="col-md-3 col-md-offset-1 no-print">
+    <div class="col-md-3 no-print">
       <h4>History</h4>
 
       <table id="opl_history" class="pricing_table_format">
