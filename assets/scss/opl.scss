@@ -12,6 +12,10 @@
   font-size: 1em;
 }
 
+.ui-contextmenu {
+  z-index: 125;
+}
+
 .task_actions {
   i {
     cursor: pointer;
