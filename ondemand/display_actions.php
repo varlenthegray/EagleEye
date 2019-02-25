@@ -210,6 +210,7 @@ switch($_REQUEST['action']) {
     echo json_encode($output);
 
     break;
+
   case 'display_ind_job_queue':
     $queue = urldecode(sanitizeInput($_REQUEST['queue']));
 
