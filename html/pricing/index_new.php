@@ -758,7 +758,7 @@ if($pg_qry->num_rows > 0) {
           <colgroup>
             <col width="40px">
             <col width="35px">
-            <col width="50px">
+            <col width="70px">
             <col width="150px">
             <col width="350px">
             <col width="50px">
@@ -787,7 +787,7 @@ if($pg_qry->num_rows > 0) {
           <colgroup>
             <col width="40px">
             <col width="40px">
-            <col width="50px">
+            <col width="70px">
             <col width="150px">
             <col width="350px">
             <col width="50px">

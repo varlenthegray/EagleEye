@@ -90,6 +90,10 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                 <col width="*">
               </colgroup>
               <tbody>
+              <tr>
+                <td><label>Nomenclature:</label></td>
+                <td><input type="text" class="c_input" name="sku" placeholder='<?php echo $info['sku']; ?> Name' value='<?php echo $info['sku']; ?>' /> </td>
+              </tr>
                 <tr>
                   <td><label><?php echo $title; ?> Name:</label></td>
                   <td><input type="text" class="c_input" name="name" placeholder='<?php echo $title; ?> Name' value='<?php echo $nameValue; ?>' /> </td>
@@ -127,7 +131,7 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
 
                       echo "<tr>
                     <td>
-                      <label>'{$cat['name']}' Description:</label>
+                      <label>'{$cat['name']}' Note:</label>
                       $checkbox
                     </td>
                     <td><div style='min-height:91px;'>$description</div></td>
@@ -138,14 +142,10 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                 ?>
 
                 <tr>
-                  <td><label>This Description:</label></td>
+                  <td><label>Current Item Notes:</label></td>
                   <td><textarea class="c_input" name="description" placeholder="Description" style="min-height:91px;"><?php echo $info['description']; ?></textarea></td>
                 </tr>
                 <?php if($type === 'item' || $type === 'addItem') { ?>
-                  <tr>
-                    <td><label>Nomenclature:</label></td>
-                    <td><input type="text" class="c_input" name="sku" placeholder='<?php echo $info['sku']; ?> Name' value='<?php echo $info['sku']; ?>' /> </td>
-                  </tr>
                   <tr>
                     <td colspan="2" class="subtable">
                       <table width="100%">
