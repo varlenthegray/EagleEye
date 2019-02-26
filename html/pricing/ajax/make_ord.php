@@ -47,8 +47,8 @@ function getCVValue($segment, $row_result) {
 $room_id = sanitizeInput($_REQUEST['roomID']);
 
 $info_qry = $dbconn->query("SELECT * FROM rooms r 
-  LEFT JOIN  sales_order so ON so.so_num = r.so_parent 
-  LEFT JOIN dealers d ON so.dealer_code = d.dealer_id
+  LEFT JOIN sales_order so ON so.so_num = r.so_parent 
+  LEFT JOIN contact c ON so.contact_id = c.id
 WHERE r.id = $room_id");
 
 if($info_qry->num_rows === 1) {
@@ -60,8 +60,8 @@ if($info_qry->num_rows === 1) {
   $_Description = "$_product_type/$_species/$_finish";
 
   $_Name = "{$info['so_num']}{$info['room']}_{$info['iteration']}";
-  $_PurchaseOrder = "{$info['project_name']} {$info['room_name']}";
-  $_Customer = $info['dealer_name'];
+  $_PurchaseOrder = strlen($info['room_name']) <= 20 ? $info['room_name'] : substr($info['room_name'], 0, 20);
+  $_Customer = empty($info['company_name']) ? "{$info['last_name']}_{$info['project_name']}" : "{$info['company_name']}_{$info['project_name']}";
   $_CabinetConstruction = getCVValue('product_type', $info);
 
   header("Content-Disposition: attachment; filename=$_Name.ord");

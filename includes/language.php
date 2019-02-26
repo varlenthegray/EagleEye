@@ -3,7 +3,7 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define('VERSION', '2.7.010');
+define('VERSION', '2.7.011');
 define('RELEASE_DATE', '2/26/19 V.' . VERSION);
 
 // Global definitions
