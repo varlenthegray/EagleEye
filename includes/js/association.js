@@ -64,6 +64,8 @@ var association = {
       let type = $.trim($("#crmViewGlobal").find(".active").text().toLowerCase()); // type = active tab
       let typeID = $(this).attr('data-type-id');
 
+      // TODO: Fix type = active tab text, that's STUPID! I should be able to change the tab text to whatever I want!
+
       if($("#contact_role :selected").val() !== 'none' || $("#custom_association").is(":checked")) {
         $.post("/ondemand/contact_actions.php?action=add_contact_project", {contact_id: contact_id, type_id: typeID, formInfo: formInfo, type: type}, function(data) {
           let info = JSON.parse(data);
