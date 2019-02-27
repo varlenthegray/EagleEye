@@ -186,10 +186,10 @@ switch($_REQUEST['action']) {
     $default_hinge = sanitizeInput($_REQUEST['default_hinge']);
     $image_type = sanitizeInput($_REQUEST['image_type']);
 
-    $drawer_box_count = sanitizeInput($_REQUEST['drawer_box_count']);
-    $assembly_points = sanitizeInput($_REQUEST['assembly_points']);
-    $delivery_points = sanitizeInput($_REQUEST['delivery_points']);
-    $install_points = sanitizeInput($_REQUEST['install_points']);
+    $drawer_box_count = !empty(sanitizeInput($_REQUEST['drawer_box_count'])) ? sanitizeInput($_REQUEST['drawer_box_count']) : 0;
+    $assembly_points = !empty(sanitizeInput($_REQUEST['assembly_points'])) ? sanitizeInput($_REQUEST['assembly_points']) : 0;
+    $delivery_points = !empty(sanitizeInput($_REQUEST['delivery_points'])) ? sanitizeInput($_REQUEST['delivery_points']) : 0;
+    $install_points =  !empty(sanitizeInput($_REQUEST['install_points'])) ? sanitizeInput($_REQUEST['install_points']) : 0;
 
     $pricing_method = sanitizeInput($_REQUEST['pricing_method']);
     $single_price =  sanitizeInput($_REQUEST['single_price']);
