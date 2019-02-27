@@ -10,13 +10,13 @@ namespace associations;
 
 
 class associations {
-  private function getContactCard($contact) {
+  private function getContactCard($contact, $association_type) {
     return <<<HEREDOC
     <div class="contact-card">
       <div style="float:right;">
         <!--<i class="fa fa-bank primary-color cursor-hand assoc_set_commission" data-id="{$contact['id']}" title="Commission Schedule"></i>-->
-        <i class="fa fa-pencil-square primary-color cursor-hand edit_assigned_contact" data-id="{$contact['cID']}" title="Edit Contact"></i>
-        <i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact" data-id="{$contact['id']}" title="Remove Contact"></i>
+        <!--<i class="fa fa-pencil-square primary-color cursor-hand edit_assigned_contact" data-id="{$contact['cID']}" title="Edit Contact"></i>-->
+        <i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact" data-id="{$contact['uID']}" data-type='$association_type' title="Remove Contact"></i>
       </div>
       
       <h5><a href="#">{$contact['name']}</a></h5>
@@ -79,6 +79,7 @@ HEREDOC;
     if($association_type === 'contact') {
       $assoc_qry = $dbconn->query("SELECT 
         '$association_id' AS id,
+        ctc.id AS uID,
         c.id AS cID,
         IF(TRIM(c.company_name != ''), c.company_name, CONCAT(c.first_name, ' ', c.last_name)) AS name,
         ctc.associated_as,
@@ -91,6 +92,7 @@ HEREDOC;
       $assoc_qry = $dbconn->query("SELECT 
         '$association_id' AS id,
         c.id AS cID,
+        ctso.id AS uID,
         IF(TRIM(c.company_name != ''), c.company_name, CONCAT(c.first_name, ' ', c.last_name)) AS name,
         ctso.associated_as,
         c.primary_phone,
@@ -104,7 +106,7 @@ HEREDOC;
 
     if($assoc_qry->num_rows > 0) {
       while($assoc = $assoc_qry->fetch_assoc()) {
-        echo $this->getContactCard($assoc);
+        echo $this->getContactCard($assoc, $association_type);
       }
     } else {
       echo '<strong>No Contacts</strong>';

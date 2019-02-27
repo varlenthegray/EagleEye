@@ -21,21 +21,24 @@ var association = {
 
     $("body")
       .on("click", ".remove_assigned_contact", function() {
-      let id = $(this).attr('data-id');
-      let thisClick = this;
+        let id = $(this).attr('data-id');
+        let type = $(this).attr('data-type');
+        let thisClick = this;
 
-      $.post("/ondemand/contact_actions.php?action=remove_contact_project", {id: id}, function(data) {
-        $(thisClick).parents().eq(1).remove();
+        console.log("Removing contact: " + id + ", Type: " + type);
 
-        if($(".contact-box .contact-card").length === 0) {
-          $(".contact-box").append("<strong>No Contacts</strong>");
-        }
+        $.post("/ondemand/contact_actions.php?action=remove_contact_project", {id: id, type: type}, function(data) {
+          $(thisClick).parents().eq(1).remove();
 
-        $("body").append(data);
-      }).fail(function(header) {
-        $("body").append(header.responseText);
-      });
-    })
+          if($(".contact-box .contact-card").length === 0) {
+            $(".contact-box").append("<strong>No Contacts</strong>");
+          }
+
+          $("body").append(data);
+        }).fail(function(header) {
+          $("body").append(header.responseText);
+        });
+      })
       .on("click", ".edit_assigned_contact", function() {
         $.post("/html/modals/add_contact.php?action=edit", {id: $(this).attr('data-id')}, function(data) {
           $("#modalGlobal").html(data).modal('show');
@@ -69,18 +72,25 @@ var association = {
       if($("#contact_role :selected").val() !== 'none' || $("#custom_association").is(":checked")) {
         $.post("/ondemand/contact_actions.php?action=add_contact_project", {contact_id: contact_id, type_id: typeID, formInfo: formInfo, type: type}, function(data) {
           let info = JSON.parse(data);
+          let displayName;
 
           //<editor-fold desc="Adding new card">
-          info['cell'] = (info['cell'] !== null) ? info['cell'] : '';
-          info['email'] = (info['email'] !== null) ? info['email'] : '';
+          info['cell'] = (info['cell'] !== null && $.trim(info['cell']) !== '') ? info['cell'] : '';
+          info['email'] = (info['email'] !== null && $.trim(info['email']) !== '') ? info['email'] : '';
+
+          if($.trim(info['first_name']) !== '' && $.trim(info['first_name']) !== null) {
+            displayName = info['first_name'] + ' ' + info['last_name'];
+          } else {
+            displayName = info['company_name'];
+          }
 
           let newCard = '<div class="contact-card">' +
             '<div style="float:right;">' +
-            '<i class="fa fa-bank primary-color cursor-hand assoc_set_commission" data-id="' + info['id'] + '" title="Commission Schedule"></i>' +
-            '<i class="fa fa-pencil-square primary-color cursor-hand edit_assigned_contact" data-id="' + contact_id + '" title="Edit Contact"></i>' +
-            '<i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact" data-id="' + info['id'] + '" title="Remove Contact"></i>' +
+            // '<i class="fa fa-bank primary-color cursor-hand assoc_set_commission" data-id="' + info['id'] + '" title="Commission Schedule"></i>' +
+            // '<i class="fa fa-pencil-square primary-color cursor-hand edit_assigned_contact" data-id="' + contact_id + '" title="Edit Contact"></i>' +
+            '<i class="fa fa-minus-square danger-color cursor-hand remove_assigned_contact" data-id="' + info['uID'] + '" title="Remove Contact"></i>' +
             '</div>' +
-            '  <h5><a href="#">' + info['first_name'] + ' ' + info['last_name'] + '</a></h5>' +
+            '  <h5><a href="#">' + displayName + '</a></h5>' +
             '  <h6>' + info['associated_as'] + '</h6>' +
             '  <p>' + info['cell'] + '<br>' + info['email'] + '</p>' +
             '</div>';
