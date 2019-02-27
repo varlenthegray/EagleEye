@@ -90,10 +90,12 @@ $nameValue = $type === 'folder' ? $info['name'] : $info['title'];
                 <col width="*">
               </colgroup>
               <tbody>
-              <tr>
-                <td><label>Nomenclature:</label></td>
-                <td><input type="text" class="c_input" name="sku" placeholder='<?php echo $info['sku']; ?> Name' value='<?php echo $info['sku']; ?>' /> </td>
-              </tr>
+                <?php if($type === 'item' || $type === 'addItem') { ?>
+                <tr>
+                  <td><label>Nomenclature:</label></td>
+                  <td><input type="text" class="c_input" name="sku" placeholder='<?php echo $info['sku']; ?> Name' value='<?php echo $info['sku']; ?>' /> </td>
+                </tr>
+                <?php } ?>
                 <tr>
                   <td><label><?php echo $title; ?> Name:</label></td>
                   <td><input type="text" class="c_input" name="name" placeholder='<?php echo $title; ?> Name' value='<?php echo $nameValue; ?>' /> </td>
