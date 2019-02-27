@@ -25,8 +25,6 @@ var association = {
         let type = $(this).attr('data-type');
         let thisClick = this;
 
-        console.log("Removing contact: " + id + ", Type: " + type);
-
         $.post("/ondemand/contact_actions.php?action=remove_contact_project", {id: id, type: type}, function(data) {
           $(thisClick).parents().eq(1).remove();
 
@@ -43,6 +41,9 @@ var association = {
         $.post("/html/modals/add_contact.php?action=edit", {id: $(this).attr('data-id')}, function(data) {
           $("#modalGlobal").html(data).modal('show');
         });
+      })
+      .on("click", ".association_add_new", function() {
+        $(".nav_add_new").trigger("click");
       })
     ;
   },

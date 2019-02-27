@@ -68,9 +68,12 @@ HEREDOC;
 
     echo "<table class='m-b-10' width='100%'>
             <tr>
-              <td width='90px'><label for='add_contact'>Add Contact</label></td>
+              <td width='120px'><label for='add_contact'>Associate Contact</label></td>
               <td>$contact_dropdown</td>
-              <td width='20px'><i class='fa fa-plus-square assign_contact primary-color cursor-hand' data-type='$association_type' data-type-id='$association_id'></i></td>
+              <td width='40px'>
+                <i class='fa fa-chain assign_contact primary-color cursor-hand' data-type='$association_type' data-type-id='$association_id' title='Associate contact'></i>
+                <i class='fa fa-plus-square association_add_new primary-color cursor-hand' title='Add New Contact'></i>
+              </td>
             </tr>
           </table>";
     //</editor-fold>
