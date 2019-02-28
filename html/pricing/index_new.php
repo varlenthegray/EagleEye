@@ -1,50 +1,14 @@
 <?php
 require '../../includes/header_start.php';
+require '../../includes/classes/global_manager.php';
 
-// replaces displayVINOpts and displayFinishOpts
-function getGlobal($segment, $dbName = null) {
-  global $vin_schema;
-  global $contact;
-
-  $room_val = !empty($dbName) ? $dbName : $segment;
-
-  $nsy = empty($contact[$room_val]) ? 'selected' : null;
-
-  $option = "<optgroup label='Empty'><option value='' $nsy disabled>Not Selected Yet</option>";
-  $prev_group = null;
-  $addl_html = null;
-
-  foreach($vin_schema[$segment] AS $element) {
-    if((bool)$element['visible']) {
-      if($prev_group !== $element['group']) {
-        $option .= "</optgroup><optgroup label='{$element['group']}'>";
-        $prev_group = $element['group'];
-      }
-
-      $selected = $contact[$room_val] === $element['key'] ? 'selected' : null;
-
-      $val = strip_tags($element['value']);
-
-      $option .= "<option value='{$element['key']}' $selected>$val</option>";
-
-      $addl_html[$element['key']] = $element['addl_html'];
-    }
-  }
-
-  $html_addl_out = null;
-
-  foreach($addl_html AS $key => $html) {
-    if(!empty($html)) {
-      $html_addl_out .= "<div class='addl_select_html'>$html</div>";
-    }
-  }
-
-  return "<select name='$room_val' id='$room_val' class='c_input' style='border:none;margin-left:-4px;font-weight:bold;'>$option</select> $html_addl_out";
-}
+use GlobalManager\global_manager;
 
 //outputPHPErrs();
 
 $room_id = sanitizeInput($_REQUEST['room_id']);
+
+$global_mgr = new global_manager($room_id);
 
 $vin_schema = getVINSchema();
 
@@ -605,17 +569,17 @@ HEREDOC;
           </tr>
           <tr>
             <td>Order Type:</td>
-            <td><?php echo getGlobal('product_type'); ?></td>
+            <td><?php echo $global_mgr->getGlobal('product_type'); ?></td>
             <td></td>
           </tr>
           <tr>
             <td><span id="leadTimeDef">Lead Time:</span></td>
-            <td><?php echo getGlobal('days_to_ship'); ?></td>
+            <td><?php echo $global_mgr->getGlobal('days_to_ship'); ?></td>
             <td></td>
           </tr>
           <tr>
             <td>Order Status:</td>
-            <td><?php echo getGlobal('order_status'); ?></td>
+            <td><?php echo $global_mgr->getGlobal('order_status'); ?></td>
             <td></td>
           </tr>
           <tr>
@@ -630,7 +594,7 @@ HEREDOC;
           </tr>
           <tr>
             <td>Ship VIA:</td>
-            <td><?php echo getGlobal('ship_via'); ?></td>
+            <td><?php echo $global_mgr->getGlobal('ship_via'); ?></td>
             <td></td>
           </tr>
 
@@ -682,7 +646,7 @@ HEREDOC;
           </tr>
           <tr>
             <td>Payment Method:</td>
-            <td><?php echo getGlobal('payment_method'); ?></td>
+            <td><?php echo $global_mgr->getGlobal('payment_method'); ?></td>
             <td></td>
           </tr>
           <tr>
@@ -731,56 +695,56 @@ HEREDOC;
             </tr>
             <tr class="border_top">
               <td width="35%" class="border_thin_bottom">Construction Method:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('construction_method'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('construction_method'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Species/Grade:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('species_grade'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('species_grade'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Carcass Material:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('carcass_material'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('carcass_material'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Door Design:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('door_design'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('door_design'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom"><div>Door Panel Raise:</div></td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('panel_raise', 'panel_raise_door'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('panel_raise', 'panel_raise_door'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Short Drawer Raise:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('panel_raise', 'panel_raise_sd'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('panel_raise', 'panel_raise_sd'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Tall Drawer Raise:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('panel_raise', 'panel_raise_td'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('panel_raise', 'panel_raise_td'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Style/Rail Width:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('style_rail_width'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('style_rail_width'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Edge Profile:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('edge_profile'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('edge_profile'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Framing Bead:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('framing_bead'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('framing_bead'); ?></div></td>
               <td class="border_thin_bottom"></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Frame Option:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('framing_options'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('framing_options'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Drawer Box:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('drawer_boxes'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('drawer_boxes'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Drawer Guide:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('drawer_guide'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('drawer_guide'); ?></div></td>
             </tr>
             <tr>
               <td colspan="2" style="height:117px;"></td>
@@ -807,35 +771,35 @@ HEREDOC;
             <tr><th colspan="2" style="padding-left:5px;" class="th_17">Finish</th></tr>
             <tr class="border_top">
               <td class="border_thin_bottom" width="30%">Finish Code:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('finish_code'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('finish_code'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Sheen:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('sheen'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('sheen'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Glaze Color:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('glaze'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('glaze'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Glaze Technique:</td>
-              <td class="border_thin_bottom pricing_value"><div class="cab_specifications_desc"><?php echo getGlobal('glaze_technique'); ?></div></td>
+              <td class="border_thin_bottom pricing_value"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('glaze_technique'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Antiquing:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('antiquing'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('antiquing'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Worn Edges:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('worn_edges'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('worn_edges'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Distressing:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('distress_level'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('distress_level'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Enviro-finish:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('green_gard'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('green_gard'); ?></div></td>
             </tr>
             <tr>
               <td colspan="2" style="height:212px;"></td>

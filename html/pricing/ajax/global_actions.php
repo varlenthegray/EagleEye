@@ -906,55 +906,26 @@ HEREDOC;
     //</editor-fold>
 
     //<editor-fold desc="DB: Update Cabinet Details for room">
-    if($dbconn->query("UPDATE rooms SET 
-        construction_method = '$construction_method', 
-        species_grade = '$species_grade', 
-        carcass_material = '$carcass_material', 
-        door_design = '$door_design', 
-        panel_raise_door = '$panel_raise_door', 
-        panel_raise_sd = '$panel_raise_sd', 
-        panel_raise_td = '$panel_raise_td', 
-        style_rail_width = '$style_rail_width', 
-        edge_profile = '$edge_profile', 
-        framing_bead = '$framing_bead', 
-        framing_options = '$framing_options', 
-        drawer_boxes = '$drawer_boxes', 
-        drawer_guide = '$drawer_guide', 
-        finish_code = '$finish_code', 
-        sheen = '$sheen', 
-        glaze = '$glaze', 
-        glaze_technique = '$glaze_technique', 
-        antiquing = '$antiquing', 
-        worn_edges = '$worn_edges', 
-        distress_level = '$distress_level', 
-        green_gard = '$green_gard', 
-        custom_vin_info = '$custom_vals',
-        room_name = '$room_name', 
-        product_type = '$product_type', 
-        days_to_ship = '$leadtime', 
-        order_status = '$order_status',
-        ship_via = $ship_via, 
-        ship_name = '$ship_to_name', 
-        ship_address = '$ship_to_address', 
-        ship_city = '$ship_to_city',
-        ship_state = '$ship_to_state', 
-        ship_zip = '$ship_to_zip', 
-        multi_room_ship = $multi_room_ship,
-        payment_method = $payment_method,
-        sample_seen_approved = $seen_approved, 
-        sample_unseen_approved = $unseen_approved, 
-        sample_requested = $requested_sample,
-        sample_reference = '$sample_reference', 
-        esig = '$signature',
-        esig_ip = '$sig_ip',
-        esig_time = $sig_time,
-        payment_deposit = $deposit_received, 
-        payment_del_ptl = $ptl_del,
-        payment_final = $final_payment,
-        ship_cubes = $shipping_cubes,
-        jobsite_delivery = $jobsite_delivery
-      WHERE id = $room_id")) {
+    $update_room_qry = $dbconn->prepare("UPDATE rooms SET 
+      construction_method = ?, species_grade = ?, carcass_material = ?, door_design = ?, panel_raise_door = ?, panel_raise_sd = ?, panel_raise_td = ?, 
+      style_rail_width = ?, edge_profile = ?, framing_bead = ?, framing_options = ?, drawer_boxes = ?, drawer_guide = ?, finish_code = ?, sheen = ?, 
+      glaze = ?, glaze_technique = ?, antiquing = ?, worn_edges = ?, distress_level = ?, green_gard = ?, custom_vin_info = ?, room_name = ?, 
+      product_type = ?, days_to_ship = ?, order_status = ?, ship_via = ?, ship_name = ?, ship_address = ?, ship_city = ?, ship_state = ?, 
+      ship_zip = ?, multi_room_ship = ?, payment_method = ?, sample_seen_approved = ?, sample_unseen_approved = ?, sample_requested = ?,
+      sample_reference = ?, esig = ?, esig_ip = ?, esig_time = ?, payment_deposit = ?, payment_del_ptl = ?, payment_final = ?, ship_cubes = ?,
+      jobsite_delivery = ?
+    WHERE id = $room_id");
+
+    $update_room_qry->bind_param('ssssssssssssssssssssssssssisssssiiiiisssiiiiii', $construction_method, $species_grade, $carcass_material,
+      $door_design, $panel_raise_door, $panel_raise_sd, $panel_raise_td, $style_rail_width, $edge_profile, $framing_bead, $framing_options, $drawer_boxes,
+      $drawer_guide, $finish_code, $sheen, $glaze, $glaze_technique, $antiquing, $worn_edges, $distress_level, $green_gard, $custom_vals, $room_name,
+      $product_type, $leadtime, $order_status, $ship_via, $ship_to_name, $ship_to_address, $ship_to_city, $ship_to_state, $ship_to_zip, $multi_room_ship,
+      $payment_method, $seen_approved, $unseen_approved, $requested_sample, $sample_reference, $signature, $sig_ip, $sig_time, $deposit_received, $ptl_del,
+      $final_payment, $shipping_cubes, $jobsite_delivery);
+
+    if($update_room_qry->execute()) {
       echo displayToast('success', 'Room updated successfully.', 'Room Updated');
+      $update_room_qry->close();
     } else {
       dbLogSQLErr($dbconn);
     }

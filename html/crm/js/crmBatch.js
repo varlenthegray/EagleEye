@@ -1,6 +1,5 @@
 var crmBatch = {
   index: {
-    init: function() {
-    }
+    init: function() {}
   }
 };
