@@ -1118,3 +1118,20 @@ h5 {
 .dhx_cal_navline .dhx_cal_date {
   padding: 0 50px 0 !important;
 }
+
+// override the new fancytree font
+table.fancytree-ext-table {
+  font-family: "Roboto", sans-serif !important;
+}
+
+.select2-container .select2-selection--single {
+  height: 14px !important;
+
+  .select2-selection__rendered {
+    line-height: 10px !important;
+  }
+
+  .select2-selection__arrow {
+    height: 10px !important;
+  }
+}

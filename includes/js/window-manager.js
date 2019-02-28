@@ -124,6 +124,12 @@ var winMgr = {
         'attachObj': null,
         'ajaxURL': '/html/windows/pending_operations.php'
       },
+      'cardView': {
+        // 'position': 2,
+        'windowTitle': 'Room Cards',
+        'attachObj': null,
+        'ajaxURL': '/html/dashboards/card_view.php'
+      },
       'quotes': {
         // 'position': 2,
         'windowTitle': 'Quotes',

@@ -11,7 +11,7 @@ function displayToast(type, message, subject) {
 
 var globalFunctions = {
   checkDropdown: function() {
-    $.each($("select"), function() {
+    $.each($(".pricing_table_format select"), function() {
       if($(this).find(":selected").val().toLowerCase().indexOf("x") >= 0) {
         $(this).parent().find(".addl_select_html").show();
       } else {

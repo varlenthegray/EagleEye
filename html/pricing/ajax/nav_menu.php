@@ -63,13 +63,14 @@ function makeTree($parent_id) {
       }
 
       if($item['itemCatalogID'] === 1) { // as long as this is catalog 1
-        $title = $item['sku']; // the title = the SKU
-
         if(!$disable_btns) { // if we're not disabling the buttons
-          $title .= " <span class='actions'>
+          $title = " <span class='actions'>
             <div class='info_container'><i class='fa fa-info-circle primary-color view_item_info' data-id='{$item['itemID']}'></i></div>
+            {$item['sku']}
             <i class='fa fa-plus-circle success-color add_item_cabinet_list' data-id='{$item['itemID']}' title='Add To Cabinet List'></i>
           </span>"; // output the title
+        } else {
+          $title = $item['sku'];
         }
 
         // if the image isn't empty, update the image

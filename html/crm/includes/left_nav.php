@@ -17,6 +17,7 @@
         <div class="col-md-3 cursor-hand widget-item widget-active" data-window="pendingOps"><i class="fa fa-hourglass-start fa-3x"></i><h5>Pend. Ops</h5></div>
         <div class="col-md-3 cursor-hand widget-item widget-active" data-window="activeOps"><i class="fa fa-hourglass-end fa-3x"></i><h5>Act. Ops</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="quotes"><i class="fa fa-pencil-square-o fa-3x"></i><h5>Quotes</h5></div>
+        <div class="col-md-3 cursor-hand widget-item" data-window="cardView"><i class="fa fa-list-alt fa-3x"></i><h5>Cards</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="reports"><i class="fa fa-inbox fa-3x"></i><h5>Reports</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="calendar"><i class="fa fa-calendar fa-3x"></i><h5>Calendar</h5></div>
         <div class="col-md-3 cursor-hand widget-item" data-window="inventory"><i class="fa fa-barcode fa-3x"></i><h5>Inventory</h5></div>

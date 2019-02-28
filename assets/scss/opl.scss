@@ -8,6 +8,14 @@
   }
 }
 
+.pricing_table_format th, .pricing_table_format .header {
+  font-size: 1em;
+}
+
+.ui-contextmenu {
+  z-index: 125;
+}
+
 .task_actions {
   i {
     cursor: pointer;

@@ -433,3 +433,16 @@ h5 {
   height: 180px;
   border-radius: 0 0 4px 4px;
 }
+
+.room_bracket {
+  background-color: rgba(192,192,192,0.5);
+  display: inline-block;
+
+  .bracket_header_noclick {
+    background-color: #FFF;
+  }
+
+  .col-green {
+    background-color: rgba(0,255,0,0.6);
+  }
+}

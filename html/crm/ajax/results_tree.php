@@ -203,6 +203,7 @@ foreach($result AS $ans) {
       $output[$pd]['children'][$ps]['altData'] = $altData;
       $output[$pd]['children'][$ps]['expanded'] = $so_expanded;
       $output[$pd]['children'][$ps]['icon'] = 'fa fa-file-text-o';
+      $output[$pd]['children'][$ps]['contactType'] = $ans['type'];
 
       // room within the SO
       $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
@@ -212,6 +213,7 @@ foreach($result AS $ans) {
       $output[$pd]['children'][$ps]['children'][$pr]['orderStatus'] = $ans['order_status'];
       $output[$pd]['children'][$ps]['children'][$pr]['icon'] = $icon;
       $output[$pd]['children'][$ps]['children'][$pr]['expanded'] = $so_expanded;
+      $output[$pd]['children'][$ps]['children'][$pr]['contactType'] = $ans['type'];
 
       $prevSO = $ans['soID']; // tell the system what SO we just worked on was
     }
@@ -234,6 +236,7 @@ foreach($result AS $ans) {
       $output[$pd]['children'][$ps]['altData'] = $altData;
       $output[$pd]['children'][$ps]['expanded'] = $so_expanded;
       $output[$pd]['children'][$ps]['icon'] = 'fa fa-file-text-o';
+      $output[$pd]['children'][$ps]['contactType'] = $ans['type'];
     }
 
     $output[$pd]['children'][$ps]['children'][$pr]['title'] = $room_header;
@@ -243,6 +246,7 @@ foreach($result AS $ans) {
     $output[$pd]['children'][$ps]['children'][$pr]['orderStatus'] = $ans['order_status'];
     $output[$pd]['children'][$ps]['children'][$pr]['icon'] = $icon;
     $output[$pd]['children'][$ps]['children'][$pr]['expanded'] = $so_expanded;
+    $output[$pd]['children'][$ps]['children'][$pr]['contactType'] = $ans['type'];
 
     $pr++;
   }

@@ -1,50 +1,14 @@
 <?php
 require '../../includes/header_start.php';
+require '../../includes/classes/global_manager.php';
 
-// replaces displayVINOpts and displayFinishOpts
-function getGlobal($segment, $dbName = null) {
-  global $vin_schema;
-  global $contact;
-
-  $room_val = !empty($dbName) ? $dbName : $segment;
-
-  $nsy = empty($contact[$room_val]) ? 'selected' : null;
-
-  $option = "<optgroup label='Empty'><option value='' $nsy disabled>Not Selected Yet</option>";
-  $prev_group = null;
-  $addl_html = null;
-
-  foreach($vin_schema[$segment] AS $element) {
-    if((bool)$element['visible']) {
-      if($prev_group !== $element['group']) {
-        $option .= "</optgroup><optgroup label='{$element['group']}'>";
-        $prev_group = $element['group'];
-      }
-
-      $selected = $contact[$room_val] === $element['key'] ? 'selected' : null;
-
-      $val = strip_tags($element['value']);
-
-      $option .= "<option value='{$element['key']}' $selected>$val</option>";
-
-      $addl_html[$element['key']] = $element['addl_html'];
-    }
-  }
-
-  $html_addl_out = null;
-
-  foreach($addl_html AS $key => $html) {
-    if(!empty($html)) {
-      $html_addl_out .= "<div class='addl_select_html'>$html</div>";
-    }
-  }
-
-  return "<select name='$room_val' id='$room_val' class='c_input' style='border:none;margin-left:-4px;font-weight:bold;'>$option</select> $html_addl_out";
-}
+use GlobalManager\global_manager;
 
 //outputPHPErrs();
 
 $room_id = sanitizeInput($_REQUEST['room_id']);
+
+$global_mgr = new global_manager($room_id);
 
 $vin_schema = getVINSchema();
 
@@ -134,13 +98,11 @@ WHERE r.id = $room_id AND vs1.segment = 'species_grade' AND vs2.segment = 'door_
 if($pg_qry->num_rows > 0) {
   $pg = $pg_qry->fetch_assoc();
 
-  if ($pg['door_design_id'] !== '1544' && $pg['species_grade_id'] !== '11') {
-    $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$pg['door_design_id']} AND species_id = {$pg['species_grade_id']}");
-    $price_group = $price_group_qry->fetch_assoc();
-    $price_group = $price_group['price_group_id'];
-  } else {
-    $price_group = '0';
-  }
+  // TODO: This friggin query is executed multiple times, why!
+
+  $price_group_qry = $dbconn->query("SELECT * FROM pricing_price_group_map WHERE door_style_id = {$pg['door_design_id']} AND species_id = {$pg['species_grade_id']}");
+  $price_group = $price_group_qry->fetch_assoc();
+  $price_group = $price_group['price_group_id'];
 } else {
   $price_group = '0';
 }
@@ -407,6 +369,152 @@ if($pg_qry->num_rows > 0) {
             </div>
           </div>
         </div>
+
+        <div class="col-md-6 no-print">
+          <?php
+          $room_qry = $dbconn->query("SELECT * FROM rooms WHERE id = $room_id ORDER BY room, iteration ASC");
+
+          $operations = []; // operation information
+
+          // get all operations
+          $op_qry = $dbconn->query('SELECT * FROM operations');
+
+          while($op = $op_qry->fetch_assoc()) {
+            $operations[$op['id']] = $op;
+          }
+
+          function getBracketStatus($bracket_pub) {
+            $out['class'] = (bool)$bracket_pub ? 'col-green' : null;
+            $out['text'] = (bool)$bracket_pub ? 'Published' : 'Not Published';
+
+            return $out;
+          }
+
+          $prev_room = null;
+          $prev_sequence = null;
+
+          while($room = $room_qry->fetch_assoc()) {
+            $output['sales_bracket'] = !empty($operations[$room['sales_bracket']]) ? $operations[$room['sales_bracket']] : array('job_title' => 'Unassigned');
+            $output['sample_bracket'] = !empty($operations[$room['sample_bracket']]) ? $operations[$room['sample_bracket']] : array('job_title' => 'Unassigned');
+            $output['preproduction_bracket'] = !empty($operations[$room['preproduction_bracket']]) ? $operations[$room['preproduction_bracket']] : array('job_title' => 'Unassigned');
+            $output['doordrawer_bracket'] = !empty($operations[$room['doordrawer_bracket']]) ? $operations[$room['doordrawer_bracket']] : array('job_title' => 'Unassigned');
+            $output['main_bracket'] = !empty($operations[$room['main_bracket']]) ? $operations[$room['main_bracket']] : array('job_title' => 'Unassigned');
+            $output['custom_bracket'] = !empty($operations[$room['custom_bracket']]) ? $operations[$room['custom_bracket']] : array('job_title' => 'Unassigned');
+            $output['shipping_bracket'] = !empty($operations[$room['shipping_bracket']]) ? $operations[$room['shipping_bracket']] : array('job_title' => 'Unassigned');
+            $output['install_bracket'] = !empty($operations[$room['install_bracket']]) ? $operations[$room['install_bracket']] : array('job_title' => 'Unassigned');
+            $output['pick_materials_bracket'] = !empty($operations[$room['pick_materials_bracket']]) ? $operations[$room['pick_materials_bracket']] : array('job_title' => 'Unassigned');
+            $output['edgebanding_bracket'] = !empty($operations[$room['edgebanding_bracket']]) ? $operations[$room['edgebanding_bracket']] : array('job_title' => 'Unassigned');
+
+            $bstat_sales = getBracketStatus($room['sales_published']);
+            $bstat_sample = getBracketStatus($room['sample_published']);
+            $bstat_preprod = getBracketStatus($room['preproduction_published']);
+            $bstat_main = getBracketStatus($room['main_published']);
+            $bstat_custom = getBracketStatus($room['custom_published']);
+            $bstat_shipping = getBracketStatus($room['shipping_published']);
+            $bstat_install = getBracketStatus($room['install_bracket_published']);
+            $bstat_pick = getBracketStatus($room['pick_materials_published']);
+            $bstat_eb = getBracketStatus($room['edgebanding_published']);
+
+            $seq_it = explode('.', $room['iteration']);
+
+            if($prev_room !== $room['room']) {
+              $prev_room = $room['room'];
+              $prev_sequence = $seq_it[0];
+
+              $room_header = "{$room['room']}{$room['iteration']}: {$room['room_name']}";
+            } else {
+              if($prev_sequence !== $seq_it[0]) {
+                $prev_sequence = $seq_it[0];
+
+                $room_header = "&nbsp;&nbsp;&nbsp;{$room['iteration']}: {$room['room_name']}";
+              } else {
+                $room_header = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.{$seq_it[1]}: {$room['room_name']}";
+              }
+            }
+
+            echo /** @lang HTML */
+            <<<HEREDOC
+            <div class="room_bracket">
+              <div class="bracket_header_noclick">
+                <button class="btn waves-effect btn-primary room_manage_bracket" data-roomid="{$room['id']}" title="Edit Bracket"><i class="fa fa-code-fork"></i></button> 
+                <button class="btn waves-effect btn_secondary disabled" id="show_attachments_room_{$room['id']}"><i class="zmdi zmdi-attachment-alt"></i></button> 
+                <button class="btn btn-primary-outline waves-effect add_iteration" data-roomid="{$room['id']}" data-sonum="{$room['so_parent']}" data-addto="sequence" data-iteration="{$room['iteration']}" title="Add additional sequence"> S +1</button> 
+                <button class="btn btn-primary-outline waves-effect add_iteration" data-roomid="{$room['id']}" data-sonum="{$room['so_parent']}" data-addto="iteration" data-iteration="{$room['iteration']}" title="Add additional iteration"> I +.01</button></td>
+    
+                $room_header
+              </div>
+              
+              <table class="bracket_details">
+                <colgroup>
+                  <col width="115px">
+                  <col width="200px">
+                  <col width="*">
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Bracket</th>
+                    <th>Operation</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="{$bstat_sales['class']}">
+                    <td>Sales:</td>
+                    <td>{$output['sales_bracket']['job_title']}</td>
+                    <td>{$bstat_sales['text']}</td>
+                  </tr>
+                  <tr class="{$bstat_sample['class']}">
+                    <td>Sample:</td>
+                    <td>{$output['sample_bracket']['job_title']}</td>
+                    <td>{$bstat_sample['text']}</td>
+                  </tr>
+                  <tr class="{$bstat_preprod['class']}">
+                    <td>Pre-production:</td>
+                    <td>{$output['preproduction_bracket']['job_title']}</td>
+                    <td>{$bstat_preprod['text']}</td>
+                  </tr>
+                  <tr class="{$bstat_sales['class']}">
+                    <td>Door/Drawer:</td>
+                    <td>{$output['doordrawer_bracket']['job_title']}</td>
+                    <td>{$bstat_sales['text']}</td>
+                  </tr>
+                  <tr class="{$bstat_main['class']}">
+                    <td>Main:</td>
+                    <td>{$output['main_bracket']['job_title']}</td>
+                    <td>{$bstat_main['text']}</td>
+                  </tr>
+                  <tr class="{$bstat_custom['class']}">
+                    <td>Custom:</td>
+                    <td>{$output['custom_bracket']['job_title']}</td>
+                    <td>{$bstat_custom['text']}</td>
+                  </tr>
+                  <tr class="{$bstat_shipping['class']}">
+                    <td>Shipping:</td>
+                    <td>{$output['shipping_bracket']['job_title']}</td>
+                    <td>{$bstat_shipping['text']}</td>
+                  </tr>
+                  <tr class="{$bstat_install['class']}">
+                    <td>Installation:</td>
+                    <td>{$output['install_bracket']['job_title']}</td>
+                    <td>{$bstat_install['text']}</td>
+                  </tr>
+                  <tr class="{$bstat_pick['class']}">
+                    <td>Pick/Materials:</td>
+                    <td>{$output['pick_materials_bracket']['job_title']}</td>
+                    <td>{$bstat_pick['text']}</td>
+                  </tr>
+                  <tr class="{$bstat_eb['class']}">
+                    <td>Edgebanding:</td>
+                    <td>{$output['edgebanding_bracket']['job_title']}</td>
+                    <td>{$bstat_eb['text']}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+HEREDOC;
+          }
+          ?>
+          </div>
         <!--</editor-fold>-->
       </div>
     </div>
@@ -461,17 +569,17 @@ if($pg_qry->num_rows > 0) {
           </tr>
           <tr>
             <td>Order Type:</td>
-            <td><?php echo getGlobal('product_type'); ?></td>
+            <td><?php echo $global_mgr->getGlobal('product_type'); ?></td>
             <td></td>
           </tr>
           <tr>
             <td><span id="leadTimeDef">Lead Time:</span></td>
-            <td><?php echo getGlobal('days_to_ship'); ?></td>
+            <td><?php echo $global_mgr->getGlobal('days_to_ship'); ?></td>
             <td></td>
           </tr>
           <tr>
             <td>Order Status:</td>
-            <td><?php echo getGlobal('order_status'); ?></td>
+            <td><?php echo $global_mgr->getGlobal('order_status'); ?></td>
             <td></td>
           </tr>
           <tr>
@@ -486,7 +594,7 @@ if($pg_qry->num_rows > 0) {
           </tr>
           <tr>
             <td>Ship VIA:</td>
-            <td><?php echo getGlobal('ship_via'); ?></td>
+            <td><?php echo $global_mgr->getGlobal('ship_via'); ?></td>
             <td></td>
           </tr>
 
@@ -538,7 +646,7 @@ if($pg_qry->num_rows > 0) {
           </tr>
           <tr>
             <td>Payment Method:</td>
-            <td><?php echo getGlobal('payment_method'); ?></td>
+            <td><?php echo $global_mgr->getGlobal('payment_method'); ?></td>
             <td></td>
           </tr>
           <tr>
@@ -587,56 +695,56 @@ if($pg_qry->num_rows > 0) {
             </tr>
             <tr class="border_top">
               <td width="35%" class="border_thin_bottom">Construction Method:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('construction_method'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('construction_method'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Species/Grade:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('species_grade'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('species_grade'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Carcass Material:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('carcass_material'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('carcass_material'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Door Design:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('door_design'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('door_design'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom"><div>Door Panel Raise:</div></td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('panel_raise', 'panel_raise_door'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('panel_raise', 'panel_raise_door'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Short Drawer Raise:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('panel_raise', 'panel_raise_sd'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('panel_raise', 'panel_raise_sd'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Tall Drawer Raise:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('panel_raise', 'panel_raise_td'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('panel_raise', 'panel_raise_td'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Style/Rail Width:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('style_rail_width'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('style_rail_width'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Edge Profile:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('edge_profile'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('edge_profile'); ?></div></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Framing Bead:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('framing_bead'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('framing_bead'); ?></div></td>
               <td class="border_thin_bottom"></td>
             </tr>
             <tr>
               <td style="padding-left:20px;" class="border_thin_bottom">Frame Option:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo getGlobal('framing_options'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc" style="margin-bottom:-1px;"><?php echo $global_mgr->getGlobal('framing_options'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Drawer Box:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('drawer_boxes'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('drawer_boxes'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Drawer Guide:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('drawer_guide'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('drawer_guide'); ?></div></td>
             </tr>
             <tr>
               <td colspan="2" style="height:117px;"></td>
@@ -663,35 +771,35 @@ if($pg_qry->num_rows > 0) {
             <tr><th colspan="2" style="padding-left:5px;" class="th_17">Finish</th></tr>
             <tr class="border_top">
               <td class="border_thin_bottom" width="30%">Finish Code:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('finish_code'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('finish_code'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Sheen:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('sheen'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('sheen'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Glaze Color:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('glaze'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('glaze'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Glaze Technique:</td>
-              <td class="border_thin_bottom pricing_value"><div class="cab_specifications_desc"><?php echo getGlobal('glaze_technique'); ?></div></td>
+              <td class="border_thin_bottom pricing_value"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('glaze_technique'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Antiquing:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('antiquing'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('antiquing'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Worn Edges:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('worn_edges'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('worn_edges'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Distressing:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('distress_level'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('distress_level'); ?></div></td>
             </tr>
             <tr>
               <td class="border_thin_bottom">Enviro-finish:</td>
-              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo getGlobal('green_gard'); ?></div></td>
+              <td class="border_thin_bottom"><div class="cab_specifications_desc"><?php echo $global_mgr->getGlobal('green_gard'); ?></div></td>
             </tr>
             <tr>
               <td colspan="2" style="height:212px;"></td>
@@ -760,7 +868,7 @@ if($pg_qry->num_rows > 0) {
           <colgroup>
             <col width="40px">
             <col width="35px">
-            <col width="50px">
+            <col width="70px">
             <col width="150px">
             <col width="350px">
             <col width="50px">
@@ -789,7 +897,7 @@ if($pg_qry->num_rows > 0) {
           <colgroup>
             <col width="40px">
             <col width="40px">
-            <col width="50px">
+            <col width="70px">
             <col width="150px">
             <col width="350px">
             <col width="50px">
@@ -952,6 +1060,8 @@ if($pg_qry->num_rows > 0) {
   pricingVars.nameOfUser = '<?php echo $_SESSION['userInfo']['name']; ?>';
   pricingVars.vinInfo = JSON.parse('<?php echo strip_tags(json_encode($json_vin)); ?>');
   pricingVars.shipCost = <?php echo $ship_cost; ?>;
+
+  crmProject.bracketMgr.init();
 
   <?php
   $shipZone = !empty($contact['batchZip']) ? $contact['batchZip'] : $contact['contactZip'];

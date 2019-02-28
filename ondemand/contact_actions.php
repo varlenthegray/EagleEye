@@ -144,7 +144,7 @@ switch($_REQUEST['action']) {
     if(!empty($con_id)) {
       if($type === 'organization') {
         $assoc_qry = $dbconn->query("SELECT * FROM contact_to_contact ctc WHERE ctc.contact_from = $type_id AND ctc.contact_to = $con_id AND associated_as = '$contact_role'");
-      } elseif($type === 'project') {
+      } elseif($type === 'sales order') {
         $assoc_qry = $dbconn->query("SELECT * FROM contact_to_sales_order ctso WHERE sales_order_id = $type_id AND contact_id = $con_id AND associated_as = '$contact_role'");
       }
 
@@ -157,10 +157,12 @@ switch($_REQUEST['action']) {
         if($type === 'organization') {
           $dbconn->query("INSERT INTO contact_to_contact (created_by, contact_from, contact_to, associated_as, created_on) 
                         VALUES ({$_SESSION['userInfo']['id']}, $type_id, $con_id, '$contact_role', UNIX_TIMESTAMP())");
-        } elseif($type === 'project') {
+        } elseif($type === 'sales order') {
           $dbconn->query("INSERT INTO contact_to_sales_order (created_by, contact_id, sales_order_id, associated_as, created_on) 
                         VALUES ({$_SESSION['userInfo']['id']}, $con_id, $type_id, '$contact_role', UNIX_TIMESTAMP())");
         }
+
+        $contact['uID'] = $dbconn->insert_id;
 
         if(empty($dbconn->error)) {
           echo json_encode($contact);
@@ -169,12 +171,12 @@ switch($_REQUEST['action']) {
           dbLogSQLErr($dbconn);
         }
       } else {
-        http_response_code(400);
+        http_response_code(401);
 
         echo displayToast('info', 'Contact has already been assigned to project.', 'Contact Already Assigned');
       }
     } else {
-      http_response_code(400);
+      http_response_code(402);
 
       echo displayToast('error', 'Unable to find contact information. Please refresh and try again.', 'Unable to Find Contact');
     }
@@ -183,10 +185,20 @@ switch($_REQUEST['action']) {
   case 'remove_contact_project':
     // TODO: Remove duplication between remove and add contact
     $id = sanitizeInput($_REQUEST['id']);
+    $type = sanitizeInput($_REQUEST['type']); // TODO: TOTALLY CONFUSED, THIS IS PROJECT ONE TIME AND SALES ORDER ANOTHER!
 
     if(!empty($id)) {
-      if($dbconn->query("DELETE FROM contact_associations WHERE id = '$id'")) {
+      if($type === 'contact') {
+        $del = $dbconn->query("DELETE FROM contact_to_contact WHERE id = $id");
+      } elseif($type === 'project') {
+        $del = $dbconn->query("DELETE FROM contact_to_sales_order WHERE id = $id");
+      }
+
+      if($del) {
         echo displayToast('success', 'Successfully removed contact from project.', 'Contact Removed');
+      } else {
+        http_response_code(401);
+        dbLogSQLErr($dbconn);
       }
     } else {
       http_response_code(400);

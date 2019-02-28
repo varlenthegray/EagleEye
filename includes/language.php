@@ -3,8 +3,8 @@
  * To define the variable language inside of the system
  */
 // Release Date
-define('VERSION', '2.7.004');
-define('RELEASE_DATE', '2/20/19 V.' . VERSION);
+define('VERSION', '2.7.015');
+define('RELEASE_DATE', '2/27/19 V.' . VERSION);
 
 // Global definitions
 define('LOGO_TEXT', 'Stratis - EagleEye ERP'); // The logo text displayed

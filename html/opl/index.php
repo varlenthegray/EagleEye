@@ -12,16 +12,16 @@ outputPHPErrs();
 
     <h1>Open Point List</h1>
 
-    <div class="col-md-8">
+    <div class="col-md-9">
       <table id="opl" class="pricing_table_format">
       <colgroup>
         <col width="20px" class="no-print">
-        <col width="50px">
-        <col width="50px" class="no-print">
-        <col width="50px">
-        <col width="450px">
-        <col width="150px" class="no-print">
-        <col width="80px">
+        <col width="40px">
+        <col width="75px" class="no-print">
+        <col width="60px">
+        <col width="*">
+        <col width="175px" class="no-print">
+        <col width="90px">
         <col width="80px">
         <!--<col width="80px">
         <col width="80px">-->
@@ -124,7 +124,7 @@ outputPHPErrs();
       </div>
 
 
-    <div class="col-md-2 col-md-offset-1 no-print">
+    <div class="col-md-3 no-print">
       <h4>History</h4>
 
       <table id="opl_history" class="pricing_table_format">
@@ -331,7 +331,7 @@ outputPHPErrs();
         // Set column #1 info from node data:
 
         // (Index #1 is the index heir level)
-        $tdList.eq(1).text(node.getIndexHier());
+        // $tdList.eq(1).text(node.getIndexHier());
 
         // (Index #2 is the priority textbox)
         let priorityTextbox = $tdList.eq(3).find("input");
@@ -468,14 +468,15 @@ outputPHPErrs();
           if(!disabled) {
             $.confirm({
               title: "Are you sure you want to complete this task?",
-              content: "You are about to remove task " + node.getIndexHier() + ": " + node.title + ". Are you sure?",
+              content: "You are about to remove task " + node.title + ". Are you sure?",
               type: 'red',
               buttons: {
                 yes: function() {
                   node.remove();
 
                   // re-render the tree deeply so that we can recalculate the line item numbers
-                  opl.fancytree("getRootNode").render(true,true);
+                  // NOTE: RE-RENDERING SEEMS TO LOCK UP WITH GC FROM CHROME WITH LOTS OF ROWS!
+                  // opl.fancytree("getRootNode").render(true,true);
                 },
                 no: function() {}
               }
