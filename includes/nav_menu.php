@@ -56,7 +56,7 @@ HEREDOC;
         $nav_out .= "<li class='nav-separator'><span></span></li>";
     }
 
-    $nav_out .= $bouncer->validate('view_contacts') ? "<li id='nav_contacts'><a onclick='unloadPage(\"display_contacts\")'><i class='zmdi zmdi-account-box-mail m-r-5'></i>Contacts</a></li>" : null;
+//    $nav_out .= $bouncer->validate('view_contacts') ? "<li id='nav_contacts'><a onclick='unloadPage(\"display_contacts\")'><i class='zmdi zmdi-account-box-mail m-r-5'></i>Contacts</a></li>" : null;
 
     if($bouncer->validate('view_workcenter') || $bouncer->validate('view_so_list') || $bouncer->validate('view_sales_list') || $bouncer->validate('view_timecards')) {
         $nav_out .= "<li class='has-submenu'>
