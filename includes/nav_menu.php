@@ -2,32 +2,6 @@
     <?php
     $nav_out = '<li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>';
 
-    /*if($bouncer->validate('search')) {
-        $nav_out .= <<<HEREDOC
-<div role="search" class="navbar-left app-search pull-left hidden-xs" _lpchecked="1">
-    <input type="text" placeholder="Search..." class="form-control ignoreSaveAlert" id="global_search" name="global_search_2" autocomplete="off"><a id="global_search_button"><i class="fa fa-search"></i></a>
-</div>
-<li style="border: 1px dotted rgba(0,0,0,.25);height: 42px;"><span></span></li>
-HEREDOC;
-    }
-
-    $nav_out .= <<<HEREDOC
-        <li class='has-submenu'>
-            <a><i class='zmdi zmdi-collection-plus'></i>New</a>
-            <ul class='submenu'>
-HEREDOC;
-
-//    $nav_out .= $bouncer->validate('add_so') ? "<li class='nav_add_so'><a><i class='zmdi zmdi-file-plus m-r-5'></i>New SO</a></li>" : null;
-    $nav_out .= $bouncer->validate('view_contacts') ? "<li class='nav_add_company'><a><i class='zmdi zmdi-city-alt m-r-5'></i>New Bill To</a></li>" : null;
-    $nav_out .= $bouncer->validate('view_contacts') ? "<li class='nav_add_contact'><a><i class='zmdi zmdi-account-add m-r-5'></i>New Contact</a></li>" : null;
-    $nav_out .= $bouncer->validate('add_project') ? "<li id='nav_add_project'><a><i class='zmdi zmdi-plus-square m-r-5'></i>New Project</a></li>" : null;
-
-    $nav_out .= <<<HEREDOC
-            </ul>
-        </li>
-HEREDOC;*/
-
-    // <li class='nav-separator'></li> (AT START OF NEXT STRING)
     $nav_out .= "<li class='navbar-left' id='nav_dashboard'><a href='/main.php'><i class='zmdi zmdi-view-dashboard m-r-5'></i><span>Dashboard</span></a></li>";
 
     if($bouncer->validate('clock_out')) {
@@ -56,7 +30,7 @@ HEREDOC;
         $nav_out .= "<li class='nav-separator'><span></span></li>";
     }
 
-    $nav_out .= $bouncer->validate('view_contacts') ? "<li id='nav_contacts'><a onclick='unloadPage(\"display_contacts\")'><i class='zmdi zmdi-account-box-mail m-r-5'></i>Contacts</a></li>" : null;
+//    $nav_out .= $bouncer->validate('view_contacts') ? "<li id='nav_contacts'><a onclick='unloadPage(\"display_contacts\")'><i class='zmdi zmdi-account-box-mail m-r-5'></i>Contacts</a></li>" : null;
 
     if($bouncer->validate('view_workcenter') || $bouncer->validate('view_so_list') || $bouncer->validate('view_sales_list') || $bouncer->validate('view_timecards')) {
         $nav_out .= "<li class='has-submenu'>
