@@ -35,6 +35,7 @@ function createBlankRoom($projectNum) {
 }
 
 $pin_count = 0;
+
 function generatePIN(&$pin_count) {
   global $dbconn;
 
@@ -257,7 +258,7 @@ switch($_REQUEST['action']) {
     }
 
     // set the fields to blank based on what's being setup
-    if($info['contactType'] === 'organization') { // if it's an organization, no first/last/title
+    if($info['contactType'] === 'company') { // if it's an organization, no first/last/title
       $info['first_name'] = '';
       $info['last_name'] = '';
       $info['title'] = '';

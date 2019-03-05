@@ -36,6 +36,8 @@ class customer {
     while($opt = $opt_qry->fetch_assoc()) {
       if($opt['value'] === $value) {
         $sel = 'selected';
+      } elseif($opt['id'] === $value) {
+        $sel = 'selected';
       } else {
         $sel = '';
       }
