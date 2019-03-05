@@ -128,7 +128,7 @@ HEREDOC;
         $emp_emergency_different = !empty(array_filter([$contact['emergency_name'], $contact['emergency_relationship'], $contact['emergency_address'], $contact['emergency_city'],
           $contact['emergency_zip'], $contact['emergency_pri_phone'], $contact['emergency_secondary_phone'], $contact['emergency_other_phone'], $contact['emergency_email']])) ? 'checked' : null;
 
-        $contact_type = !empty(trim($contact['company_name'])) ? 'organization' : 'individual';
+        $contact_type = !empty(trim($contact['company_name'])) ? 'company' : 'individual';
       }
     } else {
       $type = "<tr><td><label for='{$rnum}_new_type'>Type:</label></td><td><select class='c_input new_type' name='new_type' id='{$rnum}_new_type'><option>Organization</option><option>Individual</option></select></td></tr>";
