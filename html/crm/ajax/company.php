@@ -109,13 +109,13 @@ switch($_REQUEST['action']) {
     }
 
     // set the fields to blank based on what's being setup
-    if($info['new_type'] === 'Organization') { // if it's an organization, no first/last/title
-      $info['first_name'] = '';
-      $info['last_name'] = '';
-      $info['title'] = '';
-    } else { // otherwise, it's an individual, no org name
-      $info['org_name'] = '';
-    }
+//    if($info['new_type'] === 'Organization') { // if it's an organization, no first/last/title
+//      $info['first_name'] = '';
+//      $info['last_name'] = '';
+//      $info['title'] = '';
+//    } else { // otherwise, it's an individual, no org name
+//      $info['org_name'] = '';
+//    }
 
     // lets find out if this person's super unique information exists anywhere
     $existing_qry = $dbconn->query("SELECT * FROM contact c WHERE (email = '{$info['email']}' OR primary_phone = '{$info['primary_phone']}') AND (TRIM(email) != '' AND TRIM(primary_phone != ''))");
@@ -258,13 +258,13 @@ switch($_REQUEST['action']) {
     }
 
     // set the fields to blank based on what's being setup
-    if($info['contactType'] === 'company') { // if it's an organization, no first/last/title
-      $info['first_name'] = '';
-      $info['last_name'] = '';
-      $info['title'] = '';
-    } else { // otherwise, it's an individual, no org name
-      $info['org_name'] = '';
-    }
+//    if($info['contactType'] === 'company') { // if it's an organization, no first/last/title
+//      $info['first_name'] = '';
+//      $info['last_name'] = '';
+//      $info['title'] = '';
+//    } else { // otherwise, it's an individual, no org name
+//      $info['org_name'] = '';
+//    }
 
     // initial variable definitions set to true (in case they don't run)
     $update_contact = true; $ins_customer = true; $ins_vendor = true; $ins_emp = true;
