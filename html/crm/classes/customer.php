@@ -170,6 +170,23 @@ HEREDOC;
     }
     //</editor-fold>
 
+    $country = empty($contact['country']) ? 'USA' : $contact['country'];
+    $cust_country = empty($contact['country']) ? 'USA' : $contact['country'];
+    $vend_country = empty($contact['country']) ? 'USA' : $contact['country'];
+
+    echo <<<HEREDOC
+      <script>
+      $(function() {
+        populateCountries('{$rnum}_country', '{$rnum}_state', '$country', '{$contact['state']}');
+        populateCountries('{$rnum}_cust_ship_country', '{$rnum}_cust_ship_state', '$cust_country', '{$contact['ship_state']}');
+        populateCountries('{$rnum}_vend_receive_country', '{$rnum}_vend_receive_state', '$vend_country', '{$contact['receive_state']}');
+        
+        console.log("State: {$contact['state']}, Cust Sate: {$contact['ship_state']}, Vend State: {$contact['receive_state']}");
+      });
+      </script>
+HEREDOC;
+
+
     echo /** @lang HTML */
     <<<HEREDOC
       <!--<editor-fold desc="Global information">-->
@@ -208,11 +225,15 @@ HEREDOC;
         </tr>
         <tr>
           <td><label for="{$rnum}_country">Country:</label></td>
-          <td><select class="c_input" name="country" id="{$rnum}_country">{$this->drop_opts->getCountryOpts($contact['country'])}</select></td>
+          <td><select class="c_input" name="country" id="{$rnum}_country"></select></td>
         </tr>
         <tr>
           <td><label for="{$rnum}_address">Address:</label></td>
           <td><input type="text" value="{$contact['address']}" name="address" class="c_input" placeholder="Address" id="{$rnum}_address" /></td>
+        </tr>
+        <tr>
+          <td><label for="{$rnum}_address_2">Address 2:</label></td>
+          <td><input type="text" value="{$contact['address_2']}" name="address_2" class="c_input" placeholder="Address 2" id="{$rnum}_address_2" /></td>
         </tr>
         <tr>
           <td><label for="{$rnum}_city">City:</label></td>
@@ -220,7 +241,7 @@ HEREDOC;
         </tr>
         <tr>
           <td><label for="{$rnum}_state">State:</label></td>
-          <td><select class="c_input" id="{$rnum}_state" name="state">{$this->drop_opts->getStateOpts($contact['state'])}</select></td>
+          <td><select class="c_input" id="{$rnum}_state" name="state"></select></td>
         </tr>
         <tr>
           <td><label for="{$rnum}_zip">Zip:</label></td>
@@ -329,7 +350,7 @@ HEREDOC;
         </tr>
         <tr class="cust_ship_different">
           <td><label for="{$rnum}_cust_ship_country">Country:</label></td>
-          <td><select class="c_input" name="cust_ship_country" id="{$rnum}_cust_ship_country">{$this->drop_opts->getCountryOpts($contact['ship_country'])}</select></td>
+          <td><select class="c_input" name="cust_ship_country" id="{$rnum}_cust_ship_country"></select></td>
         </tr>
         <tr class="cust_ship_different">
           <td><label for="{$rnum}_cust_ship_address">Address:</label></td>
@@ -341,7 +362,7 @@ HEREDOC;
         </tr>
         <tr class="cust_ship_different">
           <td><label for="{$rnum}_cust_ship_state">State:</label></td>
-          <td><select class="c_input" id="{$rnum}_cust_ship_state" name="cust_ship_state">{$this->drop_opts->getStateOpts($contact['ship_state'])}</select></td>
+          <td><select class="c_input" id="{$rnum}_cust_ship_state" name="cust_ship_state" ></select></td>
         </tr>
         <tr class="cust_ship_different">
           <td><label for="{$rnum}_cust_ship_zip">Zip:</label></td>
@@ -368,6 +389,10 @@ HEREDOC;
         <tr>
           <td><label for="{$rnum}_cust_payment_terms">Payment Terms:</label></td>
           <td><select class="c_input" id="{$rnum}_cust_payment_terms" name="cust_payment_terms">{$this->getAddOpts('cust_payment_terms', $contact['payment_terms'])}</select></td>
+        </tr>
+        <tr>
+          <td><label for="{$rnum}_cust_credit_limit">Credit Limit:</label></td>
+          <td><input type="text" value="{$contact['credit_limit']}" name="cust_credit_limit" autocomplete="no" class="c_input" placeholder="Credit Limit" id="{$rnum}_cust_credit_limit"></td>
         </tr>
         <tr>
           <td><label for="{$rnum}_cust_fed_id">Federal ID:</label></td>
@@ -408,7 +433,7 @@ HEREDOC;
         </tr>
         <tr class="vend_receive_different">
           <td><label for="{$rnum}_vend_receive_country">Country:</label></td>
-          <td><select class="c_input" name="vend_receive_country" id="{$rnum}_vend_receive_country">{$this->drop_opts->getCountryOpts($contact['receive_country'])}</select></td>
+          <td><select class="c_input" name="vend_receive_country" id="{$rnum}_vend_receive_country"></select></td>
         </tr>
         <tr class="vend_receive_different">
           <td><label for="{$rnum}_vend_receive_address">Address:</label></td>
@@ -420,7 +445,7 @@ HEREDOC;
         </tr>
         <tr class="vend_receive_different">
           <td><label for="{$rnum}_vend_receive_state">State:</label></td>
-          <td><select class="c_input" id="{$rnum}_vend_receive_state" name="vend_receive_state">{$this->drop_opts->getStateOpts($contact['receive_state'])}</select></td>
+          <td><select class="c_input" id="{$rnum}_vend_receive_state" name="vend_receive_state"></select></td>
         </tr>
         <tr class="vend_receive_different">
           <td><label for="{$rnum}_vend_receive_zip">Zip:</label></td>
