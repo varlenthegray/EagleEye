@@ -170,22 +170,6 @@ HEREDOC;
     }
     //</editor-fold>
 
-    $country = empty($contact['country']) ? 'USA' : $contact['country'];
-    $cust_country = empty($contact['country']) ? 'USA' : $contact['country'];
-    $vend_country = empty($contact['country']) ? 'USA' : $contact['country'];
-
-    echo <<<HEREDOC
-      <script>
-      $(function() {
-        populateCountries('{$rnum}_country', '{$rnum}_state', '$country', '{$contact['state']}');
-        populateCountries('{$rnum}_cust_ship_country', '{$rnum}_cust_ship_state', '$cust_country', '{$contact['ship_state']}');
-        populateCountries('{$rnum}_vend_receive_country', '{$rnum}_vend_receive_state', '$vend_country', '{$contact['receive_state']}');
-        
-        console.log("State: {$contact['state']}, Cust Sate: {$contact['ship_state']}, Vend State: {$contact['receive_state']}");
-      });
-      </script>
-HEREDOC;
-
 
     echo /** @lang HTML */
     <<<HEREDOC
@@ -392,7 +376,7 @@ HEREDOC;
         </tr>
         <tr>
           <td><label for="{$rnum}_cust_credit_limit">Credit Limit:</label></td>
-          <td><input type="text" value="{$contact['credit_limit']}" name="cust_credit_limit" autocomplete="no" class="c_input" placeholder="Credit Limit" id="{$rnum}_cust_credit_limit"></td>
+          <td><input type="number" min="0" value="{$contact['credit_limit']}" name="cust_credit_limit" autocomplete="no" class="c_input" placeholder="Credit Limit" id="{$rnum}_cust_credit_limit"></td>
         </tr>
         <tr>
           <td><label for="{$rnum}_cust_fed_id">Federal ID:</label></td>
@@ -678,5 +662,26 @@ HEREDOC;
       <!--</editor-fold>-->
 HEREDOC;
 
+    $country = empty($contact['country']) ? 'USA' : $contact['country'];
+    $cust_country = empty($contact['country']) ? 'USA' : $contact['country'];
+    $vend_country = empty($contact['country']) ? 'USA' : $contact['country'];
+
+    echo <<<HEREDOC
+      <script>
+      $(function() {
+        populateCountries('{$rnum}_country', '{$rnum}_state', '$country', '{$contact['state']}');
+        populateCountries('{$rnum}_cust_ship_country', '{$rnum}_cust_ship_state', '$cust_country', '{$contact['ship_state']}');
+        populateCountries('{$rnum}_vend_receive_country', '{$rnum}_vend_receive_state', '$vend_country', '{$contact['receive_state']}');
+        
+        var number = document.getElementById('{$rnum}_cust_credit_limit');
+
+        number.onkeydown = function(e) {
+          if(!((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58) || e.keyCode == 8)) {
+            return false;
+          }
+        }
+      });
+      </script>
+HEREDOC;
   }
 }
